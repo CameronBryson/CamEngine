@@ -1,4 +1,6 @@
 #include "raylib.h"
+#include "PlayScene.hpp"
+#include "SceneManager.hpp"
 
 #define SCREEN_WIDTH (800)
 #define SCREEN_HEIGHT (450)
@@ -8,12 +10,15 @@
 int main(void)
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
+    SceneManager::GetInstance()->LoadScene<PlayScene>();
+    SceneManager::GetInstance()->Init();
     SetTargetFPS(60);
 
     Texture2D texture = LoadTexture(ASSETS_PATH"test.png"); // Check README.md for how this works
 
     while (!WindowShouldClose())
     {
+        SceneManager::GetInstance()->Update(0.0f);
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -28,6 +33,7 @@ int main(void)
 
         EndDrawing();
     }
+    SceneManager::GetInstance()->Shutdown();
 
     CloseWindow();
 
