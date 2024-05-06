@@ -1,13 +1,13 @@
-#include "raylib.h"
 #include "PlayScene.hpp"
 #include "SceneManager.hpp"
+#include "raylib.h"
+#include "Delegate.hpp"
 
 #define SCREEN_WIDTH (800)
 #define SCREEN_HEIGHT (450)
 
 #define WINDOW_TITLE "Window title"
-
-int main(void)
+int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
     SceneManager::GetInstance()->LoadScene<PlayScene>();
@@ -15,13 +15,12 @@ int main(void)
     SetTargetFPS(60);
 
     Texture2D texture = LoadTexture(ASSETS_PATH"test.png"); // Check README.md for how this works
-
     while (!WindowShouldClose())
     {
         SceneManager::GetInstance()->Update(0.0f);
         BeginDrawing();
-
         ClearBackground(RAYWHITE);
+
 
         const int texture_x = SCREEN_WIDTH / 2 - texture.width / 2;
         const int texture_y = SCREEN_HEIGHT / 2 - texture.height / 2;

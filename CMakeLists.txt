@@ -24,7 +24,14 @@ set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLU
 
 # Declaring our executable
 add_executable(${PROJECT_NAME}
-        sources/IDelegateData.hpp)
+        sources/CBoxBounds.hpp
+        sources/CCircleBounds.hpp
+        sources/CRender.hpp
+        sources/CRigidbody.hpp
+        sources/CTransform.hpp
+        sources/GameSettings.hpp
+        sources/Delegate.hpp
+)
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)

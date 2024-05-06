@@ -1,10 +1,9 @@
 #ifndef PLAYSCENE_HPP
 #define PLAYSCENE_HPP
-
 #include "IScene.hpp"
 #include "Registry.hpp"
 #include "SPhysics.hpp"
-class PlayScene: public IScene{
+class PlayScene final : public IScene{
 public:
     void Init() override;
     void Update(float dt) override;
