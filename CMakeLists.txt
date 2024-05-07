@@ -31,6 +31,8 @@ add_executable(${PROJECT_NAME}
         sources/CTransform.hpp
         sources/GameSettings.hpp
         sources/Delegate.hpp
+        sources/ISparseSet.hpp
+        sources/SparseSet.hpp
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})

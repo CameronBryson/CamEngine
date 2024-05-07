@@ -1,8 +1,12 @@
 #include "PlayScene.hpp"
+
+#include "CBoxBounds.hpp"
 #include "Registry.hpp"
 
 void PlayScene::Init()
 {
+    m_Registry.createSparseSet<CBoxBounds>();
+
 }
 
 void PlayScene::Update(float dt)

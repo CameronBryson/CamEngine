@@ -1,25 +1,37 @@
 #ifndef REGISTRY_HPP
 #define REGISTRY_HPP
 
-#include <cstdint>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
-using EntityID = std::uint16_t;
-using ComponentID = std::uint16_t;
-using ArchetypeID = std::uint16_t;
-using ArchetypeSet = std::unordered_set<ArchetypeID>; 
-using Type = std::vector<ComponentID>;
+#include "ISparseSet.hpp"
+#include "SparseSet.hpp"
 
-struct Archetype{
-  ArchetypeID id; //unique id for this archetype
-  Type type;
-};
-class Registry{
+
+#include <cstdint>
+#include <deque>
+#include <memory>
+#include <typeindex>
+#include <unordered_map>
+class Registry {
+public:
+    Registry() {
+
+    };
+    ~Registry() {
+
+    }
+    
+    unsigned short createEntity();
+    void deleteEntity(unsigned short ID);
+    template<class T>
+    void createSparseSet();
+
+
 private:
-  std::unordered_map<EntityID, Archetype> entity_map; //Find what archetype this entity belongs to
-  std::unordered_map<ComponentID, ArchetypeSet> component_map; //Find all the archetypes that contain this component
-  //std::unordered_map<Type, Archetype> archetype_map;//Find an archetype by its list of components
+    std::deque<unsigned short> m_freeIDs;
+    std::unordered_map<const char*, std::shared_ptr<ISparseSet>> m_SparseSets;
 };
+template<class T>
+void Registry::createSparseSet() {
+    m_SparseSets[typeid(T).name()] = std::make_shared<SparseSet<T>>();
+}
 
 #endif // REGISTRY_HPP
