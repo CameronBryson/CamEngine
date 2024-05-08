@@ -3,6 +3,9 @@
 #include "IScene.hpp"
 #include "Registry.hpp"
 #include "SPhysics.hpp"
+
+#include <SPlayer.hpp>
+#include <SRender.hpp>
 class PlayScene final : public IScene{
 public:
     void Init() override;
@@ -11,10 +14,13 @@ public:
     void Shutdown() override;
     Registry& GetRegistry() override;
 private:
+    void InitSparseSets();
+private:
     Registry m_Registry;
-
     //Systems
-    SPhysics physicsSystem;
+    SPhysics m_physicsSystem;
+    SPlayer m_playerSystem;
+    SRender m_renderSystem;
 
 };
 

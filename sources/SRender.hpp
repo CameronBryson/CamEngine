@@ -1,11 +1,11 @@
 #ifndef SRENDER_HPP
 #define SRENDER_HPP
 
-#include "ISystem.hpp"
-class SRender final :public ISystem{
+class SRender{
 public:
-  void Update() override;
-  void Shutdown() override;
+  void Init();
+  void Update();
+  void Shutdown();
 private:
 };
 

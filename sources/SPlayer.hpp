@@ -1,11 +1,10 @@
 #ifndef SPLAYER_HPP
 #define SPLAYER_HPP
 
-#include "ISystem.hpp"
-class SPlayer final : public ISystem{
+class SPlayer{
 public:
-  void Update() override;
-  void Shutdown() override;
+  void Update();
+  void Shutdown();
 private:
   void HandleInput();
 };

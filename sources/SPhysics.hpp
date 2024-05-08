@@ -1,11 +1,10 @@
 #ifndef SPHYSICS_HPP
 #define SPHYSICS_HPP
 
-#include "ISystem.hpp"
-class SPhysics final : public ISystem{
+class SPhysics{
 public:
-  void Update() override;
-  void Shutdown() override;
+  void Update();
+  void Shutdown();
 private:
   void UpdateKinematics();
 };
