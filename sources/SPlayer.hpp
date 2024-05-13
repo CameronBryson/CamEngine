@@ -1,9 +1,10 @@
 #ifndef SPLAYER_HPP
 #define SPLAYER_HPP
+#include <Registry.hpp>
 
 class SPlayer{
 public:
-  void Update();
+  void Update(Registry& registry);
   void Shutdown();
 private:
   void HandleInput();

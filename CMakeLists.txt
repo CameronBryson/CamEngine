@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(my_raylib_game CXX)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=leak -fsanitize=undefined -g")
+
 
 # Adding Raylib
 include(FetchContent)
@@ -24,8 +26,6 @@ set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLU
 
 # Declaring our executable
 add_executable(${PROJECT_NAME}
-        sources/CBoxBounds.hpp
-        sources/CCircleBounds.hpp
         sources/CRender.hpp
         sources/CRigidbody.hpp
         sources/CTransform.hpp
@@ -33,6 +33,7 @@ add_executable(${PROJECT_NAME}
         sources/Delegate.hpp
         sources/ISparseSet.hpp
         sources/SparseSet.hpp
+        sources/CPlayer.hpp
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})

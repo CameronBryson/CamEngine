@@ -1,9 +1,10 @@
 #include "PlayScene.hpp"
 #include "SceneManager.hpp"
 #include "raylib.h"
-#include "Delegate.hpp"
 int main()
 {
+    InitWindow(Settings::WINDOW_WIDTH, Settings::WINDOW_HEIGHT, "raylib [core] example - basic window");
+    SetTargetFPS(60);
 
     SceneManager::GetInstance()->LoadScene<PlayScene>();
     SceneManager::GetInstance()->Init();
@@ -16,5 +17,6 @@ int main()
         EndDrawing();
     }
     SceneManager::GetInstance()->Shutdown();
+    CloseWindow();
     return 0;
 }

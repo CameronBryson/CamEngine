@@ -10,25 +10,33 @@
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
-static constexpr int MAX_IDS = 255;
 class Registry {
 public:
     Registry() {
-        for (int i = 0; i < MAX_IDS; ++i) {
+        for (int i = 0; i < Settings::MAX_ENTITIES; ++i) {
             m_freeIDs.push_back(i);
         }
     };
-    ~Registry() {}
+    ~Registry() {
+    }
 
 public:
     unsigned short createEntity() {
         const unsigned short ID = m_freeIDs.front();
         m_freeIDs.pop_front();
-        m_Entities.push_back(ID);
+        //m_Entities.push_back(ID);
         return ID;
 
     };
-    void deleteEntity(unsigned short ID);
+    void deleteEntity(unsigned short ID) {
+        for (const auto sparseSets : m_SparseSets)
+        {
+            if (sparseSets.second->hasItem(ID))
+                sparseSets.second->removeItem(ID);
+        }
+        m_freeIDs.push_back(ID); //Add freed ID to list of available
+    };
+
 
 public:
     template<typename T>
@@ -40,10 +48,28 @@ public:
     template<typename T>
     void addComponent(unsigned short ID, T item);
 
+    template<typename T>
+    T& getComponent(unsigned short ID);
+
+    template<typename T>
+    std::vector<unsigned short> getEntityIDS();
+
+    template<typename T>
+    std::vector<T> getComponents();
+
+    template<typename T>
+    bool hasComponent(unsigned short ID);
+
+    template<typename T>
+    void removeComponent(unsigned short ID);
+
+
+
+
 
 private:
-    std::vector<unsigned short> m_Entities;
     std::deque<unsigned short> m_freeIDs;
+    //std::vector<unsigned short> m_Entities;
     std::unordered_map<const char *, std::shared_ptr<ISparseSet>> m_SparseSets;
 };
 template<class T>
@@ -56,7 +82,33 @@ std::shared_ptr<SparseSet<T>> Registry::getSparseSet() {
 }
 template<typename T>
 void Registry::addComponent(unsigned short ID, T item) {
-    getSparseSet<T>()->addItem(ID,item);
+    getSparseSet<T>()->addItem(ID, item);
 }
+template<typename T>
+T &Registry::getComponent(unsigned short ID) {
+    const auto set = getSparseSet<T>();
+    return set->getItem(ID);
+}
+template<typename T>
+std::vector<unsigned short> Registry::getEntityIDS() {
+    const auto set = getSparseSet<T>();
+    return set->m_Dense;
+}
+template<typename T>
+std::vector<T> Registry::getComponents() {
+    const auto set = getSparseSet<T>();
+    return set->m_Items;
+}
+template<typename T>
+bool Registry::hasComponent(unsigned short ID) {
+    const auto set = getSparseSet<T>();
+    return set->hasItem(ID);
+}
+template<typename T>
+void Registry::removeComponent(unsigned short ID) {
+    const auto set = getSparseSet<T>();
+    set->removeItem(ID);
+}
+
 
 #endif // REGISTRY_HPP
