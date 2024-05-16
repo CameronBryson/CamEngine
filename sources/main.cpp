@@ -12,9 +12,7 @@ int main()
     while (!WindowShouldClose())
     {
         SceneManager::GetInstance()->Update(0.0f);
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        EndDrawing();
+        SceneManager::GetInstance()->Render();
     }
     SceneManager::GetInstance()->Shutdown();
     CloseWindow();

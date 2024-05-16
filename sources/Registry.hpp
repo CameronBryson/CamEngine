@@ -10,14 +10,18 @@
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
+
+#include "ThreadPool.hpp"
 class Registry {
 public:
     Registry() {
+        pool = new ThreadPool;
         for (int i = 0; i < Settings::MAX_ENTITIES; ++i) {
             m_freeIDs.push_back(i);
         }
     };
     ~Registry() {
+        delete pool;
     }
 
 public:
@@ -62,6 +66,8 @@ public:
 
     template<typename T>
     void removeComponent(unsigned short ID);
+
+    ThreadPool* pool;
 
 
 
