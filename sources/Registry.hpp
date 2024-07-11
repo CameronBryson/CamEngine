@@ -22,6 +22,7 @@ public:
     };
     ~Registry() {
         delete pool;
+
     }
 
 public:

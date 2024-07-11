@@ -4,7 +4,7 @@
 
 class SPlayer{
 public:
-  void Update(Registry& registry);
+  void Update(Registry* registry, float dt);
   void Shutdown();
 private:
   void HandleInput();

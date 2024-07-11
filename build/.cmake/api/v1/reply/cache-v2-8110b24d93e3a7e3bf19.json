@@ -4051,7 +4051,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "X11_Xmu_INCLUDE_PATH-NOTFOUND"
+			"value" : "/usr/include"
 		},
 		{
 			"name" : "X11_Xmu_LIB",
@@ -4067,7 +4067,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "X11_Xmu_LIB-NOTFOUND"
+			"value" : "/usr/lib/x86_64-linux-gnu/libXmu.so"
 		},
 		{
 			"name" : "X11_Xpm_INCLUDE_PATH",

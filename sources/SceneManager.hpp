@@ -17,13 +17,13 @@ public:
     void LoadScene(){
         if(m_currentScene!=nullptr)
             Shutdown();
-        m_currentScene = std::unique_ptr<IScene>(new T());
+        m_currentScene = new T();
     }
 protected:
     SceneManager();
 private:
     static SceneManager* m_instance;
-    std::unique_ptr<IScene> m_currentScene;
+    IScene* m_currentScene;
 
 
 };

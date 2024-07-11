@@ -3,7 +3,7 @@
 #include <Registry.hpp>
 class SPhysics{
 public:
-  void Update(Registry& registry);
+  void Update(Registry* registry, float dt);
   void Shutdown();
 private:
   void UpdateKinematics();

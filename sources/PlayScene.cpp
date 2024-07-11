@@ -5,6 +5,7 @@
 #include "CRigidbody.hpp"
 #include "CTransform.hpp"
 #include "Registry.hpp"
+#include "raylib.h"
 PlayScene::PlayScene() {
     m_Registry = new Registry();
     m_playerSystem = new SPlayer();
@@ -12,6 +13,7 @@ PlayScene::PlayScene() {
     m_renderSystem = new SRender();
 }
 PlayScene::~PlayScene() {
+
     delete m_Registry;
     delete m_playerSystem;
     delete m_physicsSystem;
@@ -38,13 +40,14 @@ void PlayScene::Update(float dt)
 
     //m_Registry->pool->enqueue(&SPlayer::Update, *m_playerSystem, *m_Registry);
     //registry pointer that is being based in is being destroyed and causing the deconstrucot to destory the pool
-    m_playerSystem->Update(*m_Registry);
-    m_physicsSystem->Update(*m_Registry);
+    m_playerSystem->Update(m_Registry,dt);
+    m_physicsSystem->Update(m_Registry,dt);
+
 }
 
 void PlayScene::Render()
 {
-    m_renderSystem->Update(*m_Registry);
+    m_renderSystem->Update(m_Registry);
 }
 
 void PlayScene::Shutdown()

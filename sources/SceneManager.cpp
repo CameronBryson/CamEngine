@@ -20,8 +20,7 @@ SceneManager* SceneManager::GetInstance()
     return m_instance;
 }
 
-void SceneManager::Init()
-{
+void SceneManager::Init(){
     m_currentScene->Init();
 }
 
@@ -38,4 +37,5 @@ void SceneManager::Render()
 void SceneManager::Shutdown()
 {
     m_currentScene->Shutdown();
+    delete m_currentScene;
 }

@@ -5,9 +5,11 @@
 class SRender{
 public:
   void Init();
-  void Update(Registry& registry);
+  void Update(Registry* registry);
   void Shutdown();
 private:
+  void DrawStatistics();
+  double time = 0;
 };
 
 #endif // SRENDER_HPP
