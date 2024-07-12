@@ -1,7 +1,7 @@
 #ifndef CRIGIDBODY_HPP
 #define CRIGIDBODY_HPP
 
-#include "glm/ext/vector_float2.hpp"
+#include "../glm/ext/vector_float2.hpp"
 struct CRigidbody{
   CRigidbody(float mass = 0, float drag = 0, float angularDrag = 0){
     this->mass = mass;
