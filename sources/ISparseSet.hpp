@@ -6,6 +6,7 @@
 #define ISPARSESET_HPP
 class ISparseSet {
 public:
+    virtual ~ISparseSet() = default;
     virtual void removeItem(unsigned short ID) = 0;
     virtual bool hasItem(unsigned short ID) = 0;
 };

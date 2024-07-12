@@ -22,7 +22,9 @@ public:
     };
     ~Registry() {
         delete pool;
-
+        for (const auto sparseSet: m_SparseSets) {
+            delete sparseSet.second;
+        }
     }
 
 public:
@@ -34,10 +36,10 @@ public:
 
     };
     void deleteEntity(unsigned short ID) {
-        for (const auto sparseSets : m_SparseSets)
+        for (const auto sparseSet : m_SparseSets)
         {
-            if (sparseSets.second->hasItem(ID))
-                sparseSets.second->removeItem(ID);
+            if (sparseSet.second->hasItem(ID))
+                sparseSet.second->removeItem(ID);
         }
         m_freeIDs.push_back(ID); //Add freed ID to list of available
     };
@@ -48,7 +50,7 @@ public:
     void createSparseSet();
 
     template<typename T>
-    std::shared_ptr<SparseSet<T>> getSparseSet();
+    SparseSet<T>* getSparseSet();
 
     template<typename T>
     void addComponent(unsigned short ID, T item);
@@ -77,15 +79,15 @@ public:
 private:
     std::deque<unsigned short> m_freeIDs;
     //std::vector<unsigned short> m_Entities;
-    std::unordered_map<const char *, std::shared_ptr<ISparseSet>> m_SparseSets;
+    std::unordered_map<const char *, ISparseSet*> m_SparseSets;
 };
 template<class T>
 void Registry::createSparseSet() {
-    m_SparseSets[typeid(T).name()] = std::make_shared<SparseSet<T>>();
+    m_SparseSets[typeid(T).name()] = new SparseSet<T>();
 }
 template<typename T>
-std::shared_ptr<SparseSet<T>> Registry::getSparseSet() {
-    return std::static_pointer_cast<SparseSet<T>>(m_SparseSets[typeid(T).name()]);
+SparseSet<T>* Registry::getSparseSet() {
+    return static_cast<SparseSet<T>*>(m_SparseSets[typeid(T).name()]);
 }
 template<typename T>
 void Registry::addComponent(unsigned short ID, T item) {

@@ -7,17 +7,15 @@ int main()
 {
     InitWindow(Settings::WINDOW_WIDTH, Settings::WINDOW_HEIGHT, "raylib [core] example - basic window");
     SetTargetFPS(Settings::MAX_FPS);
-    //int* ptr = new int(5);  // Use-After-Free vulnerability
-    //delete ptr;
-    //SceneManager::GetInstance()->LoadScene<PlayScene>();
-    //SceneManager::GetInstance()->Init();
+    SceneManager::GetInstance()->LoadScene<PlayScene>();
+    SceneManager::GetInstance()->Init();
 
-    //while (!WindowShouldClose())
-    //{
-        //SceneManager::GetInstance()->Update(GetFrameTime());
-        //SceneManager::GetInstance()->Render();
-    //}
-    //SceneManager::GetInstance()->Shutdown();
+    while (!WindowShouldClose())
+    {
+        SceneManager::GetInstance()->Update(GetFrameTime());
+        SceneManager::GetInstance()->Render();
+    }
+    SceneManager::GetInstance()->Shutdown();
     CloseWindow();
     return 0;
 }
