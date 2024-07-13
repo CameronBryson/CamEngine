@@ -3,6 +3,7 @@
 #include "CTransform.hpp"
 #include "GameSettings.hpp"
 #include "raylib.h"
+#include <string>
 void SRender::Init() {
 }
 void SRender::Update(Registry* registry){
@@ -22,4 +23,11 @@ void SRender::DrawStatistics() {
     DrawText(("DeltaTime: " + std::to_string(GetFrameTime())).c_str(),50,50,50,{255,0,0,255});
     //DrawText(("Update: " + std::to_string(Settings::UpdateEnd-Settings::UpdateStart)).c_str(),50,100,50,{255,0,0,255});
 
+}
+SRender::SRender() {
+    printf("Render system created\n");
+
+}
+SRender::~SRender() {
+    printf("Render system destroyed\n");
 }

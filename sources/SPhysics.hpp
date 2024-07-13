@@ -3,6 +3,8 @@
 #include <Registry.hpp>
 class SPhysics{
 public:
+    SPhysics();
+    ~SPhysics();
   void Update(Registry* registry, float dt);
   void Shutdown();
 private:

@@ -38,4 +38,5 @@ void SceneManager::Shutdown()
 {
     m_currentScene->Shutdown();
     delete m_currentScene;
+    //delete m_instance;
 }

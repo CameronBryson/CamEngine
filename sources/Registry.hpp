@@ -15,6 +15,7 @@
 class Registry {
 public:
     Registry() {
+        printf("Registry created\n");
         pool = new ThreadPool;
         for (int i = 0; i < Settings::MAX_ENTITIES; ++i) {
             m_freeIDs.push_back(i);
@@ -25,6 +26,7 @@ public:
         for (const auto sparseSet: m_SparseSets) {
             delete sparseSet.second;
         }
+        printf("Registry destroyed\n");
     }
 
 public:
@@ -62,7 +64,7 @@ public:
     std::vector<unsigned short> getEntityIDS();
 
     template<typename T>
-    std::vector<T> getComponents();
+    std::vector<T> &getComponents();
 
     template<typename T>
     bool hasComponent(unsigned short ID);
@@ -104,7 +106,7 @@ std::vector<unsigned short> Registry::getEntityIDS() {
     return set->m_Dense;
 }
 template<typename T>
-std::vector<T> Registry::getComponents() {
+std::vector<T> &Registry::getComponents() {
     const auto set = getSparseSet<T>();
     return set->m_Items;
 }

@@ -18,11 +18,11 @@ public:
 private:
     void InitSparseSets();
 private:
-    Registry* m_Registry;
+    Registry m_Registry;
     //Systems
-    SPhysics* m_physicsSystem;
-    SPlayer* m_playerSystem;
-    SRender* m_renderSystem;
+    SPhysics m_physicsSystem;
+    SPlayer m_playerSystem;
+    SRender m_renderSystem;
 
 };
 

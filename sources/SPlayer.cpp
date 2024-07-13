@@ -18,3 +18,10 @@ void SPlayer::Update(Registry* registry, float dt) {
 void SPlayer::Shutdown(){
   
 }
+SPlayer::SPlayer() {
+    printf("Player system created\n");
+
+}
+SPlayer::~SPlayer() {
+    printf("Player system destroyed\n");
+}

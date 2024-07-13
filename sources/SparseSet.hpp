@@ -26,7 +26,7 @@ public:
     bool hasItem(unsigned short ID) override;
     T &getItem(unsigned short ID);
     std::vector<unsigned short> getIDS();
-    std::vector<T> getItems();
+    std::vector<T> &getItems();
 private:
     std::vector<unsigned short> m_Sparse;
     std::vector<unsigned short> m_Dense;
@@ -63,7 +63,7 @@ std::vector<unsigned short> SparseSet<T>::getIDS() {
     return m_Dense;
 }
 template<class T>
-std::vector<T> SparseSet<T>::getItems() {
+std::vector<T> &SparseSet<T>::getItems() {
     //this needs to change if i have dead components
     return m_Items;
 }

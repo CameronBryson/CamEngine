@@ -4,6 +4,8 @@
 
 class SPlayer{
 public:
+    SPlayer();
+    ~SPlayer();
   void Update(Registry* registry, float dt);
   void Shutdown();
 private:
