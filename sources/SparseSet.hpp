@@ -5,6 +5,9 @@
 #ifndef SPARSESET_HPP
 #define SPARSESET_HPP
 #include <vector>
+#include <string>
+#include <typeinfo>
+
 
 
 #include "GameSettings.hpp"
@@ -15,11 +18,15 @@ public:
     SparseSet() :
     m_Sparse(std::vector<unsigned short>(Settings::MAX_ENTITIES,0)),
     m_Items(std::vector<T>(Settings::MAX_COMPONENTS)){
+        printf("Sparse set created of type: ");
+        printf(typeid(T).name());
+        printf("\n");
 
     }
-    ~SparseSet() {
-
-
+    ~SparseSet() override {
+        printf("Sparse set destroyed of type: ");
+        printf(typeid(T).name());
+        printf("\n");
     }
     void addItem(unsigned short ID, T item);
     void removeItem(unsigned short ID) override;
