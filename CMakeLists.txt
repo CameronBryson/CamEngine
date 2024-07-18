@@ -38,14 +38,23 @@ set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLU
 # Declaring our executable
 add_executable(${PROJECT_NAME}
         sources/CRender.hpp
-        sources/CRigidbody.hpp
+        sources/CRigidBody.hpp
         sources/CTransform.hpp
+        sources/CSprite.hpp
+        sources/CStaticBody.hpp
+        sources/CKineticBody.hpp
         sources/GameSettings.hpp
         sources/Delegate.hpp
         sources/ISparseSet.hpp
         sources/SparseSet.hpp
         sources/CPlayer.hpp
         sources/ThreadPool.hpp
+        sources/Timer.hpp
+        sources/Stats.hpp
+        sources/Components.hpp
+        sources/Systems.hpp
+        sources/Stats.cpp
+
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})

@@ -16,13 +16,11 @@ class Registry {
 public:
     Registry() {
         printf("Registry created\n");
-        pool = new ThreadPool;
         for (int i = 0; i < Settings::MAX_ENTITIES; ++i) {
             m_freeIDs.push_back(i);
         }
     };
     ~Registry() {
-        delete pool;
         for (const auto sparseSet: m_SparseSets) {
             delete sparseSet.second;
         }
@@ -72,7 +70,6 @@ public:
     template<typename T>
     void removeComponent(unsigned short ID);
 
-    ThreadPool* pool;
 
 
 

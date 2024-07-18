@@ -1,10 +1,8 @@
 #include "PlayScene.hpp"
 
-#include "CPlayer.hpp"
-#include "CRender.hpp"
-#include "CRigidbody.hpp"
-#include "CTransform.hpp"
+#include "Components.hpp"
 #include "Registry.hpp"
+#include "Timer.hpp"
 #include "raylib.h"
 PlayScene::PlayScene() {
     printf("PlayScene created\n");
@@ -20,13 +18,12 @@ void PlayScene::Init()
 {
     InitSparseSets();
 
-    m_Registry.pool->enqueue(&SRender::Init,&m_renderSystem);
-    //m_renderSystem.Init();
+    m_renderSystem.Init();
 
     auto player = m_Registry.createEntity();
     m_Registry.addComponent(player, CTransform({100,100}));
     m_Registry.addComponent(player,CPlayer());
-    m_Registry.addComponent(player, CRigidbody(0,0.7));
+    m_Registry.addComponent(player, CRigidBody(0,0.7));
 
 
 
@@ -34,9 +31,7 @@ void PlayScene::Init()
 
 void PlayScene::Update(float dt)
 {
-
-    //m_Registry->pool->enqueue(&SPlayer::Update, *m_playerSystem, *m_Registry);
-    //registry pointer that is being based in is being destroyed and causing the deconstrucot to destory the pool
+    Timer updateTimer(Stats::StatType::UPDATE);
     m_playerSystem.Update(&m_Registry,dt);
     m_physicsSystem.Update(&m_Registry,dt);
 
@@ -44,7 +39,6 @@ void PlayScene::Update(float dt)
 
 void PlayScene::Render()
 {
-
     m_renderSystem.Update(&m_Registry);
 }
 
@@ -60,6 +54,9 @@ Registry* PlayScene::GetRegistry() {
 void PlayScene::InitSparseSets() {
     m_Registry.createSparseSet<CTransform>();
     m_Registry.createSparseSet<CRender>();
-    m_Registry.createSparseSet<CRigidbody>();
+    m_Registry.createSparseSet<CRigidBody>();
     m_Registry.createSparseSet<CPlayer>();
+    m_Registry.createSparseSet<CSprite>();
+    m_Registry.createSparseSet<CStaticBody>();
+    m_Registry.createSparseSet<CKineticBody>();
 }

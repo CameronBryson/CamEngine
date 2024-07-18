@@ -52,6 +52,7 @@ inline ThreadPool::ThreadPool(std::size_t num_workers) : stop(false){
             }
         );
     }
+    printf("Created thread pool\n");
 }
 
 inline ThreadPool::~ThreadPool() {
@@ -62,6 +63,7 @@ inline ThreadPool::~ThreadPool() {
     condition.notify_all();
     for(std::thread &worker: workers)
         worker.join();
+    printf("Destroyed thread pool\n");
 }
 
 template<class F, class ... Args>

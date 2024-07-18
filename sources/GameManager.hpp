@@ -2,15 +2,17 @@
 #define SCENEMANAGER_HPP
 
 #include "IScene.hpp"
+#include "ThreadPool.hpp"
 #include <memory>
-class SceneManager{
+class GameManager{
 public:
-    ~SceneManager();
-    static SceneManager* GetInstance();
-    void Init();
+    ~GameManager();
+    static GameManager* GetInstance();
+    void Init() const;
     void Update(float dt);
     void Render();
     void Shutdown();
+    ThreadPool* GetThreadPool() const;
     //idk if I should be using template
     //better solution is probably to pass interface
     template<typename T>
@@ -20,10 +22,11 @@ public:
         m_currentScene = new T();
     }
 protected:
-    SceneManager();
+    GameManager();
 private:
-    static SceneManager* m_instance;
+    static GameManager* m_instance;
     IScene* m_currentScene;
+	ThreadPool* m_threadPool;
 
 
 };

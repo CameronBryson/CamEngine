@@ -1,21 +1,20 @@
 #include "PlayScene.hpp"
-#include "SceneManager.hpp"
+#include "GameManager.hpp"
 #include "raylib.h"
-static double UpdateStart = 0;
-static double UpdateEnd = 0;
+double UpdateStart = 0;
+double UpdateEnd = 0;
 int main()
 {
     InitWindow(Settings::WINDOW_WIDTH, Settings::WINDOW_HEIGHT, "raylib [core] example - basic window");
     SetTargetFPS(Settings::MAX_FPS);
-    SceneManager::GetInstance()->LoadScene<PlayScene>();
-    SceneManager::GetInstance()->Init();
-
+    GameManager::GetInstance()->LoadScene<PlayScene>();
+    GameManager::GetInstance()->Init();
     while (!WindowShouldClose())
     {
-        SceneManager::GetInstance()->Update(GetFrameTime());
-        SceneManager::GetInstance()->Render();
+        GameManager::GetInstance()->GetThreadPool()->enqueue([=]() { GameManager::GetInstance()->Update(GetFrameTime()); });    //std::thread updateThread(&SceneManager::Update, SceneManager::GetInstance(), GetFrameTime());
+        GameManager::GetInstance()->Render();
     }
-    SceneManager::GetInstance()->Shutdown();
+    GameManager::GetInstance()->Shutdown();
     CloseWindow();
     return 0;
 }

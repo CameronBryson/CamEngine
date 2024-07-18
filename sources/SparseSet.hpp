@@ -13,7 +13,7 @@
 #include "GameSettings.hpp"
 #include "ISparseSet.hpp"
 template<class T>
-class SparseSet : public ISparseSet {
+class SparseSet final : public ISparseSet {
 public:
     SparseSet() :
     m_Sparse(std::vector<unsigned short>(Settings::MAX_ENTITIES,0)),

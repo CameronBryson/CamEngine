@@ -2,10 +2,7 @@
 #define PLAYSCENE_HPP
 #include "IScene.hpp"
 #include "Registry.hpp"
-#include "SPhysics.hpp"
-
-#include <SPlayer.hpp>
-#include <SRender.hpp>
+#include "Systems.hpp"
 class PlayScene final : public IScene{
 public:
     PlayScene();

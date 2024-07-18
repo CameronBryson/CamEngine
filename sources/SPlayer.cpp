@@ -1,13 +1,13 @@
 #include "SPlayer.hpp"
 
 #include "CPlayer.hpp"
-#include "CRigidbody.hpp"
+#include "CRigidBody.hpp"
 #include "CTransform.hpp"
 #include "raylib.h"
 static constexpr float MOVESPEED = 500.0f;
 void SPlayer::Update(Registry* registry, float dt) {
     for (const auto ID: registry->getSparseSet<CPlayer>()->getIDS()) {
-        auto& rb = registry->getComponent<CRigidbody>(ID);
+        auto& rb = registry->getComponent<CRigidBody>(ID);
         if (IsKeyDown(KEY_D)) rb.acceleration.x += MOVESPEED * dt;
         if (IsKeyDown(KEY_A)) rb.acceleration.x -= MOVESPEED * dt;
         if (IsKeyDown(KEY_W)) rb.acceleration.y -= MOVESPEED * dt;
