@@ -23,9 +23,14 @@ void PlayScene::Init()
     m_renderSystem.Init();
 
     auto player = m_Registry.createEntity();
+
     m_Registry.addComponent<CTransform>(player,CTransform());
     m_Registry.addComponent<CRigidBody>(player,CRigidBody(0,0.7));
     m_Registry.addComponent<CPlayer>(player, CPlayer());
+    auto player2 = m_Registry.createEntity();
+    m_Registry.addComponent<CTransform>(player2,CTransform());
+    m_Registry.addComponent<CRigidBody>(player2,CRigidBody(0,0.7));
+    m_Registry.addComponent<CPlayer>(player2, CPlayer());
 
 
 
@@ -35,11 +40,11 @@ void PlayScene::Update(float dt)
 {
     Timer updateTimer(Stats::StatType::UPDATE);
 
-    //GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_playerSystem.Update(&m_Registry,dt); });
-    m_playerSystem.Update(&m_Registry,dt);
-    //GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_physicsSystem.Update(&m_Registry,dt); });
+    GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_playerSystem.Update(&m_Registry,dt); });
+    //m_playerSystem.Update(&m_Registry,dt);
+    GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_physicsSystem.Update(&m_Registry,dt); });
 
-    m_physicsSystem.Update(&m_Registry,dt);
+    //m_physicsSystem.Update(&m_Registry,dt);
     m_Registry.processCommands();
 
 }

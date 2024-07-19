@@ -9,19 +9,14 @@
 
 void SPhysics::Update(Registry* registry, float dt) {
     for (const auto ID: registry->getSparseSet<CRigidBody>()->getIDS()) {
-        auto reg = registry;
-        auto rb = registry->getComponent<CRigidBody>(ID);
-        auto transform = registry->getComponent<CTransform>(ID);
+        auto lock = registry->lockEntity(ID);
+        auto& rb = registry->getComponent<CRigidBody>(ID);
+        auto& transform = registry->getComponent<CTransform>(ID);
         rb.velocity += rb.acceleration * dt;
         rb.velocity *= std::pow(1 - rb.drag, dt);
         transform.position += rb.velocity;
         rb.acceleration = {0, 0};
-
-        registry->setComponent(ID, transform);
-        registry->setComponent(ID, rb);
     }
-
-
 }
 void SPhysics::Shutdown(){
   

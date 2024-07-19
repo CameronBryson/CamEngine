@@ -16,7 +16,7 @@
 #include "ThreadPool.hpp"
 class Registry {
 public:
-    Registry() {
+    Registry() : m_Locks(Settings::MAX_COMPONENTS) {
         printf("Registry created\n");
         for (int i = 0; i < Settings::MAX_ENTITIES; ++i) {
             m_freeIDs.push_back(i);
@@ -50,6 +50,9 @@ public:
         processEditComponentCommands();
         processRemoveComponentCommands();
     }
+    std::unique_lock<std::mutex> lockEntity(unsigned short ID) {
+        return std::unique_lock<std::mutex>(m_Locks[ID]);
+    }
 public:
     template<typename T>
     void createSparseSet();
@@ -61,7 +64,7 @@ public:
     void addComponent(unsigned short ID, const T& componentData);
 
     template<typename T>
-    const T& getComponent(unsigned short ID);
+    T& getComponent(unsigned short ID);
 
     template<typename T>
     std::vector<unsigned short> getEntityIDS();
@@ -81,8 +84,10 @@ public:
 
 private:
     std::deque<unsigned short> m_freeIDs;
+    //figure out way to make sure entities and locks match up
     //std::vector<unsigned short> m_Entities;
     std::unordered_map<const char *, ISparseSet*> m_SparseSets;
+    std::vector<std::mutex> m_Locks;
     std::queue<std::function<void()>> m_AddComponentCommands;
     std::queue<std::function<void()>> m_EditComponentCommands;
     std::queue<std::function<void()>> m_RemoveComponentCommands;
@@ -118,13 +123,12 @@ SparseSet<T>* Registry::getSparseSet() {
 template<typename T>
 void Registry::addComponent(unsigned short ID, const T &componentData) {
     //Add a addcomponent command to the queue to be processed later
-    m_AddComponentCommands.push([this, ID, componentData](){getSparseSet<T>()->addItem(ID, componentData);});
-    //getSparseSet<T>()->addItem(ID, componentData);
+    //m_AddComponentCommands.push([this, ID, componentData](){getSparseSet<T>()->addItem(ID, componentData);});
+    getSparseSet<T>()->addItem(ID, componentData);
 }
 template<typename T>
-const T &Registry::getComponent(unsigned short ID) {
-    const auto set = getSparseSet<T>();
-    return set->getItem(ID);
+T &Registry::getComponent(unsigned short ID) {
+    return getSparseSet<T>()->getItem(ID);
 }
 template<typename T>
 std::vector<unsigned short> Registry::getEntityIDS() {
@@ -142,16 +146,15 @@ bool Registry::hasComponent(unsigned short ID) {
     return set->hasItem(ID);
 }
 template<typename T>
-void Registry::removeComponent(unsigned short ID) {
-    //Add a removecomponent command to the queue to be processed later
-    m_AddComponentCommands.push([this, ID](){getSparseSet<T>()->removeItem(ID);});
-    //getSparseSet<T>()->removeItem(ID);
+void Registry::removeComponent(unsigned short ID) {//Add a removecomponent command to the queue to be processed later
+    //m_AddComponentCommands.push([this, ID](){getSparseSet<T>()->removeItem(ID);});
+    getSparseSet<T>()->removeItem(ID);
 }
 template<typename T>
 void Registry::setComponent(unsigned short ID, const T &componentData) {
     //Add a setcomponent command to the queue to be processed later
-    m_AddComponentCommands.push([this, ID, componentData](){getSparseSet<T>()->setItem(ID, componentData);});
-    //getSparseSet<T>().setItem(ID, componentData);
+    //m_AddComponentCommands.push([this, ID, componentData](){getSparseSet<T>()->setItem(ID, componentData);});
+    getSparseSet<T>()->setItem(ID, componentData);
 }
 
 #endif // REGISTRY_HPP
