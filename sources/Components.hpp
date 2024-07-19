@@ -12,5 +12,6 @@
 #include <CSprite.hpp>
 #include <CRigidBody.hpp>
 #include <CStaticBody.hpp>
+#include <CGravity.hpp>
 
 #endif //COMPONENTS_HPP

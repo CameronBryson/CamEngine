@@ -8,4 +8,5 @@
 #include <SPhysics.hpp>
 #include <SRender.hpp>
 #include <SPlayer.hpp>
+#include <SGravity.hpp>
 #endif //SYSTEMS_HPP

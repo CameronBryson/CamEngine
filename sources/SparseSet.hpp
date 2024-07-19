@@ -28,8 +28,9 @@ public:
         printf(typeid(T).name());
         printf("\n");
     }
-    void addItem(unsigned short ID, T item);
+    void addItem(unsigned short ID, const T& componentData);
     void removeItem(unsigned short ID) override;
+    void setItem(unsigned short ID, const T& componentData);
     bool hasItem(unsigned short ID) override;
     T &getItem(unsigned short ID);
     std::vector<unsigned short> getIDS();
@@ -40,10 +41,10 @@ private:
     std::vector<T> m_Items;
 };
 template<class T>
-void SparseSet<T>::addItem(unsigned short ID, T item) {
+void SparseSet<T>::addItem(unsigned short ID, const T& componentData) {
     const auto pos = m_Dense.size();
     m_Dense.push_back(ID);
-    m_Items[ID] = item;
+    m_Items[ID] = componentData;
     //m_Items.push_back(item);
     m_Sparse[ID] = pos;
 
@@ -55,7 +56,11 @@ void SparseSet<T>::removeItem(unsigned short ID) {
     std::swap(m_Items.back(), m_Items[m_Sparse[ID]]);
     std::swap(m_Sparse[last], m_Sparse[ID]);
     m_Dense.pop_back();
-    //m_Items.pop_back();
+    // m_Items.pop_back();
+}
+template<class T>
+void SparseSet<T>::setItem(unsigned short ID, const T &componentData) {
+    getItem(ID) = componentData;
 }
 template<class T>
 bool SparseSet<T>::hasItem(unsigned short ID) {

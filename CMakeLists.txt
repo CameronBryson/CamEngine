@@ -54,6 +54,11 @@ add_executable(${PROJECT_NAME}
         sources/Components.hpp
         sources/Systems.hpp
         sources/Stats.cpp
+        sources/SGravity.cpp
+        sources/SGravity.hpp
+        sources/Factory.cpp
+        sources/Factory.hpp
+        sources/CGravity.hpp
 
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})

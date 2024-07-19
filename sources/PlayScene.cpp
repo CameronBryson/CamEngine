@@ -1,5 +1,7 @@
 #include "PlayScene.hpp"
 
+#include <GameManager.hpp>
+
 #include "Components.hpp"
 #include "Registry.hpp"
 #include "Timer.hpp"
@@ -21,9 +23,9 @@ void PlayScene::Init()
     m_renderSystem.Init();
 
     auto player = m_Registry.createEntity();
-    m_Registry.addComponent(player, CTransform({100,100}));
-    m_Registry.addComponent(player,CPlayer());
-    m_Registry.addComponent(player, CRigidBody(0,0.7));
+    m_Registry.addComponent<CTransform>(player,CTransform());
+    m_Registry.addComponent<CRigidBody>(player,CRigidBody());
+    m_Registry.addComponent<CPlayer>(player, CPlayer());
 
 
 
@@ -32,8 +34,13 @@ void PlayScene::Init()
 void PlayScene::Update(float dt)
 {
     Timer updateTimer(Stats::StatType::UPDATE);
+
+    //GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_playerSystem.Update(&m_Registry,dt); });
     m_playerSystem.Update(&m_Registry,dt);
+    //GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_physicsSystem.Update(&m_Registry,dt); });
+
     m_physicsSystem.Update(&m_Registry,dt);
+    m_Registry.processCommands();
 
 }
 
