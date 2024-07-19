@@ -24,7 +24,7 @@ void PlayScene::Init()
 
     auto player = m_Registry.createEntity();
     m_Registry.addComponent<CTransform>(player,CTransform());
-    m_Registry.addComponent<CRigidBody>(player,CRigidBody());
+    m_Registry.addComponent<CRigidBody>(player,CRigidBody(0,0.7));
     m_Registry.addComponent<CPlayer>(player, CPlayer());
 
 

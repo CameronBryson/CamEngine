@@ -61,13 +61,13 @@ public:
     void addComponent(unsigned short ID, const T& componentData);
 
     template<typename T>
-    T& getComponent(unsigned short ID);
+    const T& getComponent(unsigned short ID);
 
     template<typename T>
     std::vector<unsigned short> getEntityIDS();
 
     template<typename T>
-    std::vector<T> &getComponents();
+    const std::vector<T> &getComponents();
 
     template<typename T>
     bool hasComponent(unsigned short ID);
@@ -118,10 +118,11 @@ SparseSet<T>* Registry::getSparseSet() {
 template<typename T>
 void Registry::addComponent(unsigned short ID, const T &componentData) {
     //Add a addcomponent command to the queue to be processed later
-    return getSparseSet<T>()->addItem(ID, componentData);
+    m_AddComponentCommands.push([this, ID, componentData](){getSparseSet<T>()->addItem(ID, componentData);});
+    //getSparseSet<T>()->addItem(ID, componentData);
 }
 template<typename T>
-T &Registry::getComponent(unsigned short ID) {
+const T &Registry::getComponent(unsigned short ID) {
     const auto set = getSparseSet<T>();
     return set->getItem(ID);
 }
@@ -131,7 +132,7 @@ std::vector<unsigned short> Registry::getEntityIDS() {
     return set->m_Dense;
 }
 template<typename T>
-std::vector<T> &Registry::getComponents() {
+const std::vector<T> &Registry::getComponents() {
     const auto set = getSparseSet<T>();
     return set->m_Items;
 }
@@ -143,13 +144,14 @@ bool Registry::hasComponent(unsigned short ID) {
 template<typename T>
 void Registry::removeComponent(unsigned short ID) {
     //Add a removecomponent command to the queue to be processed later
-    const auto set = getSparseSet<T>();
-    set->removeItem(ID);
+    m_AddComponentCommands.push([this, ID](){getSparseSet<T>()->removeItem(ID);});
+    //getSparseSet<T>()->removeItem(ID);
 }
 template<typename T>
 void Registry::setComponent(unsigned short ID, const T &componentData) {
     //Add a setcomponent command to the queue to be processed later
-    getSparseSet<T>().setItem(ID, componentData);
+    m_AddComponentCommands.push([this, ID, componentData](){getSparseSet<T>()->setItem(ID, componentData);});
+    //getSparseSet<T>().setItem(ID, componentData);
 }
 
 #endif // REGISTRY_HPP

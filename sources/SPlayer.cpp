@@ -7,11 +7,13 @@
 static constexpr float MOVESPEED = 500.0f;
 void SPlayer::Update(Registry* registry, float dt) {
     for (const auto ID: registry->getSparseSet<CPlayer>()->getIDS()) {
-        auto& rb = registry->getComponent<CRigidBody>(ID);
+        auto rb = registry->getComponent<CRigidBody>(ID);
         if (IsKeyDown(KEY_D)) rb.acceleration.x += MOVESPEED * dt;
         if (IsKeyDown(KEY_A)) rb.acceleration.x -= MOVESPEED * dt;
         if (IsKeyDown(KEY_W)) rb.acceleration.y -= MOVESPEED * dt;
         if (IsKeyDown(KEY_S)) rb.acceleration.y += MOVESPEED * dt;
+
+        registry->setComponent(ID, rb);
     }
 }
 
