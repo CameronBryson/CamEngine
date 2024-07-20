@@ -40,13 +40,21 @@ void PlayScene::Update(float dt)
 {
     Timer updateTimer(Stats::StatType::UPDATE);
 
-    GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_playerSystem.Update(m_Registry,dt); });
-    //m_playerSystem.Update(&m_Registry,dt);
-    GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_physicsSystem.Update(m_Registry,dt); });
+    // Enqueue separate tasks for player and physics system updates
+    auto& threadPool = *GameManager::GetInstance()->GetThreadPool();
+    std::future<void> playerUpdate = threadPool.enqueue([this, dt]() {
+        m_playerSystem.Update(m_Registry, dt);
+        m_physicsSystem.Update(m_Registry, dt);
+    });
+    // std::future<void> physicsUpdate = threadPool.enqueue([this, dt]() {
+    //     m_physicsSystem.Update(m_Registry, dt);
+    // });
 
-    //m_physicsSystem.Update(&m_Registry,dt);
+    // Wait for both updates to complete before processing commands
+    playerUpdate.wait();
+    //physicsUpdate.wait();
+
     m_Registry.processCommands();
-
 }
 
 void PlayScene::Render()

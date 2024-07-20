@@ -9,8 +9,8 @@ int main()
     GameManager::GetInstance()->Init();
     while (!WindowShouldClose())
     {
-        //GameManager::GetInstance()->Update(GetFrameTime());
-        GameManager::GetInstance()->GetThreadPool()->enqueue([]() { GameManager::GetInstance()->Update(GetFrameTime()); });    //std::thread updateThread(&SceneManager::Update, SceneManager::GetInstance(), GetFrameTime());
+        GameManager::GetInstance()->Update(GetFrameTime());
+        //GameManager::GetInstance()->GetThreadPool()->enqueue([]() { GameManager::GetInstance()->Update(GetFrameTime()); });    //std::thread updateThread(&SceneManager::Update, SceneManager::GetInstance(), GetFrameTime());
         GameManager::GetInstance()->Render();
     }
     GameManager::GetInstance()->Shutdown();
