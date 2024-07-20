@@ -23,9 +23,9 @@ public:
         }
     };
     ~Registry() {
-        for (const auto sparseSet: m_SparseSets) {
-            delete sparseSet.second;
-        }
+        // for (const auto sparseSet: m_SparseSets) {
+        //     delete sparseSet.second;
+        // }
         printf("Registry destroyed\n");
     }
 
@@ -38,7 +38,7 @@ public:
 
     };
     void deleteEntity(unsigned short ID) {
-        for (const auto sparseSet : m_SparseSets)
+        for (const auto& sparseSet : m_SparseSets)
         {
             if (sparseSet.second->hasItem(ID))
                 sparseSet.second->removeItem(ID);
@@ -58,7 +58,7 @@ public:
     void createSparseSet();
 
     template<typename T>
-    SparseSet<T>* getSparseSet();
+    SparseSet<T>& getSparseSet();
 
     template<typename T>
     void addComponent(unsigned short ID, const T& componentData);
@@ -86,7 +86,7 @@ private:
     std::deque<unsigned short> m_freeIDs;
     //figure out way to make sure entities and locks match up
     //std::vector<unsigned short> m_Entities;
-    std::unordered_map<const char *, ISparseSet*> m_SparseSets;
+    std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> m_SparseSets;
     std::vector<std::mutex> m_Locks;
     std::queue<std::function<void()>> m_AddComponentCommands;
     std::queue<std::function<void()>> m_EditComponentCommands;
@@ -114,31 +114,31 @@ private:
 };
 template<class T>
 void Registry::createSparseSet() {
-    m_SparseSets[typeid(T).name()] = new SparseSet<T>();
+    m_SparseSets[std::type_index(typeid(T))] = std::make_unique<SparseSet<T>>();
 }
 template<typename T>
-SparseSet<T>* Registry::getSparseSet() {
-    return static_cast<SparseSet<T>*>(m_SparseSets[typeid(T).name()]);
+SparseSet<T>&  Registry::getSparseSet() {
+    return *static_cast<SparseSet<T>*>(m_SparseSets[std::type_index(typeid(T))].get());
 }
 template<typename T>
 void Registry::addComponent(unsigned short ID, const T &componentData) {
     //Add a addcomponent command to the queue to be processed later
     //m_AddComponentCommands.push([this, ID, componentData](){getSparseSet<T>()->addItem(ID, componentData);});
-    getSparseSet<T>()->addItem(ID, componentData);
+    getSparseSet<T>().addItem(ID, componentData);
 }
 template<typename T>
 T &Registry::getComponent(unsigned short ID) {
-    return getSparseSet<T>()->getItem(ID);
+    return getSparseSet<T>().getItem(ID);
 }
 template<typename T>
 std::vector<unsigned short> Registry::getEntityIDS() {
     const auto set = getSparseSet<T>();
-    return set->m_Dense;
+    return set.m_Dense;
 }
 template<typename T>
 const std::vector<T> &Registry::getComponents() {
     const auto set = getSparseSet<T>();
-    return set->m_Items;
+    return set.m_Items;
 }
 template<typename T>
 bool Registry::hasComponent(unsigned short ID) {

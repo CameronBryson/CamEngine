@@ -11,7 +11,7 @@ public:
     void Update(float dt) override;
     void Render() override;
     void Shutdown() override;
-    Registry* GetRegistry() override;
+    Registry& GetRegistry() override;
 private:
     void InitSparseSets();
 private:

@@ -9,12 +9,12 @@
 void SRender::Init() {
     printf("Render init\n");
 }
-void SRender::Update(Registry* registry){
+void SRender::Update(Registry& registry){
     //printf("Render update\n");
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    for (const auto ID: registry->getSparseSet<CTransform>()->getIDS()) {
-        auto& transform = registry->getComponent<CTransform>(ID);
+    for (const auto ID: registry.getSparseSet<CTransform>().getIDS()) {
+        auto& transform = registry.getComponent<CTransform>(ID);
         DrawRectangle(transform.position.x,transform.position.y,50,50,{255,0,0,255});
     }
     DrawStatistics();

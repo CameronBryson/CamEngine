@@ -7,11 +7,11 @@
 #include "raylib.h"
 
 
-void SPhysics::Update(Registry* registry, float dt) {
-    for (const auto ID: registry->getSparseSet<CRigidBody>()->getIDS()) {
-        auto lock = registry->lockEntity(ID);
-        auto& rb = registry->getComponent<CRigidBody>(ID);
-        auto& transform = registry->getComponent<CTransform>(ID);
+void SPhysics::Update(Registry& registry, float dt) {
+    for (const auto ID: registry.getSparseSet<CRigidBody>().getIDS()) {
+        auto lock = registry.lockEntity(ID);
+        auto& rb = registry.getComponent<CRigidBody>(ID);
+        auto& transform = registry.getComponent<CTransform>(ID);
         rb.velocity += rb.acceleration * dt;
         rb.velocity *= std::pow(1 - rb.drag, dt);
         transform.position += rb.velocity;

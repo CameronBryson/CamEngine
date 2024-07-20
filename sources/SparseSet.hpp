@@ -4,10 +4,10 @@
 
 #ifndef SPARSESET_HPP
 #define SPARSESET_HPP
-#include <vector>
+#include <array>
 #include <string>
 #include <typeinfo>
-
+#include <vector>
 
 
 #include "GameSettings.hpp"
@@ -15,13 +15,10 @@
 template<class T>
 class SparseSet final : public ISparseSet {
 public:
-    SparseSet() :
-    m_Sparse(std::vector<unsigned short>(Settings::MAX_ENTITIES,0)),
-    m_Items(std::vector<T>(Settings::MAX_COMPONENTS)){
+    SparseSet() : m_Sparse() {
         printf("Sparse set created of type: ");
         printf(typeid(T).name());
         printf("\n");
-
     }
     ~SparseSet() override {
         printf("Sparse set destroyed of type: ");
@@ -30,15 +27,16 @@ public:
     }
     void addItem(unsigned short ID, const T& componentData);
     void removeItem(unsigned short ID) override;
+
     void setItem(unsigned short ID, const T& componentData);
     bool hasItem(unsigned short ID) override;
     T &getItem(unsigned short ID);
     std::vector<unsigned short> getIDS();
-    std::vector<T> &getItems();
+    std::array<T,Settings::MAX_COMPONENTS> &getItems();
 private:
-    std::vector<unsigned short> m_Sparse;
     std::vector<unsigned short> m_Dense;
-    std::vector<T> m_Items;
+    std::array<unsigned short, Settings::MAX_COMPONENTS> m_Sparse;
+    std::array<T, Settings::MAX_COMPONENTS> m_Items;
 };
 template<class T>
 void SparseSet<T>::addItem(unsigned short ID, const T& componentData) {
@@ -75,7 +73,7 @@ std::vector<unsigned short> SparseSet<T>::getIDS() {
     return m_Dense;
 }
 template<class T>
-std::vector<T> &SparseSet<T>::getItems() {
+std::array<T, Settings::MAX_COMPONENTS> &SparseSet<T>::getItems() {
     //this needs to change if i have dead components
     return m_Items;
 }

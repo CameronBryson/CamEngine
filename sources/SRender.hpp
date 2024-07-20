@@ -7,7 +7,7 @@ public:
     SRender();
     ~SRender();
   void Init();
-  void Update(Registry* registry);
+  void Update(Registry& registry);
   void Shutdown();
 private:
   void DrawStatistics();

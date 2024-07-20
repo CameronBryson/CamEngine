@@ -40,9 +40,9 @@ void PlayScene::Update(float dt)
 {
     Timer updateTimer(Stats::StatType::UPDATE);
 
-    GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_playerSystem.Update(&m_Registry,dt); });
+    GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_playerSystem.Update(m_Registry,dt); });
     //m_playerSystem.Update(&m_Registry,dt);
-    GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_physicsSystem.Update(&m_Registry,dt); });
+    GameManager::GetInstance()->GetThreadPool()->enqueue([&]() { m_physicsSystem.Update(m_Registry,dt); });
 
     //m_physicsSystem.Update(&m_Registry,dt);
     m_Registry.processCommands();
@@ -51,7 +51,7 @@ void PlayScene::Update(float dt)
 
 void PlayScene::Render()
 {
-    m_renderSystem.Update(&m_Registry);
+    m_renderSystem.Update(m_Registry);
 }
 
 void PlayScene::Shutdown()
@@ -60,8 +60,8 @@ void PlayScene::Shutdown()
     m_playerSystem.Shutdown();
     m_physicsSystem.Shutdown();
 }
-Registry* PlayScene::GetRegistry() {
-    return &m_Registry;
+Registry& PlayScene::GetRegistry() {
+    return m_Registry;
 }
 void PlayScene::InitSparseSets() {
     m_Registry.createSparseSet<CTransform>();
