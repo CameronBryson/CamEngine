@@ -8,7 +8,8 @@
 
 
 void SPhysics::Update(Registry& registry, float dt) {
-    for (const auto ID: registry.getSparseSet<CRigidBody>().getIDS()) {
+    for (const auto ID: registry.getEntityIDS<CRigidBody, CTransform>()) {
+
         auto lock = registry.lockEntity(ID);
         auto& rb = registry.getComponent<CRigidBody>(ID);
         auto& transform = registry.getComponent<CTransform>(ID);

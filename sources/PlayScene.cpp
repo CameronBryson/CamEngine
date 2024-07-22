@@ -53,8 +53,6 @@ void PlayScene::Update(float dt)
     // Wait for both updates to complete before processing commands
     playerUpdate.wait();
     //physicsUpdate.wait();
-
-    m_Registry.processCommands();
 }
 
 void PlayScene::Render()

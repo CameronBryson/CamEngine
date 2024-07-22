@@ -13,7 +13,7 @@ void SRender::Update(Registry& registry){
     //printf("Render update\n");
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    for (const auto ID: registry.getSparseSet<CTransform>().getIDS()) {
+    for (const auto ID: registry.getEntityIDS<CTransform>()) {
         auto& transform = registry.getComponent<CTransform>(ID);
         DrawRectangle(transform.position.x,transform.position.y,50,50,{255,0,0,255});
     }

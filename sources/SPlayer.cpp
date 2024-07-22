@@ -6,7 +6,7 @@
 #include "raylib.h"
 static constexpr float MOVESPEED = 500.0f;
 void SPlayer::Update(Registry& registry, float dt) {
-    for (const auto ID: registry.getSparseSet<CPlayer>().getIDS()) {
+    for (const auto ID: registry.getEntityIDS<CPlayer>()) {
         auto lock = registry.lockEntity(ID);
         auto& rb = registry.getComponent<CRigidBody>(ID);
         if (IsKeyDown(KEY_D)) rb.acceleration.x += MOVESPEED * dt;

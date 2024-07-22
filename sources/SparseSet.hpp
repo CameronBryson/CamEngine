@@ -6,6 +6,7 @@
 #define SPARSESET_HPP
 #include <array>
 #include <string>
+#include <typeindex>
 #include <typeinfo>
 #include <vector>
 
@@ -31,7 +32,8 @@ public:
     void setItem(unsigned short ID, const T& componentData);
     bool hasItem(unsigned short ID) override;
     T &getItem(unsigned short ID);
-    std::vector<unsigned short> getIDS();
+    size_t getSize() const override;
+    std::vector<unsigned short> getIDS() override;
     std::array<T,Settings::MAX_COMPONENTS> &getItems();
 private:
     std::vector<unsigned short> m_Dense;
@@ -67,6 +69,10 @@ bool SparseSet<T>::hasItem(unsigned short ID) {
 template<class T>
 T &SparseSet<T>::getItem(unsigned short ID) {
     return m_Items[m_Sparse[ID]];
+}
+template<class T>
+std::size_t SparseSet<T>::getSize() const {
+    return m_Dense.size();
 }
 template<class T>
 std::vector<unsigned short> SparseSet<T>::getIDS() {
