@@ -2,29 +2,41 @@
 
 #include <cmath>
 
-#include "CRigidBody.hpp"
-#include "CTransform.hpp"
+#include "Components.hpp"
 #include "raylib.h"
 
-
 void SPhysics::Update(Registry& registry, float dt) {
-    for (const auto ID: registry.getEntityIDS<CRigidBody, CTransform>()) {
-
+    // Iterate over entities that have CRigidBody, CTransform, and CVelocity components
+    for (const auto ID: registry.getEntityIDS<CRigidBody, CPosition, CVelocity>()) {
         auto lock = registry.lockEntity(ID);
         auto& rb = registry.getComponent<CRigidBody>(ID);
-        auto& transform = registry.getComponent<CTransform>(ID);
-        rb.velocity += rb.acceleration * dt;
-        rb.velocity *= std::pow(1 - rb.drag, dt);
-        transform.position += rb.velocity;
+        auto& position = registry.getComponent<CPosition>(ID);
+        auto& velocity = registry.getComponent<CVelocity>(ID);
+
+        // Apply acceleration to velocity
+        velocity.x += rb.acceleration.x * dt;
+        velocity.y += rb.acceleration.y * dt;
+
+        // Apply drag to velocity
+        velocity.x *= std::pow(1 - rb.drag, dt);
+        velocity.y *= std::pow(1 - rb.drag, dt);
+
+        // Update position based on velocity
+        position.x += velocity.x;
+        position.y += velocity.y;
+
+        // Reset acceleration
         rb.acceleration = {0, 0};
     }
 }
-void SPhysics::Shutdown(){
-  
+
+void SPhysics::Shutdown() {
 }
+
 SPhysics::SPhysics() {
     printf("Physics system created\n");
 }
+
 SPhysics::~SPhysics() {
     printf("Physics system destroyed\n");
 }

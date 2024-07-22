@@ -37,17 +37,10 @@ set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLU
 
 # Declaring our executable
 add_executable(${PROJECT_NAME}
-        sources/CRender.hpp
-        sources/CRigidBody.hpp
-        sources/CTransform.hpp
-        sources/CSprite.hpp
-        sources/CStaticBody.hpp
-        sources/CKineticBody.hpp
         sources/GameSettings.hpp
         sources/Delegate.hpp
         sources/ISparseSet.hpp
         sources/SparseSet.hpp
-        sources/CPlayer.hpp
         sources/ThreadPool.hpp
         sources/Timer.hpp
         sources/Stats.hpp
@@ -58,7 +51,6 @@ add_executable(${PROJECT_NAME}
         sources/SGravity.hpp
         sources/Factory.cpp
         sources/Factory.hpp
-        sources/CGravity.hpp
 
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})

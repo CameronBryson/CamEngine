@@ -1,7 +1,7 @@
 #include "SRender.hpp"
 
 #include <string>
-#include "CTransform.hpp"
+#include "Components.hpp"
 #include "GameSettings.hpp"
 #include "raylib.h"
 
@@ -13,9 +13,9 @@ void SRender::Update(Registry& registry){
     //printf("Render update\n");
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    for (const auto ID: registry.getEntityIDS<CTransform>()) {
-        auto& transform = registry.getComponent<CTransform>(ID);
-        DrawRectangle(transform.position.x,transform.position.y,50,50,{255,0,0,255});
+    for (const auto ID: registry.getEntityIDS<CPosition>()) {
+        auto& position = registry.getComponent<CPosition>(ID);
+        DrawRectangle(position.x,position.y,50,50,{255,0,0,255});
     }
     DrawStatistics();
     EndDrawing();

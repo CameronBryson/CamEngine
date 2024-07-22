@@ -1,8 +1,6 @@
 #include "SPlayer.hpp"
 
-#include "CPlayer.hpp"
-#include "CRigidBody.hpp"
-#include "CTransform.hpp"
+#include "Components.hpp"
 #include "raylib.h"
 static constexpr float MOVESPEED = 500.0f;
 void SPlayer::Update(Registry& registry, float dt) {
