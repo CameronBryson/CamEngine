@@ -25,17 +25,15 @@ void GameManager::Init() const {
     m_currentScene->Init();
 }
 
-void GameManager::Update(float dt)
-{
+void GameManager::Update(float dt) const {
     m_currentScene->Update(dt);
 }
 
-void GameManager::Render()
-{
+void GameManager::Render() const {
     m_currentScene->Render();
 }
 
-void GameManager::Shutdown() {
+void GameManager::Shutdown() const {
     m_currentScene->Shutdown();
     delete m_currentScene;
     delete m_threadPool;

@@ -9,9 +9,9 @@ public:
     ~GameManager();
     static GameManager* GetInstance();
     void Init() const;
-    void Update(float dt);
-    void Render();
-    void Shutdown();
+    void Update(float dt) const;
+    void Render() const;
+    void Shutdown() const;
     ThreadPool& GetThreadPool() const;
     //idk if I should be using template
     //better solution is probably to pass interface

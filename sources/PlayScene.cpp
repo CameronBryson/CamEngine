@@ -19,7 +19,7 @@ void PlayScene::Init()
 {
     InitSparseSets();
 
-    m_renderSystem.Init();
+    SRender::Init();
 
     auto player = m_Registry.createEntity();
 
@@ -40,23 +40,23 @@ void PlayScene::Update(float dt)
     Timer updateTimer(Stats::StatType::UPDATE);
 
     // Enqueue separate tasks for player and physics system updates
-    std::future<void> playerUpdate = m_threadPool.enqueue([this, dt]() {
-        m_playerSystem.Update(m_Registry, dt);
-        m_physicsSystem.Update(m_Registry, dt);
+    std::future<void> playerUpdate = m_threadPool.enqueue([this, dt] {
+        SPlayer::Update(m_Registry, dt);
+        SPhysics::Update(m_Registry, dt);
     });
     playerUpdate.wait();
 }
 
 void PlayScene::Render()
 {
-    m_renderSystem.Update(m_Registry);
+    SRender::Update(m_Registry);
 }
 
 void PlayScene::Shutdown()
 {
-    m_renderSystem.Shutdown();
-    m_playerSystem.Shutdown();
-    m_physicsSystem.Shutdown();
+    SRender::Shutdown();
+    SPlayer::Shutdown();
+    SPhysics::Shutdown();
 }
 Registry& PlayScene::GetRegistry() {
     return m_Registry;

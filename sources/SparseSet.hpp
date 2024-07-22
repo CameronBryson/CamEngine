@@ -46,7 +46,7 @@ template<class T>
 void SparseSet<T>::addItem(unsigned short ID, const T& componentData) {
     if (!m_AvailableIndices.empty()) {
         // Reuse a dead component slot
-        unsigned short reuseIndex = m_AvailableIndices.back();
+        const unsigned short reuseIndex = m_AvailableIndices.back();
         m_AvailableIndices.pop_back();
         m_Dense[reuseIndex] = ID;
         m_Items[ID] = std::move(componentData);

@@ -6,12 +6,11 @@ class SRender{
 public:
     SRender();
     ~SRender();
-  void Init();
-  void Update(Registry& registry);
-  void Shutdown();
+    static void Init();
+    static void Update(Registry &registry);
+    static void Shutdown();
 private:
-  void DrawStatistics();
-  double time = 0;
+    static void DrawStatistics();
 };
 
 #endif // SRENDER_HPP

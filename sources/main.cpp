@@ -5,7 +5,7 @@ int main()
 {
     InitWindow(Settings::WINDOW_WIDTH, Settings::WINDOW_HEIGHT, "raylib [core] example - basic window");
     SetTargetFPS(Settings::MAX_FPS);
-    auto gameManager = GameManager::GetInstance();
+    const auto gameManager = GameManager::GetInstance();
     gameManager->LoadScene<PlayScene>();
     gameManager->Init();
     while (!WindowShouldClose())

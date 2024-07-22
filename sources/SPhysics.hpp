@@ -5,8 +5,8 @@ class SPhysics{
 public:
     SPhysics();
     ~SPhysics();
-  void Update(Registry& registry, float dt);
-  void Shutdown();
+    static void Update(Registry &registry, float dt);
+    static void Shutdown();
 private:
   void UpdateKinematics();
 };
