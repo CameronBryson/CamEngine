@@ -5,15 +5,16 @@ int main()
 {
     InitWindow(Settings::WINDOW_WIDTH, Settings::WINDOW_HEIGHT, "raylib [core] example - basic window");
     SetTargetFPS(Settings::MAX_FPS);
-    GameManager::GetInstance()->LoadScene<PlayScene>();
-    GameManager::GetInstance()->Init();
+    auto gameManager = GameManager::GetInstance();
+    gameManager->LoadScene<PlayScene>();
+    gameManager->Init();
     while (!WindowShouldClose())
     {
-        GameManager::GetInstance()->Update(GetFrameTime());
+        gameManager->Update(GetFrameTime());
         //GameManager::GetInstance()->GetThreadPool()->enqueue([]() { GameManager::GetInstance()->Update(GetFrameTime()); });    //std::thread updateThread(&SceneManager::Update, SceneManager::GetInstance(), GetFrameTime());
-        GameManager::GetInstance()->Render();
+        gameManager->Render();
     }
-    GameManager::GetInstance()->Shutdown();
+    gameManager->Shutdown();
     CloseWindow();
     return 0;
 }

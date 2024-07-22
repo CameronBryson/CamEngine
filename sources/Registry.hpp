@@ -98,6 +98,8 @@ T &Registry::getComponent(unsigned short ID) {
 }
 template<typename... T>
 std::vector<unsigned short> Registry::getEntityIDS() {
+    // Optimization for single component type
+    if (sizeof...(T) == 1) return (getSparseSet<T>().getIDS(), ...);
     std::vector<unsigned short> result, shortestIDs;
     std::size_t minSize = std::numeric_limits<std::size_t>::max();
 

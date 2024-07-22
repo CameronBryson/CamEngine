@@ -6,9 +6,8 @@
 #include "Registry.hpp"
 #include "Timer.hpp"
 #include "raylib.h"
-PlayScene::PlayScene() {
+PlayScene::PlayScene() : m_threadPool(GameManager::GetInstance()->GetThreadPool()) {
     printf("PlayScene created\n");
-
 
 }
 PlayScene::~PlayScene() {
@@ -41,18 +40,11 @@ void PlayScene::Update(float dt)
     Timer updateTimer(Stats::StatType::UPDATE);
 
     // Enqueue separate tasks for player and physics system updates
-    auto& threadPool = *GameManager::GetInstance()->GetThreadPool();
-    std::future<void> playerUpdate = threadPool.enqueue([this, dt]() {
+    std::future<void> playerUpdate = m_threadPool.enqueue([this, dt]() {
         m_playerSystem.Update(m_Registry, dt);
         m_physicsSystem.Update(m_Registry, dt);
     });
-    // std::future<void> physicsUpdate = threadPool.enqueue([this, dt]() {
-    //     m_physicsSystem.Update(m_Registry, dt);
-    // });
-
-    // Wait for both updates to complete before processing commands
     playerUpdate.wait();
-    //physicsUpdate.wait();
 }
 
 void PlayScene::Render()

@@ -41,6 +41,6 @@ void GameManager::Shutdown() {
     delete m_threadPool;
     // delete m_instance;
 }
-ThreadPool *GameManager::GetThreadPool() const {
-    return m_threadPool;
+ThreadPool &GameManager::GetThreadPool() const {
+    return *m_threadPool;
 }

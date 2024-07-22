@@ -20,6 +20,7 @@ private:
     SPhysics m_physicsSystem;
     SPlayer m_playerSystem;
     SRender m_renderSystem;
+    ThreadPool& m_threadPool;
 
 };
 

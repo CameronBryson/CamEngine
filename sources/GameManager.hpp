@@ -12,7 +12,7 @@ public:
     void Update(float dt);
     void Render();
     void Shutdown();
-    ThreadPool* GetThreadPool() const;
+    ThreadPool& GetThreadPool() const;
     //idk if I should be using template
     //better solution is probably to pass interface
     template<typename T>
