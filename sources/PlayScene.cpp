@@ -20,7 +20,24 @@ void PlayScene::Init()
     InitSparseSets();
 
     SRender::Init();
+    for (int i = 0; i < Settings::MAX_ENTITIES-2; i++) {
 
+        auto entity = m_Registry.createEntity();
+        m_Registry.addComponent<CPosition>(entity, CPosition());
+        m_Registry.addComponent<CRigidBody>(entity, CRigidBody());
+        m_Registry.addComponent<CVelocity>(entity, CVelocity());
+        m_Registry.addComponent<CPlayer>(entity, CPlayer());
+        m_Registry.addComponent<CRender>(entity, CRender());
+    }
+
+    for (int i = 0; i < Settings::MAX_ENTITIES-2; i++) {
+        m_Registry.removeComponent<CRender>(i);
+        m_Registry.removeComponent<CPlayer>(i);
+        m_Registry.removeComponent<CVelocity>(i);
+        m_Registry.removeComponent<CRigidBody>(i);
+        m_Registry.removeComponent<CPosition>(i);
+    }
+//if there arent any spots left the new component wont have the new rigidbody properties
     auto player = m_Registry.createEntity();
 
     m_Registry.addComponent<CPosition>(player,CPosition());
@@ -49,6 +66,8 @@ void PlayScene::Update(float dt)
     // playerUpdate.wait();
     SPlayer::Update(m_Registry, dt);
     SPhysics::Update(m_Registry, dt);
+
+    m_Registry.ProcessCommands();
 }
 
 void PlayScene::Render()

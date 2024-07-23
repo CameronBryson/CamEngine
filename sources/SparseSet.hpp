@@ -18,61 +18,44 @@
 template<class T>
 class SparseSet final : public ISparseSet {
 public:
-    SparseSet() {
-        printf("Sparse set created of type: %s\n", typeid(T).name());
-    }
+    SparseSet() : m_Sparse() { printf("Sparse set created of type: %s\n", typeid(T).name()); }
     ~SparseSet() override {
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
+        m_Items.empty();
     }
 
-    void addItem(unsigned short ID, const T& componentData);
+    void addItem(unsigned short ID, T componentData);
     void removeItem(unsigned short ID) override;
-    void resetComponent(unsigned short ID) override;
     bool hasItem(unsigned short ID) override;
     T& getItem(unsigned short ID);
-    size_t getSize() const override;
+    [[nodiscard]] std::size_t getSize() const override;
     std::vector<unsigned short> getIDS() override;
 
 private:
     std::vector<unsigned short> m_Dense;
-    std::array<unsigned short, Settings::MAX_COMPONENTS> m_Sparse;
-    std::array<T, Settings::MAX_COMPONENTS> m_Items;
-    std::vector<unsigned short> m_AvailableIndices; // Tracks dead component indices for reuse
-
-    bool isIndexValid(unsigned short ID) const;
+    std::array<unsigned short, Settings::MAX_ENTITIES> m_Sparse;
+    std::array<T, Settings::MAX_ENTITIES> m_Items;
 };
 
 template<class T>
-void SparseSet<T>::addItem(unsigned short ID, const T& componentData) {
-    if (!m_AvailableIndices.empty()) {
-        // Reuse a dead component slot
-        const unsigned short reuseIndex = m_AvailableIndices.back();
-        m_AvailableIndices.pop_back();
-        m_Dense[reuseIndex] = ID;
-        m_Items[ID] = std::move(componentData);
-        m_Sparse[ID] = reuseIndex;
-    } else {
+void SparseSet<T>::addItem(unsigned short ID, T componentData) {
         // Add a new component
-        const auto pos = m_Dense.size();
-        m_Dense.push_back(ID);
-        m_Items[ID] = std::move(componentData);
-        m_Sparse[ID] = pos;
-    }
+    const auto pos = m_Dense.size();
+    m_Dense.push_back(ID);
+    m_Items[ID] = std::move(componentData);
+    m_Sparse[ID] = pos;
 }
 
 template<class T>
 void SparseSet<T>::removeItem(unsigned short ID) {
     // Instead of removing, reset and mark as dead
-    resetComponent(ID);
+    const auto last = m_Dense.back();
+    std::swap(m_Dense.back(), m_Dense[m_Sparse[ID]]);
+    std::swap(m_Items.back(), m_Items[m_Sparse[ID]]);
+    std::swap(m_Sparse[last], m_Sparse[ID]);
+    m_Dense.pop_back();
 }
 
-template<class T>
-void SparseSet<T>::resetComponent(unsigned short ID) {
-    if (hasItem(ID)) {
-        m_Items[ID] = T{}; // Reset to dead state
-        m_AvailableIndices.push_back(m_Sparse[ID]); // Mark index as available for reuse
-    }
-}
 
 template<class T>
 bool SparseSet<T>::hasItem(unsigned short ID) {
@@ -94,8 +77,4 @@ std::vector<unsigned short> SparseSet<T>::getIDS() {
     return m_Dense;
 }
 
-template<class T>
-bool SparseSet<T>::isIndexValid(unsigned short ID) const {
-    return std::find(m_AvailableIndices.begin(), m_AvailableIndices.end(), ID) == m_AvailableIndices.end();
-}
 #endif //SPARSESET_HPP

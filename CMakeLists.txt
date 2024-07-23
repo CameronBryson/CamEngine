@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(my_raylib_game CXX)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -O3")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -fsanitize=address -fsanitize=leak -fsanitize=undefined")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -fsanitize=address -fsanitize=leak -fsanitize=undefined -DENABLE_ASAN:BOOL=ON")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fsanitize=leak -fsanitize=undefined -DENABLE_ASAN:BOOL=ON")
@@ -38,7 +40,6 @@ set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLU
 # Declaring our executable
 add_executable(${PROJECT_NAME}
         sources/GameSettings.hpp
-        sources/Delegate.hpp
         sources/ISparseSet.hpp
         sources/SparseSet.hpp
         sources/ThreadPool.hpp
@@ -51,6 +52,7 @@ add_executable(${PROJECT_NAME}
         sources/SGravity.hpp
         sources/Factory.cpp
         sources/Factory.hpp
+        sources/Commands.hpp
 
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})

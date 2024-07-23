@@ -16,9 +16,11 @@
 #include "ThreadPool.hpp"
 
 #include <algorithm>
+
+#include "Commands.hpp"
 class Registry {
 public:
-    Registry() : m_Locks(Settings::MAX_COMPONENTS) {
+    Registry() : m_Locks(Settings::MAX_ENTITIES) {
         printf("Registry created\n");
         for (int i = 0; i < Settings::MAX_ENTITIES; ++i) {
             m_freeIDs.push_back(i);
@@ -50,6 +52,14 @@ public:
     std::unique_lock<std::mutex> lockEntity(unsigned short ID) {
         return std::unique_lock<std::mutex>(m_Locks[ID]);
     }
+    void ProcessCommands() {
+        while (!commandQueue.empty()) {
+            const auto & command = commandQueue.front();
+            command->Execute();
+            commandQueue.pop();
+        }
+
+    }
 public:
     template<typename T>
     void createSparseSet();
@@ -74,6 +84,7 @@ private:
     //figure out way to make sure entities and locks match up
     //std::vector<unsigned short> m_Entities;
     std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> m_SparseSets;
+    std::queue<std::unique_ptr<ICommand>> commandQueue;
     std::vector<std::mutex> m_Locks;
     template<typename T>
     SparseSet<T>& getSparseSet();
@@ -90,7 +101,8 @@ SparseSet<T>&  Registry::getSparseSet() {
 template<typename T>
 void Registry::addComponent(unsigned short ID, const T &componentData) {
     //Add a addcomponent command to the queue to be processed later
-    getSparseSet<T>().addItem(ID, componentData);
+    //getSparseSet<T>().addItem(ID, componentData);
+    commandQueue.push(std::make_unique<AddComponentCommand<T>>(getSparseSet<T>(), ID, componentData));
 }
 template<typename T>
 T &Registry::getComponent(unsigned short ID) {
@@ -124,7 +136,8 @@ bool Registry::hasComponent(unsigned short ID) {
 }
 template<typename T>
 void Registry::removeComponent(unsigned short ID) {//Add a removecomponent command to the queue to be processed later
-    getSparseSet<T>().removeItem(ID);
+    //getSparseSet<T>().removeItem(ID);
+    commandQueue.push(std::make_unique<RemoveComponentCommand<T>>(getSparseSet<T>(), ID));
 }
 
 #endif // REGISTRY_HPP
