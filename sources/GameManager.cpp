@@ -5,7 +5,6 @@ GameManager* GameManager::m_instance = nullptr;
 GameManager::GameManager()
 {
     m_currentScene = nullptr;
-    m_threadPool = new ThreadPool();
 }
 
 GameManager::~GameManager()
@@ -36,9 +35,5 @@ void GameManager::Render() const {
 void GameManager::Shutdown() const {
     m_currentScene->Shutdown();
     delete m_currentScene;
-    delete m_threadPool;
     // delete m_instance;
-}
-ThreadPool &GameManager::GetThreadPool() const {
-    return *m_threadPool;
 }

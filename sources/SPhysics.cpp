@@ -1,13 +1,17 @@
 #include "SPhysics.hpp"
 
 #include <cmath>
+#include <execution>
+#include <pstl/glue_execution_defs.h>
 
 #include "Components.hpp"
 #include "raylib.h"
 
 void SPhysics::Update(Registry& registry, float dt) {
     // Iterate over entities that have CRigidBody, CTransform, and CVelocity components
-    for (const auto ID: registry.getEntityIDS<CRigidBody, CPosition, CVelocity>()) {
+    std::vector<unsigned short> IDS = registry.getEntityIDS<CRigidBody, CPosition, CVelocity>();
+    std::for_each(std::execution::par_unseq,
+        std::begin(IDS), std::end(IDS), [&registry, dt](const unsigned short ID) {
         auto lock = registry.lockEntity(ID);
         auto& rb = registry.getComponent<CRigidBody>(ID);
         auto& position = registry.getComponent<CPosition>(ID);
@@ -27,7 +31,7 @@ void SPhysics::Update(Registry& registry, float dt) {
 
         // Reset acceleration
         rb.acceleration = {0, 0};
-    }
+    });
 }
 
 void SPhysics::Shutdown() {

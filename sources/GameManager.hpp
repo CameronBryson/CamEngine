@@ -2,7 +2,6 @@
 #define SCENEMANAGER_HPP
 
 #include "IScene.hpp"
-#include "ThreadPool.hpp"
 #include <memory>
 class GameManager{
 public:
@@ -12,7 +11,6 @@ public:
     void Update(float dt) const;
     void Render() const;
     void Shutdown() const;
-    [[nodiscard]] ThreadPool& GetThreadPool() const;
     //idk if I should be using template
     //better solution is probably to pass interface
     template<typename T>
@@ -26,7 +24,6 @@ protected:
 private:
     static GameManager* m_instance;
     IScene* m_currentScene;
-    ThreadPool* m_threadPool;
 
 
 };

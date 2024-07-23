@@ -43,6 +43,7 @@ void SparseSet<T>::addItem(unsigned short ID, T componentData) {
     const auto pos = m_Dense.size();
     m_Dense.push_back(ID);
     m_Items[ID] = std::move(componentData);
+    //m_Items[ID] = componentData;
     m_Sparse[ID] = pos;
 }
 

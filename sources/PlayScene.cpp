@@ -6,7 +6,7 @@
 #include "Registry.hpp"
 #include "Timer.hpp"
 #include "raylib.h"
-PlayScene::PlayScene() : m_threadPool(GameManager::GetInstance()->GetThreadPool()) {
+PlayScene::PlayScene() {
     printf("PlayScene created\n");
 
 }
@@ -20,24 +20,6 @@ void PlayScene::Init()
     InitSparseSets();
 
     SRender::Init();
-    for (int i = 0; i < Settings::MAX_ENTITIES-2; i++) {
-
-        auto entity = m_Registry.createEntity();
-        m_Registry.addComponent<CPosition>(entity, CPosition());
-        m_Registry.addComponent<CRigidBody>(entity, CRigidBody());
-        m_Registry.addComponent<CVelocity>(entity, CVelocity());
-        m_Registry.addComponent<CPlayer>(entity, CPlayer());
-        m_Registry.addComponent<CRender>(entity, CRender());
-    }
-
-    for (int i = 0; i < Settings::MAX_ENTITIES-2; i++) {
-        m_Registry.removeComponent<CRender>(i);
-        m_Registry.removeComponent<CPlayer>(i);
-        m_Registry.removeComponent<CVelocity>(i);
-        m_Registry.removeComponent<CRigidBody>(i);
-        m_Registry.removeComponent<CPosition>(i);
-    }
-//if there arent any spots left the new component wont have the new rigidbody properties
     auto player = m_Registry.createEntity();
 
     m_Registry.addComponent<CPosition>(player,CPosition());
@@ -49,9 +31,26 @@ void PlayScene::Init()
     m_Registry.addComponent<CRigidBody>(player2,CRigidBody{.mass = 0, .drag = 0.7});
     m_Registry.addComponent<CPlayer>(player2, CPlayer());
     m_Registry.addComponent<CVelocity>(player2, CVelocity());
+    Timer benchmarkTimer(Stats::StatType::BENCHMARK);
+    for (int i = 2; i < Settings::MAX_ENTITIES; i++) {
 
+        auto entity = m_Registry.createEntity();
+        m_Registry.addComponent<CPosition>(entity, CPosition());
+        m_Registry.addComponent<CRigidBody>(entity, CRigidBody());
+        m_Registry.addComponent<CVelocity>(entity, CVelocity());
+        m_Registry.addComponent<CPlayer>(entity, CPlayer());
+        m_Registry.addComponent<CRender>(entity, CRender());
+    }
 
-
+    for (int i = 2; i < Settings::MAX_ENTITIES; i++) {
+        m_Registry.removeComponent<CRender>(i);
+        m_Registry.removeComponent<CPlayer>(i);
+        m_Registry.removeComponent<CVelocity>(i);
+        m_Registry.removeComponent<CRigidBody>(i);
+        m_Registry.removeComponent<CPosition>(i);
+    }
+//if there arent any spots left the new component wont have the new rigidbody properties
+    m_Registry.ProcessCommands();
 }
 
 void PlayScene::Update(float dt)
@@ -72,6 +71,7 @@ void PlayScene::Update(float dt)
 
 void PlayScene::Render()
 {
+    Timer renderTimer(Stats::StatType::RENDER);
     SRender::Update(m_Registry);
 }
 

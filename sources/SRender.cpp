@@ -1,6 +1,8 @@
 #include "SRender.hpp"
 
 #include <string>
+
+#include <execution>
 #include "Components.hpp"
 #include "GameSettings.hpp"
 #include "raylib.h"
@@ -13,10 +15,12 @@ void SRender::Update(Registry& registry){
     //printf("Render update\n");
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    for (const auto ID: registry.getEntityIDS<CPosition>()) {
+    std::vector<unsigned short> IDS = registry.getEntityIDS<CPosition>();
+    std::for_each(std::execution::par_unseq,
+        std::begin(IDS), std::end(IDS), [&registry](const unsigned short ID) {
         auto& position = registry.getComponent<CPosition>(ID);
         DrawRectangle(position.x,position.y,50,50,{255,0,0,255});
-    }
+    });
     DrawStatistics();
     EndDrawing();
 
@@ -26,6 +30,8 @@ void SRender::DrawStatistics() {
     DrawText(("FPS: " + std::to_string(GetFPS())).c_str(),50,0,50,{255,0,0,255});
     DrawText(("DeltaTime: " + std::to_string(GetFrameTime())).c_str(),50,50,50,{255,0,0,255});
     DrawText(("Update: " + std::to_string(Stats::timerVector[Stats::StatType::UPDATE].count())).c_str(),50,100,50,{255,0,0,255});
+    DrawText(("Render: " + std::to_string(Stats::timerVector[Stats::StatType::RENDER].count())).c_str(),50,150,50,{255,0,0,255});
+    DrawText(("Benchmark: " + std::to_string(Stats::timerVector[Stats::StatType::BENCHMARK].count())).c_str(),50,200,50,{255,0,0,255});
 
 }
 SRender::SRender() {

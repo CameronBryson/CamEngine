@@ -16,7 +16,6 @@ private:
     void InitSparseSets();
 private:
     Registry m_Registry;
-    ThreadPool& m_threadPool;
 
 };
 
