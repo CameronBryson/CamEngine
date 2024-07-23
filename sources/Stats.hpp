@@ -13,7 +13,8 @@ public:
     enum StatType{
         UPDATE,
         RENDER,
-        BENCHMARK
+        BENCHMARK,
+        COUNT
     };
     static std::vector<std::chrono::duration<float,std::ratio<1,100>>> timerVector;
 };

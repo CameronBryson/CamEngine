@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <execution>
-#include <pstl/glue_execution_defs.h>
 
 #include "Components.hpp"
 #include "raylib.h"

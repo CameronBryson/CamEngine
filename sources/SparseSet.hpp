@@ -21,15 +21,14 @@ public:
     SparseSet() : m_Sparse() { printf("Sparse set created of type: %s\n", typeid(T).name()); }
     ~SparseSet() override {
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
-        m_Items.empty();
     }
 
     void addItem(unsigned short ID, T componentData);
     void removeItem(unsigned short ID) override;
-    bool hasItem(unsigned short ID) override;
+    [[nodiscard]] bool hasItem(unsigned short ID) const override;
     T& getItem(unsigned short ID);
     [[nodiscard]] std::size_t getSize() const override;
-    std::vector<unsigned short> getIDS() override;
+    [[nodiscard]] std::vector<unsigned short> getIDS() const override;
 
 private:
     std::vector<unsigned short> m_Dense;
@@ -59,7 +58,7 @@ void SparseSet<T>::removeItem(unsigned short ID) {
 
 
 template<class T>
-bool SparseSet<T>::hasItem(unsigned short ID) {
+bool SparseSet<T>::hasItem(unsigned short ID) const {
     return ID < m_Sparse.size() && m_Sparse[ID] < m_Dense.size() && m_Dense[m_Sparse[ID]] == ID;
 }
 
@@ -74,7 +73,7 @@ size_t SparseSet<T>::getSize() const {
 }
 
 template<class T>
-std::vector<unsigned short> SparseSet<T>::getIDS() {
+std::vector<unsigned short> SparseSet<T>::getIDS() const {
     return m_Dense;
 }
 

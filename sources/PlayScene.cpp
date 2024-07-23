@@ -43,14 +43,11 @@ void PlayScene::Init()
     }
 
     for (int i = 2; i < Settings::MAX_ENTITIES; i++) {
-        m_Registry.removeComponent<CRender>(i);
-        m_Registry.removeComponent<CPlayer>(i);
-        m_Registry.removeComponent<CVelocity>(i);
-        m_Registry.removeComponent<CRigidBody>(i);
-        m_Registry.removeComponent<CPosition>(i);
+        m_Registry.deleteEntity(i);
     }
 //if there arent any spots left the new component wont have the new rigidbody properties
     m_Registry.ProcessCommands();
+
 }
 
 void PlayScene::Update(float dt)
@@ -67,6 +64,7 @@ void PlayScene::Update(float dt)
     SPhysics::Update(m_Registry, dt);
 
     m_Registry.ProcessCommands();
+
 }
 
 void PlayScene::Render()

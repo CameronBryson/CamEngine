@@ -1,7 +1,6 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
-#include <glm/glm.hpp>
-
+#include "../glm/glm.hpp"
 // Component for entities affected by gravity
 struct CGravity {};
 

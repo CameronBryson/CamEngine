@@ -41,12 +41,7 @@ public:
 
     };
     void deleteEntity(unsigned short ID) {
-        for (const auto& sparseSet : m_SparseSets)
-        {
-            if (sparseSet.second->hasItem(ID))
-                sparseSet.second->removeItem(ID);
-        }
-        m_freeIDs.push_back(ID); //Add freed ID to list of available
+        commandQueue.push(std::make_unique<DeleteEntityCommand>(m_SparseSets,m_freeIDs, ID));
     };
     std::unique_lock<std::mutex> lockEntity(unsigned short ID) {
         return std::unique_lock<std::mutex>(m_Locks[ID]);
@@ -67,16 +62,16 @@ public:
     void addComponent(unsigned short ID, const T& componentData);
 
     template<typename T>
-    T& getComponent(unsigned short ID);
+    T& getComponent(unsigned short ID) const;
 
     template<typename T>
-    bool hasComponent(unsigned short ID);
+    [[nodiscard]] bool hasComponent(unsigned short ID) const;
 
     template<typename T>
     void removeComponent(unsigned short ID);
 
     template<typename... T>
-    std::vector<unsigned short> getEntityIDS();
+    [[nodiscard]] std::vector<unsigned short> getEntityIDS() const;
 
 private:
     std::deque<unsigned short> m_freeIDs;
@@ -86,7 +81,7 @@ private:
     std::queue<std::unique_ptr<ICommand>> commandQueue;
     std::vector<std::mutex> m_Locks;
     template<typename T>
-    SparseSet<T>& getSparseSet();
+    SparseSet<T>& getSparseSet() const;
 
 };
 template<class T>
@@ -94,8 +89,8 @@ void Registry::createSparseSet() {
     m_SparseSets[std::type_index(typeid(T))] = std::make_unique<SparseSet<T>>();
 }
 template<typename T>
-SparseSet<T>&  Registry::getSparseSet() {
-    return *static_cast<SparseSet<T>*>(m_SparseSets[std::type_index(typeid(T))].get());
+SparseSet<T>&  Registry::getSparseSet() const {
+    return *static_cast<SparseSet<T>*>(m_SparseSets.at(std::type_index(typeid(T))).get());
 }
 template<typename T>
 void Registry::addComponent(unsigned short ID, const T &componentData) {
@@ -104,39 +99,40 @@ void Registry::addComponent(unsigned short ID, const T &componentData) {
     commandQueue.push(std::make_unique<AddComponentCommand<T>>(getSparseSet<T>(), ID, componentData));
 }
 template<typename T>
-T &Registry::getComponent(unsigned short ID) {
+T &Registry::getComponent(unsigned short ID) const {
     return getSparseSet<T>().getItem(ID);
 }
 template<typename... T>
-std::vector<unsigned short> Registry::getEntityIDS() {
-    // Optimization for single component type
-    if (sizeof...(T) == 1) return (getSparseSet<T>().getIDS(), ...);
-    std::vector<unsigned short> result, shortestIDs;
+std::vector<unsigned short> Registry::getEntityIDS() const {
+    std::vector<unsigned short> result;
     std::size_t minSize = std::numeric_limits<std::size_t>::max();
+    std::vector<unsigned short> shortestIDs;
 
-    // Combine finding the shortest vector and checking components into a single loop
+    // Determine the shortest ID list among the specified component types
     ([&](const auto& vec) {
         if (vec.size() < minSize) {
             minSize = vec.size();
             shortestIDs = vec;
         }
-        for (const auto ID: shortestIDs) {
-            if ((hasComponent<T>(ID) && ...)) { // Fold expression to check all components
-                result.push_back(ID);
-            }
-        }
     }(getSparseSet<T>().getIDS()), ...);
+
+    // Iterate over the shortest ID list and check if each entity has all specified components
+    for (const auto ID : shortestIDs) {
+        if ((hasComponent<T>(ID) && ...)) {
+            result.push_back(ID);
+        }
+    }
 
     return result;
 }
 template<typename T>
-bool Registry::hasComponent(unsigned short ID) {
+bool Registry::hasComponent(unsigned short ID) const {
     return getSparseSet<T>().hasItem(ID);
 }
 template<typename T>
 void Registry::removeComponent(unsigned short ID) {//Add a removecomponent command to the queue to be processed later
     //getSparseSet<T>().removeItem(ID);
-    commandQueue.push(std::make_unique<RemoveComponentCommand<T>>(getSparseSet<T>(), ID));
+    commandQueue.push(std::make_unique<RemoveComponentCommand>(getSparseSet<T>(), ID));
 }
 
 #endif // REGISTRY_HPP
