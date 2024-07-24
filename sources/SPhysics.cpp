@@ -11,7 +11,6 @@ void SPhysics::Update(Registry& registry, float dt) {
     std::vector<unsigned short> IDS = registry.getEntityIDS<CRigidBody, CPosition, CVelocity>();
     std::for_each(std::execution::par_unseq,
         std::begin(IDS), std::end(IDS), [&registry, dt](const unsigned short ID) {
-        auto lock = registry.lockEntity(ID);
         auto& rb = registry.getComponent<CRigidBody>(ID);
         auto& position = registry.getComponent<CPosition>(ID);
         auto& velocity = registry.getComponent<CVelocity>(ID);

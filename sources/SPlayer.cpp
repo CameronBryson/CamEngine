@@ -7,7 +7,6 @@ void SPlayer::Update(Registry& registry, float dt) {
     std::vector<unsigned short> IDS = registry.getEntityIDS<CPlayer, CRigidBody>();
     std::for_each(std::execution::par_unseq,
         std::begin(IDS), std::end(IDS), [&registry, dt](const unsigned short ID) {
-        auto lock = registry.lockEntity(ID);
         auto& rb = registry.getComponent<CRigidBody>(ID);
         if (IsKeyDown(KEY_D)) rb.acceleration.x += MOVESPEED * dt;
         if (IsKeyDown(KEY_A)) rb.acceleration.x -= MOVESPEED * dt;
