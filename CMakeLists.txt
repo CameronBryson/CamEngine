@@ -2,12 +2,21 @@ cmake_minimum_required(VERSION 3.0)
 project(my_raylib_game CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED  True)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -O3")
+if(UNIX)
+
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -O3")
+find_package(TBB REQUIRED)
+endif (UNIX)
+
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /O2")
+endif (WIN32)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -fsanitize=address -fsanitize=leak -fsanitize=undefined")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -fsanitize=address -fsanitize=leak -fsanitize=undefined -DENABLE_ASAN:BOOL=ON")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fsanitize=leak -fsanitize=undefined -DENABLE_ASAN:BOOL=ON")
-find_package(TBB REQUIRED)
+
 
 # Adding Raylib
 include(FetchContent)
@@ -39,7 +48,6 @@ FetchContent_Declare(
         GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(tbb)
-
 # Adding our source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/sources/*.cpp") # Define PROJECT_SOURCES as a list of all source files
 set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLUDE to be the path to the include directory of the project
