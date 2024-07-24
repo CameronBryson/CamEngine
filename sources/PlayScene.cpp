@@ -20,31 +20,19 @@ void PlayScene::Init()
     InitSparseSets();
 
     SRender::Init();
-    auto player = m_Registry.createEntity();
-
-    m_Registry.addComponent<CPosition>(player,CPosition());
-    m_Registry.addComponent<CRigidBody>(player,CRigidBody{.mass = 0, .drag = 0.7});
-    m_Registry.addComponent<CPlayer>(player, CPlayer());
-    m_Registry.addComponent<CVelocity>(player, CVelocity());
-    auto player2 = m_Registry.createEntity();
-    m_Registry.addComponent<CPosition>(player2,CPosition());
-    m_Registry.addComponent<CRigidBody>(player2,CRigidBody{.mass = 0, .drag = 0.7});
-    m_Registry.addComponent<CPlayer>(player2, CPlayer());
-    m_Registry.addComponent<CVelocity>(player2, CVelocity());
     Timer benchmarkTimer(Stats::StatType::BENCHMARK);
-    for (int i = 2; i < Settings::MAX_ENTITIES; i++) {
+    for (int i = 0; i < Settings::MAX_ENTITIES; i++) {
 
         auto entity = m_Registry.createEntity();
         m_Registry.addComponent<CPosition>(entity, CPosition());
         m_Registry.addComponent<CRigidBody>(entity, CRigidBody());
         m_Registry.addComponent<CVelocity>(entity, CVelocity());
         m_Registry.addComponent<CPlayer>(entity, CPlayer());
-        m_Registry.addComponent<CRender>(entity, CRender());
     }
 
-    for (int i = 2; i < Settings::MAX_ENTITIES; i++) {
-        m_Registry.deleteEntity(i);
-    }
+    // for (int i = 0; i < Settings::MAX_ENTITIES; i++) {
+    //     m_Registry.deleteEntity(i);
+    // }
 //if there arent any spots left the new component wont have the new rigidbody properties
     m_Registry.ProcessCommands();
 

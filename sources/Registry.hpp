@@ -36,12 +36,12 @@ public:
     unsigned short createEntity() {
         const unsigned short ID = m_freeIDs.front();
         m_freeIDs.pop_front();
-        //m_Entities.push_back(ID);
+        m_Entities.push_back(ID);
         return ID;
 
     };
     void deleteEntity(unsigned short ID) {
-        commandQueue.push(std::make_unique<DeleteEntityCommand>(m_SparseSets,m_freeIDs, ID));
+        commandQueue.push(std::make_unique<DeleteEntityCommand>(m_SparseSets,m_freeIDs,m_Entities, ID));
     };
     std::unique_lock<std::mutex> lockEntity(unsigned short ID) {
         return std::unique_lock<std::mutex>(m_Locks[ID]);
@@ -76,7 +76,7 @@ public:
 private:
     std::deque<unsigned short> m_freeIDs;
     //figure out way to make sure entities and locks match up
-    //std::vector<unsigned short> m_Entities;
+    std::vector<unsigned short> m_Entities;
     std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> m_SparseSets;
     std::queue<std::unique_ptr<ICommand>> commandQueue;
     std::vector<std::mutex> m_Locks;
@@ -105,24 +105,11 @@ T &Registry::getComponent(unsigned short ID) const {
 template<typename... T>
 std::vector<unsigned short> Registry::getEntityIDS() const {
     std::vector<unsigned short> result;
-    std::size_t minSize = std::numeric_limits<std::size_t>::max();
-    std::vector<unsigned short> shortestIDs;
-
-    // Determine the shortest ID list among the specified component types
-    ([&](const auto& vec) {
-        if (vec.size() < minSize) {
-            minSize = vec.size();
-            shortestIDs = vec;
-        }
-    }(getSparseSet<T>().getIDS()), ...);
-
-    // Iterate over the shortest ID list and check if each entity has all specified components
-    for (const auto ID : shortestIDs) {
+    for (const auto ID : m_Entities) {
         if ((hasComponent<T>(ID) && ...)) {
             result.push_back(ID);
         }
     }
-
     return result;
 }
 template<typename T>

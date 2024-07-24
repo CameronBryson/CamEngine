@@ -33,7 +33,7 @@ public:
 private:
     std::vector<unsigned short> m_Dense;
     std::array<unsigned short, Settings::MAX_ENTITIES> m_Sparse;
-    std::array<T, Settings::MAX_ENTITIES> m_Items;
+    std::vector<T> m_Items;
 };
 
 template<class T>
@@ -41,7 +41,7 @@ void SparseSet<T>::addItem(unsigned short ID, T componentData) {
         // Add a new component
     const auto pos = m_Dense.size();
     m_Dense.push_back(ID);
-    m_Items[ID] = std::move(componentData);
+    m_Items.push_back(std::move(componentData));
     //m_Items[ID] = componentData;
     m_Sparse[ID] = pos;
 }
@@ -54,6 +54,7 @@ void SparseSet<T>::removeItem(unsigned short ID) {
     std::swap(m_Items.back(), m_Items[m_Sparse[ID]]);
     std::swap(m_Sparse[last], m_Sparse[ID]);
     m_Dense.pop_back();
+    m_Items.pop_back();
 }
 
 
