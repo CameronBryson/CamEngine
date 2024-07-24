@@ -3,6 +3,7 @@
 #include <GameManager.hpp>
 
 #include "Components.hpp"
+#include "Factory.hpp"
 #include "Registry.hpp"
 #include "Timer.hpp"
 #include "raylib.h"
@@ -21,7 +22,7 @@ void PlayScene::Init()
 
     SRender::Init();
     Timer benchmarkTimer(Stats::StatType::BENCHMARK);
-    for (int i = 0; i < Settings::MAX_ENTITIES; i++) {
+    for (int i = 1; i < Settings::MAX_ENTITIES-1; i++) {
 
         auto entity = m_Registry.createEntity();
         m_Registry.addComponent<CPosition>(entity, CPosition());
@@ -30,11 +31,11 @@ void PlayScene::Init()
         m_Registry.addComponent<CPlayer>(entity, CPlayer());
     }
 
-    // for (int i = 0; i < Settings::MAX_ENTITIES; i++) {
+    // for (int i = 1; i < Settings::MAX_ENTITIES-1; i++) {
     //     m_Registry.deleteEntity(i);
     // }
+    Factory::CreatePlayer(m_Registry);
 //if there arent any spots left the new component wont have the new rigidbody properties
-    m_Registry.ProcessCommands();
 
 }
 

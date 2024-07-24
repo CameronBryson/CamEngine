@@ -1,10 +1,5 @@
-//
-// Created by cam on 07/05/24.
-//
-
 #ifndef SPARSESET_HPP
 #define SPARSESET_HPP
-// Modification in SparseSet.hpp to incorporate dead components
 
 #include <algorithm>
 #include <array>
@@ -12,70 +7,65 @@
 #include <typeindex>
 #include <typeinfo>
 #include <vector>
+#include <cassert>
 #include "GameSettings.hpp"
 #include "ISparseSet.hpp"
 
 template<class T>
 class SparseSet final : public ISparseSet {
 public:
-    SparseSet() : m_Sparse() { printf("Sparse set created of type: %s\n", typeid(T).name()); }
+    SparseSet() { printf("Sparse set created of type: %s\n", typeid(T).name()); }
     ~SparseSet() override {
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
     }
 
-    void addItem(unsigned short ID, T componentData);
-    void removeItem(unsigned short ID) override;
-    [[nodiscard]] bool hasItem(unsigned short ID) const override;
-    T& getItem(unsigned short ID);
-    [[nodiscard]] std::size_t getSize() const override;
-    [[nodiscard]] std::vector<unsigned short> getIDS() const override;
+    void addItem(unsigned short ID, T componentData) {
+        assert(ID < Settings::MAX_ENTITIES && "ID is out of range.");
+        assert(m_Size < Settings::MAX_ENTITIES && "Exceeding maximum entities.");
+        if (ID < Settings::MAX_ENTITIES) {
+            m_Dense[m_Size] = ID;
+            m_Items[m_Size] = std::move(componentData);
+            m_Sparse[ID] = m_Size;
+            ++m_Size;
+        }
+    }
+
+    void removeItem(unsigned short ID) override {
+        assert(ID < Settings::MAX_ENTITIES && "ID is out of range.");
+        assert(m_Size > 0 && "Sparse set is empty, cannot remove item.");
+        if (m_Size > 0 && ID < Settings::MAX_ENTITIES) {
+            auto lastID = m_Dense[m_Size - 1];
+            auto indexToRemove = m_Sparse[ID];
+            m_Dense[indexToRemove] = lastID;
+            m_Items[indexToRemove] = std::move(m_Items[m_Size - 1]);
+            m_Sparse[lastID] = indexToRemove;
+            --m_Size;
+        }
+    }
+
+    [[nodiscard]] bool hasItem(unsigned short ID) const override {
+        return ID < Settings::MAX_ENTITIES && m_Sparse[ID] < m_Size && m_Dense[m_Sparse[ID]] == ID;
+    }
+
+    T& getItem(unsigned short ID) {
+        assert(ID < Settings::MAX_ENTITIES && "ID is out of range.");
+        assert(m_Sparse[ID] < m_Size && "ID does not exist in the sparse set.");
+        return m_Items[m_Sparse[ID]];
+    }
+
+    [[nodiscard]] std::size_t getSize() const override {
+        return m_Size;
+    }
+
+    [[nodiscard]] std::vector<unsigned short> getIDS() const override {
+        return std::vector<unsigned short>(m_Dense.begin(), m_Dense.begin() + m_Size);
+    }
 
 private:
-    std::vector<unsigned short> m_Dense;
-    std::array<unsigned short, Settings::MAX_ENTITIES> m_Sparse;
-    std::vector<T> m_Items;
+    std::array<unsigned short, Settings::MAX_ENTITIES> m_Dense = {0};
+    std::array<unsigned short, Settings::MAX_ENTITIES> m_Sparse = {0};
+    std::array<T, Settings::MAX_ENTITIES> m_Items;
+    std::size_t m_Size = 0;
 };
-
-template<class T>
-void SparseSet<T>::addItem(unsigned short ID, T componentData) {
-        // Add a new component
-    const auto pos = m_Dense.size();
-    m_Dense.push_back(ID);
-    m_Items.push_back(std::move(componentData));
-    //m_Items[ID] = componentData;
-    m_Sparse[ID] = pos;
-}
-
-template<class T>
-void SparseSet<T>::removeItem(unsigned short ID) {
-    // Instead of removing, reset and mark as dead
-    const auto last = m_Dense.back();
-    std::swap(m_Dense.back(), m_Dense[m_Sparse[ID]]);
-    std::swap(m_Items.back(), m_Items[m_Sparse[ID]]);
-    std::swap(m_Sparse[last], m_Sparse[ID]);
-    m_Dense.pop_back();
-    m_Items.pop_back();
-}
-
-
-template<class T>
-bool SparseSet<T>::hasItem(unsigned short ID) const {
-    return ID < m_Sparse.size() && m_Sparse[ID] < m_Dense.size() && m_Dense[m_Sparse[ID]] == ID;
-}
-
-template<class T>
-T& SparseSet<T>::getItem(unsigned short ID) {
-    return m_Items[m_Sparse[ID]];
-}
-
-template<class T>
-size_t SparseSet<T>::getSize() const {
-    return m_Dense.size();
-}
-
-template<class T>
-std::vector<unsigned short> SparseSet<T>::getIDS() const {
-    return m_Dense;
-}
 
 #endif //SPARSESET_HPP

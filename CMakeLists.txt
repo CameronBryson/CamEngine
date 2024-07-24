@@ -64,7 +64,6 @@ add_executable(${PROJECT_NAME}
         sources/Stats.cpp
         sources/SGravity.cpp
         sources/SGravity.hpp
-        sources/Factory.cpp
         sources/Factory.hpp
         sources/Commands.hpp
 

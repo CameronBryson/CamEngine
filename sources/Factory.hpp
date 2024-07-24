@@ -10,12 +10,14 @@
 
 class Factory {
 public:
-    Factory(Registry* registry) : m_Registry(registry) {}
-    ~Factory() {}
-
-    unsigned short CreatePlayer();
-private:
-    Registry* m_Registry;
+    static unsigned short CreatePlayer(Registry& registry) {
+        auto ID = registry.createEntity();
+        registry.addComponent<CPlayer>(ID, CPlayer());
+        registry.addComponent<CPosition>(ID, CPosition());
+        registry.addComponent<CVelocity>(ID, CVelocity());
+        registry.addComponent<CRigidBody>(ID, CRigidBody());
+        return ID;
+    }
 };
 
 
