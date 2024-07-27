@@ -67,14 +67,14 @@ public:
     template<typename... T>
     [[nodiscard]] std::vector<unsigned short> getEntityIDS() const;
 
+    template<typename T>
+    SparseSet<T>& getSparseSet() const;
+
 private:
     std::deque<unsigned short> m_freeIDs;
     std::bitset<Settings::MAX_ENTITIES> m_Entities;
     std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> m_SparseSets;
     std::queue<std::unique_ptr<ICommand>> commandQueue;
-
-    template<typename T>
-    SparseSet<T>& getSparseSet() const;
 };
 
 template<class T>

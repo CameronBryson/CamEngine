@@ -7,15 +7,16 @@
 static constexpr float MOVESPEED = 500.0f;
 
 void SPlayer::Update(Registry& registry, float dt) {
-    std::vector<unsigned short> IDS = registry.getEntityIDS<CPlayer, CRigidBody>();
+    auto& rigidbodies = registry.getSparseSet<CRigidBody>();
+    auto IDS = registry.getEntityIDS<CPlayer, CRigidBody>();
 
     bool D = IsKeyDown(KEY_D);
     bool A = IsKeyDown(KEY_A);
     bool W = IsKeyDown(KEY_W);
     bool S = IsKeyDown(KEY_S);
-    for (const auto& ID : IDS) {
 
-        auto& rb = registry.getComponent<CRigidBody>(ID);
+    for (auto ID : IDS) {
+        auto& rb = rigidbodies.getItem(ID);
         if (D) rb.acceleration.x += MOVESPEED * dt;
         if (A) rb.acceleration.x -= MOVESPEED * dt;
         if (W) rb.acceleration.y -= MOVESPEED * dt;

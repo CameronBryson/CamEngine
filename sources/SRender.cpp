@@ -10,18 +10,17 @@
 void SRender::Init() {
     printf("Render init\n");
 }
-void SRender::Update(Registry& registry){
-    //printf("Render update\n");
+void SRender::Update(Registry& registry) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    std::vector<unsigned short> IDS = registry.getEntityIDS<CPosition>();
-    for (const auto ID : IDS) {
-        auto& position = registry.getComponent<CPosition>(ID);
-        DrawRectangle(position.x,position.y,50,50,{255,0,0,255});
+    auto& positions = registry.getSparseSet<CPosition>();
+    auto IDS = registry.getEntityIDS<CPosition>();
+    for (auto ID : IDS) {
+        auto& position = positions.getItem(ID);
+        DrawRectangle(position.x, position.y, 50, 50, {255, 0, 0, 255});
     }
     DrawStatistics();
     EndDrawing();
-
 }
 void SRender::Shutdown() {}
 void SRender::DrawStatistics() {

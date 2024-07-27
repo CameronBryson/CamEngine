@@ -7,27 +7,25 @@
 #include "raylib.h"
 
 void SPhysics::Update(Registry& registry, float dt) {
-    // Iterate over entities that have CRigidBody, CTransform, and CVelocity components
-    std::vector<unsigned short> IDS = registry.getEntityIDS<CRigidBody, CPosition, CVelocity>();
-    for (const auto& ID : IDS) {
+    auto& rigidbodies = registry.getSparseSet<CRigidBody>();
+    auto& positions = registry.getSparseSet<CPosition>();
+    auto& velocities = registry.getSparseSet<CVelocity>();
+    auto IDS = registry.getEntityIDS<CRigidBody, CPosition, CVelocity>();
 
-        auto& rb = registry.getComponent<CRigidBody>(ID);
-        auto& position = registry.getComponent<CPosition>(ID);
-        auto& velocity = registry.getComponent<CVelocity>(ID);
+    for (auto ID : IDS) {
+        auto& rb = rigidbodies.getItem(ID);
+        auto& position = positions.getItem(ID);
+        auto& velocity = velocities.getItem(ID);
 
-        // Apply acceleration to velocity
         velocity.x += rb.acceleration.x * dt;
         velocity.y += rb.acceleration.y * dt;
 
-        // Apply drag to velocity
         velocity.x *= std::pow(1 - rb.drag, dt);
         velocity.y *= std::pow(1 - rb.drag, dt);
 
-        // Update position based on velocity
         position.x += velocity.x;
         position.y += velocity.y;
 
-        // Reset acceleration
         rb.acceleration = {0, 0};
     }
 }
