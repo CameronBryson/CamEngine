@@ -11,7 +11,6 @@ int main()
     while (!WindowShouldClose())
     {
         gameManager->Update(GetFrameTime());
-        //GameManager::GetInstance()->GetThreadPool()->enqueue([]() { GameManager::GetInstance()->Update(GetFrameTime()); });    //std::thread updateThread(&SceneManager::Update, SceneManager::GetInstance(), GetFrameTime());
         gameManager->Render();
     }
     gameManager->Shutdown();

@@ -1,17 +1,16 @@
 #include "SPhysics.hpp"
-
 #include <cmath>
-#include <execution>
-
+#include <vector>
+#include <algorithm>
+#include <mutex>
 #include "Components.hpp"
 #include "raylib.h"
 
 void SPhysics::Update(Registry& registry, float dt) {
     // Iterate over entities that have CRigidBody, CTransform, and CVelocity components
     std::vector<unsigned short> IDS = registry.getEntityIDS<CRigidBody, CPosition, CVelocity>();
+    for (const auto& ID : IDS) {
 
-    std::for_each(std::execution::par_unseq,
-        std::begin(IDS), std::end(IDS), [&registry, dt](const unsigned short ID) {
         auto& rb = registry.getComponent<CRigidBody>(ID);
         auto& position = registry.getComponent<CPosition>(ID);
         auto& velocity = registry.getComponent<CVelocity>(ID);
@@ -30,7 +29,7 @@ void SPhysics::Update(Registry& registry, float dt) {
 
         // Reset acceleration
         rb.acceleration = {0, 0};
-    });
+    }
 }
 
 void SPhysics::Shutdown() {

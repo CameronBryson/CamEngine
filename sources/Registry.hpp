@@ -113,21 +113,14 @@ std::vector<unsigned short> Registry::getEntityIDS() const {
         }
         return result;
     }
-    std::vector<std::vector<unsigned short>> IDS;
-    (IDS.push_back(getSparseSet<T>().getIDS()), ...);
+    std::vector<ISparseSet*> sparseSets = {&getSparseSet<T>()...};
 
-    // Sort each component's IDs before intersection
-    for(auto& idList : IDS) {
-        std::sort(idList.begin(), idList.end());
-    }
     // Initialize result with the first component's IDs if available
-    result = IDS[0];
+    result = sparseSets[0]->getIDS();
 
     // Find intersection across all component types
-    for (size_t i = 1; i < IDS.size(); ++i) {
-        std::vector<unsigned short> tempResult;
-        std::set_intersection(result.begin(), result.end(), IDS[i].begin(), IDS[i].end(), std::back_inserter(tempResult));
-        result.swap(tempResult);
+    for (size_t i = 1; i < sparseSets.size(); ++i) {
+        result = sparseSets[i]->getIntersection(*sparseSets[i]);
     }
 
     return result;

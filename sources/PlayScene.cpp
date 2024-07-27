@@ -7,7 +7,6 @@
 #include "Registry.hpp"
 #include "Timer.hpp"
 #include "raylib.h"
-#include "tbb/parallel_invoke.h"
 PlayScene::PlayScene() {
     printf("PlayScene created\n");
 
@@ -50,10 +49,8 @@ void PlayScene::Update(float dt)
     // });
     // playerUpdate.wait();
     // Use TBB to parallelize the update tasks
-    tbb::parallel_invoke(
-        [this, dt] { SPlayer::Update(m_Registry, dt); },
-        [this, dt] { SPhysics::Update(m_Registry, dt); }
-    );
+    SPlayer::Update(m_Registry, dt);
+    SPhysics::Update(m_Registry, dt);
     m_Registry.ProcessCommands();
 
 }

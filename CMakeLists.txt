@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(my_raylib_game CXX)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set CMake policy CMP0058 to NEW
@@ -11,7 +11,6 @@ endif()
 if(UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
-    find_package(TBB REQUIRED)
 endif (UNIX)
 
 if(WIN32)
@@ -54,7 +53,6 @@ FetchContent_Declare(
         GIT_SHALLOW ON
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
-FetchContent_MakeAvailable(tbb)
 
 # Adding our source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/sources/*.cpp") # Define PROJECT_SOURCES as a list of all source files
@@ -77,7 +75,7 @@ add_executable(${PROJECT_NAME}
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib TBB::tbb)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 
 # Setting ASSETS_PATH
 target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/") # Set the asset path macro to the absolute path on the dev machine

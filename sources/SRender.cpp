@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include <execution>
 #include "Components.hpp"
 #include "GameSettings.hpp"
 #include "raylib.h"

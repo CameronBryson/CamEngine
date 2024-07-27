@@ -61,7 +61,20 @@ public:
     }
 
     [[nodiscard]] std::vector<unsigned short> getIDS() const override {
-        return {std::vector<unsigned short>(m_Dense.begin(), m_Dense.begin() + m_Size)};
+        return {m_Dense.begin(), m_Dense.begin() + m_Size};
+    }
+
+    std::vector<unsigned short> getIntersection(const ISparseSet& other) const override {
+        std::vector<unsigned short> intersection;
+        if (m_Size > other.getSize()) {
+            return other.getIntersection(*this);
+        }
+        for (std::size_t i = 0; i < m_Size; ++i) {
+            if (other.hasItem(m_Dense[i])) {
+                intersection.push_back(m_Dense[i]);
+            }
+        }
+        return intersection;
     }
 
 private:
