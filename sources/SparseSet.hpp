@@ -2,11 +2,9 @@
 #define SPARSESET_HPP
 
 #include <algorithm>
-#include <array>
-#include <cstdio>
-#include <typeindex>
-#include <typeinfo>
 #include <vector>
+#include <cstdio>
+#include <typeinfo>
 #include <cassert>
 #include "GameSettings.hpp"
 #include "ISparseSet.hpp"
@@ -14,7 +12,12 @@
 template<class T>
 class SparseSet final : public ISparseSet {
 public:
-    SparseSet() { printf("Sparse set created of type: %s\n", typeid(T).name()); }
+    SparseSet() {
+        printf("Sparse set created of type: %s\n", typeid(T).name());
+        m_Dense.reserve(Settings::MAX_ENTITIES);
+        m_Sparse.reserve(Settings::MAX_ENTITIES);
+        m_Items.reserve(Settings::MAX_ENTITIES);
+    }
     ~SparseSet() override {
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
     }
@@ -58,13 +61,14 @@ public:
     }
 
     [[nodiscard]] std::vector<unsigned short> getIDS() const override {
-        return std::vector<unsigned short>(m_Dense.begin(), m_Dense.begin() + m_Size);
+        return {std::vector<unsigned short>(m_Dense.begin(), m_Dense.begin() + m_Size)};
     }
 
 private:
-    std::array<unsigned short, Settings::MAX_ENTITIES> m_Dense = {0};
-    std::array<unsigned short, Settings::MAX_ENTITIES> m_Sparse = {0};
-    std::array<T, Settings::MAX_ENTITIES> m_Items;
+    //no stack overlow
+    std::vector<unsigned short> m_Dense;
+    std::vector<unsigned short> m_Sparse;
+    std::vector<T> m_Items;
     std::size_t m_Size = 0;
 };
 

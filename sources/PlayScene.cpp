@@ -7,6 +7,7 @@
 #include "Registry.hpp"
 #include "Timer.hpp"
 #include "raylib.h"
+#include "tbb/parallel_invoke.h"
 PlayScene::PlayScene() {
     printf("PlayScene created\n");
 
@@ -30,7 +31,6 @@ void PlayScene::Init()
         m_Registry.addComponent<CVelocity>(entity, CVelocity());
         m_Registry.addComponent<CPlayer>(entity, CPlayer());
     }
-
     // for (int i = 1; i < Settings::MAX_ENTITIES-1; i++) {
     //     m_Registry.deleteEntity(i);
     // }
@@ -49,9 +49,11 @@ void PlayScene::Update(float dt)
     //     SPhysics::Update(m_Registry, dt);
     // });
     // playerUpdate.wait();
-    SPlayer::Update(m_Registry, dt);
-    SPhysics::Update(m_Registry, dt);
-
+    // Use TBB to parallelize the update tasks
+    tbb::parallel_invoke(
+        [this, dt] { SPlayer::Update(m_Registry, dt); },
+        [this, dt] { SPhysics::Update(m_Registry, dt); }
+    );
     m_Registry.ProcessCommands();
 
 }
