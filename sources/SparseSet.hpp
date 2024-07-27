@@ -14,9 +14,9 @@ class SparseSet final : public ISparseSet {
 public:
     SparseSet() {
         printf("Sparse set created of type: %s\n", typeid(T).name());
-        m_Dense.reserve(Settings::MAX_ENTITIES);
-        m_Sparse.reserve(Settings::MAX_ENTITIES);
-        m_Items.reserve(Settings::MAX_ENTITIES);
+        m_Dense.resize(Settings::MAX_ENTITIES);
+        m_Sparse.resize(Settings::MAX_ENTITIES);
+        m_Items.resize(Settings::MAX_ENTITIES);
     }
     ~SparseSet() override {
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
