@@ -1,9 +1,4 @@
-//
-// Created by cam on 07/05/24.
-//
-
-#ifndef ISPARSESET_HPP
-#define ISPARSESET_HPP
+#pragma once
 #include <cstddef>
 #include <vector>
 class ISparseSet {
@@ -15,4 +10,3 @@ public:
     [[nodiscard]] virtual std::vector<unsigned short> getIDS() const = 0;
     virtual std::vector<unsigned short> getIntersection(const ISparseSet& other) const = 0;
 };
-#endif //ISPARSESET_HPP

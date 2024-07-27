@@ -1,6 +1,4 @@
-#ifndef SPARSESET_HPP
-#define SPARSESET_HPP
-
+#pragma once
 #include <algorithm>
 #include <vector>
 #include <cstdio>
@@ -84,5 +82,3 @@ private:
     std::vector<T> m_Items;
     std::size_t m_Size = 0;
 };
-
-#endif //SPARSESET_HPP

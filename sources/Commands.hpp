@@ -1,10 +1,4 @@
-//
-// Created by cam on 23/07/24.
-//
-
-#ifndef COMMANDS_HPP
-#define COMMANDS_HPP
-
+#pragma once
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
@@ -60,5 +54,3 @@ private:
     std::bitset<Settings::MAX_ENTITIES>& m_Entities;
     unsigned short m_ID;
 };
-
-#endif //COMMANDS_HPP

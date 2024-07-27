@@ -1,5 +1,4 @@
-#ifndef COMPONENTS_HPP
-#define COMPONENTS_HPP
+#pragma once
 #include "../glm/glm.hpp"
 // Component for entities affected by gravity
 struct CGravity {};
@@ -39,5 +38,3 @@ struct CVelocity {
     float x = 0;
     float y = 0;
 };
-
-#endif // COMPONENTS_HPP

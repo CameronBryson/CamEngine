@@ -34,21 +34,11 @@ void PlayScene::Init()
     //     m_Registry.deleteEntity(i);
     // }
     Factory::CreatePlayer(m_Registry);
-//if there arent any spots left the new component wont have the new rigidbody properties
-
 }
 
 void PlayScene::Update(float dt)
 {
     Timer updateTimer(Stats::StatType::UPDATE);
-
-    // Enqueue separate tasks for player and physics system updates
-    // std::future<void> playerUpdate = m_threadPool.enqueue([this, dt] {
-    //     SPlayer::Update(m_Registry, dt);
-    //     SPhysics::Update(m_Registry, dt);
-    // });
-    // playerUpdate.wait();
-    // Use TBB to parallelize the update tasks
     SPlayer::Update(m_Registry, dt);
     SPhysics::Update(m_Registry, dt);
     m_Registry.ProcessCommands();

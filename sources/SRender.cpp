@@ -31,10 +31,3 @@ void SRender::DrawStatistics() {
     DrawText(("Benchmark: " + std::to_string(Stats::timerVector[Stats::StatType::BENCHMARK].count()) + " MS").c_str(),50,200,50,{255,0,0,255});
 
 }
-SRender::SRender() {
-    printf("Render system created\n");
-
-}
-SRender::~SRender() {
-    printf("Render system destroyed\n");
-}

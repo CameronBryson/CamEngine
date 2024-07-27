@@ -1,6 +1,4 @@
-#ifndef REGISTRY_HPP
-#define REGISTRY_HPP
-
+#pragma once
 #include "ISparseSet.hpp"
 #include "SparseSet.hpp"
 #include "Commands.hpp"
@@ -138,5 +136,3 @@ void Registry::removeComponent(unsigned short ID) {
     auto& set = getSparseSet<T>();
     commandQueue.push(std::make_unique<RemoveComponentCommand>(set, ID));
 }
-
-#endif // REGISTRY_HPP

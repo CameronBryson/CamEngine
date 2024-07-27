@@ -1,6 +1,4 @@
-#ifndef SCENEMANAGER_HPP
-#define SCENEMANAGER_HPP
-
+#pragma once
 #include "IScene.hpp"
 #include <memory>
 class GameManager{
@@ -27,5 +25,3 @@ private:
 
 
 };
-
-#endif // SCENEMANAGER_HPP
