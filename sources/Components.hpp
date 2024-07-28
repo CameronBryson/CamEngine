@@ -1,6 +1,6 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
-#include "../glm/glm.hpp"
+#include "Vectors.hpp"
 // Component for entities affected by gravity
 struct CGravity {};
 
@@ -9,14 +9,14 @@ struct CPlayer {};
 
 // Component for entities that need rendering
 struct CRender {
-    glm::vec2 renderOffset = {0, 0};
+    Vec2 renderOffset = {0, 0};
 };
 
 // Component for entities with physical properties
 struct CRigidBody {
     float mass = 1.0f; // Default mass to avoid division by zero
     float drag = 0.0f;
-    glm::vec2 acceleration = {0, 0};
+    Vec2 acceleration = {0, 0};
 };
 
 // Component for entities with a sprite

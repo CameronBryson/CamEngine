@@ -72,6 +72,10 @@ add_executable(${PROJECT_NAME}
         sources/SGravity.hpp
         sources/Factory.hpp
         sources/Commands.hpp
+        sources/Vectors.hpp
+        sources/Matrix.hpp
+        sources/Quaternion.hpp
+        sources/MathUtil.hpp
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
