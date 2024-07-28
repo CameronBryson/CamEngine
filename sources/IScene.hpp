@@ -1,6 +1,4 @@
-#ifndef ISCENE_HPP
-#define ISCENE_HPP
-
+#pragma once
 #include "Registry.hpp"
 class IScene{
 public:
@@ -12,4 +10,3 @@ public:
     virtual Registry& GetRegistry() = 0;
 };
 
-#endif // ISCENE_HPP

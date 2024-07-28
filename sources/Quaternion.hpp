@@ -1,6 +1,4 @@
-#ifndef QUATERNION_HPP
-#define QUATERNION_HPP
-
+#pragma once
 #include <cmath>
 
 class Quat {
@@ -69,5 +67,3 @@ public:
         return n > 0 ? conjugate() * (1.0f / (n * n)) : Quat();
     }
 };
-
-#endif // QUATERNION_HPP

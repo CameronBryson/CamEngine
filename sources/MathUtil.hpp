@@ -1,6 +1,4 @@
-#ifndef MATHUTIL_HPP
-#define MATHUTIL_HPP
-
+#pragma once
 #include <cmath>
 #include <cstdlib>
 #include "Vectors.hpp"
@@ -92,5 +90,3 @@ public:
         );
     }
 };
-
-#endif // MATHUTIL_HPP

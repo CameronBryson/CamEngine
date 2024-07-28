@@ -1,5 +1,4 @@
-#ifndef PLAYSCENE_HPP
-#define PLAYSCENE_HPP
+#pragma once
 #include "IScene.hpp"
 #include "Registry.hpp"
 #include "raylib.h"
@@ -21,4 +20,3 @@ private:
 
 };
 
-#endif // PLAYSCENE_HPP

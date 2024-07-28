@@ -1,8 +1,4 @@
-#ifndef MATRIX_HPP
-#define MATRIX_HPP
-
-#include <cmath>
-
+#pragma once
 class Mat2 {
 public:
     float m[2][2] = {};
@@ -21,8 +17,12 @@ public:
     }
 
     Mat2 operator*(const Mat2& other) const {
-        return {{m[0][0] * other.m[0][0] + m[0][1] * other.m[1][0], m[0][0] * other.m[0][1] + m[0][1] * other.m[1][1]},
-                {m[1][0] * other.m[0][0] + m[1][1] * other.m[1][0], m[1][0] * other.m[0][1] + m[1][1] * other.m[1][1]}};
+        Mat2 result;
+        result.m[0][0] = m[0][0] * other.m[0][0] + m[0][1] * other.m[1][0];
+        result.m[0][1] = m[0][0] * other.m[0][1] + m[0][1] * other.m[1][1];
+        result.m[1][0] = m[1][0] * other.m[0][0] + m[1][1] * other.m[1][0];
+        result.m[1][1] = m[1][0] * other.m[0][1] + m[1][1] * other.m[1][1];
+        return result;
     }
 
     Mat2& operator+=(const Mat2& other) {
@@ -64,15 +64,12 @@ public:
     }
 
     Mat3 operator*(const Mat3& other) const {
-        return {{m[0][0] * other.m[0][0] + m[0][1] * other.m[1][0] + m[0][2] * other.m[2][0],
-                 m[0][0] * other.m[0][1] + m[0][1] * other.m[1][1] + m[0][2] * other.m[2][1],
-                 m[0][0] * other.m[0][2] + m[0][1] * other.m[1][2] + m[0][2] * other.m[2][2]},
-                {m[1][0] * other.m[0][0] + m[1][1] * other.m[1][0] + m[1][2] * other.m[2][0],
-                 m[1][0] * other.m[0][1] + m[1][1] * other.m[1][1] + m[1][2] * other.m[2][1],
-                 m[1][0] * other.m[0][2] + m[1][1] * other.m[1][2] + m[1][2] * other.m[2][2]},
-                {m[2][0] * other.m[0][0] + m[2][1] * other.m[1][0] + m[2][2] * other.m[2][0],
-                 m[2][0] * other.m[0][1] + m[2][1] * other.m[1][1] + m[2][2] * other.m[2][1],
-                 m[2][0] * other.m[0][2] + m[2][1] * other.m[1][2] + m[2][2] * other.m[2][2]}};
+        Mat3 result;
+        for (int i = 0; i < 3; ++i)
+            for (int j = 0; j < 3; ++j)
+                for (int k = 0; k < 3; ++k)
+                    result.m[i][j] += m[i][k] * other.m[k][j];
+        return result;
     }
 
     Mat3& operator+=(const Mat3& other) {
@@ -146,5 +143,3 @@ public:
         return *this;
     }
 };
-
-#endif // MATRIX_HPP
