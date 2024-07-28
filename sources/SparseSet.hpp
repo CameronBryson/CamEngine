@@ -6,6 +6,7 @@
 #include <cassert>
 #include "GameSettings.hpp"
 #include "ISparseSet.hpp"
+#include <unordered_set>
 
 template<class T>
 class SparseSet final : public ISparseSet {
@@ -62,14 +63,13 @@ public:
         return {m_Dense.begin(), m_Dense.begin() + m_Size};
     }
 
-    std::vector<unsigned short> getIntersection(const ISparseSet& other) const override {
+    std::vector<unsigned short> getIntersection(const std::vector<unsigned short>& other) const override {
         std::vector<unsigned short> intersection;
-        if (m_Size > other.getSize()) {
-            return other.getIntersection(*this);
-        }
-        for (std::size_t i = 0; i < m_Size; ++i) {
-            if (other.hasItem(m_Dense[i])) {
-                intersection.push_back(m_Dense[i]);
+        std::unordered_set<unsigned short> otherSet(other.begin(), other.end());
+
+        for (auto id : getIDS()) {
+            if (otherSet.find(id) != otherSet.end()) {
+                intersection.push_back(id);
             }
         }
         return intersection;

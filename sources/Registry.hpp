@@ -14,13 +14,14 @@
 #include <algorithm>
 #include <cassert>
 #include <bitset>
+#include <unordered_set>
 
 class Registry {
 public:
     Registry() {
         printf("Registry created\n");
         for (int i = 1; i < Settings::MAX_ENTITIES; ++i) {
-            m_freeIDs.push_back(i);
+            m_freeIDs.insert(i);
         }
     };
     ~Registry() {
@@ -30,9 +31,9 @@ public:
 public:
     unsigned short createEntity() {
         assert(!m_freeIDs.empty() && "No more entities available.");
-        const unsigned short ID = m_freeIDs.front();
-        m_freeIDs.pop_front();
-        m_Entities.set(ID);
+        const unsigned short ID = *m_freeIDs.begin();
+        m_freeIDs.erase(m_freeIDs.begin());
+        m_Entities.insert(ID);
         return ID;
     };
     void deleteEntity(unsigned short ID) {
@@ -69,8 +70,8 @@ public:
     SparseSet<T>& getSparseSet() const;
 
 private:
-    std::deque<unsigned short> m_freeIDs;
-    std::bitset<Settings::MAX_ENTITIES> m_Entities;
+    std::unordered_set<unsigned short> m_freeIDs;
+    std::unordered_set<unsigned short> m_Entities;
     std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> m_SparseSets;
     std::queue<std::unique_ptr<ICommand>> commandQueue;
 };
@@ -89,7 +90,7 @@ SparseSet<T>&  Registry::getSparseSet() const {
 
 template<typename T>
 void Registry::addComponent(unsigned short ID, const T &componentData) {
-    assert(m_Entities[ID] && "Entity does not exist.");
+    assert(m_Entities.find(ID) != m_Entities.end() && "Entity does not exist.");
     auto& set = getSparseSet<T>();
     commandQueue.push(std::make_unique<AddComponentCommand<T>>(set, ID, componentData));
 }
@@ -105,7 +106,7 @@ std::vector<unsigned short> Registry::getEntityIDS() const {
     std::vector<unsigned short> result;
     if(sizeof...(T) == 0) {
         for (unsigned short i = 0; i < Settings::MAX_ENTITIES; ++i) {
-            if (m_Entities[i]) {
+            if (m_Entities.find(i) != m_Entities.end()) {
                 result.push_back(i);
             }
         }
@@ -118,7 +119,7 @@ std::vector<unsigned short> Registry::getEntityIDS() const {
 
     // Find intersection across all component types
     for (size_t i = 1; i < sparseSets.size(); ++i) {
-        result = sparseSets[i]->getIntersection(*sparseSets[i]);
+        result = sparseSets[i]->getIntersection(result);
     }
 
     return result;
@@ -131,7 +132,7 @@ bool Registry::hasComponent(unsigned short ID) const {
 
 template<typename T>
 void Registry::removeComponent(unsigned short ID) {
-    assert(m_Entities[ID] && "Entity does not exist.");
+    assert(m_Entities.find(ID) != m_Entities.end() && "Entity does not exist.");
     assert(hasComponent<T>(ID) && "Entity does not have component.");
     auto& set = getSparseSet<T>();
     commandQueue.push(std::make_unique<RemoveComponentCommand>(set, ID));

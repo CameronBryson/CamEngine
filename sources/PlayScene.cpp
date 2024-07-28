@@ -5,6 +5,7 @@
 #include "Components.hpp"
 #include "Factory.hpp"
 #include "Registry.hpp"
+#include "SCollision.hpp"
 #include "Timer.hpp"
 #include "raylib.h"
 PlayScene::PlayScene() {
@@ -27,7 +28,7 @@ void PlayScene::Init()
 
     SRender::Init();
     Timer benchmarkTimer(Stats::StatType::BENCHMARK);
-    for (int i = 1; i < Settings::MAX_ENTITIES-1; i++) {
+    for (int i = 1; i < Settings::MAX_ENTITIES-3; i++) {
 
         auto entity = m_Registry.createEntity();
         m_Registry.addComponent<CTransform>(entity, CTransform());
@@ -35,10 +36,23 @@ void PlayScene::Init()
         m_Registry.addComponent<CVelocity>(entity, CVelocity());
         m_Registry.addComponent<CPlayer>(entity, CPlayer());
     }
-    for (int i = 1; i < Settings::MAX_ENTITIES-1; i++) {
+    for (int i = 1; i < Settings::MAX_ENTITIES-3; i++) {
         m_Registry.deleteEntity(i);
     }
     Factory::CreatePlayer(m_Registry);
+    auto enemy = m_Registry.createEntity();
+    m_Registry.addComponent<CTransform>(enemy, CTransform{.position = {5.0f, 0.0f, 0.0f}});
+    m_Registry.addComponent<CRigidBody>(enemy, CRigidBody{.drag = 0.9f});
+    m_Registry.addComponent<CVelocity>(enemy, CVelocity());
+    m_Registry.addComponent<CEnemy>(enemy, CEnemy());
+    m_Registry.addComponent<CAABB>(enemy, CAABB{.extents = {1.0f, 1.0f, 1.0f}});
+
+    auto enemy2 = m_Registry.createEntity();
+    m_Registry.addComponent<CTransform>(enemy2, CTransform{.position = {-5.0f, 0.0f, 0.0f}});
+    m_Registry.addComponent<CRigidBody>(enemy2, CRigidBody{.drag = 0.9f});
+    m_Registry.addComponent<CVelocity>(enemy2, CVelocity());
+    m_Registry.addComponent<CEnemy>(enemy2, CEnemy());
+    m_Registry.addComponent<CSphere>(enemy2, CSphere{.radius = 1.0f});
 }
 
 void PlayScene::Update(float dt)
@@ -46,6 +60,7 @@ void PlayScene::Update(float dt)
     Timer updateTimer(Stats::StatType::UPDATE);
     SPlayer::Update(m_Registry, dt);
     SPhysics::Update(m_Registry, dt);
+    SCollision::Update(m_Registry);
     m_Registry.ProcessCommands();
 
 }
@@ -74,4 +89,10 @@ void PlayScene::InitSparseSets() {
     m_Registry.createSparseSet<CStaticBody>();
     m_Registry.createSparseSet<CKineticBody>();
     m_Registry.createSparseSet<CVelocity>();
+    m_Registry.createSparseSet<CCollider>();
+    m_Registry.createSparseSet<CHealth>();
+    m_Registry.createSparseSet<CEnemy>();
+    m_Registry.createSparseSet<CAABB>();
+    m_Registry.createSparseSet<CSphere>();
+    m_Registry.createSparseSet<CCapsule>();
 }

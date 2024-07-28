@@ -9,8 +9,8 @@ if(POLICY CMP0058)
 endif()
 
 if(UNIX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
 endif (UNIX)
 
 if(WIN32)
@@ -62,7 +62,6 @@ set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLU
 add_executable(${PROJECT_NAME}
         sources/GameSettings.hpp
         sources/ISparseSet.hpp
-        sources/SparseSet.hpp
         sources/Timer.hpp
         sources/Stats.hpp
         sources/Components.hpp
@@ -76,6 +75,9 @@ add_executable(${PROJECT_NAME}
         sources/Matrix.hpp
         sources/Quaternion.hpp
         sources/MathUtil.hpp
+        sources/SparseSet.hpp
+        sources/SCollision.cpp
+        sources/SCollision.hpp
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
