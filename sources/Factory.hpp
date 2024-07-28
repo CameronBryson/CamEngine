@@ -1,9 +1,4 @@
-//
-// Created by cam on 19/07/24.
-//
-
-#ifndef FACTORY_HPP
-#define FACTORY_HPP
+#pragma once
 #include <Registry.hpp>
 #include <Components.hpp>
 
@@ -19,7 +14,3 @@ public:
         return ID;
     }
 };
-
-
-
-#endif //FACTORY_HPP

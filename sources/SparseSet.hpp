@@ -1,6 +1,4 @@
-#ifndef SPARSESET_HPP
-#define SPARSESET_HPP
-
+#pragma once
 #include <algorithm>
 #include <vector>
 #include <cstdio>
@@ -14,9 +12,9 @@ class SparseSet final : public ISparseSet {
 public:
     SparseSet() {
         printf("Sparse set created of type: %s\n", typeid(T).name());
-        m_Dense.reserve(Settings::MAX_ENTITIES);
-        m_Sparse.reserve(Settings::MAX_ENTITIES);
-        m_Items.reserve(Settings::MAX_ENTITIES);
+        m_Dense.resize(Settings::MAX_ENTITIES);
+        m_Sparse.resize(Settings::MAX_ENTITIES);
+        m_Items.resize(Settings::MAX_ENTITIES);
     }
     ~SparseSet() override {
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
@@ -84,5 +82,3 @@ private:
     std::vector<T> m_Items;
     std::size_t m_Size = 0;
 };
-
-#endif //SPARSESET_HPP

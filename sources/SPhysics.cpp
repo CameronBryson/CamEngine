@@ -32,11 +32,3 @@ void SPhysics::Update(Registry& registry, float dt) {
 
 void SPhysics::Shutdown() {
 }
-
-SPhysics::SPhysics() {
-    printf("Physics system created\n");
-}
-
-SPhysics::~SPhysics() {
-    printf("Physics system destroyed\n");
-}

@@ -1,9 +1,4 @@
-//
-// Created by cam on 16/07/24.
-//
-
-#ifndef STATS_HPP
-#define STATS_HPP
+#pragma once
 #include <chrono>
 #include <vector>
 
@@ -19,6 +14,3 @@ public:
     static std::vector<std::chrono::duration<float,std::ratio<1,100>>> timerVector;
 };
 
-
-
-#endif //STATS_HPP

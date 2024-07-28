@@ -1,5 +1,4 @@
-#ifndef TIMER_HPP
-#define TIMER_HPP
+#pragma once
 #include <chrono>
 #include "Stats.hpp"
 
@@ -19,4 +18,3 @@ private:
     std::chrono::time_point<std::chrono::system_clock> start, end;
     Stats::StatType statType;
 };
-#endif //TIMER_HPP
