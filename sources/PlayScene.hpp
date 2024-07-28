@@ -2,6 +2,7 @@
 #define PLAYSCENE_HPP
 #include "IScene.hpp"
 #include "Registry.hpp"
+#include "raylib.h"
 #include "Systems.hpp"
 class PlayScene final : public IScene{
 public:
@@ -16,6 +17,7 @@ private:
     void InitSparseSets();
 private:
     Registry m_Registry;
+    Camera3D m_Camera;
 
 };
 

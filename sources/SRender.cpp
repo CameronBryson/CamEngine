@@ -10,15 +10,19 @@
 void SRender::Init() {
     printf("Render init\n");
 }
-void SRender::Update(Registry& registry) {
+void SRender::Update(Registry& registry, Camera3D& camera) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    auto& positions = registry.getSparseSet<CPosition>();
-    auto IDS = registry.getEntityIDS<CPosition>();
+    BeginMode3D(camera);
+    auto& positions = registry.getSparseSet<CTransform>();
+    auto IDS = registry.getEntityIDS<CTransform>();
     for (auto ID : IDS) {
         auto& position = positions.getItem(ID);
-        DrawRectangle(position.x, position.y, 50, 50, {255, 0, 0, 255});
+        DrawCube({position.position.x, position.position.y, position.position.z}, 2.0f, 2.0f, 2.0f, RED);
+        DrawCubeWires({position.position.x, position.position.y, position.position.z}, 2.0f, 2.0f, 2.0f, MAROON);
+        DrawGrid(10, 1.0f);
     }
+    EndMode3D();
     DrawStatistics();
     EndDrawing();
 }

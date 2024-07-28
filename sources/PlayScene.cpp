@@ -18,6 +18,11 @@ PlayScene::~PlayScene() {
 }
 void PlayScene::Init()
 {
+    m_Camera.position = {0.0f, 10.0f, 10.0f};
+    m_Camera.target = {0.0f, 0.0f, 0.0f};
+    m_Camera.up = {0.0f, 1.0f, 0.0f};
+    m_Camera.fovy = 45.0f;
+    m_Camera.projection = CAMERA_PERSPECTIVE;
     InitSparseSets();
 
     SRender::Init();
@@ -25,14 +30,14 @@ void PlayScene::Init()
     for (int i = 1; i < Settings::MAX_ENTITIES-1; i++) {
 
         auto entity = m_Registry.createEntity();
-        m_Registry.addComponent<CPosition>(entity, CPosition());
+        m_Registry.addComponent<CTransform>(entity, CTransform());
         m_Registry.addComponent<CRigidBody>(entity, CRigidBody());
         m_Registry.addComponent<CVelocity>(entity, CVelocity());
         m_Registry.addComponent<CPlayer>(entity, CPlayer());
     }
-    // for (int i = 1; i < Settings::MAX_ENTITIES-1; i++) {
-    //     m_Registry.deleteEntity(i);
-    // }
+    for (int i = 1; i < Settings::MAX_ENTITIES-1; i++) {
+        m_Registry.deleteEntity(i);
+    }
     Factory::CreatePlayer(m_Registry);
 }
 
@@ -48,7 +53,7 @@ void PlayScene::Update(float dt)
 void PlayScene::Render()
 {
     Timer renderTimer(Stats::StatType::RENDER);
-    SRender::Update(m_Registry);
+    SRender::Update(m_Registry, m_Camera);
 }
 
 void PlayScene::Shutdown()
@@ -61,7 +66,7 @@ Registry& PlayScene::GetRegistry() {
     return m_Registry;
 }
 void PlayScene::InitSparseSets() {
-    m_Registry.createSparseSet<CPosition>();
+    m_Registry.createSparseSet<CTransform>();
     m_Registry.createSparseSet<CRender>();
     m_Registry.createSparseSet<CRigidBody>();
     m_Registry.createSparseSet<CPlayer>();

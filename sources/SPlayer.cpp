@@ -4,7 +4,7 @@
 #include "Components.hpp"
 #include "raylib.h"
 
-static constexpr float MOVESPEED = 500.0f;
+static constexpr float MOVESPEED = 50.0f;
 
 void SPlayer::Update(Registry& registry, float dt) {
     auto& rigidbodies = registry.getSparseSet<CRigidBody>();
@@ -19,8 +19,8 @@ void SPlayer::Update(Registry& registry, float dt) {
         auto& rb = rigidbodies.getItem(ID);
         if (D) rb.acceleration.x += MOVESPEED * dt;
         if (A) rb.acceleration.x -= MOVESPEED * dt;
-        if (W) rb.acceleration.y -= MOVESPEED * dt;
-        if (S) rb.acceleration.y += MOVESPEED * dt;
+        if (W) rb.acceleration.z -= MOVESPEED * dt;
+        if (S) rb.acceleration.z += MOVESPEED * dt;
     }
 }
 

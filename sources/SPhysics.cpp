@@ -8,25 +8,22 @@
 
 void SPhysics::Update(Registry& registry, float dt) {
     auto& rigidbodies = registry.getSparseSet<CRigidBody>();
-    auto& positions = registry.getSparseSet<CPosition>();
+    auto& positions = registry.getSparseSet<CTransform>();
     auto& velocities = registry.getSparseSet<CVelocity>();
-    auto IDS = registry.getEntityIDS<CRigidBody, CPosition, CVelocity>();
+    auto IDS = registry.getEntityIDS<CRigidBody, CTransform, CVelocity>();
 
     for (auto ID : IDS) {
         auto& rb = rigidbodies.getItem(ID);
         auto& position = positions.getItem(ID);
         auto& velocity = velocities.getItem(ID);
 
-        velocity.x += rb.acceleration.x * dt;
-        velocity.y += rb.acceleration.y * dt;
+        velocity.velocity += rb.acceleration * dt;
 
-        velocity.x *= std::pow(1 - rb.drag, dt);
-        velocity.y *= std::pow(1 - rb.drag, dt);
+        velocity.velocity *= std::pow(1 - rb.drag, dt);
 
-        position.x += velocity.x;
-        position.y += velocity.y;
+        position.position += velocity.velocity;
 
-        rb.acceleration = {0, 0};
+        rb.acceleration = {0, 0, 0};
     }
 }
 
