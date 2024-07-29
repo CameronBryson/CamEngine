@@ -4,7 +4,7 @@
 #include "Components.hpp"
 #include "raylib.h"
 
-static constexpr float MOVESPEED = 50.0f;
+static constexpr float MOVESPEED = 5.0f;
 
 void SPlayer::Update(Registry& registry, float dt) {
     auto& rigidbodies = registry.getSparseSet<CRigidBody>();

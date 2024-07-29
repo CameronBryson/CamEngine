@@ -3,37 +3,40 @@
 #include "SparseSet.hpp"
 #include "Commands.hpp"
 
+#include <algorithm>
+#include <bitset>
+#include <cassert>
 #include <cstdint>
 #include <deque>
+#include <functional>
 #include <memory>
+#include <mutex>
+#include <numeric>
+#include <queue>
 #include <typeindex>
 #include <unordered_map>
-#include <mutex>
-#include <functional>
-#include <queue>
-#include <algorithm>
-#include <cassert>
-#include <bitset>
-#include <unordered_set>
+#include <vector>
 
 class Registry {
 public:
     Registry() {
         printf("Registry created\n");
-        for (int i = 1; i < Settings::MAX_ENTITIES; ++i) {
-            m_freeIDs.insert(i);
-        }
+        m_Entities.reserve(Settings::MAX_ENTITIES);
+        m_freeIDs.resize(Settings::MAX_ENTITIES-1);
+        std::iota(m_freeIDs.begin(), m_freeIDs.end(), 1);
+
     };
     ~Registry() {
+        ProcessCommands();
         printf("Registry destroyed\n");
     }
 
 public:
     unsigned short createEntity() {
         assert(!m_freeIDs.empty() && "No more entities available.");
-        const unsigned short ID = *m_freeIDs.begin();
-        m_freeIDs.erase(m_freeIDs.begin());
-        m_Entities.insert(ID);
+        const unsigned short ID = m_freeIDs.back();
+        m_freeIDs.pop_back();
+        m_Entities.push_back(ID);
         return ID;
     };
     void deleteEntity(unsigned short ID) {
@@ -70,8 +73,8 @@ public:
     SparseSet<T>& getSparseSet() const;
 
 private:
-    std::unordered_set<unsigned short> m_freeIDs;
-    std::unordered_set<unsigned short> m_Entities;
+    std::vector<unsigned short> m_freeIDs;
+    std::vector<unsigned short> m_Entities;
     std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> m_SparseSets;
     std::queue<std::unique_ptr<ICommand>> commandQueue;
 };
@@ -90,7 +93,7 @@ SparseSet<T>&  Registry::getSparseSet() const {
 
 template<typename T>
 void Registry::addComponent(unsigned short ID, const T &componentData) {
-    assert(m_Entities.find(ID) != m_Entities.end() && "Entity does not exist.");
+    assert(m_Entities.end() != std::find(m_Entities.begin(), m_Entities.end(), ID) && "Entity does not exist.");
     auto& set = getSparseSet<T>();
     commandQueue.push(std::make_unique<AddComponentCommand<T>>(set, ID, componentData));
 }
@@ -106,7 +109,7 @@ std::vector<unsigned short> Registry::getEntityIDS() const {
     std::vector<unsigned short> result;
     if(sizeof...(T) == 0) {
         for (unsigned short i = 0; i < Settings::MAX_ENTITIES; ++i) {
-            if (m_Entities.find(i) != m_Entities.end()) {
+            if (std::find(m_Entities.begin(), m_Entities.end(), i) != m_Entities.end()) {
                 result.push_back(i);
             }
         }
@@ -132,7 +135,7 @@ bool Registry::hasComponent(unsigned short ID) const {
 
 template<typename T>
 void Registry::removeComponent(unsigned short ID) {
-    assert(m_Entities.find(ID) != m_Entities.end() && "Entity does not exist.");
+    assert(m_Entities.end() != std::find(m_Entities.begin(), m_Entities.end(), ID) && "Entity does not exist.");
     assert(hasComponent<T>(ID) && "Entity does not have component.");
     auto& set = getSparseSet<T>();
     commandQueue.push(std::make_unique<RemoveComponentCommand>(set, ID));

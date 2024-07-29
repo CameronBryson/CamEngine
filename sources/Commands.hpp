@@ -38,19 +38,25 @@ private:
 
 class DeleteEntityCommand : public ICommand {
 public:
-    DeleteEntityCommand(std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>>& sparseSets, std::unordered_set<unsigned short>& freeIDs, std::unordered_set<unsigned short>& entities, unsigned short ID) : m_SparseSets(sparseSets), m_freeIDs(freeIDs), m_Entities(entities), m_ID(ID) {}
+    DeleteEntityCommand(std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>>& sparseSets, std::vector<unsigned short>& freeIDs, std::vector<unsigned short>& entities, unsigned short ID)
+        : m_SparseSets(sparseSets), m_freeIDs(freeIDs), m_Entities(entities), m_ID(ID) {}
+
     void Execute() override {
         for (auto& sparseSet : m_SparseSets) {
             if(sparseSet.second->hasItem(m_ID)) {
                 sparseSet.second->removeItem(m_ID);
             }
         }
-        m_Entities.erase(m_ID);
-        m_freeIDs.insert(m_ID);
+        auto it = std::find(m_Entities.begin(), m_Entities.end(), m_ID);
+        if (it != m_Entities.end()) {
+            m_Entities.erase(it);
+        }
+        m_freeIDs.push_back(m_ID);
     }
+
 private:
     std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>>& m_SparseSets;
-    std::unordered_set<unsigned short>& m_freeIDs;
-    std::unordered_set<unsigned short>& m_Entities;
+    std::vector<unsigned short>& m_freeIDs;
+    std::vector<unsigned short>& m_Entities;
     unsigned short m_ID;
 };

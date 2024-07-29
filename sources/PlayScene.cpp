@@ -35,6 +35,7 @@ void PlayScene::Init()
         m_Registry.addComponent<CRigidBody>(entity, CRigidBody());
         m_Registry.addComponent<CVelocity>(entity, CVelocity());
         m_Registry.addComponent<CPlayer>(entity, CPlayer());
+        m_Registry.addComponent<CAABB>(entity, CAABB());
     }
     for (int i = 1; i < Settings::MAX_ENTITIES-3; i++) {
         m_Registry.deleteEntity(i);

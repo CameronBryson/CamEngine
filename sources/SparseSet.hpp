@@ -64,19 +64,14 @@ public:
     }
 
     std::vector<unsigned short> getIntersection(const std::vector<unsigned short>& other) const override {
+        auto IDS = getIDS();
         std::vector<unsigned short> intersection;
-        std::unordered_set<unsigned short> otherSet(other.begin(), other.end());
-
-        for (auto id : getIDS()) {
-            if (otherSet.find(id) != otherSet.end()) {
-                intersection.push_back(id);
-            }
-        }
+        intersection.reserve(std::min(IDS.size(), other.size()));
+        std::set_intersection(IDS.begin(), IDS.end(), other.begin(), other.end(), std::back_inserter(intersection));
         return intersection;
     }
 
 private:
-    //no stack overlow
     std::vector<unsigned short> m_Dense;
     std::vector<unsigned short> m_Sparse;
     std::vector<T> m_Items;
