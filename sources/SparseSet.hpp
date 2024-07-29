@@ -7,6 +7,7 @@
 #include "GameSettings.hpp"
 #include "ISparseSet.hpp"
 #include <unordered_set>
+#include <iterator>
 
 template<class T>
 class SparseSet final : public ISparseSet {
@@ -60,10 +61,12 @@ public:
     }
 
     [[nodiscard]] std::vector<unsigned short> getIDS() const override {
-        return {m_Dense.begin(), m_Dense.begin() + m_Size};
+        auto ids = std::vector<unsigned short>(m_Dense.begin(), m_Dense.begin() + m_Size);
+        std::sort(ids.begin(), ids.end());
+        return ids;
     }
 
-    std::vector<unsigned short> getIntersection(const std::vector<unsigned short>& other) const override {
+    [[nodiscard]] std::vector<unsigned short> getIntersection(const std::vector<unsigned short>& other) const override {
         auto IDS = getIDS();
         std::vector<unsigned short> intersection;
         intersection.reserve(std::min(IDS.size(), other.size()));
@@ -75,5 +78,5 @@ private:
     std::vector<unsigned short> m_Dense;
     std::vector<unsigned short> m_Sparse;
     std::vector<T> m_Items;
-    std::size_t m_Size = 0;
+    unsigned short m_Size = 0;
 };
