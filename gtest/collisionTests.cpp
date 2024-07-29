@@ -1,187 +1,173 @@
-#include <gtest/gtest.h>
-#include "../sources/SCollision.hpp"
-#include "../sources/Registry.hpp"
 #include "../sources/Components.hpp"
+#include "../sources/Registry.hpp"
+#include "../sources/SCollision.hpp"
+#include <gtest/gtest.h>
 
-TEST(CollisionTests, AABBAABBIntersectionTest) {
-    Registry registry;
-    unsigned short entity1 = registry.createEntity();
-    unsigned short entity2 = registry.createEntity();
+TEST(CollisionTests, AABBAABBIntersectionTest)
+{
+    registry registry;
+    unsigned short entity1 = registry.create_entity();
+    unsigned short entity2 = registry.create_entity();
+    registry.create_sparse_set<c_aabb>();
+    registry.create_sparse_set<c_transform>();
 
-    registry.createSparseSet<CAABB>();
-    registry.createSparseSet<CTransform>();
+    registry.add_component<c_aabb>(entity1, c_aabb{vec3(1, 1, 1)});
+    registry.add_component<c_transform>(entity1, c_transform{vec3(0, 0, 0)});
 
-    registry.addComponent<CAABB>(entity1, CAABB{Vec3(1, 1, 1)});
-    registry.addComponent<CTransform>(entity1, CTransform{Vec3(0, 0, 0)});
+    registry.add_component<c_aabb>(entity2, c_aabb{vec3(1, 1, 1)});
+    registry.add_component<c_transform>(entity2, c_transform{vec3(1, 1, 1)});
 
-    registry.addComponent<CAABB>(entity2, CAABB{Vec3(1, 1, 1)});
-    registry.addComponent<CTransform>(entity2, CTransform{Vec3(1, 1, 1)});
+    registry.process_commands();
 
-    registry.ProcessCommands();
-
-    ASSERT_TRUE(SCollision::intersectsAABBInAABB(
-            registry.getComponent<CAABB>(entity1),
-            registry.getComponent<CAABB>(entity2),
-            registry.getComponent<CTransform>(entity1),
-            registry.getComponent<CTransform>(entity2)
-                    ));
+    ASSERT_TRUE(s_collision::intersects_aabb_in_aabb(
+        registry.get_component<c_aabb>(entity1), registry.get_component<c_aabb>(entity2),
+        registry.get_component<c_transform>(entity1), registry.get_component<c_transform>(entity2)));
 }
 
-TEST(CollisionTests, PointAABBIntersectionTest) {
-    Registry registry;
-    unsigned short entity = registry.createEntity();
+TEST(CollisionTests, PointAABBIntersectionTest)
+{
+    registry registry;
+    unsigned short entity = registry.create_entity();
 
-    registry.createSparseSet<CAABB>();
-    registry.createSparseSet<CTransform>();
+    registry.create_sparse_set<c_aabb>();
+    registry.create_sparse_set<c_transform>();
 
-    registry.addComponent<CAABB>(entity, CAABB{Vec3(1, 1, 1)});
-    registry.addComponent<CTransform>(entity, CTransform{Vec3(0, 0, 0)});
+    registry.add_component<c_aabb>(entity, c_aabb{vec3(1, 1, 1)});
+    registry.add_component<c_transform>(entity, c_transform{vec3(0, 0, 0)});
 
-    registry.ProcessCommands();
+    registry.process_commands();
 
-    Vec3 point(0.5, 0.5, 0.5);
-    ASSERT_TRUE(SCollision::intersectsPointInAABB(
-            point,
-            registry.getComponent<CAABB>(entity),
-            registry.getComponent<CTransform>(entity)
-                    ));
+    vec3 point(0.5, 0.5, 0.5);
+    ASSERT_TRUE(s_collision::intersects_point_in_aabb(point, registry.get_component<c_aabb>(entity),
+                                                  registry.get_component<c_transform>(entity)));
 }
 
-TEST(CollisionTests, SphereAABBIntersectionTest) {
-    Registry registry;
-    unsigned short entity1 = registry.createEntity();
-    unsigned short entity2 = registry.createEntity();
+TEST(CollisionTests, SphereAABBIntersectionTest)
+{
+    registry registry;
+    unsigned short entity1 = registry.create_entity();
+    unsigned short entity2 = registry.create_entity();
 
-    registry.createSparseSet<CAABB>();
-    registry.createSparseSet<CSphere>();
-    registry.createSparseSet<CTransform>();
+    registry.create_sparse_set<c_aabb>();
+    registry.create_sparse_set<c_sphere>();
+    registry.create_sparse_set<c_transform>();
 
-    registry.addComponent<CAABB>(entity1, CAABB{Vec3(1, 1, 1)});
-    registry.addComponent<CTransform>(entity1, CTransform{Vec3(0, 0, 0)});
+    registry.add_component<c_aabb>(entity1, c_aabb{vec3(1, 1, 1)});
+    registry.add_component<c_transform>(entity1, c_transform{vec3(0, 0, 0)});
 
-    registry.addComponent<CSphere>(entity2, CSphere{1.0f});
-    registry.addComponent<CTransform>(entity2, CTransform{Vec3(0.5, 0.5, 0.5)});
+    registry.add_component<c_sphere>(entity2, c_sphere{1.0f});
+    registry.add_component<c_transform>(entity2, c_transform{vec3(0.5, 0.5, 0.5)});
 
-    registry.ProcessCommands();
+    registry.process_commands();
 
-    ASSERT_TRUE(SCollision::intersectsSphereInAABB(
-            registry.getComponent<CSphere>(entity2),
-            registry.getComponent<CAABB>(entity1),
-            registry.getComponent<CTransform>(entity2),
-            registry.getComponent<CTransform>(entity1)
-                    ));
+    ASSERT_TRUE(s_collision::intersects_sphere_in_aabb(
+        registry.get_component<c_sphere>(entity2), registry.get_component<c_aabb>(entity1),
+        registry.get_component<c_transform>(entity2), registry.get_component<c_transform>(entity1)));
 }
 
-TEST(CollisionTests, SphereSphereIntersectionTest) {
-    Registry registry;
-    unsigned short entity1 = registry.createEntity();
-    unsigned short entity2 = registry.createEntity();
+TEST(CollisionTests, SphereSphereIntersectionTest)
+{
+    registry registry;
+    unsigned short entity1 = registry.create_entity();
+    unsigned short entity2 = registry.create_entity();
 
-    registry.createSparseSet<CSphere>();
-    registry.createSparseSet<CTransform>();
+    registry.create_sparse_set<c_sphere>();
+    registry.create_sparse_set<c_transform>();
 
-    registry.addComponent<CSphere>(entity1, CSphere{1.0f});
-    registry.addComponent<CTransform>(entity1, CTransform{Vec3(0, 0, 0)});
+    registry.add_component<c_sphere>(entity1, c_sphere{1.0f});
+    registry.add_component<c_transform>(entity1, c_transform{vec3(0, 0, 0)});
 
-    registry.addComponent<CSphere>(entity2, CSphere{1.0f});
-    registry.addComponent<CTransform>(entity2, CTransform{Vec3(1, 1, 1)});
+    registry.add_component<c_sphere>(entity2, c_sphere{1.0f});
+    registry.add_component<c_transform>(entity2, c_transform{vec3(1, 1, 1)});
 
-    registry.ProcessCommands();
+    registry.process_commands();
 
-    ASSERT_TRUE(SCollision::intersectsSphereInSphere(
-            registry.getComponent<CSphere>(entity1),
-            registry.getComponent<CSphere>(entity2),
-            registry.getComponent<CTransform>(entity1),
-            registry.getComponent<CTransform>(entity2)
-                    ));
-
-}
-TEST(CollisionTests, AABBAABBNonIntersectionTest) {
-    Registry registry;
-    unsigned short entity1 = registry.createEntity();
-    unsigned short entity2 = registry.createEntity();
-
-    registry.createSparseSet<CAABB>();
-    registry.createSparseSet<CTransform>();
-
-    registry.addComponent<CAABB>(entity1, CAABB{Vec3(1, 1, 1)});
-    registry.addComponent<CTransform>(entity1, CTransform{Vec3(0, 0, 0)});
-
-    registry.addComponent<CAABB>(entity2, CAABB{Vec3(1, 1, 1)});
-    registry.addComponent<CTransform>(entity2, CTransform{Vec3(3, 3, 3)});
-
-    registry.ProcessCommands();
-
-    ASSERT_FALSE(SCollision::intersectsAABBInAABB(
-            registry.getComponent<CAABB>(entity1),
-            registry.getComponent<CAABB>(entity2),
-            registry.getComponent<CTransform>(entity1),
-            registry.getComponent<CTransform>(entity2)
-                    ));
+    ASSERT_TRUE(s_collision::intersects_sphere_in_sphere(
+        registry.get_component<c_sphere>(entity1), registry.get_component<c_sphere>(entity2),
+        registry.get_component<c_transform>(entity1), registry.get_component<c_transform>(entity2)));
 }
 
-TEST(CollisionTests, PointAABBNonIntersectionTest) {
-    Registry registry;
-    unsigned short entity = registry.createEntity();
+TEST(CollisionTests, AABBAABBNonIntersectionTest)
+{
+    registry registry;
+    unsigned short entity1 = registry.create_entity();
+    unsigned short entity2 = registry.create_entity();
 
-    registry.createSparseSet<CAABB>();
-    registry.createSparseSet<CTransform>();
+    registry.create_sparse_set<c_aabb>();
+    registry.create_sparse_set<c_transform>();
 
-    registry.addComponent<CAABB>(entity, CAABB{Vec3(1, 1, 1)});
-    registry.addComponent<CTransform>(entity, CTransform{Vec3(0, 0, 0)});
+    registry.add_component<c_aabb>(entity1, c_aabb{vec3(1, 1, 1)});
+    registry.add_component<c_transform>(entity1, c_transform{vec3(0, 0, 0)});
 
-    registry.ProcessCommands();
+    registry.add_component<c_aabb>(entity2, c_aabb{vec3(1, 1, 1)});
+    registry.add_component<c_transform>(entity2, c_transform{vec3(3, 3, 3)});
 
-    Vec3 point(2, 2, 2);
-    ASSERT_FALSE(SCollision::intersectsPointInAABB(
-            point,
-            registry.getComponent<CAABB>(entity),
-            registry.getComponent<CTransform>(entity)
-                    ));
+    registry.process_commands();
+
+    ASSERT_FALSE(s_collision::intersects_aabb_in_aabb(
+        registry.get_component<c_aabb>(entity1), registry.get_component<c_aabb>(entity2),
+        registry.get_component<c_transform>(entity1), registry.get_component<c_transform>(entity2)));
 }
 
-TEST(CollisionTests, SphereAABBNonIntersectionTest) {
-    Registry registry;
-    unsigned short entity1 = registry.createEntity();
-    unsigned short entity2 = registry.createEntity();
+TEST(CollisionTests, PointAABBNonIntersectionTest)
+{
+    registry registry;
+    unsigned short entity = registry.create_entity();
 
-    registry.createSparseSet<CAABB>();
-    registry.createSparseSet<CSphere>();
-    registry.createSparseSet<CTransform>();
+    registry.create_sparse_set<c_aabb>();
+    registry.create_sparse_set<c_transform>();
 
-    registry.addComponent<CAABB>(entity1, CAABB{Vec3(1, 1, 1)});
-    registry.addComponent<CTransform>(entity1, CTransform{Vec3(0, 0, 0)});
+    registry.add_component<c_aabb>(entity, c_aabb{vec3(1, 1, 1)});
+    registry.add_component<c_transform>(entity, c_transform{vec3(0, 0, 0)});
 
-    registry.addComponent<CSphere>(entity2, CSphere{1.0f});
-    registry.addComponent<CTransform>(entity2, CTransform{Vec3(3, 3, 3)});
+    registry.process_commands();
 
-    registry.ProcessCommands();
-
-    ASSERT_FALSE(SCollision::intersectsSphereInAABB(
-            registry.getComponent<CSphere>(entity2),
-            registry.getComponent<CAABB>(entity1),
-            registry.getComponent<CTransform>(entity2),
-            registry.getComponent<CTransform>(entity1)
-                    ));
+    vec3 point(2, 2, 2);
+    ASSERT_FALSE(s_collision::intersects_point_in_aabb(point, registry.get_component<c_aabb>(entity),
+                                                   registry.get_component<c_transform>(entity)));
 }
 
-TEST(CollisionTests, SphereSphereNonIntersectionTest) {
-    Registry registry;
-    unsigned short entity1 = registry.createEntity();
-    unsigned short entity2 = registry.createEntity();
+TEST(CollisionTests, SphereAABBNonIntersectionTest)
+{
+    registry registry;
+    unsigned short entity1 = registry.create_entity();
+    unsigned short entity2 = registry.create_entity();
 
-    registry.createSparseSet<CSphere>();
-    registry.createSparseSet<CTransform>();
+    registry.create_sparse_set<c_aabb>();
+    registry.create_sparse_set<c_sphere>();
+    registry.create_sparse_set<c_transform>();
 
-    registry.addComponent<CSphere>(entity1, CSphere{1.0f});
-    registry.addComponent<CTransform>(entity1, CTransform{Vec3(0, 0, 0)});
+    registry.add_component<c_aabb>(entity1, c_aabb{vec3(1, 1, 1)});
+    registry.add_component<c_transform>(entity1, c_transform{vec3(0, 0, 0)});
 
-    registry.addComponent<CSphere>(entity2, CSphere{1.0f});
-    registry.addComponent<CTransform>(entity2, CTransform{Vec3(3, 3, 3)});
+    registry.add_component<c_sphere>(entity2, c_sphere{1.0f});
+    registry.add_component<c_transform>(entity2, c_transform{vec3(3, 3, 3)});
 
-    registry.ProcessCommands();
+    registry.process_commands();
 
-    ASSERT_FALSE(SCollision::intersectsSphereInSphere(
-            registry.getComponent<CSphere>(entity1), registry.getComponent<CSphere>(entity2),
-            registry.getComponent<CTransform>(entity1), registry.getComponent<CTransform>(entity2)));
+    ASSERT_FALSE(s_collision::intersects_sphere_in_aabb(
+        registry.get_component<c_sphere>(entity2), registry.get_component<c_aabb>(entity1),
+        registry.get_component<c_transform>(entity2), registry.get_component<c_transform>(entity1)));
+}
+
+TEST(CollisionTests, SphereSphereNonIntersectionTest)
+{
+    registry registry;
+    unsigned short entity1 = registry.create_entity();
+    unsigned short entity2 = registry.create_entity();
+
+    registry.create_sparse_set<c_sphere>();
+    registry.create_sparse_set<c_transform>();
+
+    registry.add_component<c_sphere>(entity1, c_sphere{1.0f});
+    registry.add_component<c_transform>(entity1, c_transform{vec3(0, 0, 0)});
+
+    registry.add_component<c_sphere>(entity2, c_sphere{1.0f});
+    registry.add_component<c_transform>(entity2, c_transform{vec3(3, 3, 3)});
+
+    registry.process_commands();
+
+    ASSERT_FALSE(s_collision::intersects_sphere_in_sphere(
+        registry.get_component<c_sphere>(entity1), registry.get_component<c_sphere>(entity2),
+        registry.get_component<c_transform>(entity1), registry.get_component<c_transform>(entity2)));
 }

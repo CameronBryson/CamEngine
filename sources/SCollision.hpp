@@ -1,12 +1,16 @@
 #pragma once
-#include "Registry.hpp"
 #include "Components.hpp"
+#include "Registry.hpp"
 
-class SCollision {
-public:
-    static void Update(Registry& registry);
-    static bool intersectsAABBInAABB(const CAABB& aabb1, const CAABB& aabb2, const CTransform& transform1, const CTransform& transform2);
-    static bool intersectsPointInAABB(const Vec3& point, const CAABB& aabb, const CTransform& aabbTransform);
-    static bool intersectsSphereInAABB(const CSphere& sphere, const CAABB& aabb, const CTransform& sphereTransform, const CTransform& aabbTransform);
-    static bool intersectsSphereInSphere(const CSphere& sphere1, const CSphere& sphere2, const CTransform& transform1, const CTransform& transform2);
+class s_collision
+{
+  public:
+    static void update(const registry &registry);
+    static bool intersects_aabb_in_aabb(const c_aabb &aabb1, const c_aabb &aabb2, const c_transform &transform1,
+                                     const c_transform &transform2);
+    static bool intersects_point_in_aabb(const vec3 &point, const c_aabb &aabb, const c_transform &aabb_transform);
+    static bool intersects_sphere_in_aabb(const c_sphere &sphere, const c_aabb &aabb, const c_transform &sphere_transform,
+                                       const c_transform &aabb_transform);
+    static bool intersects_sphere_in_sphere(const c_sphere &sphere1, const c_sphere &sphere2, const c_transform &transform1,
+                                         const c_transform &transform2);
 };

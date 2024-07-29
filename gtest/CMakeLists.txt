@@ -5,9 +5,11 @@ add_executable(google_testing main.cpp sampleTest.cpp
         factoryTests.cpp
         vectorTests.cpp
         matrixTests.cpp
-        quaterionTests.cpp
+        quaternionTests.cpp
         collisionTests.cpp
-        ../sources/SCollision.cpp)
+        ../sources/SCollision.cpp
+        mathUtilTests.cpp
+)
 
 target_link_libraries(google_testing GTest::gtest_main)
 

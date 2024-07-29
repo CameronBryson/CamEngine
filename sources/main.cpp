@@ -1,19 +1,19 @@
-#include "PlayScene.hpp"
 #include "GameManager.hpp"
+#include "PlayScene.hpp"
 #include "raylib.h"
 int main()
 {
-    InitWindow(Settings::WINDOW_WIDTH, Settings::WINDOW_HEIGHT, "raylib [core] example - basic window");
-    SetTargetFPS(Settings::MAX_FPS);
-    const auto gameManager = GameManager::GetInstance();
-    gameManager->LoadScene<PlayScene>();
-    gameManager->Init();
+    InitWindow(settings::window_width, settings::window_height, "raylib [core] example - basic window");
+    SetTargetFPS(settings::max_fps);
+    const auto game_manager = game_manager::get_instance();
+    game_manager->load_scene<play_scene>();
+    game_manager->init();
     while (!WindowShouldClose())
     {
-        gameManager->Update(GetFrameTime());
-        gameManager->Render();
+        game_manager->update(GetFrameTime());
+        game_manager->render();
     }
-    gameManager->Shutdown();
+    game_manager->shutdown();
     CloseWindow();
     return 0;
 }

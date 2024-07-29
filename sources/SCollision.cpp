@@ -1,94 +1,111 @@
 #include "SCollision.hpp"
 
-void SCollision::Update(Registry &registry) {
-    auto& aabbs = registry.getSparseSet<CAABB>();
-    auto& transforms = registry.getSparseSet<CTransform>();
-    auto& spheres = registry.getSparseSet<CSphere>();
+void s_collision::update(const registry &registry)
+{
+    auto &aabbs = registry.get_sparse_set<c_aabb>();
+    auto &transforms = registry.get_sparse_set<c_transform>();
+    auto &spheres = registry.get_sparse_set<c_sphere>();
 
-    std::vector<unsigned short> AABB_IDS = registry.getEntityIDS<CAABB, CTransform>();
-    std::vector<unsigned short> Sphere_IDS = registry.getEntityIDS<CSphere, CTransform>();
+    std::vector<unsigned short> aabb_ids = registry.get_entity_ids<c_aabb, c_transform>();
+    std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform>();
 
     // Check AABB-AABB intersections
-    for (auto ID : AABB_IDS) {
-        auto& aabb = aabbs.getItem(ID);
-        auto& transform = transforms.getItem(ID);
+    for (const auto id : aabb_ids)
+    {
+        auto &aabb = aabbs.get_item(id);
+        auto &transform = transforms.get_item(id);
 
-        for (auto innerID : AABB_IDS) {
-            if (ID == innerID) continue;
+        for (const auto inner_id : aabb_ids)
+        {
+            if (id == inner_id)
+                continue;
 
-            if (intersectsAABBInAABB(aabb, aabbs.getItem(innerID), transform, transforms.getItem(innerID))) {
-                //printf("AABB %d intersects AABB %d\n", ID, innerID);
+            if (intersects_aabb_in_aabb(aabb, aabbs.get_item(inner_id), transform, transforms.get_item(inner_id)))
+            {
+                // printf("AABB %d intersects AABB %d\n", ID, innerID);
             }
         }
     }
 
     // Check Sphere-AABB intersections
-    for (auto ID : AABB_IDS) {
-        auto& aabb = aabbs.getItem(ID);
-        auto& transform = transforms.getItem(ID);
+    for (const auto id : aabb_ids)
+    {
+        auto &aabb = aabbs.get_item(id);
+        auto &transform = transforms.get_item(id);
 
-        for (auto sphereID : Sphere_IDS) {
-            if (intersectsSphereInAABB(spheres.getItem(sphereID), aabb, transforms.getItem(sphereID), transform)) {
-                //printf("Sphere %d intersects AABB %d\n", sphereID, ID);
+        for (const auto sphere_id : sphere_ids)
+        {
+            if (intersects_sphere_in_aabb(spheres.get_item(sphere_id), aabb, transforms.get_item(sphere_id), transform))
+            {
+                // printf("Sphere %d intersects AABB %d\n", sphereID, ID);
             }
         }
     }
 
     // Check Sphere-Sphere intersections
-    for (auto ID : Sphere_IDS) {
-        auto& sphere = spheres.getItem(ID);
-        auto& transform = transforms.getItem(ID);
+    for (const auto id : sphere_ids)
+    {
+        auto &sphere = spheres.get_item(id);
+        auto &transform = transforms.get_item(id);
 
-        for (auto innerID : Sphere_IDS) {
-            if (ID == innerID) continue;
+        for (const auto inner_id : sphere_ids)
+        {
+            if (id == inner_id)
+                continue;
 
-            if (intersectsSphereInSphere(sphere, spheres.getItem(innerID), transform, transforms.getItem(innerID))) {
-                //printf("Sphere %d intersects Sphere %d\n", ID, innerID);
+            if (intersects_sphere_in_sphere(sphere, spheres.get_item(inner_id), transform, transforms.get_item(inner_id)))
+            {
+                // printf("Sphere %d intersects Sphere %d\n", ID, innerID);
             }
         }
     }
 }
 
-
-bool SCollision::intersectsAABBInAABB(const CAABB &aabb1, const CAABB &aabb2, const CTransform &transform1, const CTransform &transform2) {
-    Vec3 center1 = transform1.position;
-    Vec3 center2 = transform2.position;
-    Vec3 extents1 = aabb1.extents;
-    Vec3 extents2 = aabb2.extents;
+bool s_collision::intersects_aabb_in_aabb(const c_aabb &aabb1, const c_aabb &aabb2, const c_transform &transform1,
+                                      const c_transform &transform2)
+{
+    const vec3 center1 = transform1.position;
+    const vec3 center2 = transform2.position;
+    const vec3 extents1 = aabb1.extents;
+    const vec3 extents2 = aabb2.extents;
 
     return (std::abs(center1.x - center2.x) <= (extents1.x + extents2.x)) &&
            (std::abs(center1.y - center2.y) <= (extents1.y + extents2.y)) &&
            (std::abs(center1.z - center2.z) <= (extents1.z + extents2.z));
 }
 
-bool SCollision::intersectsPointInAABB(const Vec3 &point, const CAABB &aabb, const CTransform &aabbTransform) {
-    Vec3 center = aabbTransform.position;
-    Vec3 extents = aabb.extents;
+bool s_collision::intersects_point_in_aabb(const vec3 &point, const c_aabb &aabb, const c_transform &aabb_transform)
+{
+    const vec3 center = aabb_transform.position;
+    const vec3 extents = aabb.extents;
 
-    return (std::abs(point.x - center.x) <= extents.x) &&
-           (std::abs(point.y - center.y) <= extents.y) &&
+    return (std::abs(point.x - center.x) <= extents.x) && (std::abs(point.y - center.y) <= extents.y) &&
            (std::abs(point.z - center.z) <= extents.z);
 }
 
-bool SCollision::intersectsSphereInAABB(const CSphere &sphere, const CAABB &aabb, const CTransform &sphereTransform, const CTransform &aabbTransform) {
-    Vec3 centerAABB = aabbTransform.position;
-    Vec3 extentsAABB = aabb.extents;
-    Vec3 centerSphere = sphereTransform.position;
-    float radiusSphere = sphere.radius;
+bool s_collision::intersects_sphere_in_aabb(const c_sphere &sphere, const c_aabb &aabb, const c_transform &sphere_transform,
+                                        const c_transform &aabb_transform)
+{
+    const vec3 center_aabb = aabb_transform.position;
+    const vec3 extents_aabb = aabb.extents;
+    const vec3 center_sphere = sphere_transform.position;
+    const float radius_sphere = sphere.radius;
 
-    return (std::abs(centerSphere.x - centerAABB.x) <= (extentsAABB.x + radiusSphere)) &&
-           (std::abs(centerSphere.y - centerAABB.y) <= (extentsAABB.y + radiusSphere)) &&
-           (std::abs(centerSphere.z - centerAABB.z) <= (extentsAABB.z + radiusSphere));
+    return (std::abs(center_sphere.x - center_aabb.x) <= (extents_aabb.x + radius_sphere)) &&
+           (std::abs(center_sphere.y - center_aabb.y) <= (extents_aabb.y + radius_sphere)) &&
+           (std::abs(center_sphere.z - center_aabb.z) <= (extents_aabb.z + radius_sphere));
 }
 
-bool SCollision::intersectsSphereInSphere(const CSphere &sphere1, const CSphere &sphere2, const CTransform &transform1, const CTransform &transform2) {
-    Vec3 center1 = transform1.position;
-    Vec3 center2 = transform2.position;
-    float radius1 = sphere1.radius;
-    float radius2 = sphere2.radius;
+bool s_collision::intersects_sphere_in_sphere(const c_sphere &sphere1, const c_sphere &sphere2, const c_transform &transform1,
+                                          const c_transform &transform2)
+{
+    const vec3 center1 = transform1.position;
+    const vec3 center2 = transform2.position;
+    const float radius1 = sphere1.radius;
+    const float radius2 = sphere2.radius;
 
-    float distanceSquared = (center1 - center2).lengthSquared();
-    float radiusSum = radius1 + radius2;
+    const float distance_squared = (center1 - center2).length_squared();
+    const float radius_sum = radius1 + radius2;
 
-    return distanceSquared <= (radiusSum * radiusSum);
+    return distance_squared <= (radius_sum * radius_sum);
 }

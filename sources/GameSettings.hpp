@@ -1,7 +1,8 @@
 #pragma once
-namespace Settings{
-    constexpr unsigned WINDOW_WIDTH = 1920;
-    constexpr unsigned WINDOW_HEIGHT = 1080;
-    constexpr unsigned MAX_FPS = 15000;
-    constexpr unsigned MAX_ENTITIES = 10;
-}
+namespace settings
+{
+constexpr unsigned window_width = 1920;
+constexpr unsigned window_height = 1080;
+constexpr unsigned max_fps = 15000;
+constexpr unsigned max_entities = 10;
+} // namespace Settings

@@ -1,31 +1,32 @@
 #include "SPhysics.hpp"
-#include <cmath>
-#include <vector>
-#include <algorithm>
-#include <mutex>
 #include "Components.hpp"
-#include "raylib.h"
+#include <cmath>
+#include <mutex>
+#include <vector>
 
-void SPhysics::Update(Registry& registry, float dt) {
-    auto& rigidbodies = registry.getSparseSet<CRigidBody>();
-    auto& positions = registry.getSparseSet<CTransform>();
-    auto& velocities = registry.getSparseSet<CVelocity>();
-    auto IDS = registry.getEntityIDS<CRigidBody, CTransform, CVelocity>();
+void s_physics::update(const registry &registry, const float dt)
+{
+    auto &rigidbodies = registry.get_sparse_set<c_rigid_body>();
+    auto &positions = registry.get_sparse_set<c_transform>();
+    auto &velocities = registry.get_sparse_set<c_velocity>();
+    const auto ids = registry.get_entity_ids<c_rigid_body, c_transform, c_velocity>();
 
-    for (auto ID : IDS) {
-        auto& rb = rigidbodies.getItem(ID);
-        auto& position = positions.getItem(ID);
-        auto& velocity = velocities.getItem(ID);
+    for (const auto id : ids)
+    {
+        auto &[mass, drag, acceleration, force] = rigidbodies.get_item(id);
+        auto &[position, rotation, scale] = positions.get_item(id);
+        auto &[velocity] = velocities.get_item(id);
 
-        velocity.velocity += rb.acceleration * dt;
+        velocity += acceleration * dt;
 
-        velocity.velocity *= std::pow(1 - rb.drag, dt);
+        velocity *= std::pow(1 - drag, dt);
 
-        position.position += velocity.velocity;
+        position += velocity;
 
-        rb.acceleration = {0, 0, 0};
+        acceleration = {0, 0, 0};
     }
 }
 
-void SPhysics::Shutdown() {
+void s_physics::shutdown()
+{
 }

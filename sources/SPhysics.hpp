@@ -1,7 +1,8 @@
 #pragma once
 #include <Registry.hpp>
-class SPhysics{
-public:
-    static void Update(Registry &registry, float dt);
-    static void Shutdown();
+class s_physics
+{
+  public:
+    static void update(const registry &registry, float dt);
+    static void shutdown();
 };

@@ -1,149 +1,150 @@
 #pragma once
+#include "Commands.hpp"
 #include "ISparseSet.hpp"
 #include "SparseSet.hpp"
-#include "Commands.hpp"
 
 #include <algorithm>
 #include <bitset>
 #include <cassert>
-#include <cstdint>
-#include <deque>
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <numeric>
 #include <queue>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
 
-class Registry {
-public:
-    Registry() {
+class registry
+{
+  public:
+    registry()
+    {
         printf("Registry created\n");
-        m_Entities.reserve(Settings::MAX_ENTITIES);
-        m_freeIDs.resize(Settings::MAX_ENTITIES-1);
-        std::iota(m_freeIDs.begin(), m_freeIDs.end(), 1);
-
+        m_entities_.reserve(settings::max_entities);
+        m_free_i_ds_.resize(settings::max_entities - 1);
+        std::iota(m_free_i_ds_.begin(), m_free_i_ds_.end(), 1);
     };
-    ~Registry() {
-        ProcessCommands();
+    ~registry()
+    {
+        process_commands();
         printf("Registry destroyed\n");
     }
 
-public:
-    unsigned short createEntity() {
+  public:
+    unsigned short create_entity()
+    {
         assert(!m_freeIDs.empty() && "No more entities available.");
-        const unsigned short ID = m_freeIDs.back();
-        m_freeIDs.pop_back();
-        m_Entities.push_back(ID);
-        return ID;
+        const unsigned short id = m_free_i_ds_.back();
+        m_free_i_ds_.pop_back();
+        m_entities_.push_back(id);
+        return id;
     };
-    void deleteEntity(unsigned short ID) {
-        commandQueue.push(std::make_unique<DeleteEntityCommand>(m_SparseSets, m_freeIDs, m_Entities, ID));
+    void delete_entity(unsigned short id)
+    {
+        command_queue_.push(std::make_unique<delete_entity_command>(m_sparse_sets_, m_free_i_ds_, m_entities_, id));
     };
-    void ProcessCommands() {
-        while (!commandQueue.empty()) {
-            const auto & command = commandQueue.front();
-            command->Execute();
-            commandQueue.pop();
+    void process_commands()
+    {
+        while (!command_queue_.empty())
+        {
+            const auto &command = command_queue_.front();
+            command->execute();
+            command_queue_.pop();
         }
     }
 
-public:
-    template<typename T>
-    void createSparseSet();
+  public:
+    template <typename T> void create_sparse_set();
 
-    template<typename T>
-    void addComponent(unsigned short ID, const T& componentData);
+    template <typename T> void add_component(unsigned short id, const T &component_data);
 
-    template<typename T>
-    T& getComponent(unsigned short ID) const;
+    template <typename T> T &get_component(unsigned short id) const;
 
-    template<typename T>
-    [[nodiscard]] bool hasComponent(unsigned short ID) const;
+    template <typename T> [[nodiscard]] bool has_component(unsigned short id) const;
 
-    template<typename T>
-    void removeComponent(unsigned short ID);
+    template <typename T> void remove_component(unsigned short id);
 
-    template<typename... T>
-    [[nodiscard]] std::vector<unsigned short> getEntityIDS() const;
+    template <typename... T> [[nodiscard]] std::vector<unsigned short> get_entity_ids() const;
 
-    template<typename T>
-    SparseSet<T>& getSparseSet() const;
+    template <typename T> sparse_set<T> &get_sparse_set() const;
 
-    template<typename T>
-    [[nodiscard]] bool hasSparseSet() const;
+    template <typename T> [[nodiscard]] bool has_sparse_set() const;
 
-    private:
-    std::vector<unsigned short> m_freeIDs;
-    std::vector<unsigned short> m_Entities;
-    std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> m_SparseSets;
-    std::queue<std::unique_ptr<ICommand>> commandQueue;
+  private:
+    std::vector<unsigned short> m_free_i_ds_;
+    std::vector<unsigned short> m_entities_;
+    std::unordered_map<std::type_index, std::unique_ptr<i_sparse_set>> m_sparse_sets_;
+    std::queue<std::unique_ptr<i_command>> command_queue_;
 };
-template<typename T>
-bool Registry::hasSparseSet() const {
-    return m_SparseSets.find(std::type_index(typeid(T))) != m_SparseSets.end();
+template <typename T> bool registry::has_sparse_set() const
+{
+    return m_sparse_sets_.find(std::type_index(typeid(T))) != m_sparse_sets_.end();
 }
 
-template<class T>
-void Registry::createSparseSet() {
-    assert(m_SparseSets.find(std::type_index(typeid(T))) == m_SparseSets.end() && "Error: Sparse set already exists for this type.");
-    m_SparseSets[std::type_index(typeid(T))] = std::make_unique<SparseSet<T>>();
+template <class T> void registry::create_sparse_set()
+{
+    assert(m_SparseSets.find(std::type_index(typeid(T))) == m_SparseSets.end() &&
+           "Error: Sparse set already exists for this type.");
+    m_sparse_sets_[std::type_index(typeid(T))] = std::make_unique<sparse_set<T>>();
 }
 
-template<typename T>
-SparseSet<T>&  Registry::getSparseSet() const {
-    assert(m_SparseSets.find(std::type_index(typeid(T))) != m_SparseSets.end() && "Error: Sparse set does not exist for this type.");
-    return *static_cast<SparseSet<T>*>(m_SparseSets.at(std::type_index(typeid(T))).get());
+template <typename T> sparse_set<T> &registry::get_sparse_set() const
+{
+    assert(m_SparseSets.find(std::type_index(typeid(T))) != m_SparseSets.end() &&
+           "Error: Sparse set does not exist for this type.");
+    return *static_cast<sparse_set<T> *>(m_sparse_sets_.at(std::type_index(typeid(T))).get());
 }
 
-template<typename T>
-void Registry::addComponent(unsigned short ID, const T &componentData) {
+template <typename T> void registry::add_component(unsigned short id, const T &component_data)
+{
     assert(m_Entities.end() != std::find(m_Entities.begin(), m_Entities.end(), ID) && "Entity does not exist.");
-    auto& set = getSparseSet<T>();
-    commandQueue.push(std::make_unique<AddComponentCommand<T>>(set, ID, componentData));
+    auto &set = get_sparse_set<T>();
+    command_queue_.push(std::make_unique<add_component_command<T>>(set, id, component_data));
 }
 
-template<typename T>
-T &Registry::getComponent(unsigned short ID) const {
+template <typename T> T &registry::get_component(unsigned short id) const
+{
     assert(hasComponent<T>(ID) && "Entity does not have component.");
-    return getSparseSet<T>().getItem(ID);
+    return get_sparse_set<T>().get_item(id);
 }
 
-template<typename... T>
-std::vector<unsigned short> Registry::getEntityIDS() const {
+template <typename... T> std::vector<unsigned short> registry::get_entity_ids() const
+{
     std::vector<unsigned short> result;
-    if(sizeof...(T) == 0) {
-        for (unsigned short i = 0; i < Settings::MAX_ENTITIES; ++i) {
-            if (std::find(m_Entities.begin(), m_Entities.end(), i) != m_Entities.end()) {
+    if (sizeof...(T) == 0)
+    {
+        for (unsigned short i = 0; i < settings::max_entities; ++i)
+        {
+            if (std::find(m_entities_.begin(), m_entities_.end(), i) != m_entities_.end())
+            {
                 result.push_back(i);
             }
         }
         return result;
     }
-    std::vector<ISparseSet*> sparseSets = {&getSparseSet<T>()...};
+    std::vector<i_sparse_set *> sparse_sets = {&get_sparse_set<T>()...};
 
     // Initialize result with the first component's IDs if available
-    result = sparseSets[0]->getIDS();
+    result = sparse_sets[0]->get_ids();
 
     // Find intersection across all component types
-    for (size_t i = 1; i < sparseSets.size(); ++i) {
-        result = sparseSets[i]->getIntersection(result);
+    for (size_t i = 1; i < sparse_sets.size(); ++i)
+    {
+        result = sparse_sets[i]->get_intersection(result);
     }
 
     return result;
 }
 
-template<typename T>
-bool Registry::hasComponent(unsigned short ID) const {
-    return getSparseSet<T>().hasItem(ID);
+template <typename T> bool registry::has_component(unsigned short id) const
+{
+    return get_sparse_set<T>().has_item(id);
 }
 
-template<typename T>
-void Registry::removeComponent(unsigned short ID) {
+template <typename T> void registry::remove_component(unsigned short id)
+{
     assert(m_Entities.end() != std::find(m_Entities.begin(), m_Entities.end(), ID) && "Entity does not exist.");
     assert(hasComponent<T>(ID) && "Entity does not have component.");
-    auto& set = getSparseSet<T>();
-    commandQueue.push(std::make_unique<RemoveComponentCommand<T>>(set, ID));
+    auto &set = get_sparse_set<T>();
+    command_queue_.push(std::make_unique<remove_component_command<T>>(set, id));
 }

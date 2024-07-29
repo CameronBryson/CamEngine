@@ -3,75 +3,92 @@
 #include "Quaternion.hpp"
 #include "Vectors.hpp"
 
-
 // Component for entities affected by gravity
-struct CGravity {
-    Vec3 gravity = {0, -9.81f, 0};
+struct c_gravity
+{
+    vec3 gravity = {0, -9.81f, 0};
 };
 
 // Component for player-specific data
-struct CPlayer {
+struct c_player
+{
 };
 
 // Component for rendering-related data
-struct CRender {
+struct c_render
+{
     int layer = 0;
 };
 
 // Component for physical properties
-struct CRigidBody {
+struct c_rigid_body
+{
     float mass = 1.0f; // Default mass to avoid division by zero
     float drag = 0.0f;
-    Vec3 acceleration = {0, 0, 0};
-    Vec3 force = {0, 0, 0};
+    vec3 acceleration = {0, 0, 0};
+    vec3 force = {0, 0, 0};
 };
 
 // Component for sprite-related data
-struct CSprite {
+struct c_sprite
+{
 };
 
 // Marker component for static bodies (e.g., walls)
-struct CStaticBody {};
+struct c_static_body
+{
+};
 
 // Component for position, rotation, and scale
-struct CTransform {
-    Vec3 position = {0, 0, 0};
-    Quat rotation = {1, 0, 0, 0};
-    Vec3 scale = {1, 1, 1};
+struct c_transform
+{
+    vec3 position = {0, 0, 0};
+    quat rotation = {1, 0, 0, 0};
+    vec3 scale = {1, 1, 1};
 };
 
 // Marker component for kinetic bodies (e.g., moving platforms)
-struct CKineticBody {};
+struct c_kinetic_body
+{
+};
 
 // Component for velocity
-struct CVelocity {
-    Vec3 velocity = {0, 0, 0};
+struct c_velocity
+{
+    vec3 velocity = {0, 0, 0};
 };
 
 // Component for collider-related data
-struct CCollider {
+struct c_collider
+{
 };
 
-struct CHealth {
+struct c_health
+{
     int health = 100;
 };
 
-struct CEnemy {
+struct c_enemy
+{
 };
 
-struct CAABB {
-    Vec3 extents;
+struct c_aabb
+{
+    vec3 extents;
 };
-struct CSphere {
+struct c_sphere
+{
     float radius;
 };
-struct CCapsule {
+struct c_capsule
+{
     float radius;
     float height;
 };
-struct CPlane {
-    Vec3 normal;
-    float distance;
+struct c_plane
+{
+    vec3 normal;
+    float distance{};
 };
 
 #endif // COMPONENTS_HPP

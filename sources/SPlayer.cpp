@@ -1,28 +1,34 @@
 #include "SPlayer.hpp"
-#include <vector>
-#include <mutex>
 #include "Components.hpp"
 #include "raylib.h"
+#include <vector>
 
-static constexpr float MOVESPEED = 5.0f;
+static constexpr float movespeed = 5.0f;
 
-void SPlayer::Update(Registry& registry, float dt) {
-    auto& rigidbodies = registry.getSparseSet<CRigidBody>();
-    auto IDS = registry.getEntityIDS<CPlayer, CRigidBody>();
+void s_player::update(const registry &registry, const float dt)
+{
+    auto &rigidbodies = registry.get_sparse_set<c_rigid_body>();
+    auto ids = registry.get_entity_ids<c_player, c_rigid_body>();
 
-    bool D = IsKeyDown(KEY_D);
-    bool A = IsKeyDown(KEY_A);
-    bool W = IsKeyDown(KEY_W);
-    bool S = IsKeyDown(KEY_S);
+    const bool d = IsKeyDown(KEY_D);
+    const bool a = IsKeyDown(KEY_A);
+    const bool w = IsKeyDown(KEY_W);
+    const bool s = IsKeyDown(KEY_S);
 
-    for (auto ID : IDS) {
-        auto& rb = rigidbodies.getItem(ID);
-        if (D) rb.acceleration.x += MOVESPEED * dt;
-        if (A) rb.acceleration.x -= MOVESPEED * dt;
-        if (W) rb.acceleration.z -= MOVESPEED * dt;
-        if (S) rb.acceleration.z += MOVESPEED * dt;
+    for (const auto id : ids)
+    {
+        auto &[mass, drag, acceleration, force] = rigidbodies.get_item(id);
+        if (d)
+            acceleration.x += movespeed * dt;
+        if (a)
+            acceleration.x -= movespeed * dt;
+        if (w)
+            acceleration.z -= movespeed * dt;
+        if (s)
+            acceleration.z += movespeed * dt;
     }
 }
 
-void SPlayer::Shutdown() {
+void s_player::shutdown()
+{
 }

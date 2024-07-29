@@ -2,21 +2,21 @@
 #include "IScene.hpp"
 #include "Registry.hpp"
 #include "raylib.h"
-#include "Systems.hpp"
-class PlayScene final : public IScene{
-public:
-    PlayScene();
-    ~PlayScene() override;
-    void Init() override;
-    void Update(float dt) override;
-    void Render() override;
-    void Shutdown() override;
-    Registry& GetRegistry() override;
-private:
-    void InitSparseSets();
-private:
-    Registry m_Registry;
-    Camera3D m_Camera;
+class play_scene final : public i_scene
+{
+  public:
+    play_scene();
+    ~play_scene() override;
+    void init() override;
+    void update(float dt) override;
+    void render() override;
+    void shutdown() override;
+    registry &get_registry() override;
 
+  private:
+    void init_sparse_sets();
+
+  private:
+    registry m_registry_;
+    Camera3D m_camera_{};
 };
-

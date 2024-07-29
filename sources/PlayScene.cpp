@@ -1,99 +1,100 @@
 #include "PlayScene.hpp"
 
-#include <GameManager.hpp>
-
 #include "Components.hpp"
 #include "Factory.hpp"
 #include "Registry.hpp"
 #include "SCollision.hpp"
 #include "Timer.hpp"
 #include "raylib.h"
-PlayScene::PlayScene() {
+#include "Systems.hpp"
+play_scene::play_scene()
+{
     printf("PlayScene created\n");
-
 }
-PlayScene::~PlayScene() {
+play_scene::~play_scene()
+{
     printf("PlayScene destroyed\n");
-
-
 }
-void PlayScene::Init()
+void play_scene::init()
 {
-    m_Camera.position = {0.0f, 10.0f, 10.0f};
-    m_Camera.target = {0.0f, 0.0f, 0.0f};
-    m_Camera.up = {0.0f, 1.0f, 0.0f};
-    m_Camera.fovy = 45.0f;
-    m_Camera.projection = CAMERA_PERSPECTIVE;
-    InitSparseSets();
+    m_camera_.position = {0.0f, 10.0f, 10.0f};
+    m_camera_.target = {0.0f, 0.0f, 0.0f};
+    m_camera_.up = {0.0f, 1.0f, 0.0f};
+    m_camera_.fovy = 45.0f;
+    m_camera_.projection = CAMERA_PERSPECTIVE;
+    init_sparse_sets();
 
-    SRender::Init();
-    Timer benchmarkTimer(Stats::StatType::BENCHMARK);
-    for (int i = 1; i < Settings::MAX_ENTITIES-3; i++) {
+    s_render::init();
+    timer benchmark_timer(stats::stat_type::BENCHMARK);
+    for (int i = 1; i < settings::max_entities - 3; i++)
+    {
 
-        auto entity = m_Registry.createEntity();
-        m_Registry.addComponent<CTransform>(entity, CTransform());
-        m_Registry.addComponent<CRigidBody>(entity, CRigidBody());
-        m_Registry.addComponent<CVelocity>(entity, CVelocity());
-        m_Registry.addComponent<CPlayer>(entity, CPlayer());
-        m_Registry.addComponent<CAABB>(entity, CAABB());
+        const auto entity = m_registry_.create_entity();
+        m_registry_.add_component<c_transform>(entity, c_transform());
+        m_registry_.add_component<c_rigid_body>(entity, c_rigid_body());
+        m_registry_.add_component<c_velocity>(entity, c_velocity());
+        m_registry_.add_component<c_player>(entity, c_player());
+        m_registry_.add_component<c_aabb>(entity, c_aabb());
     }
-    for (int i = 1; i < Settings::MAX_ENTITIES-3; i++) {
-        m_Registry.deleteEntity(i);
+    for (int i = 1; i < settings::max_entities - 3; i++)
+    {
+        m_registry_.delete_entity(i);
     }
-    Factory::CreatePlayer(m_Registry);
-    auto enemy = m_Registry.createEntity();
-    m_Registry.addComponent<CTransform>(enemy, CTransform{.position = {5.0f, 0.0f, 0.0f}});
-    m_Registry.addComponent<CRigidBody>(enemy, CRigidBody{.drag = 0.9f});
-    m_Registry.addComponent<CVelocity>(enemy, CVelocity());
-    m_Registry.addComponent<CEnemy>(enemy, CEnemy());
-    m_Registry.addComponent<CAABB>(enemy, CAABB{.extents = {1.0f, 1.0f, 1.0f}});
+    factory::create_player(m_registry_);
+    const auto enemy = m_registry_.create_entity();
+    m_registry_.add_component<c_transform>(enemy, c_transform{.position = {5.0f, 0.0f, 0.0f}});
+    m_registry_.add_component<c_rigid_body>(enemy, c_rigid_body{.drag = 0.9f});
+    m_registry_.add_component<c_velocity>(enemy, c_velocity());
+    m_registry_.add_component<c_enemy>(enemy, c_enemy());
+    m_registry_.add_component<c_aabb>(enemy, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
 
-    auto enemy2 = m_Registry.createEntity();
-    m_Registry.addComponent<CTransform>(enemy2, CTransform{.position = {-5.0f, 0.0f, 0.0f}});
-    m_Registry.addComponent<CRigidBody>(enemy2, CRigidBody{.drag = 0.9f});
-    m_Registry.addComponent<CVelocity>(enemy2, CVelocity());
-    m_Registry.addComponent<CEnemy>(enemy2, CEnemy());
-    m_Registry.addComponent<CSphere>(enemy2, CSphere{.radius = 1.0f});
+    const auto enemy2 = m_registry_.create_entity();
+    m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {-5.0f, 0.0f, 0.0f}});
+    m_registry_.add_component<c_rigid_body>(enemy2, c_rigid_body{.drag = 0.9f});
+    m_registry_.add_component<c_velocity>(enemy2, c_velocity());
+    m_registry_.add_component<c_enemy>(enemy2, c_enemy());
+    m_registry_.add_component<c_sphere>(enemy2, c_sphere{.radius = 1.0f});
 }
 
-void PlayScene::Update(float dt)
+void play_scene::update(const float dt)
 {
-    Timer updateTimer(Stats::StatType::UPDATE);
-    SPlayer::Update(m_Registry, dt);
-    SPhysics::Update(m_Registry, dt);
-    SCollision::Update(m_Registry);
-    m_Registry.ProcessCommands();
-
+    timer update_timer(stats::stat_type::UPDATE);
+    s_player::update(m_registry_, dt);
+    s_physics::update(m_registry_, dt);
+    s_collision::update(m_registry_);
+    m_registry_.process_commands();
 }
 
-void PlayScene::Render()
+void play_scene::render()
 {
-    Timer renderTimer(Stats::StatType::RENDER);
-    SRender::Update(m_Registry, m_Camera);
+    timer render_timer(stats::stat_type::RENDER);
+    s_render::update(m_registry_, m_camera_);
 }
 
-void PlayScene::Shutdown()
+void play_scene::shutdown()
 {
-    SRender::Shutdown();
-    SPlayer::Shutdown();
-    SPhysics::Shutdown();
+    s_render::shutdown();
+    s_player::shutdown();
+    s_physics::shutdown();
 }
-Registry& PlayScene::GetRegistry() {
-    return m_Registry;
+registry &play_scene::get_registry()
+{
+    return m_registry_;
 }
-void PlayScene::InitSparseSets() {
-    m_Registry.createSparseSet<CTransform>();
-    m_Registry.createSparseSet<CRender>();
-    m_Registry.createSparseSet<CRigidBody>();
-    m_Registry.createSparseSet<CPlayer>();
-    m_Registry.createSparseSet<CSprite>();
-    m_Registry.createSparseSet<CStaticBody>();
-    m_Registry.createSparseSet<CKineticBody>();
-    m_Registry.createSparseSet<CVelocity>();
-    m_Registry.createSparseSet<CCollider>();
-    m_Registry.createSparseSet<CHealth>();
-    m_Registry.createSparseSet<CEnemy>();
-    m_Registry.createSparseSet<CAABB>();
-    m_Registry.createSparseSet<CSphere>();
-    m_Registry.createSparseSet<CCapsule>();
+void play_scene::init_sparse_sets()
+{
+    m_registry_.create_sparse_set<c_transform>();
+    m_registry_.create_sparse_set<c_render>();
+    m_registry_.create_sparse_set<c_rigid_body>();
+    m_registry_.create_sparse_set<c_player>();
+    m_registry_.create_sparse_set<c_sprite>();
+    m_registry_.create_sparse_set<c_static_body>();
+    m_registry_.create_sparse_set<c_kinetic_body>();
+    m_registry_.create_sparse_set<c_velocity>();
+    m_registry_.create_sparse_set<c_collider>();
+    m_registry_.create_sparse_set<c_health>();
+    m_registry_.create_sparse_set<c_enemy>();
+    m_registry_.create_sparse_set<c_aabb>();
+    m_registry_.create_sparse_set<c_sphere>();
+    m_registry_.create_sparse_set<c_capsule>();
 }

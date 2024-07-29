@@ -1,20 +1,24 @@
 #pragma once
-#include <chrono>
 #include "Stats.hpp"
+#include <chrono>
 
-class Timer {
-public:
-    explicit Timer(Stats::StatType type) {
-        start = std::chrono::system_clock::now();
-        statType = type;
+class timer
+{
+  public:
+    explicit timer(const stats::stat_type type)
+    {
+        start_ = std::chrono::system_clock::now();
+        stat_type_ = type;
     };
-    ~Timer() {
-        end = std::chrono::system_clock::now();
-        const std::chrono::duration<float, std::ratio<1,1000>> final = end - start;
+    ~timer()
+    {
+        end_ = std::chrono::system_clock::now();
+        const std::chrono::duration<float, std::ratio<1, 1000>> final = end_ - start_;
         // Assuming statType is an enum and can be cast to size_t
-        Stats::timerVector[statType] = final;
+        stats::timer_vector[stat_type_] = final;
     }
-private:
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    Stats::StatType statType;
+
+  private:
+    std::chrono::time_point<std::chrono::system_clock> start_, end_;
+    stats::stat_type stat_type_;
 };

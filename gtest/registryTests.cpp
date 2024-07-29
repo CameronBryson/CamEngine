@@ -1,71 +1,81 @@
+#include "../sources/Registry.hpp"
 #include <gtest/gtest.h>
 #include <memory>
-#include "../sources/Registry.hpp"
 
-TEST(RegistryTests, CreateEntityTest) {
-    Registry registry;
-    for (int i = 0; i < Settings::MAX_ENTITIES - 1; i++) {
-        registry.createEntity();
+TEST(RegistryTests, CreateEntityTest)
+{
+    registry registry;
+    for (int i = 0; i < settings::max_entities - 1; i++)
+    {
+        registry.create_entity();
     }
-    ASSERT_EQ(registry.getEntityIDS().size(), Settings::MAX_ENTITIES - 1);
+    ASSERT_EQ(registry.get_entity_ids().size(), settings::max_entities - 1);
 }
 
-TEST(RegistryTests, DeleteEntityTest) {
-    Registry registry;
-    for (int i = 0; i < Settings::MAX_ENTITIES - 1; i++) {
-        registry.createEntity();
+TEST(RegistryTests, DeleteEntityTest)
+{
+    registry registry;
+    for (int i = 0; i < settings::max_entities - 1; i++)
+    {
+        registry.create_entity();
     }
-    for (int i = 1; i < Settings::MAX_ENTITIES; i++) {
-        registry.deleteEntity(i);
+    for (int i = 1; i < settings::max_entities; i++)
+    {
+        registry.delete_entity(i);
     }
-    registry.ProcessCommands();
-    ASSERT_EQ(registry.getEntityIDS().size(), 0);
+    registry.process_commands();
+    ASSERT_EQ(registry.get_entity_ids().size(), 0);
 }
 
-TEST(RegistryTests, CreateSparseSetTest) {
-    Registry registry;
-    registry.createSparseSet<int>();
-    ASSERT_TRUE(registry.hasSparseSet<int>());
+TEST(RegistryTests, CreateSparseSetTest)
+{
+    registry registry;
+    registry.create_sparse_set<int>();
+    ASSERT_TRUE(registry.has_sparse_set<int>());
 }
 
-TEST(RegistryTests, AddComponentTest) {
-    Registry registry;
-    registry.createSparseSet<int>();
-    unsigned short entity = registry.createEntity();
-    registry.addComponent<int>(entity, 42);
-    registry.ProcessCommands();
-    ASSERT_TRUE(registry.hasComponent<int>(entity));
+TEST(RegistryTests, AddComponentTest)
+{
+    registry registry;
+    registry.create_sparse_set<int>();
+    unsigned short entity = registry.create_entity();
+    registry.add_component<int>(entity, 42);
+    registry.process_commands();
+    ASSERT_TRUE(registry.has_component<int>(entity));
 }
 
-TEST(RegistryTests, GetComponentTest) {
-    Registry registry;
-    registry.createSparseSet<int>();
+TEST(RegistryTests, GetComponentTest)
+{
+    registry registry;
+    registry.create_sparse_set<int>();
 
-    unsigned short entity = registry.createEntity();
-    registry.addComponent<int>(entity, 42);
-    registry.ProcessCommands();
-    ASSERT_EQ(registry.getComponent<int>(entity), 42);
+    unsigned short entity = registry.create_entity();
+    registry.add_component<int>(entity, 42);
+    registry.process_commands();
+    ASSERT_EQ(registry.get_component<int>(entity), 42);
 }
 
-TEST(RegistryTests, RemoveComponentTest) {
-    Registry registry;
-    registry.createSparseSet<int>();
-    unsigned short entity = registry.createEntity();
-    registry.addComponent<int>(entity, 42);
-    registry.ProcessCommands();
-    registry.removeComponent<int>(entity);
-    registry.ProcessCommands();
-    ASSERT_FALSE(registry.hasComponent<int>(entity));
+TEST(RegistryTests, RemoveComponentTest)
+{
+    registry registry;
+    registry.create_sparse_set<int>();
+    unsigned short entity = registry.create_entity();
+    registry.add_component<int>(entity, 42);
+    registry.process_commands();
+    registry.remove_component<int>(entity);
+    registry.process_commands();
+    ASSERT_FALSE(registry.has_component<int>(entity));
 }
 
-TEST(RegistryTests, MultipleComponentsTest) {
-    Registry registry;
-    registry.createSparseSet<int>();
-    registry.createSparseSet<float>();
-    unsigned short entity = registry.createEntity();
-    registry.addComponent<int>(entity, 42);
-    registry.addComponent<float>(entity, 3.14f);
-    registry.ProcessCommands();
-    ASSERT_EQ(registry.getComponent<int>(entity), 42);
-    ASSERT_EQ(registry.getComponent<float>(entity), 3.14f);
+TEST(RegistryTests, MultipleComponentsTest)
+{
+    registry registry;
+    registry.create_sparse_set<int>();
+    registry.create_sparse_set<float>();
+    unsigned short entity = registry.create_entity();
+    registry.add_component<int>(entity, 42);
+    registry.add_component<float>(entity, 3.14f);
+    registry.process_commands();
+    ASSERT_EQ(registry.get_component<int>(entity), 42);
+    ASSERT_EQ(registry.get_component<float>(entity), 3.14f);
 }

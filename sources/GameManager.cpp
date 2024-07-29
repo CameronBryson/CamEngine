@@ -1,39 +1,43 @@
 #include "GameManager.hpp"
-#include <memory>
-GameManager* GameManager::m_instance = nullptr;
+game_manager *game_manager::m_instance_ = nullptr;
 
-GameManager::GameManager()
+game_manager::game_manager()
 {
-    m_currentScene = nullptr;
+    m_current_scene_ = nullptr;
 }
 
-GameManager::~GameManager()
+game_manager::~game_manager()
 {
-    Shutdown();
+    shutdown();
 }
 
-GameManager* GameManager::GetInstance()
+game_manager *game_manager::get_instance()
 {
-    if (m_instance == nullptr){
-        m_instance = new GameManager();
+    if (m_instance_ == nullptr)
+    {
+        m_instance_ = new game_manager();
     }
-    return m_instance;
+    return m_instance_;
 }
 
-void GameManager::Init() const {
-    m_currentScene->Init();
+void game_manager::init() const
+{
+    m_current_scene_->init();
 }
 
-void GameManager::Update(float dt) const {
-    m_currentScene->Update(dt);
+void game_manager::update(const float dt) const
+{
+    m_current_scene_->update(dt);
 }
 
-void GameManager::Render() const {
-    m_currentScene->Render();
+void game_manager::render() const
+{
+    m_current_scene_->render();
 }
 
-void GameManager::Shutdown() const {
-    m_currentScene->Shutdown();
-    delete m_currentScene;
+void game_manager::shutdown() const
+{
+    m_current_scene_->shutdown();
+    delete m_current_scene_;
     // delete m_instance;
 }

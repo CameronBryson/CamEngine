@@ -1,13 +1,14 @@
 #pragma once
-#include <Registry.hpp>
 #include "raylib.h"
+#include <Registry.hpp>
 
-class SRender{
-public:
-    static void Init();
-    static void Update(Registry &registry, Camera3D &camera);
-    static void Shutdown();
-private:
-    static void DrawStatistics();
+class s_render
+{
+  public:
+    static void init();
+    static void update(const registry &registry, const Camera3D &camera);
+    static void shutdown();
+
+  private:
+    static void draw_statistics();
 };
-

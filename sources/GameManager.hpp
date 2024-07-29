@@ -1,27 +1,27 @@
 #pragma once
 #include "IScene.hpp"
-#include <memory>
-class GameManager{
-public:
-    ~GameManager();
-    static GameManager* GetInstance();
-    void Init() const;
-    void Update(float dt) const;
-    void Render() const;
-    void Shutdown() const;
-    //idk if I should be using template
-    //better solution is probably to pass interface
-    template<typename T>
-    void LoadScene(){
-        if(m_currentScene!=nullptr)
-            Shutdown();
-        m_currentScene = new T();
+class game_manager
+{
+  public:
+    ~game_manager();
+    static game_manager *get_instance();
+    void init() const;
+    void update(float dt) const;
+    void render() const;
+    void shutdown() const;
+    // idk if I should be using template
+    // better solution is probably to pass interface
+    template <typename T> void load_scene()
+    {
+        if (m_current_scene_ != nullptr)
+            shutdown();
+        m_current_scene_ = new T();
     }
-protected:
-    GameManager();
-private:
-    static GameManager* m_instance;
-    IScene* m_currentScene;
 
+  protected:
+    game_manager();
 
+  private:
+    static game_manager *m_instance_;
+    i_scene *m_current_scene_;
 };

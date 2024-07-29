@@ -1,82 +1,92 @@
 #pragma once
-#include <algorithm>
-#include <vector>
-#include <cstdio>
-#include <typeinfo>
-#include <cassert>
 #include "GameSettings.hpp"
 #include "ISparseSet.hpp"
-#include <unordered_set>
+#include <algorithm>
+#include <cassert>
+#include <cstdio>
 #include <iterator>
+#include <typeinfo>
+#include <vector>
 
-template<class T>
-class SparseSet final : public ISparseSet {
-public:
-    SparseSet() {
+template <class T> class sparse_set final : public i_sparse_set
+{
+  public:
+    sparse_set()
+    {
         printf("Sparse set created of type: %s\n", typeid(T).name());
-        m_Dense.resize(Settings::MAX_ENTITIES);
-        m_Sparse.resize(Settings::MAX_ENTITIES);
-        m_Items.resize(Settings::MAX_ENTITIES);
+        m_dense_.resize(settings::max_entities);
+        m_sparse_.resize(settings::max_entities);
+        m_items_.resize(settings::max_entities);
     }
-    ~SparseSet() override {
+    ~sparse_set() override
+    {
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
     }
 
-    void addItem(unsigned short ID, T componentData) {
+    void add_item(const unsigned short id, T component_data)
+    {
         assert(ID < Settings::MAX_ENTITIES && "ID is out of range.");
         assert(m_Size < Settings::MAX_ENTITIES && "Exceeding maximum entities.");
-        if (ID < Settings::MAX_ENTITIES) {
-            m_Dense[m_Size] = ID;
-            m_Items[m_Size] = std::move(componentData);
-            m_Sparse[ID] = m_Size;
-            ++m_Size;
+        if (id < settings::max_entities)
+        {
+            m_dense_[m_size_] = id;
+            m_items_[m_size_] = std::move(component_data);
+            m_sparse_[id] = m_size_;
+            ++m_size_;
         }
     }
 
-    void removeItem(unsigned short ID) override {
+    void remove_item(const unsigned short id) override
+    {
         assert(ID < Settings::MAX_ENTITIES && "ID is out of range.");
         assert(m_Size > 0 && "Sparse set is empty, cannot remove item.");
-        if (m_Size > 0 && ID < Settings::MAX_ENTITIES) {
-            auto lastID = m_Dense[m_Size - 1];
-            auto indexToRemove = m_Sparse[ID];
-            m_Dense[indexToRemove] = lastID;
-            m_Items[indexToRemove] = std::move(m_Items[m_Size - 1]);
-            m_Sparse[lastID] = indexToRemove;
-            --m_Size;
+        if (m_size_ > 0 && id < settings::max_entities)
+        {
+            const auto last_id = m_dense_[m_size_ - 1];
+            auto index_to_remove = m_sparse_[id];
+            m_dense_[index_to_remove] = last_id;
+            m_items_[index_to_remove] = std::move(m_items_[m_size_ - 1]);
+            m_sparse_[last_id] = index_to_remove;
+            --m_size_;
         }
     }
 
-    [[nodiscard]] bool hasItem(unsigned short ID) const override {
-        return ID < Settings::MAX_ENTITIES && m_Sparse[ID] < m_Size && m_Dense[m_Sparse[ID]] == ID;
+    [[nodiscard]] bool has_item(const unsigned short id) const override
+    {
+        return id < settings::max_entities && m_sparse_[id] < m_size_ && m_dense_[m_sparse_[id]] == id;
     }
 
-    T& getItem(unsigned short ID) {
+    T &get_item(const unsigned short id)
+    {
         assert(ID < Settings::MAX_ENTITIES && "ID is out of range.");
         assert(m_Sparse[ID] < m_Size && "ID does not exist in the sparse set.");
-        return m_Items[m_Sparse[ID]];
+        return m_items_[m_sparse_[id]];
     }
 
-    [[nodiscard]] std::size_t getSize() const override {
-        return m_Size;
+    [[nodiscard]] std::size_t get_size() const override
+    {
+        return m_size_;
     }
 
-    [[nodiscard]] std::vector<unsigned short> getIDS() const override {
-        auto ids = std::vector<unsigned short>(m_Dense.begin(), m_Dense.begin() + m_Size);
+    [[nodiscard]] std::vector<unsigned short> get_ids() const override
+    {
+        auto ids = std::vector<unsigned short>(m_dense_.begin(), m_dense_.begin() + m_size_);
         std::sort(ids.begin(), ids.end());
         return ids;
     }
 
-    [[nodiscard]] std::vector<unsigned short> getIntersection(const std::vector<unsigned short>& other) const override {
-        auto IDS = getIDS();
+    [[nodiscard]] std::vector<unsigned short> get_intersection(const std::vector<unsigned short> &other) const override
+    {
+        auto ids = get_ids();
         std::vector<unsigned short> intersection;
-        intersection.reserve(std::min(IDS.size(), other.size()));
-        std::set_intersection(IDS.begin(), IDS.end(), other.begin(), other.end(), std::back_inserter(intersection));
+        intersection.reserve(std::min(ids.size(), other.size()));
+        std::set_intersection(ids.begin(), ids.end(), other.begin(), other.end(), std::back_inserter(intersection));
         return intersection;
     }
 
-private:
-    std::vector<unsigned short> m_Dense;
-    std::vector<unsigned short> m_Sparse;
-    std::vector<T> m_Items;
-    unsigned short m_Size = 0;
+  private:
+    std::vector<unsigned short> m_dense_;
+    std::vector<unsigned short> m_sparse_;
+    std::vector<T> m_items_;
+    unsigned short m_size_ = 0;
 };

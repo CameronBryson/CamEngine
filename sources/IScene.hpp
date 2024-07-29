@@ -1,12 +1,12 @@
 #pragma once
 #include "Registry.hpp"
-class IScene{
-public:
-    virtual ~IScene() = default;
-    virtual void Init()=0;
-    virtual void Update(float dt)=0;
-    virtual void Render() = 0;
-    virtual void Shutdown()=0;
-    virtual Registry& GetRegistry() = 0;
+class i_scene
+{
+  public:
+    virtual ~i_scene() = default;
+    virtual void init() = 0;
+    virtual void update(float dt) = 0;
+    virtual void render() = 0;
+    virtual void shutdown() = 0;
+    virtual registry &get_registry() = 0;
 };
-

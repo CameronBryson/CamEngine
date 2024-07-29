@@ -1,7 +1,5 @@
 #pragma once
 
-
-class SGravity {
-
+class s_gravity
+{
 };
-
