@@ -72,12 +72,19 @@ public:
     template<typename T>
     SparseSet<T>& getSparseSet() const;
 
-private:
+    template<typename T>
+    [[nodiscard]] bool hasSparseSet() const;
+
+    private:
     std::vector<unsigned short> m_freeIDs;
     std::vector<unsigned short> m_Entities;
     std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> m_SparseSets;
     std::queue<std::unique_ptr<ICommand>> commandQueue;
 };
+template<typename T>
+bool Registry::hasSparseSet() const {
+    return m_SparseSets.find(std::type_index(typeid(T))) != m_SparseSets.end();
+}
 
 template<class T>
 void Registry::createSparseSet() {
@@ -138,5 +145,5 @@ void Registry::removeComponent(unsigned short ID) {
     assert(m_Entities.end() != std::find(m_Entities.begin(), m_Entities.end(), ID) && "Entity does not exist.");
     assert(hasComponent<T>(ID) && "Entity does not have component.");
     auto& set = getSparseSet<T>();
-    commandQueue.push(std::make_unique<RemoveComponentCommand>(set, ID));
+    commandQueue.push(std::make_unique<RemoveComponentCommand<T>>(set, ID));
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include <Registry.hpp>
-#include <Components.hpp>
+#include "Registry.hpp"
+#include "Components.hpp"
 
 
 class Factory {

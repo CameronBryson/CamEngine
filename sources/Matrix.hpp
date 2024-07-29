@@ -1,145 +1,179 @@
 #pragma once
-class Mat2 {
+class Mat {
 public:
-    float m[2][2] = {};
+    float m[4][4] = {0};
 
-    Mat2() = default;
-    Mat2(float a, float b, float c, float d) : m{{a, b}, {c, d}} {}
-
-    Mat2 operator+(const Mat2& other) const {
-        return {{m[0][0] + other.m[0][0], m[0][1] + other.m[0][1]},
-                {m[1][0] + other.m[1][0], m[1][1] + other.m[1][1]}};
+    Mat() = default;
+    Mat(float m00, float m01, float m02, float m03,
+        float m10, float m11, float m12, float m13,
+        float m20, float m21, float m22, float m23,
+        float m30, float m31, float m32, float m33) {
+        m[0][0] = m00; m[0][1] = m01; m[0][2] = m02; m[0][3] = m03;
+        m[1][0] = m10; m[1][1] = m11; m[1][2] = m12; m[1][3] = m13;
+        m[2][0] = m20; m[2][1] = m21; m[2][2] = m22; m[2][3] = m23;
+        m[3][0] = m30; m[3][1] = m31; m[3][2] = m32; m[3][3] = m33;
     }
 
-    Mat2 operator-(const Mat2& other) const {
-        return {{m[0][0] - other.m[0][0], m[0][1] - other.m[0][1]},
-                {m[1][0] - other.m[1][0], m[1][1] - other.m[1][1]}};
+    Mat operator+(const Mat& other) const {
+        return {
+                m[0][0] + other.m[0][0], m[0][1] + other.m[0][1], m[0][2] + other.m[0][2], m[0][3] + other.m[0][3],
+                m[1][0] + other.m[1][0], m[1][1] + other.m[1][1], m[1][2] + other.m[1][2], m[1][3] + other.m[1][3],
+                m[2][0] + other.m[2][0], m[2][1] + other.m[2][1], m[2][2] + other.m[2][2], m[2][3] + other.m[2][3],
+                m[3][0] + other.m[3][0], m[3][1] + other.m[3][1], m[3][2] + other.m[3][2], m[3][3] + other.m[3][3]
+        };
     }
 
-    Mat2 operator*(const Mat2& other) const {
-        Mat2 result;
-        result.m[0][0] = m[0][0] * other.m[0][0] + m[0][1] * other.m[1][0];
-        result.m[0][1] = m[0][0] * other.m[0][1] + m[0][1] * other.m[1][1];
-        result.m[1][0] = m[1][0] * other.m[0][0] + m[1][1] * other.m[1][0];
-        result.m[1][1] = m[1][0] * other.m[0][1] + m[1][1] * other.m[1][1];
-        return result;
+    Mat operator-(const Mat& other) const {
+        return {
+                m[0][0] - other.m[0][0], m[0][1] - other.m[0][1], m[0][2] - other.m[0][2], m[0][3] - other.m[0][3],
+                m[1][0] - other.m[1][0], m[1][1] - other.m[1][1], m[1][2] - other.m[1][2], m[1][3] - other.m[1][3],
+                m[2][0] - other.m[2][0], m[2][1] - other.m[2][1], m[2][2] - other.m[2][2], m[2][3] - other.m[2][3],
+                m[3][0] - other.m[3][0], m[3][1] - other.m[3][1], m[3][2] - other.m[3][2], m[3][3] - other.m[3][3]
+        };
     }
 
-    Mat2& operator+=(const Mat2& other) {
-        m[0][0] += other.m[0][0]; m[0][1] += other.m[0][1];
-        m[1][0] += other.m[1][0]; m[1][1] += other.m[1][1];
-        return *this;
-    }
-
-    Mat2& operator-=(const Mat2& other) {
-        m[0][0] -= other.m[0][0]; m[0][1] -= other.m[0][1];
-        m[1][0] -= other.m[1][0]; m[1][1] -= other.m[1][1];
-        return *this;
-    }
-
-    Mat2& operator*=(const Mat2& other) {
-        *this = *this * other;
-        return *this;
-    }
-};
-
-class Mat3 {
-public:
-    float m[3][3] = {};
-
-    Mat3() = default;
-    Mat3(float a, float b, float c, float d, float e, float f, float g, float h, float i)
-        : m{{a, b, c}, {d, e, f}, {g, h, i}} {}
-
-    Mat3 operator+(const Mat3& other) const {
-        return {{m[0][0] + other.m[0][0], m[0][1] + other.m[0][1], m[0][2] + other.m[0][2]},
-                {m[1][0] + other.m[1][0], m[1][1] + other.m[1][1], m[1][2] + other.m[1][2]},
-                {m[2][0] + other.m[2][0], m[2][1] + other.m[2][1], m[2][2] + other.m[2][2]}};
-    }
-
-    Mat3 operator-(const Mat3& other) const {
-        return {{m[0][0] - other.m[0][0], m[0][1] - other.m[0][1], m[0][2] - other.m[0][2]},
-                {m[1][0] - other.m[1][0], m[1][1] - other.m[1][1], m[1][2] - other.m[1][2]},
-                {m[2][0] - other.m[2][0], m[2][1] - other.m[2][1], m[2][2] - other.m[2][2]}};
-    }
-
-    Mat3 operator*(const Mat3& other) const {
-        Mat3 result;
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 3; ++j)
-                for (int k = 0; k < 3; ++k)
+    Mat operator*(const Mat& other) const {
+        Mat result;
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                result.m[i][j] = 0;
+                for (int k = 0; k < 4; ++k) {
                     result.m[i][j] += m[i][k] * other.m[k][j];
+                }
+            }
+        }
         return result;
     }
 
-    Mat3& operator+=(const Mat3& other) {
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 3; ++j)
+    Mat& operator+=(const Mat& other) {
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
                 m[i][j] += other.m[i][j];
+            }
+        }
         return *this;
     }
 
-    Mat3& operator-=(const Mat3& other) {
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 3; ++j)
+    Mat& operator-=(const Mat& other) {
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
                 m[i][j] -= other.m[i][j];
+            }
+        }
         return *this;
     }
 
-    Mat3& operator*=(const Mat3& other) {
+    Mat& operator*=(const Mat& other) {
         *this = *this * other;
         return *this;
     }
-};
 
-class Mat4 {
-public:
-    float m[4][4] = {};
-
-    Mat4() = default;
-    Mat4(float a, float b, float c, float d, float e, float f, float g, float h,
-              float i, float j, float k, float l, float m, float n, float o, float p)
-        : m{{a, b, c, d}, {e, f, g, h}, {i, j, k, l}, {m, n, o, p}} {}
-
-    Mat4 operator+(const Mat4& other) const {
-        return {{m[0][0] + other.m[0][0], m[0][1] + other.m[0][1], m[0][2] + other.m[0][2], m[0][3] + other.m[0][3]},
-                {m[1][0] + other.m[1][0], m[1][1] + other.m[1][1], m[1][2] + other.m[1][2], m[1][3] + other.m[1][3]},
-                {m[2][0] + other.m[2][0], m[2][1] + other.m[2][1], m[2][2] + other.m[2][2], m[2][3] + other.m[2][3]},
-                {m[3][0] + other.m[3][0], m[3][1] + other.m[3][1], m[3][2] + other.m[3][2], m[3][3] + other.m[3][3]}};
-    }
-
-    Mat4 operator-(const Mat4& other) const {
-        return {{m[0][0] - other.m[0][0], m[0][1] - other.m[0][1], m[0][2] - other.m[0][2], m[0][3] - other.m[0][3]},
-                {m[1][0] - other.m[1][0], m[1][1] - other.m[1][1], m[1][2] - other.m[1][2], m[1][3] - other.m[1][3]},
-                {m[2][0] - other.m[2][0], m[2][1] - other.m[2][1], m[2][2] - other.m[2][2], m[2][3] - other.m[2][3]},
-                {m[3][0] - other.m[3][0], m[3][1] - other.m[3][1], m[3][2] - other.m[3][2], m[3][3] - other.m[3][3]}};
-    }
-
-    Mat4 operator*(const Mat4& other) const {
-        Mat4 result;
-        for (int i = 0; i < 4; ++i)
-            for (int j = 0; j < 4; ++j)
-                for (int k = 0; k < 4; ++k)
-                    result.m[i][j] += m[i][k] * other.m[k][j];
+    Mat operator*(float scalar) const {
+        Mat result;
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                result.m[i][j] = m[i][j] * scalar;
+            }
+        }
         return result;
     }
 
-    Mat4& operator+=(const Mat4& other) {
-        for (int i = 0; i < 4; ++i)
-            for (int j = 0; j < 4; ++j)
-                m[i][j] += other.m[i][j];
+    Mat& operator*=(float scalar) {
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                m[i][j] *= scalar;
+            }
+        }
         return *this;
     }
-
-    Mat4& operator-=(const Mat4& other) {
-        for (int i = 0; i < 4; ++i)
-            for (int j = 0; j < 4; ++j)
-                m[i][j] -= other.m[i][j];
-        return *this;
+    bool operator==(const Mat& other) const {
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                if (m[i][j] != other.m[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
-    Mat4& operator*=(const Mat4& other) {
-        *this = *this * other;
-        return *this;
+    bool operator!=(const Mat& other) const {
+        return !(*this == other);
+    }
+
+    float determinant() const {
+        // Calculate the determinant of the 4x4 matrix
+        float det = 0.0f;
+        for (int i = 0; i < 4; ++i) {
+            Mat subMat;
+            for (int j = 1; j < 4; ++j) {
+                int subCol = 0;
+                for (int k = 0; k < 4; ++k) {
+                    if (k == i) continue;
+                    subMat.m[j-1][subCol] = m[j][k];
+                    ++subCol;
+                }
+            }
+            det += (i % 2 == 0 ? 1 : -1) * m[0][i] * subMat.determinant3x3();
+        }
+        return det;
+    }
+
+    Mat transpose() const {
+        Mat result;
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                result.m[i][j] = m[j][i];
+            }
+        }
+        return result;
+    }
+
+    Mat inverse() const {
+        float det = determinant();
+        assert(det != 0 && "Matrix is not invertible.");
+        Mat adjugate;
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                Mat subMat;
+                int subRow = 0;
+                for (int k = 0; k < 4; ++k) {
+                    if (k == i) continue;
+                    int subCol = 0;
+                    for (int l = 0; l < 4; ++l) {
+                        if (l == j) continue;
+                        subMat.m[subRow][subCol] = m[k][l];
+                        ++subCol;
+                    }
+                    ++subRow;
+                }
+                adjugate.m[j][i] = ((i + j) % 2 == 0 ? 1 : -1) * subMat.determinant3x3();
+            }
+        }
+        return adjugate * (1.0f / det);
+    }
+
+    bool isIdentity() const {
+        Mat identity = {
+                1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 1.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 1.0f, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+        };
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                if (m[i][j] != identity.m[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+private:
+    float determinant3x3() const {
+        return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+               - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+               + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
     }
 };
