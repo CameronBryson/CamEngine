@@ -23,9 +23,9 @@ void s_player::update(const registry &registry, const float dt)
         if (a)
             acceleration.x -= movespeed * dt;
         if (w)
-            acceleration.z -= movespeed * dt;
+            acceleration.y -= movespeed * dt;
         if (s)
-            acceleration.z += movespeed * dt;
+            acceleration.y += movespeed * dt;
     }
 }
 
