@@ -30,10 +30,10 @@ void s_render::update(const registry &registry, const camera &camera)
         auto &[radius] = spheres.get_item(id);
         auto &[position, rotation, scale] = positions.get_item(id); // Assuming CTransform is also present
         //sphere stuff here
-        for (auto &quad_face : faces::get_sphere_faces(radius,10,10))
+        for (auto &sphere_face : faces::get_sphere_faces(radius,10,10))
         {
-            update_face(quad_face, scale, rotation, position);
-            draw_queue.push_back(quad_face);
+            update_face(sphere_face, scale, rotation, position);
+            draw_queue.push_back(sphere_face);
         }
     }
 
@@ -119,8 +119,8 @@ void s_render::update_face(std::vector<vec3> &face, const vec3 &scale, const qua
 {
     for (auto &vertex : face)
     {
-        vertex*=scale;
+        vertex *= scale;
         vertex = rotation * vertex;
-        vertex+=translation;
+        vertex += translation;
     }
 }
