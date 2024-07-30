@@ -30,6 +30,11 @@ void s_render::update(const registry &registry, const camera &camera)
         auto &[radius] = spheres.get_item(id);
         auto &[position, rotation, scale] = positions.get_item(id); // Assuming CTransform is also present
         //sphere stuff here
+        for (auto &quad_face : faces::get_sphere_faces(radius,10,10))
+        {
+            update_face(quad_face, scale, rotation, position);
+            draw_queue.push_back(quad_face);
+        }
     }
 
     // Draw CAABB
@@ -99,20 +104,11 @@ vec2 s_render::project(const vec3 &vertex, const camera &camera)
         MathUtil::dot_product(relative_vertex, camera_direction)
     };
 
-    vec2 projected_vertex;
-    float aspect_ratio = static_cast<float>(GetScreenWidth()) / static_cast<float>(GetScreenHeight());
-    float scale_factor = 1.0f / std::tan(MathUtil::to_radians(camera.fov) / 2.0f);
-
-    if (transformed_vertex.z != 0)
-    {
-        projected_vertex.x = (transformed_vertex.x * scale_factor / transformed_vertex.z) * aspect_ratio;
-        projected_vertex.y = (transformed_vertex.y * scale_factor / transformed_vertex.z);
-    }
-    else
-    {
-        projected_vertex.x = transformed_vertex.x * scale_factor * aspect_ratio;
-        projected_vertex.y = transformed_vertex.y * scale_factor;
-    }
+    float aspect_ratio = static_cast<float>(GetScreenWidth()) / GetScreenHeight();
+    vec2 projected_vertex = {
+        transformed_vertex.x / transformed_vertex.z,
+        (transformed_vertex.y / transformed_vertex.z) * aspect_ratio
+    };
 
     projected_vertex.x = (projected_vertex.x + 1.0f) * 0.5f * GetScreenWidth();
     projected_vertex.y = (1.0f - projected_vertex.y) * 0.5f * GetScreenHeight();

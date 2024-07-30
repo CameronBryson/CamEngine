@@ -8,9 +8,9 @@ static constexpr float camera_rotationspeed = 500.0f;
 
 void s_camera::update(const registry &registry, const float dt, camera &camera)
 {
-    vec3 forward = (camera.target - camera.position).normalized();
-    vec3 right = MathUtil::cross_product(forward, camera.up).normalized();
-    vec3 up = camera.up;
+    const vec3 forward = (camera.target - camera.position).normalized();
+    const vec3 right = MathUtil::cross_product(forward, camera.up).normalized();
+    const vec3 up = camera.up;
 
     // Move camera
     if (IsKeyDown(KEY_I))

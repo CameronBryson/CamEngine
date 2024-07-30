@@ -48,12 +48,12 @@ void play_scene::init()
     // m_registry_.add_component<c_enemy>(enemy, c_enemy());
     // m_registry_.add_component<c_aabb>(enemy, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
     //
-    // const auto enemy2 = m_registry_.create_entity();
-    // m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {-5.0f, 0.0f, 0.0f}});
-    // m_registry_.add_component<c_rigid_body>(enemy2, c_rigid_body{.drag = 0.9f});
-    // m_registry_.add_component<c_velocity>(enemy2, c_velocity());
-    // m_registry_.add_component<c_enemy>(enemy2, c_enemy());
-    // m_registry_.add_component<c_sphere>(enemy2, c_sphere{.radius = 1.0f});
+    const auto enemy2 = m_registry_.create_entity();
+    m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {-5.0f, 0.0f, 0.0f}});
+    m_registry_.add_component<c_rigid_body>(enemy2, c_rigid_body{.drag = 0.9f});
+    m_registry_.add_component<c_velocity>(enemy2, c_velocity());
+    m_registry_.add_component<c_enemy>(enemy2, c_enemy());
+    m_registry_.add_component<c_sphere>(enemy2, c_sphere{.radius = 10.0f});
 }
 
 void play_scene::update(const float dt)
