@@ -93,7 +93,10 @@ class MathUtil
     {
         return v1.x * v2.x + v1.y * v2.y;
     }
-
+    static float dot_product(const vec3 &v1, const vec3 &v2)
+    {
+        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+    }
     static vec2 cross_product(const vec2 &v1, const vec2 &v2)
     {
         return {v1.y * v2.x - v1.x * v2.y, v1.x * v2.y - v1.y * v2.x};

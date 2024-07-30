@@ -1,5 +1,8 @@
 #pragma once
+#include "Vectors.hpp"
 #include <cmath>
+
+#include <MathUtil.hpp>
 
 class quat
 {
@@ -87,5 +90,12 @@ class quat
     {
         const float n = norm();
         return n > 0 ? conjugate() * (1.0f / (n * n)) : quat();
+    }
+
+    vec3 operator*(const vec3 &v) const
+    {
+        vec3 u(x, y, z);
+        float s = w;
+        return u * 2.0f * MathUtil::dot_product(u, v) + v * (s * s - MathUtil::dot_product(u, u)) + MathUtil::cross_product(u, v) * 2.0f * s;
     }
 };

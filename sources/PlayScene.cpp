@@ -3,10 +3,11 @@
 #include "Components.hpp"
 #include "Factory.hpp"
 #include "Registry.hpp"
+#include "SCamera.hpp"
 #include "SCollision.hpp"
+#include "Systems.hpp"
 #include "Timer.hpp"
 #include "raylib.h"
-#include "Systems.hpp"
 play_scene::play_scene()
 {
     printf("PlayScene created\n");
@@ -17,9 +18,10 @@ play_scene::~play_scene()
 }
 void play_scene::init()
 {
-    m_camera_.from = {0.0f, 10.0f, 10.0f};
-    m_camera_.to= {0.0f, 0.0f, 0.0f};
+    m_camera_.position = {0.0f, 50.0f, -50.0f};
+    m_camera_.target= {0.0f, 0.0f, 0.0f};
     m_camera_.up = {0.0f, 1.0f, 0.0f};
+    m_camera_.fov = 60.0f;
     init_sparse_sets();
 
     s_render::init();
@@ -57,6 +59,7 @@ void play_scene::init()
 void play_scene::update(const float dt)
 {
     timer update_timer(stats::stat_type::UPDATE);
+    s_camera::update(m_registry_, dt,  m_camera_);
     s_player::update(m_registry_, dt);
     s_physics::update(m_registry_, dt);
     s_collision::update(m_registry_);

@@ -1,7 +1,7 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
-#include "Quaternion.hpp"
 #include "Vectors.hpp"
+#include "Quaternion.hpp"
 
 // Component for entities affected by gravity
 struct c_gravity

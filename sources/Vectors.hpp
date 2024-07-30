@@ -2,25 +2,38 @@
 #include <cmath>
 class vec2
 {
-  public:
+public:
     float x = 0, y = 0;
 
     vec2() = default;
-    vec2(const float x, const float y) : x(x), y(y)
-    {
-    }
+    vec2(const float x, const float y) : x(x), y(y) {}
 
     vec2 operator+(const vec2 &other) const
     {
         return {x + other.x, y + other.y};
     }
+
     vec2 operator-(const vec2 &other) const
     {
         return {x - other.x, y - other.y};
     }
+
     vec2 operator*(const float scalar) const
     {
         return {x * scalar, y * scalar};
+    }
+    vec2 operator*(const vec2 &other) const
+    {
+        return {x * other.x, y * other.y};
+    }
+    vec2 operator/(const float scalar) const
+    {
+        return {x / scalar, y / scalar};
+    }
+
+    vec2 operator/(const vec2 &other) const
+    {
+        return {x / other.x, y / other.y};
     }
 
     vec2 &operator+=(const vec2 &other)
@@ -29,18 +42,43 @@ class vec2
         y += other.y;
         return *this;
     }
+
     vec2 &operator-=(const vec2 &other)
     {
         x -= other.x;
         y -= other.y;
         return *this;
     }
+
     vec2 &operator*=(const float scalar)
     {
         x *= scalar;
         y *= scalar;
         return *this;
     }
+
+    vec2 &operator*=(const vec2 &other)
+    {
+        x *= other.x;
+        y *= other.y;
+        return *this;
+    }
+
+    vec2 &operator/=(const float scalar)
+    {
+        x /= scalar;
+        y /= scalar;
+        return *this;
+    }
+
+    vec2 &operator/=(const vec2 &other)
+    {
+        x /= other.x;
+        y /= other.y;
+        return *this;
+    }
+
+
 
     [[nodiscard]] float length() const
     {
@@ -79,6 +117,19 @@ class vec3
     {
         return {x * scalar, y * scalar, z * scalar};
     }
+    vec3 operator*(const vec3 &other) const
+    {
+        return {x * other.x, y * other.y, z * other.z};
+    }
+    vec3 operator/(const float scalar) const
+    {
+        return {x / scalar, y / scalar, z / scalar};
+    }
+
+    vec3 operator/(const vec3 &other) const
+    {
+        return {x / other.x, y / other.y, z / other.z};
+    }
 
     vec3 &operator+=(const vec3 &other)
     {
@@ -101,6 +152,28 @@ class vec3
         z *= scalar;
         return *this;
     }
+    vec3 &operator*=(const vec3 &other)
+    {
+        x *= other.x;
+        y *= other.y;
+        z *= other.z;
+        return *this;
+    }
+    vec3 &operator/=(const float scalar)
+    {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
+        return *this;
+    }
+
+    vec3 &operator/=(const vec3 &other)
+    {
+        x /= other.x;
+        y /= other.y;
+        z /= other.z;
+        return *this;
+    }
 
     [[nodiscard]] float length() const
     {
@@ -119,25 +192,40 @@ class vec3
 
 class vec4
 {
-  public:
+public:
     float x = 0, y = 0, z = 0, w = 0;
 
     vec4() = default;
-    vec4(const float x, const float y, const float z, const float w) : x(x), y(y), z(z), w(w)
-    {
-    }
+    vec4(const float x, const float y, const float z, const float w) : x(x), y(y), z(z), w(w) {}
 
     vec4 operator+(const vec4 &other) const
     {
         return {x + other.x, y + other.y, z + other.z, w + other.w};
     }
+
     vec4 operator-(const vec4 &other) const
     {
         return {x - other.x, y - other.y, z - other.z, w - other.w};
     }
+
     vec4 operator*(const float scalar) const
     {
         return {x * scalar, y * scalar, z * scalar, w * scalar};
+    }
+
+    vec4 operator*(const vec4 &other) const
+    {
+        return {x * other.x, y * other.y, z * other.z, w * other.w};
+    }
+
+    vec4 operator/(const float scalar) const
+    {
+        return {x / scalar, y / scalar, z / scalar, w / scalar};
+    }
+
+    vec4 operator/(const vec4 &other) const
+    {
+        return {x / other.x, y / other.y, z / other.z, w / other.w};
     }
 
     vec4 &operator+=(const vec4 &other)
@@ -148,6 +236,7 @@ class vec4
         w += other.w;
         return *this;
     }
+
     vec4 &operator-=(const vec4 &other)
     {
         x -= other.x;
@@ -156,12 +245,40 @@ class vec4
         w -= other.w;
         return *this;
     }
+
     vec4 &operator*=(const float scalar)
     {
         x *= scalar;
         y *= scalar;
         z *= scalar;
         w *= scalar;
+        return *this;
+    }
+
+    vec4 &operator*=(const vec4 &other)
+    {
+        x *= other.x;
+        y *= other.y;
+        z *= other.z;
+        w *= other.w;
+        return *this;
+    }
+
+    vec4 &operator/=(const float scalar)
+    {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
+        w /= scalar;
+        return *this;
+    }
+
+    vec4 &operator/=(const vec4 &other)
+    {
+        x /= other.x;
+        y /= other.y;
+        z /= other.z;
+        w /= other.w;
         return *this;
     }
 

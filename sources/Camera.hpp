@@ -8,9 +8,10 @@
 
 struct camera
 {
-    vec3 from;
-    vec3 to;
+    vec3 position;
+    vec3 target;
     vec3 up;
+    float fov;
 };
 
 #endif // CAMERA_HPP
