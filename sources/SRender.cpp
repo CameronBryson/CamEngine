@@ -15,9 +15,9 @@ void s_render::init()
 
 void s_render::update(const registry &registry, const camera &camera)
 {
-    const mat view_matrix = camera.get_view_matrix();
-    const mat projection_matrix = camera.get_projection_matrix();
-    std::vector<std::vector<vec3>> draw_queue;
+    const mat combined_matrix = camera.get_projection_matrix() * camera.get_view_matrix();
+    std::vector<std::vector<vec3>> project_queue;
+    std::vector<std::vector<vec2>> edge_queue;
 
     auto &positions = registry.get_sparse_set<c_transform>();
 
@@ -32,7 +32,7 @@ void s_render::update(const registry &registry, const camera &camera)
         for (auto &sphere_face : faces::get_sphere_faces(radius, 10, 10))
         {
             update_face(sphere_face, matrix);
-            draw_queue.push_back(sphere_face);
+            project_queue.push_back(sphere_face);
         }
     }
 
@@ -46,15 +46,25 @@ void s_render::update(const registry &registry, const camera &camera)
         for (auto &quad_face : faces::get_quad_faces(extents))
         {
             update_face(quad_face, matrix);
-            draw_queue.push_back(quad_face);
+            project_queue.push_back(quad_face);
         }
     }
-
+    for (const auto& face : project_queue)
+    {
+        for (size_t i = 0; i < face.size(); ++i)
+        {
+            const vec3 &start = face[i];
+            const vec3 &end = face[(i + 1) % face.size()];
+            vec2 projected_start = project(start, combined_matrix);
+            vec2 projected_end = project(end, combined_matrix);
+            edge_queue.push_back({projected_start, projected_end});
+        }
+    }
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    for (const auto &face : draw_queue)
+    for (const auto &edge : edge_queue)
     {
-        draw_face(face, view_matrix, projection_matrix);
+        DrawLine(edge[0].x, edge[0].y, edge[1].x, edge[1].y, RED);
     }
     draw_statistics();
     EndDrawing();
@@ -75,21 +85,6 @@ void s_render::draw_statistics()
     DrawText(("Benchmark: " + std::to_string(stats::timer_vector[stats::stat_type::BENCHMARK].count()) + " MS").c_str(),
              50, 200, 50, {255, 0, 0, 255});
 }
-void s_render::draw_face(const std::vector<vec3> &face, const mat &view_matrix, const mat &projection_matrix)
-{
-    for (size_t i = 0; i < face.size(); ++i)
-    {
-        const vec3 &start = face[i];
-        const vec3 &end = face[(i + 1) % face.size()];
-        draw_edge(start, end, view_matrix, projection_matrix);
-    }
-}
-void s_render::draw_edge(const vec3 &start, const vec3 &end, const mat &view_matrix, const mat &projection_matrix)
-{
-    vec2 projected_start = project(start, view_matrix, projection_matrix);
-    vec2 projected_end = project(end, view_matrix, projection_matrix);
-    DrawLine(projected_start.x, projected_start.y, projected_end.x, projected_end.y, RED);
-}
 void s_render::update_face(std::vector<vec3> &face, const mat &matrix)
 {
     for (auto &vertex : face)
@@ -98,13 +93,11 @@ void s_render::update_face(std::vector<vec3> &face, const mat &matrix)
     }
 }
 
-vec2 s_render::project(const vec3& vertex, const mat &view_matrix, const mat &projection_matrix)
+vec2 s_render::project(const vec3& vertex, const mat& matrix)
 {
-    // Transform the vertex to camera space
-    vec4 camera_space_vertex = view_matrix * vec4(vertex.x, vertex.y, vertex.z, 1.0f);
 
     // Transform the vertex to clip space
-    vec4 clip_space_vertex = projection_matrix * camera_space_vertex;
+    vec4 clip_space_vertex =  matrix * vec4(vertex.x, vertex.y, vertex.z, 1.0f);
 
     // Convert clip space coordinates to screen space coordinates
     int screen_width = GetScreenWidth();
