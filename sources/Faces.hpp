@@ -31,6 +31,9 @@ public:
         std::vector<vec3> vertices;
         std::vector<std::vector<vec3>> faces;
 
+        vertices.reserve((stacks + 1) * (sectors + 1));
+        faces.reserve(stacks * sectors * 2);
+
         // Generate vertices
         for (int i = 0; i <= stacks; ++i)
         {
