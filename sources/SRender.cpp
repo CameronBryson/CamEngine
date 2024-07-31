@@ -7,7 +7,6 @@
 
 #include "Stats.hpp"
 #include "Faces.hpp"
-#include "Quaternion.hpp"
 #include "MathUtil.hpp"
 void s_render::init()
 {
@@ -16,46 +15,46 @@ void s_render::init()
 
 void s_render::update(const registry &registry, const camera &camera)
 {
-
+    const mat view_matrix = camera.get_view_matrix();
+    const mat projection_matrix = camera.get_projection_matrix();
     std::vector<std::vector<vec3>> draw_queue;
-    // Draw CTransform (Cubes)
-    auto &positions = registry.get_sparse_set<c_transform>();
-    auto ids = registry.get_entity_ids<c_transform>();
 
-    // Draw CSphere
+    auto &positions = registry.get_sparse_set<c_transform>();
+
     auto &spheres = registry.get_sparse_set<c_sphere>();
-    ids = registry.get_entity_ids<c_sphere>();
+    auto ids = registry.get_entity_ids<c_sphere>();
+
     for (const auto id : ids)
     {
         auto &[radius] = spheres.get_item(id);
         auto &[position, rotation, scale] = positions.get_item(id); // Assuming CTransform is also present
-        //sphere stuff here
-        for (auto &sphere_face : faces::get_sphere_faces(radius,10,10))
+        mat matrix = mat::create_translation_matrix(position) * mat::create_rotation_matrix(rotation) * mat::create_scale_matrix(scale * 0.1f);
+        for (auto &sphere_face : faces::get_sphere_faces(radius, 10, 10))
         {
-            update_face(sphere_face, scale, rotation, position);
+            update_face(sphere_face, matrix);
             draw_queue.push_back(sphere_face);
         }
     }
 
-    // Draw CAABB
     auto &aabbs = registry.get_sparse_set<c_aabb>();
     ids = registry.get_entity_ids<c_aabb>();
     for (const auto id : ids)
     {
         auto &[extents] = aabbs.get_item(id);
         auto &[position, rotation, scale] = positions.get_item(id); // Assuming CTransform is also present
+        mat matrix = mat::create_translation_matrix(position) * mat::create_rotation_matrix(rotation) * mat::create_scale_matrix(scale * 0.1f);
         for (auto &quad_face : faces::get_quad_faces(extents))
         {
-            update_face(quad_face, scale, rotation, position);
+            update_face(quad_face, matrix);
             draw_queue.push_back(quad_face);
         }
-
     }
+
     BeginDrawing();
     ClearBackground(RAYWHITE);
     for (const auto &face : draw_queue)
     {
-        draw_face(face, camera);
+        draw_face(face, view_matrix, projection_matrix);
     }
     draw_statistics();
     EndDrawing();
@@ -76,51 +75,43 @@ void s_render::draw_statistics()
     DrawText(("Benchmark: " + std::to_string(stats::timer_vector[stats::stat_type::BENCHMARK].count()) + " MS").c_str(),
              50, 200, 50, {255, 0, 0, 255});
 }
-void s_render::draw_face(const std::vector<vec3> &face, const camera& camera)
+void s_render::draw_face(const std::vector<vec3> &face, const mat &view_matrix, const mat &projection_matrix)
 {
     for (size_t i = 0; i < face.size(); ++i)
     {
-        const auto start = face[i];
-        const auto end = face[(i + 1) % face.size()];
-        draw_edge({start.x, start.y, start.z}, {end.x, end.y, end.z}, camera);
+        const vec3 &start = face[i];
+        const vec3 &end = face[(i + 1) % face.size()];
+        draw_edge(start, end, view_matrix, projection_matrix);
     }
 }
-void s_render::draw_edge(const vec3 &start, const vec3 &end, const camera& camera)
+void s_render::draw_edge(const vec3 &start, const vec3 &end, const mat &view_matrix, const mat &projection_matrix)
 {
-    const vec2 start_projected = project(start, camera);
-    const vec2 end_projected = project(end, camera);
-    DrawLine(start_projected.x, start_projected.y, end_projected.x, end_projected.y, RED);
+    vec2 projected_start = project(start, view_matrix, projection_matrix);
+    vec2 projected_end = project(end, view_matrix, projection_matrix);
+    DrawLine(projected_start.x, projected_start.y, projected_end.x, projected_end.y, RED);
 }
-vec2 s_render::project(const vec3 &vertex, const camera &camera)
-{
-    vec3 camera_direction = (camera.target - camera.position).normalized();
-    vec3 camera_right = MathUtil::cross_product(camera.up, camera_direction).normalized();
-    vec3 camera_up = MathUtil::cross_product(camera_direction, camera_right);
-
-    vec3 relative_vertex = vertex - camera.position;
-    vec3 transformed_vertex = {
-        MathUtil::dot_product(relative_vertex, camera_right),
-        MathUtil::dot_product(relative_vertex, camera_up),
-        MathUtil::dot_product(relative_vertex, camera_direction)
-    };
-
-    float aspect_ratio = static_cast<float>(GetScreenWidth()) / GetScreenHeight();
-    vec2 projected_vertex = {
-        transformed_vertex.x / transformed_vertex.z,
-        (transformed_vertex.y / transformed_vertex.z) * aspect_ratio
-    };
-
-    projected_vertex.x = (projected_vertex.x + 1.0f) * 0.5f * GetScreenWidth();
-    projected_vertex.y = (1.0f - projected_vertex.y) * 0.5f * GetScreenHeight();
-
-    return projected_vertex;
-}
-void s_render::update_face(std::vector<vec3> &face, const vec3 &scale, const quat &rotation, const vec3 &translation)
+void s_render::update_face(std::vector<vec3> &face, const mat &matrix)
 {
     for (auto &vertex : face)
     {
-        vertex *= scale;
-        vertex = rotation * vertex;
-        vertex += translation;
+        vertex = matrix * vertex;
     }
+}
+
+vec2 s_render::project(const vec3& vertex, const mat &view_matrix, const mat &projection_matrix)
+{
+    // Transform the vertex to camera space
+    vec4 camera_space_vertex = view_matrix * vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+
+    // Transform the vertex to clip space
+    vec4 clip_space_vertex = projection_matrix * camera_space_vertex;
+
+    // Convert clip space coordinates to screen space coordinates
+    int screen_width = GetScreenWidth();
+    int screen_height = GetScreenHeight();
+    vec2 screen_space = vec2(
+        (clip_space_vertex.x + 1.0f) * 0.5f * screen_width,
+        (1.0f - clip_space_vertex.y) * 0.5f * screen_height
+    );
+    return screen_space;
 }

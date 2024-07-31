@@ -218,6 +218,7 @@ public:
         return {x * other.x, y * other.y, z * other.z, w * other.w};
     }
 
+
     vec4 operator/(const float scalar) const
     {
         return {x / scalar, y / scalar, z / scalar, w / scalar};

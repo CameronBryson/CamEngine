@@ -10,7 +10,7 @@
 
 class s_camera {
 public:
-    static void update(const registry &registry, const float dt, camera &camera);
+    static void update(const float dt, camera &camera);
 
 };
 

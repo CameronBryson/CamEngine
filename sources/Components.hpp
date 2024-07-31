@@ -1,7 +1,6 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
 #include "Vectors.hpp"
-#include "Quaternion.hpp"
 
 // Component for entities affected by gravity
 struct c_gravity
@@ -43,7 +42,7 @@ struct c_static_body
 struct c_transform
 {
     vec3 position = {0, 0, 0};
-    quat rotation = {1, 0, 0, 0};
+    vec3 rotation = {0, 0, 0};
     vec3 scale = {1, 1, 1};
 };
 

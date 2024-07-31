@@ -9,10 +9,10 @@ class factory
     {
         const auto id = registry.create_entity();
         registry.add_component<c_player>(id, c_player());
-        registry.add_component<c_transform>(id, c_transform{.position = {0,0,0}, .rotation = {1,1,1,1}, .scale = {1,1,1}});
+        registry.add_component<c_transform>(id, c_transform{.position = {0,0,0}, .rotation = {0,0,0}, .scale = {1,1,1}});
         registry.add_component<c_velocity>(id, c_velocity());
         registry.add_component<c_rigid_body>(id, c_rigid_body{.drag = 0.9f});
-        registry.add_component<c_aabb>(id, c_aabb{.extents = {5.0f, 5.0f, 5.0f}});
+        registry.add_component<c_aabb>(id, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
         return id;
     }
 };

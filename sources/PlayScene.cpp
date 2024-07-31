@@ -18,10 +18,7 @@ play_scene::~play_scene()
 }
 void play_scene::init()
 {
-    m_camera_.position = {0.0f, 50.0f, -50.0f};
-    m_camera_.target= {0.0f, 0.0f, 0.0f};
-    m_camera_.up = {0.0f, 1.0f, 0.0f};
-    m_camera_.fov = 60.0f;
+
     init_sparse_sets();
 
     s_render::init();
@@ -49,7 +46,7 @@ void play_scene::init()
     // m_registry_.add_component<c_aabb>(enemy, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
     //
     const auto enemy2 = m_registry_.create_entity();
-    m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {-5.0f, 0.0f, 0.0f}});
+    m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {2.0f, 0.0f, 0.0f}});
     m_registry_.add_component<c_rigid_body>(enemy2, c_rigid_body{.drag = 0.9f});
     m_registry_.add_component<c_velocity>(enemy2, c_velocity());
     m_registry_.add_component<c_enemy>(enemy2, c_enemy());
@@ -59,7 +56,7 @@ void play_scene::init()
 void play_scene::update(const float dt)
 {
     timer update_timer(stats::stat_type::UPDATE);
-    s_camera::update(m_registry_, dt,  m_camera_);
+    s_camera::update(dt,  m_camera_);
     s_player::update(m_registry_, dt);
     s_physics::update(m_registry_, dt);
     s_collision::update(m_registry_);

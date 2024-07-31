@@ -3,15 +3,14 @@
 
 #include <raylib.h>
 
-static constexpr float camera_movespeed = 50.0f;
-static constexpr float camera_rotationspeed = 500.0f;
+static constexpr float camera_movespeed = 500.0f;
+static constexpr float camera_rotationspeed = 50.0f;
 
-void s_camera::update(const registry &registry, const float dt, camera &camera)
+void s_camera::update(const float dt, camera &camera)
 {
     const vec3 forward = (camera.target - camera.position).normalized();
     const vec3 right = MathUtil::cross_product(forward, camera.up).normalized();
     const vec3 up = camera.up;
-
     // Move camera
     if (IsKeyDown(KEY_I))
         camera.position += forward * camera_movespeed * dt;
@@ -35,4 +34,7 @@ void s_camera::update(const registry &registry, const float dt, camera &camera)
         camera.target.x -= camera_rotationspeed * dt;
     if (IsKeyDown(KEY_RIGHT))
         camera.target.x += camera_rotationspeed * dt;
+
+    camera.update_projection_matrix();
+    camera.update_view_matrix();
 }
