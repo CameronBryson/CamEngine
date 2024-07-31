@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include "Vectors.hpp"
 
@@ -26,7 +27,7 @@ public:
                 { vertices[0], vertices[1], vertices[5], vertices[4] }  // Bottom
         };
     }
-    static std::vector<std::vector<vec3>> get_sphere_faces(const float radius, int stacks, int sectors)
+    static std::vector<std::vector<vec3>> get_sphere_faces(const float radius, const int stacks, const int sectors)
     {
         std::vector<vec3> vertices;
         std::vector<std::vector<vec3>> faces;
@@ -37,13 +38,13 @@ public:
         // Generate vertices
         for (int i = 0; i <= stacks; ++i)
         {
-            float stack_angle = MathUtil::pi / 2 - i * MathUtil::pi / stacks;
-            float xy = radius * cosf(stack_angle);
+            const float stack_angle = MathUtil::pi / 2 - i * MathUtil::pi / stacks;
+            const float xy = radius * cosf(stack_angle);
             float z = radius * sinf(stack_angle);
 
             for (int j = 0; j <= sectors; ++j)
             {
-                float sector_angle = j * 2 * MathUtil::pi / sectors;
+                const float sector_angle = j * 2 * MathUtil::pi / sectors;
                 vertices.push_back({xy * cosf(sector_angle), xy * sinf(sector_angle), z});
             }
         }

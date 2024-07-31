@@ -90,18 +90,18 @@ void s_render::project_faces(const std::deque<std::vector<vec3>> &project_queue,
     {
         for (size_t i = 0; i < face.size(); ++i)
         {
-            vec2 projected_start = project(face[i], combined_matrix);
-            vec2 projected_end = project(face[(i + 1) % face.size()], combined_matrix);
-            edge_queue.push_back({projected_start, projected_end});
+            vec2 start = project(face[i], combined_matrix);
+            vec2 end = project(face[(i + 1) % face.size()], combined_matrix);
+            edge_queue.push_back({start, end});
         }
     }
 }
 
 vec2 s_render::project(const vec3& vertex, const mat& matrix)
 {
-    vec4 clip_space_vertex = matrix * vec4(vertex.x, vertex.y, vertex.z, 1.0f);
-    int screen_width = GetScreenWidth();
-    int screen_height = GetScreenHeight();
+    const vec4 clip_space_vertex = matrix * vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+    const int screen_width = GetScreenWidth();
+    const int screen_height = GetScreenHeight();
     return vec2(
         (clip_space_vertex.x + 1.0f) * 0.5f * screen_width,
         (1.0f - clip_space_vertex.y) * 0.5f * screen_height

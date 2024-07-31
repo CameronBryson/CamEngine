@@ -39,7 +39,7 @@ TEST(CollisionTests, PointAABBIntersectionTest)
 
     vec3 point(0.5, 0.5, 0.5);
     ASSERT_TRUE(s_collision::intersects_point_in_aabb(point, registry.get_component<c_aabb>(entity),
-                                                  registry.get_component<c_transform>(entity)));
+                                                      registry.get_component<c_transform>(entity)));
 }
 
 TEST(CollisionTests, SphereAABBIntersectionTest)
@@ -124,7 +124,7 @@ TEST(CollisionTests, PointAABBNonIntersectionTest)
 
     vec3 point(2, 2, 2);
     ASSERT_FALSE(s_collision::intersects_point_in_aabb(point, registry.get_component<c_aabb>(entity),
-                                                   registry.get_component<c_transform>(entity)));
+                                                       registry.get_component<c_transform>(entity)));
 }
 
 TEST(CollisionTests, SphereAABBNonIntersectionTest)

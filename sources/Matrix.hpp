@@ -4,7 +4,7 @@
 class mat
 {
 public:
-    float m[4][4] = {0};
+    float m[4][4] = {};
 
     mat() = default;
     mat(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13,
@@ -33,7 +33,7 @@ public:
     }
     static mat create_rotation_matrix(const vec3& rotation) {
         // Rotation around the X-axis
-        mat rotation_x(
+        const mat rotation_x(
             1, 0, 0, 0,
             0, cos(rotation.x), -sin(rotation.x), 0,
             0, sin(rotation.x), cos(rotation.x), 0,
@@ -41,7 +41,7 @@ public:
         );
 
         // Rotation around the Y-axis
-        mat rotation_y(
+        const mat rotation_y(
             cos(rotation.y), 0, sin(rotation.y), 0,
             0, 1, 0, 0,
             -sin(rotation.y), 0, cos(rotation.y), 0,
@@ -49,7 +49,7 @@ public:
         );
 
         // Rotation around the Z-axis
-        mat rotation_z(
+        const mat rotation_z(
             cos(rotation.z), -sin(rotation.z), 0, 0,
             sin(rotation.z), cos(rotation.z), 0, 0,
             0, 0, 1, 0,

@@ -33,10 +33,10 @@ void play_scene::init()
         m_registry_.add_component<c_player>(entity, c_player());
         m_registry_.add_component<c_aabb>(entity, c_aabb());
     }
-    for (int i = 1; i < settings::max_entities - 3; i++)
-    {
-        m_registry_.delete_entity(i);
-    }
+    // for (int i = 1; i < settings::max_entities - 3; i++)
+    // {
+    //     m_registry_.delete_entity(i);
+    // }
     factory::create_player(m_registry_);
     // const auto enemy = m_registry_.create_entity();
     // m_registry_.add_component<c_transform>(enemy, c_transform{.position = {0.0f, 0.0f, 0.0f}});

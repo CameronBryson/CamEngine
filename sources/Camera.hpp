@@ -5,7 +5,7 @@
 
 class camera {
 public:
-    camera() : position(1.0f, 1.0f, 1.0f), target(0.0f, 0.0f, 0.0f), up(0.0f, 1.0f, 0.0f), fov(90.0f), aspect_ratio(16.0f / 9.0f), near_plane(0.1f), far_plane(100.0f) {
+    camera() : position(1.0f, 1.0f, 1.0f), target(0.0f, 0.0f, 0.0f), up(0.0f, 1.0f, 0.0f), fov_(90.0f), aspect_ratio_(16.0f / 9.0f), near_plane_(0.1f), far_plane_(100.0f) {
         update_view_matrix();
         update_projection_matrix();
     }
@@ -28,12 +28,12 @@ public:
     }
 
     void update_projection_matrix() {
-        float tan_half_fov = std::tan(MathUtil::to_radians(fov) / 2.0f);
+        const float tan_half_fov = std::tan(MathUtil::to_radians(fov_) / 2.0f);
         projection_matrix_ = mat({
-            1.0f / (aspect_ratio * tan_half_fov), 0, 0, 0,
+            1.0f / (aspect_ratio_ * tan_half_fov), 0, 0, 0,
             0, 1.0f / tan_half_fov, 0, 0,
-            0, 0, -(far_plane + near_plane) / (far_plane - near_plane), -1,
-            0, 0, -(2.0f * far_plane * near_plane) / (far_plane - near_plane), 0
+            0, 0, -(far_plane_ + near_plane_) / (far_plane_ - near_plane_), -1,
+            0, 0, -(2.0f * far_plane_ * near_plane_) / (far_plane_ - near_plane_), 0
         });
     }
 
@@ -46,10 +46,10 @@ public:
     }
 
 private:
-    float fov;
-    float aspect_ratio;
-    float near_plane;
-    float far_plane;
+    float fov_;
+    float aspect_ratio_;
+    float near_plane_;
+    float far_plane_;
     mat view_matrix_;
     mat projection_matrix_;
 };
