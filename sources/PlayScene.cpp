@@ -33,10 +33,10 @@ void play_scene::init()
         m_registry_.add_component<c_player>(entity, c_player());
         m_registry_.add_component<c_aabb>(entity, c_aabb());
     }
-    // for (int i = 1; i < settings::max_entities - 3; i++)
-    // {
-    //     m_registry_.delete_entity(i);
-    // }
+    for (int i = 1; i < settings::max_entities - 3; i++)
+    {
+        m_registry_.delete_entity(i);
+    }
     factory::create_player(m_registry_);
     // const auto enemy = m_registry_.create_entity();
     // m_registry_.add_component<c_transform>(enemy, c_transform{.position = {0.0f, 0.0f, 0.0f}});
@@ -46,17 +46,17 @@ void play_scene::init()
     // m_registry_.add_component<c_aabb>(enemy, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
     //
     const auto enemy2 = m_registry_.create_entity();
-    m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {2.0f, 0.0f, 0.0f}});
+    m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {0.0f, 0.0f, 0.0f}});
     m_registry_.add_component<c_rigid_body>(enemy2, c_rigid_body{.drag = 0.9f});
     m_registry_.add_component<c_velocity>(enemy2, c_velocity());
     m_registry_.add_component<c_enemy>(enemy2, c_enemy());
-    m_registry_.add_component<c_sphere>(enemy2, c_sphere{.radius = 10.0f});
+    m_registry_.add_component<c_sphere>(enemy2, c_sphere{.radius = 1.1f});
 }
 
 void play_scene::update(const float dt)
 {
     timer update_timer(stats::stat_type::UPDATE);
-    s_camera::update(dt,  m_camera_);
+    s_camera::update(m_camera_, dt);
     s_player::update(m_registry_, dt);
     s_physics::update(m_registry_, dt);
     s_collision::update(m_registry_);

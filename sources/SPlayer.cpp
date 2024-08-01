@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include <vector>
 
-static constexpr float movespeed = 500.0f;
+static constexpr float movespeed = 5.0f;
 
 void s_player::update(const registry &registry, const float dt)
 {

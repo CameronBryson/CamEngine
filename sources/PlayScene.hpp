@@ -19,5 +19,5 @@ class play_scene final : public i_scene
 
   private:
     registry m_registry_;
-    camera m_camera_{};
+    camera m_camera_;
 };

@@ -12,7 +12,7 @@ class factory
         registry.add_component<c_transform>(id, c_transform{.position = {0,0,0}, .rotation = {0,0,0}, .scale = {1,1,1}});
         registry.add_component<c_velocity>(id, c_velocity());
         registry.add_component<c_rigid_body>(id, c_rigid_body{.drag = 0.9f});
-        registry.add_component<c_aabb>(id, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
+        registry.add_component<c_aabb>(id, c_aabb{.extents = {0.1f, 0.1f, 0.1f}});
         return id;
     }
 };

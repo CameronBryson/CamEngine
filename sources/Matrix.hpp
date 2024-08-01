@@ -59,7 +59,30 @@ public:
         // Combine the rotation matrices
         return rotation_z * rotation_y * rotation_x;
     }
+    static mat create_view_matrix(const vec3& position, const vec3& target, const vec3& up) {
+        vec3 z_axis = (position - target).normalized();
+        vec3 x_axis = MathUtil::cross_product(up.normalized(), z_axis).normalized();
+        vec3 y_axis = MathUtil::cross_product(z_axis, x_axis);
 
+        mat translation = create_translation_matrix(position*-1.0f);
+        mat rotation = mat(
+            x_axis.x, x_axis.y, x_axis.z, 0,
+            y_axis.x, y_axis.y, y_axis.z, 0,
+            z_axis.x, z_axis.y, z_axis.z, 0,
+            0, 0, 0, 1
+        );
+        return rotation * translation;
+    }
+    static mat create_perspective_matrix(const float fov, const float aspect_ratio, const float near_plane, const float far_plane) {
+        const float f = 1.0f / tan(MathUtil::deg_to_rad*(fov * 0.5f));
+
+        return mat(
+            f / aspect_ratio, 0, 0, 0,
+            0, -f, 0, 0,
+            0, 0, far_plane/(near_plane - far_plane), -1,
+            0, 0, (near_plane * far_plane) / (near_plane - far_plane), 0
+        );
+    }
     mat operator+(const mat &other) const {
         mat result;
         for (int i = 0; i < 4; ++i)

@@ -3,7 +3,6 @@
 #include "raylib.h"
 
 #include <Registry.hpp>
-
 class s_render
 {
   public:
@@ -13,9 +12,9 @@ class s_render
 
   private:
     static void draw_statistics();
-    static vec2 project(const vec3 &vertex, const mat &matrix);
-    static void update_face(std::vector<vec3> &face, const mat &matrix);
-    static void draw_edges(const std::deque<std::vector<vec2>> &edge_queue);
-    static void project_faces(const std::deque<std::vector<vec3>> &project_queue,
-                              std::deque<std::vector<vec2>> &edge_queue, const mat &combined_matrix);
+    static void project(vec3 &vertex, const mat& view_matrix, const mat& projection_matrix);
+    static void update_triangle(std::vector<vec3> &triangle, const mat& local_matrix);
+    static void draw_triangles(const std::deque<std::vector<vec3>> &triangle_queue);
+    static void project_triangles(std::deque<std::vector<vec3>> &triangle_queue,const mat& view_matrix, const mat& projection_matrix);
+    static bool is_triangle_visable(const std::vector<vec3> &triangle,const camera& camera);
 };

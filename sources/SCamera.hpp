@@ -10,7 +10,7 @@
 
 class s_camera {
 public:
-    static void update(float dt, camera &camera);
+    static void update(camera &camera, const float dt);
 
 };
 
