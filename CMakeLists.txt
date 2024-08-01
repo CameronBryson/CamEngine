@@ -49,7 +49,8 @@ add_executable(${PROJECT_NAME}
         sources/Faces.hpp
         sources/SCamera.hpp
         sources/Matrix.hpp
-        sources/Vectors.hpp)
+        sources/Vectors.hpp
+)
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)

@@ -71,7 +71,7 @@ struct c_enemy
 {
 };
 
-struct c_aabb
+struct c_quad
 {
     vec3 extents;
 };

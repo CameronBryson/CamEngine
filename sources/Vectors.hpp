@@ -78,8 +78,6 @@ public:
         return *this;
     }
 
-
-
     [[nodiscard]] float length() const
     {
         return std::sqrt(x * x + y * y);
@@ -93,11 +91,21 @@ public:
         const float len = length();
         return len > 0 ? vec2(x / len, y / len) : vec2();
     }
+
+    float dot_product(const vec2 &other) const
+    {
+        return x * other.x + y * other.y;
+    }
+
+    vec2 cross_product(const vec2 &other) const
+    {
+        return {y * other.x - x * other.y, x * other.y - y * other.x};
+    }
 };
 
 class vec3
 {
-  public:
+public:
     float x = 0, y = 0, z = 0;
 
     vec3() = default;
@@ -188,6 +196,16 @@ class vec3
         const float len = length();
         return len > 0 ? vec3(x / len, y / len, z / len) : vec3();
     }
+
+    float dot_product(const vec3 &other) const
+    {
+        return x * other.x + y * other.y + z * other.z;
+    }
+
+    vec3 cross_product(const vec3 &other) const
+    {
+        return {y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x};
+    }
 };
 
 class vec4
@@ -217,7 +235,6 @@ public:
     {
         return {x * other.x, y * other.y, z * other.z, w * other.w};
     }
-
 
     vec4 operator/(const float scalar) const
     {
@@ -287,13 +304,25 @@ public:
     {
         return std::sqrt(x * x + y * y + z * z + w * w);
     }
+
     [[nodiscard]] float length_squared() const
     {
         return x * x + y * y + z * z + w * w;
     }
+
     [[nodiscard]] vec4 normalized() const
     {
         const float len = length();
         return len > 0 ? vec4(x / len, y / len, z / len, w / len) : vec4();
+    }
+
+    float dot_product(const vec4 &other) const
+    {
+        return x * other.x + y * other.y + z * other.z + w * other.w;
+    }
+
+    vec4 cross_product(const vec4 &other) const
+    {
+        return {y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x, 0.0f};
     }
 };

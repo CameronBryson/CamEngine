@@ -10,14 +10,14 @@ TEST(FactoryTests, CreatePlayerTest)
     registry.create_sparse_set<c_transform>();
     registry.create_sparse_set<c_velocity>();
     registry.create_sparse_set<c_rigid_body>();
-    registry.create_sparse_set<c_aabb>();
+    registry.create_sparse_set<c_quad>();
     unsigned short player_id = factory::create_player(registry);
     registry.process_commands();
     ASSERT_TRUE(registry.has_component<c_player>(player_id));
     ASSERT_TRUE(registry.has_component<c_transform>(player_id));
     ASSERT_TRUE(registry.has_component<c_velocity>(player_id));
     ASSERT_TRUE(registry.has_component<c_rigid_body>(player_id));
-    ASSERT_TRUE(registry.has_component<c_aabb>(player_id));
+    ASSERT_TRUE(registry.has_component<c_quad>(player_id));
 }
 
 TEST(FactoryTests, PlayerComponentsDefaultValuesTest)
@@ -27,7 +27,7 @@ TEST(FactoryTests, PlayerComponentsDefaultValuesTest)
     registry.create_sparse_set<c_transform>();
     registry.create_sparse_set<c_velocity>();
     registry.create_sparse_set<c_rigid_body>();
-    registry.create_sparse_set<c_aabb>();
+    registry.create_sparse_set<c_quad>();
     unsigned short player_id = factory::create_player(registry);
     registry.process_commands();
 
@@ -35,7 +35,7 @@ TEST(FactoryTests, PlayerComponentsDefaultValuesTest)
     const c_transform &transform = registry.get_component<c_transform>(player_id);
     const c_velocity &velocity = registry.get_component<c_velocity>(player_id);
     const c_rigid_body &rigidBody = registry.get_component<c_rigid_body>(player_id);
-    const c_aabb &aabb = registry.get_component<c_aabb>(player_id);
+    const c_quad &aabb = registry.get_component<c_quad>(player_id);
 
     // Check default values
     ASSERT_EQ(rigidBody.drag, 0.9f);

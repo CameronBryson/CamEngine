@@ -23,20 +23,20 @@ void play_scene::init()
 
     s_render::init();
     timer benchmark_timer(stats::stat_type::BENCHMARK);
-    for (int i = 1; i < settings::max_entities - 3; i++)
-    {
-
-        const auto entity = m_registry_.create_entity();
-        m_registry_.add_component<c_transform>(entity, c_transform());
-        m_registry_.add_component<c_rigid_body>(entity, c_rigid_body());
-        m_registry_.add_component<c_velocity>(entity, c_velocity());
-        m_registry_.add_component<c_player>(entity, c_player());
-        m_registry_.add_component<c_aabb>(entity, c_aabb());
-    }
-    for (int i = 1; i < settings::max_entities - 3; i++)
-    {
-        m_registry_.delete_entity(i);
-    }
+    // for (int i = 1; i < settings::max_entities - 3; i++)
+    // {
+    //
+    //     const auto entity = m_registry_.create_entity();
+    //     m_registry_.add_component<c_transform>(entity, c_transform());
+    //     m_registry_.add_component<c_rigid_body>(entity, c_rigid_body());
+    //     m_registry_.add_component<c_velocity>(entity, c_velocity());
+    //     m_registry_.add_component<c_player>(entity, c_player());
+    //     m_registry_.add_component<c_quad>(entity, c_quad());
+    // }
+    // for (int i = 1; i < settings::max_entities - 3; i++)
+    // {
+    //     m_registry_.delete_entity(i);
+    // }
     factory::create_player(m_registry_);
     // const auto enemy = m_registry_.create_entity();
     // m_registry_.add_component<c_transform>(enemy, c_transform{.position = {0.0f, 0.0f, 0.0f}});
@@ -46,11 +46,20 @@ void play_scene::init()
     // m_registry_.add_component<c_aabb>(enemy, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
     //
     const auto enemy2 = m_registry_.create_entity();
-    m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {0.0f, 0.0f, 0.0f}});
+    m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {0,0.2,0}, .rotation = {0,0,0}, .scale = {1,1,1}});
     m_registry_.add_component<c_rigid_body>(enemy2, c_rigid_body{.drag = 0.9f});
     m_registry_.add_component<c_velocity>(enemy2, c_velocity());
     m_registry_.add_component<c_enemy>(enemy2, c_enemy());
-    m_registry_.add_component<c_sphere>(enemy2, c_sphere{.radius = 1.1f});
+    //m_registry_.add_component<c_sphere>(enemy2, c_sphere{.radius = 1.1f});
+    m_registry_.add_component<c_quad>(enemy2, c_quad{.extents = {0.3f, 0.1f, 0.2f}});
+
+    const auto enemy3 = m_registry_.create_entity();
+    m_registry_.add_component<c_transform>(enemy3, c_transform{.position = {0,-0.2,0}, .rotation = {0,0,0}, .scale = {1,1,1}});
+    m_registry_.add_component<c_rigid_body>(enemy3, c_rigid_body{.drag = 0.9f});
+    m_registry_.add_component<c_velocity>(enemy3, c_velocity());
+    m_registry_.add_component<c_enemy>(enemy3, c_enemy());
+    m_registry_.add_component<c_sphere>(enemy3, c_sphere{.radius = 0.1f});
+
 }
 
 void play_scene::update(const float dt)
@@ -92,7 +101,7 @@ void play_scene::init_sparse_sets()
     m_registry_.create_sparse_set<c_collider>();
     m_registry_.create_sparse_set<c_health>();
     m_registry_.create_sparse_set<c_enemy>();
-    m_registry_.create_sparse_set<c_aabb>();
+    m_registry_.create_sparse_set<c_quad>();
     m_registry_.create_sparse_set<c_sphere>();
     m_registry_.create_sparse_set<c_capsule>();
 }

@@ -1,7 +1,6 @@
 #include "SCamera.hpp"
 #include "MathUtil.hpp"
 #include <raylib.h>
-#include <string> // Add this include for std::to_string
 
 static constexpr float camera_movespeed = 5.0f;
 static constexpr float camera_rotationspeed = 1.0f;
@@ -9,7 +8,7 @@ static constexpr float camera_rotationspeed = 1.0f;
 void s_camera::update(camera &camera, const float dt)
 {
     const vec3 forward = (camera.target - camera.position).normalized();
-    const vec3 right = MathUtil::cross_product(forward, camera.up).normalized();
+    const vec3 right = forward.cross_product(camera.up).normalized();
     const vec3 up = camera.up;
 
     // Move camera

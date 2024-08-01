@@ -1,18 +1,26 @@
+#pragma once
+#include "Vectors.hpp"
+#include "MathUtil.hpp"
 class faces {
 public:
-    static std::vector<std::vector<vec3>> get_quad_triangles(const vec3& extents) {
+    static std::vector<vec3> get_quad_verticies(const vec3& extents)
+    {
         vec3 half_extents = extents * 0.5f;
-
-        std::vector<vec3> vertices = {
-            { -half_extents.x, -half_extents.y, -half_extents.z },
-            {  half_extents.x, -half_extents.y, -half_extents.z },
-            {  half_extents.x,  half_extents.y, -half_extents.z },
-            { -half_extents.x,  half_extents.y, -half_extents.z },
-            { -half_extents.x, -half_extents.y,  half_extents.z },
-            {  half_extents.x, -half_extents.y,  half_extents.z },
-            {  half_extents.x,  half_extents.y,  half_extents.z },
-            { -half_extents.x,  half_extents.y,  half_extents.z }
+        return{
+                { -half_extents.x, -half_extents.y, -half_extents.z },
+                {  half_extents.x, -half_extents.y, -half_extents.z },
+                {  half_extents.x,  half_extents.y, -half_extents.z },
+                { -half_extents.x,  half_extents.y, -half_extents.z },
+                { -half_extents.x, -half_extents.y,  half_extents.z },
+                {  half_extents.x, -half_extents.y,  half_extents.z },
+                {  half_extents.x,  half_extents.y,  half_extents.z },
+                { -half_extents.x,  half_extents.y,  half_extents.z }
         };
+    }
+
+    static std::vector<std::vector<vec3>> get_quad_triangles(const vec3& extents) {
+
+        auto vertices = get_quad_verticies(extents);
 
         return {
             // Front face (counterclockwise)
@@ -35,6 +43,8 @@ public:
                 { vertices[1], vertices[0], vertices[4] }
         };
     }
+
+
 
     static std::vector<std::vector<vec3>> get_sphere_triangles(const float radius, const int stacks, const int sectors)
     {

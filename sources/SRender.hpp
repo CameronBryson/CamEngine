@@ -12,9 +12,9 @@ class s_render
 
   private:
     static void draw_statistics();
-    static void project(vec3 &vertex, const mat& view_matrix, const mat& projection_matrix);
-    static void update_triangle(std::vector<vec3> &triangle, const mat& local_matrix);
+    static void project(vec3 &vertex, const mat4& view_matrix, const mat4& projection_matrix);
+    static void update_triangle(std::vector<vec3> &triangle, const mat4& local_matrix);
     static void draw_triangles(const std::deque<std::vector<vec3>> &triangle_queue);
-    static void project_triangles(std::deque<std::vector<vec3>> &triangle_queue,const mat& view_matrix, const mat& projection_matrix);
+    static void project_triangles(std::deque<std::vector<vec3>> &triangle_queue,const mat4& view_matrix, const mat4& projection_matrix);
     static bool is_triangle_visable(const std::vector<vec3> &triangle,const camera& camera);
 };
