@@ -41,9 +41,12 @@ void s_collision::update(const registry &registry)
 
         for (const auto sphere_id : sphere_ids)
         {
-            if (intersects_sphere_in_aabb(spheres.get_item(sphere_id), aabb, transforms.get_item(sphere_id), transform))
+            CollisionResult collision = intersects_sphere_in_aabb(spheres.get_item(sphere_id), aabb, transforms.get_item(sphere_id), transform);
+            if (collision.intersects)
             {
                 printf("Sphere %d intersects AABB %d\n", sphere_id, id);
+                printf("Penetration depth: %f\n", collision.penetration_depth);
+                printf("Penetration axis: %f, %f, %f\n", collision.penetration_axis.x, collision.penetration_axis.y, collision.penetration_axis.z);
 
             }
         }
@@ -59,43 +62,76 @@ void s_collision::update(const registry &registry)
         {
             if (id == inner_id)
                 continue;
-
-            if (intersects_sphere_in_sphere(sphere, spheres.get_item(inner_id), transform, transforms.get_item(inner_id)))
+            CollisionResult collision = intersects_sphere_in_sphere(sphere, spheres.get_item(inner_id), transform, transforms.get_item(inner_id));
+            if (collision.intersects)
             {
-                // printf("Sphere %d intersects Sphere %d\n", ID, innerID);
+                printf("Sphere %d intersects Sphere %d\n", id, inner_id);
+                printf("Penetration depth: %f\n", collision.penetration_depth);
+                printf("Penetration axis: %f, %f, %f\n", collision.penetration_axis.x, collision.penetration_axis.y, collision.penetration_axis.z);
             }
         }
     }
 }
 
-bool s_collision::intersects_aabb_in_aabb(const c_quad &aabb1, const c_quad &aabb2, const c_transform &transform1,
-                                      const c_transform &transform2)
-{
+CollisionResult s_collision::intersects_aabb_in_aabb(const c_quad &aabb1, const c_quad &aabb2, const c_transform &transform1,
+                                                     const c_transform &transform2) {
     const vec3 center1 = transform1.position;
     const vec3 center2 = transform2.position;
-    const vec3 extents1 = aabb1.extents*0.5f;
-    const vec3 extents2 = aabb2.extents*0.5f;
+    const vec3 extents1 = aabb1.extents * 0.5f;
+    const vec3 extents2 = aabb2.extents * 0.5f;
 
-    return (std::fabs(center1.x - center2.x) <= (extents1.x + extents2.x)) &&
-           (std::fabs(center1.y - center2.y) <= (extents1.y + extents2.y)) &&
-           (std::fabs(center1.z - center2.z) <= (extents1.z + extents2.z));
+    vec3 axes[3] = { vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1) };
+    float min_penetration_depth = std::numeric_limits<float>::max();
+    vec3 penetration_axis;
+
+    for (const auto &axis : axes) {
+        float distance = std::fabs((center1 - center2).dot_product(axis));
+        float overlap = (extents1.dot_product(axis) + extents2.dot_product(axis)) - distance;
+
+        if (overlap < 0) {
+            return {false, 0, vec3()};
+        }
+
+        if (overlap < min_penetration_depth) {
+            min_penetration_depth = overlap;
+            penetration_axis = axis;
+        }
+    }
+
+    return {true, min_penetration_depth, penetration_axis};
 }
 
 
-bool s_collision::intersects_sphere_in_aabb(const c_sphere &sphere, const c_quad &aabb, const c_transform &sphere_transform,
-                                        const c_transform &aabb_transform)
-{
+CollisionResult s_collision::intersects_sphere_in_aabb(const c_sphere &sphere, const c_quad &aabb, const c_transform &sphere_transform,
+                                                       const c_transform &aabb_transform) {
     const vec3 center_aabb = aabb_transform.position;
-    const vec3 extents_aabb = aabb.extents*0.5f;
+    const vec3 extents_aabb = aabb.extents * 0.5f;
     const vec3 center_sphere = sphere_transform.position;
     const float radius_sphere = sphere.radius;
 
-    return (std::fabs(center_sphere.x - center_aabb.x) < (extents_aabb.x + radius_sphere)) &&
-           (std::fabs(center_sphere.y - center_aabb.y) < (extents_aabb.y + radius_sphere)) &&
-           (std::fabs(center_sphere.z - center_aabb.z) < (extents_aabb.z + radius_sphere));
+    // Calculate the closest point on the AABB to the sphere center
+    vec3 closest_point = center_sphere;
+    closest_point.x = std::max(center_aabb.x - extents_aabb.x, std::min(center_sphere.x, center_aabb.x + extents_aabb.x));
+    closest_point.y = std::max(center_aabb.y - extents_aabb.y, std::min(center_sphere.y, center_aabb.y + extents_aabb.y));
+    closest_point.z = std::max(center_aabb.z - extents_aabb.z, std::min(center_sphere.z, center_aabb.z + extents_aabb.z));
+
+    // Compute the vector from the sphere center to the closest point
+    vec3 difference = center_sphere - closest_point;
+    float distance_squared = difference.length_squared();
+
+    // Check if the distance is less than the sphere radius
+    if (distance_squared > radius_sphere * radius_sphere) {
+        return {false, 0, vec3()};
+    }
+
+    float distance = std::sqrt(distance_squared);
+    float penetration_depth = radius_sphere - distance;
+    vec3 penetration_axis = difference.normalized();
+
+    return {true, penetration_depth, penetration_axis};
 }
 
-bool s_collision::intersects_sphere_in_sphere(const c_sphere &sphere1, const c_sphere &sphere2,
+CollisionResult s_collision::intersects_sphere_in_sphere(const c_sphere &sphere1, const c_sphere &sphere2,
                                               const c_transform &transform1, const c_transform &transform2)
 {
     const vec3 center1 = transform1.position;
@@ -106,16 +142,24 @@ bool s_collision::intersects_sphere_in_sphere(const c_sphere &sphere1, const c_s
     const float distance_squared = (center1 - center2).length_squared();
     const float radius_sum = radius1 + radius2;
 
-    return distance_squared <= (radius_sum * radius_sum);
+    if (distance_squared > (radius_sum * radius_sum)) {
+        return {false, 0, vec3()};
+    }
+
+    float distance = std::sqrt(distance_squared);
+    float penetration_depth = radius_sum - distance;
+    vec3 penetration_axis = (center2 - center1).normalized();
+
+    return {true, penetration_depth, penetration_axis};
 }
 CollisionResult s_collision::intersects_obb_in_obb(const c_quad &obb1, const c_quad &obb2, const c_transform &transform1,
                                                    const c_transform &transform2) {
     // Extract rotation matrices
-    mat4 rotation_matrix1 = mat4::create_rotation_matrix(transform1.rotation);
-    mat4 rotation_matrix2 = mat4::create_rotation_matrix(transform2.rotation);
+    const mat4 rotation_matrix1 = mat4::create_rotation_matrix(transform1.rotation);
+    const mat4 rotation_matrix2 = mat4::create_rotation_matrix(transform2.rotation);
 
-    auto vertices1 = get_obb_points_in_world_space(obb1, transform1);
-    auto vertices2 = get_obb_points_in_world_space(obb2, transform2);
+    const auto vertices1 = get_obb_points_in_world_space(obb1, transform1);
+    const auto vertices2 = get_obb_points_in_world_space(obb2, transform2);
 
     // Extract axes
     vec3 axes1[3] = {
