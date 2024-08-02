@@ -1,247 +1,237 @@
-#include "../sources/Vectors.hpp"
 #include <gtest/gtest.h>
+#include "../sources/Vectors.hpp"
 
-// Vec2 Tests
-TEST(Vec2Tests, DefaultConstructor)
-{
-    vec2 v;
-    ASSERT_EQ(v.x, 0);
-    ASSERT_EQ(v.y, 0);
+// Test vec2 class
+TEST(Vec2Tests, Constructors) {
+    vec2 v1;
+    EXPECT_FLOAT_EQ(v1.x, 0.0f);
+    EXPECT_FLOAT_EQ(v1.y, 0.0f);
+
+    vec2 v2(1.0f, 2.0f);
+    EXPECT_FLOAT_EQ(v2.x, 1.0f);
+    EXPECT_FLOAT_EQ(v2.y, 2.0f);
 }
 
-TEST(Vec2Tests, ParameterizedConstructor)
-{
-    vec2 v(1.0f, 2.0f);
-    ASSERT_EQ(v.x, 1.0f);
-    ASSERT_EQ(v.y, 2.0f);
-}
-
-TEST(Vec2Tests, AdditionOperator)
-{
+TEST(Vec2Tests, ArithmeticOperators) {
     vec2 v1(1.0f, 2.0f);
     vec2 v2(3.0f, 4.0f);
-    vec2 result = v1 + v2;
-    ASSERT_EQ(result.x, 4.0f);
-    ASSERT_EQ(result.y, 6.0f);
+
+    vec2 v3 = v1 + v2;
+    EXPECT_FLOAT_EQ(v3.x, 4.0f);
+    EXPECT_FLOAT_EQ(v3.y, 6.0f);
+
+    vec2 v4 = v1 - v2;
+    EXPECT_FLOAT_EQ(v4.x, -2.0f);
+    EXPECT_FLOAT_EQ(v4.y, -2.0f);
+
+    vec2 v5 = v1 * 2.0f;
+    EXPECT_FLOAT_EQ(v5.x, 2.0f);
+    EXPECT_FLOAT_EQ(v5.y, 4.0f);
+
+    vec2 v6 = v1 / 2.0f;
+    EXPECT_FLOAT_EQ(v6.x, 0.5f);
+    EXPECT_FLOAT_EQ(v6.y, 1.0f);
 }
 
-TEST(Vec2Tests, SubtractionOperator)
-{
+TEST(Vec2Tests, CompoundAssignmentOperators) {
     vec2 v1(1.0f, 2.0f);
     vec2 v2(3.0f, 4.0f);
-    vec2 result = v1 - v2;
-    ASSERT_EQ(result.x, -2.0f);
-    ASSERT_EQ(result.y, -2.0f);
-}
 
-TEST(Vec2Tests, MultiplicationOperator)
-{
-    vec2 v(1.0f, 2.0f);
-    vec2 result = v * 2.0f;
-    ASSERT_EQ(result.x, 2.0f);
-    ASSERT_EQ(result.y, 4.0f);
-}
-
-TEST(Vec2Tests, CompoundAdditionOperator)
-{
-    vec2 v1(1.0f, 2.0f);
-    vec2 v2(3.0f, 4.0f);
     v1 += v2;
-    ASSERT_EQ(v1.x, 4.0f);
-    ASSERT_EQ(v1.y, 6.0f);
-}
+    EXPECT_FLOAT_EQ(v1.x, 4.0f);
+    EXPECT_FLOAT_EQ(v1.y, 6.0f);
 
-TEST(Vec2Tests, CompoundSubtractionOperator)
-{
-    vec2 v1(1.0f, 2.0f);
-    vec2 v2(3.0f, 4.0f);
     v1 -= v2;
-    ASSERT_EQ(v1.x, -2.0f);
-    ASSERT_EQ(v1.y, -2.0f);
+    EXPECT_FLOAT_EQ(v1.x, 1.0f);
+    EXPECT_FLOAT_EQ(v1.y, 2.0f);
+
+    v1 *= 2.0f;
+    EXPECT_FLOAT_EQ(v1.x, 2.0f);
+    EXPECT_FLOAT_EQ(v1.y, 4.0f);
+
+    v1 /= 2.0f;
+    EXPECT_FLOAT_EQ(v1.x, 1.0f);
+    EXPECT_FLOAT_EQ(v1.y, 2.0f);
 }
 
-TEST(Vec2Tests, CompoundMultiplicationOperator)
-{
-    vec2 v(1.0f, 2.0f);
-    v *= 2.0f;
-    ASSERT_EQ(v.x, 2.0f);
-    ASSERT_EQ(v.y, 4.0f);
+TEST(Vec2Tests, UtilityFunctions) {
+    vec2 v1(3.0f, 4.0f);
+    EXPECT_FLOAT_EQ(v1.length(), 5.0f);
+    EXPECT_FLOAT_EQ(v1.length_squared(), 25.0f);
+
+    vec2 v2 = v1.normalized();
+    EXPECT_FLOAT_EQ(v2.length(), 1.0f);
+
+    vec2 v3(1.0f, 0.0f);
+    vec2 v4(0.0f, 1.0f);
+    EXPECT_FLOAT_EQ(v3.dot_product(v4), 0.0f);
+
+    float v5 = v3.cross_product(v4);
+    EXPECT_FLOAT_EQ(v5, 1.0f);
 }
 
-TEST(Vec2Tests, Length)
-{
-    vec2 v(3.0f, 4.0f);
-    ASSERT_EQ(v.length(), 5.0f);
+// Test vec3 class
+TEST(Vec3Tests, Constructors) {
+    vec3 v1;
+    EXPECT_FLOAT_EQ(v1.x, 0.0f);
+    EXPECT_FLOAT_EQ(v1.y, 0.0f);
+    EXPECT_FLOAT_EQ(v1.z, 0.0f);
+
+    vec3 v2(1.0f, 2.0f, 3.0f);
+    EXPECT_FLOAT_EQ(v2.x, 1.0f);
+    EXPECT_FLOAT_EQ(v2.y, 2.0f);
+    EXPECT_FLOAT_EQ(v2.z, 3.0f);
 }
 
-TEST(Vec2Tests, LengthSquared)
-{
-    vec2 v(3.0f, 4.0f);
-    ASSERT_EQ(v.length_squared(), 25.0f);
-}
-
-TEST(Vec2Tests, Normalized)
-{
-    vec2 v(3.0f, 4.0f);
-    vec2 result = v.normalized();
-    ASSERT_NEAR(result.x, 0.6f, 1e-5);
-    ASSERT_NEAR(result.y, 0.8f, 1e-5);
-}
-
-// Vec3 Tests
-TEST(Vec3Tests, DefaultConstructor)
-{
-    vec3 v;
-    ASSERT_EQ(v.x, 0);
-    ASSERT_EQ(v.y, 0);
-    ASSERT_EQ(v.z, 0);
-}
-
-TEST(Vec3Tests, ParameterizedConstructor)
-{
-    vec3 v(1.0f, 2.0f, 3.0f);
-    ASSERT_EQ(v.x, 1.0f);
-    ASSERT_EQ(v.y, 2.0f);
-    ASSERT_EQ(v.z, 3.0f);
-}
-
-TEST(Vec3Tests, AdditionOperator)
-{
+TEST(Vec3Tests, ArithmeticOperators) {
     vec3 v1(1.0f, 2.0f, 3.0f);
     vec3 v2(4.0f, 5.0f, 6.0f);
-    vec3 result = v1 + v2;
-    ASSERT_EQ(result.x, 5.0f);
-    ASSERT_EQ(result.y, 7.0f);
-    ASSERT_EQ(result.z, 9.0f);
+
+    vec3 v3 = v1 + v2;
+    EXPECT_FLOAT_EQ(v3.x, 5.0f);
+    EXPECT_FLOAT_EQ(v3.y, 7.0f);
+    EXPECT_FLOAT_EQ(v3.z, 9.0f);
+
+    vec3 v4 = v1 - v2;
+    EXPECT_FLOAT_EQ(v4.x, -3.0f);
+    EXPECT_FLOAT_EQ(v4.y, -3.0f);
+    EXPECT_FLOAT_EQ(v4.z, -3.0f);
+
+    vec3 v5 = v1 * 2.0f;
+    EXPECT_FLOAT_EQ(v5.x, 2.0f);
+    EXPECT_FLOAT_EQ(v5.y, 4.0f);
+    EXPECT_FLOAT_EQ(v5.z, 6.0f);
+
+    vec3 v6 = v1 / 2.0f;
+    EXPECT_FLOAT_EQ(v6.x, 0.5f);
+    EXPECT_FLOAT_EQ(v6.y, 1.0f);
+    EXPECT_FLOAT_EQ(v6.z, 1.5f);
 }
 
-TEST(Vec3Tests, SubtractionOperator)
-{
+TEST(Vec3Tests, CompoundAssignmentOperators) {
     vec3 v1(1.0f, 2.0f, 3.0f);
     vec3 v2(4.0f, 5.0f, 6.0f);
-    vec3 result = v1 - v2;
-    ASSERT_EQ(result.x, -3.0f);
-    ASSERT_EQ(result.y, -3.0f);
-    ASSERT_EQ(result.z, -3.0f);
-}
 
-TEST(Vec3Tests, MultiplicationOperator)
-{
-    vec3 v(1.0f, 2.0f, 3.0f);
-    vec3 result = v * 2.0f;
-    ASSERT_EQ(result.x, 2.0f);
-    ASSERT_EQ(result.y, 4.0f);
-    ASSERT_EQ(result.z, 6.0f);
-}
-
-TEST(Vec3Tests, CompoundAdditionOperator)
-{
-    vec3 v1(1.0f, 2.0f, 3.0f);
-    vec3 v2(4.0f, 5.0f, 6.0f);
     v1 += v2;
-    ASSERT_EQ(v1.x, 5.0f);
-    ASSERT_EQ(v1.y, 7.0f);
-    ASSERT_EQ(v1.z, 9.0f);
-}
+    EXPECT_FLOAT_EQ(v1.x, 5.0f);
+    EXPECT_FLOAT_EQ(v1.y, 7.0f);
+    EXPECT_FLOAT_EQ(v1.z, 9.0f);
 
-TEST(Vec3Tests, CompoundSubtractionOperator)
-{
-    vec3 v1(1.0f, 2.0f, 3.0f);
-    vec3 v2(4.0f, 5.0f, 6.0f);
     v1 -= v2;
-    ASSERT_EQ(v1.x, -3.0f);
-    ASSERT_EQ(v1.y, -3.0f);
-    ASSERT_EQ(v1.z, -3.0f);
+    EXPECT_FLOAT_EQ(v1.x, 1.0f);
+    EXPECT_FLOAT_EQ(v1.y, 2.0f);
+    EXPECT_FLOAT_EQ(v1.z, 3.0f);
+
+    v1 *= 2.0f;
+    EXPECT_FLOAT_EQ(v1.x, 2.0f);
+    EXPECT_FLOAT_EQ(v1.y, 4.0f);
+    EXPECT_FLOAT_EQ(v1.z, 6.0f);
+
+    v1 /= 2.0f;
+    EXPECT_FLOAT_EQ(v1.x, 1.0f);
+    EXPECT_FLOAT_EQ(v1.y, 2.0f);
+    EXPECT_FLOAT_EQ(v1.z, 3.0f);
 }
 
-TEST(Vec3Tests, CompoundMultiplicationOperator)
-{
-    vec3 v(1.0f, 2.0f, 3.0f);
-    v *= 2.0f;
-    ASSERT_EQ(v.x, 2.0f);
-    ASSERT_EQ(v.y, 4.0f);
-    ASSERT_EQ(v.z, 6.0f);
+TEST(Vec3Tests, UtilityFunctions) {
+    vec3 v1(3.0f, 4.0f, 0.0f);
+    EXPECT_FLOAT_EQ(v1.length(), 5.0f);
+    EXPECT_FLOAT_EQ(v1.length_squared(), 25.0f);
+
+    vec3 v2 = v1.normalized();
+    EXPECT_FLOAT_EQ(v2.length(), 1.0f);
+
+    vec3 v3(1.0f, 0.0f, 0.0f);
+    vec3 v4(0.0f, 1.0f, 0.0f);
+    EXPECT_FLOAT_EQ(v3.dot_product(v4), 0.0f);
+
+    vec3 v5 = v3.cross_product(v4);
+    EXPECT_FLOAT_EQ(v5.x, 0.0f);
+    EXPECT_FLOAT_EQ(v5.y, 0.0f);
+    EXPECT_FLOAT_EQ(v5.z, 1.0f);
+}
+// Test vec4 class
+TEST(Vec4Tests, Constructors) {
+    vec4 v1;
+    EXPECT_FLOAT_EQ(v1.x, 0.0f);
+    EXPECT_FLOAT_EQ(v1.y, 0.0f);
+    EXPECT_FLOAT_EQ(v1.z, 0.0f);
+    EXPECT_FLOAT_EQ(v1.w, 0.0f);
+
+    vec4 v2(1.0f, 2.0f, 3.0f, 4.0f);
+    EXPECT_FLOAT_EQ(v2.x, 1.0f);
+    EXPECT_FLOAT_EQ(v2.y, 2.0f);
+    EXPECT_FLOAT_EQ(v2.z, 3.0f);
+    EXPECT_FLOAT_EQ(v2.w, 4.0f);
 }
 
-TEST(Vec3Tests, Length)
-{
-    vec3 v(1.0f, 2.0f, 2.0f);
-    ASSERT_EQ(v.length(), 3.0f);
-}
-
-TEST(Vec3Tests, LengthSquared)
-{
-    vec3 v(1.0f, 2.0f, 2.0f);
-    ASSERT_EQ(v.length_squared(), 9.0f);
-}
-
-TEST(Vec3Tests, Normalized)
-{
-    vec3 v(1.0f, 2.0f, 2.0f);
-    vec3 result = v.normalized();
-    ASSERT_NEAR(result.x, 1.0f / 3.0f, 1e-5);
-    ASSERT_NEAR(result.y, 2.0f / 3.0f, 1e-5);
-    ASSERT_NEAR(result.z, 2.0f / 3.0f, 1e-5);
-}
-
-// Vec4 Tests
-TEST(Vec4Tests, DefaultConstructor)
-{
-    vec4 v;
-    ASSERT_EQ(v.x, 0);
-    ASSERT_EQ(v.y, 0);
-    ASSERT_EQ(v.z, 0);
-    ASSERT_EQ(v.w, 0);
-}
-
-TEST(Vec4Tests, ParameterizedConstructor)
-{
-    vec4 v(1.0f, 2.0f, 3.0f, 4.0f);
-    ASSERT_EQ(v.x, 1.0f);
-    ASSERT_EQ(v.y, 2.0f);
-    ASSERT_EQ(v.z, 3.0f);
-    ASSERT_EQ(v.w, 4.0f);
-}
-
-TEST(Vec4Tests, AdditionOperator)
-{
+TEST(Vec4Tests, ArithmeticOperators) {
     vec4 v1(1.0f, 2.0f, 3.0f, 4.0f);
     vec4 v2(5.0f, 6.0f, 7.0f, 8.0f);
-    vec4 result = v1 + v2;
-    ASSERT_EQ(result.x, 6.0f);
-    ASSERT_EQ(result.y, 8.0f);
-    ASSERT_EQ(result.z, 10.0f);
-    ASSERT_EQ(result.w, 12.0f);
+
+    vec4 v3 = v1 + v2;
+    EXPECT_FLOAT_EQ(v3.x, 6.0f);
+    EXPECT_FLOAT_EQ(v3.y, 8.0f);
+    EXPECT_FLOAT_EQ(v3.z, 10.0f);
+    EXPECT_FLOAT_EQ(v3.w, 12.0f);
+
+    vec4 v4 = v1 - v2;
+    EXPECT_FLOAT_EQ(v4.x, -4.0f);
+    EXPECT_FLOAT_EQ(v4.y, -4.0f);
+    EXPECT_FLOAT_EQ(v4.z, -4.0f);
+    EXPECT_FLOAT_EQ(v4.w, -4.0f);
+
+    vec4 v5 = v1 * 2.0f;
+    EXPECT_FLOAT_EQ(v5.x, 2.0f);
+    EXPECT_FLOAT_EQ(v5.y, 4.0f);
+    EXPECT_FLOAT_EQ(v5.z, 6.0f);
+    EXPECT_FLOAT_EQ(v5.w, 8.0f);
+
+    vec4 v6 = v1 / 2.0f;
+    EXPECT_FLOAT_EQ(v6.x, 0.5f);
+    EXPECT_FLOAT_EQ(v6.y, 1.0f);
+    EXPECT_FLOAT_EQ(v6.z, 1.5f);
+    EXPECT_FLOAT_EQ(v6.w, 2.0f);
 }
 
-TEST(Vec4Tests, SubtractionOperator)
-{
+TEST(Vec4Tests, CompoundAssignmentOperators) {
     vec4 v1(1.0f, 2.0f, 3.0f, 4.0f);
     vec4 v2(5.0f, 6.0f, 7.0f, 8.0f);
-    vec4 result = v1 - v2;
-    ASSERT_EQ(result.x, -4.0f);
-    ASSERT_EQ(result.y, -4.0f);
-    ASSERT_EQ(result.z, -4.0f);
-    ASSERT_EQ(result.w, -4.0f);
-}
 
-TEST(Vec4Tests, MultiplicationOperator)
-{
-    vec4 v(1.0f, 2.0f, 3.0f, 4.0f);
-    vec4 result = v * 2.0f;
-    ASSERT_EQ(result.x, 2.0f);
-    ASSERT_EQ(result.y, 4.0f);
-    ASSERT_EQ(result.z, 6.0f);
-    ASSERT_EQ(result.w, 8.0f);
-}
-
-TEST(Vec4Tests, CompoundAdditionOperator)
-{
-    vec4 v1(1.0f, 2.0f, 3.0f, 4.0f);
-    vec4 v2(5.0f, 6.0f, 7.0f, 8.0f);
     v1 += v2;
-    ASSERT_EQ(v1.x, 6.0f);
-    ASSERT_EQ(v1.y, 8.0f);
-    ASSERT_EQ(v1.z, 10.0f);
-    ASSERT_EQ(v1.w, 12.0f);
+    EXPECT_FLOAT_EQ(v1.x, 6.0f);
+    EXPECT_FLOAT_EQ(v1.y, 8.0f);
+    EXPECT_FLOAT_EQ(v1.z, 10.0f);
+    EXPECT_FLOAT_EQ(v1.w, 12.0f);
+
+    v1 -= v2;
+    EXPECT_FLOAT_EQ(v1.x, 1.0f);
+    EXPECT_FLOAT_EQ(v1.y, 2.0f);
+    EXPECT_FLOAT_EQ(v1.z, 3.0f);
+    EXPECT_FLOAT_EQ(v1.w, 4.0f);
+
+    v1 *= 2.0f;
+    EXPECT_FLOAT_EQ(v1.x, 2.0f);
+    EXPECT_FLOAT_EQ(v1.y, 4.0f);
+    EXPECT_FLOAT_EQ(v1.z, 6.0f);
+    EXPECT_FLOAT_EQ(v1.w, 8.0f);
+
+    v1 /= 2.0f;
+    EXPECT_FLOAT_EQ(v1.x, 1.0f);
+    EXPECT_FLOAT_EQ(v1.y, 2.0f);
+    EXPECT_FLOAT_EQ(v1.z, 3.0f);
+    EXPECT_FLOAT_EQ(v1.w, 4.0f);
+}
+
+TEST(Vec4Tests, UtilityFunctions) {
+    vec4 v1(3.0f, 4.0f, 0.0f, 0.0f);
+    EXPECT_FLOAT_EQ(v1.length(), 5.0f);
+    EXPECT_FLOAT_EQ(v1.length_squared(), 25.0f);
+
+    vec4 v2 = v1.normalized();
+    EXPECT_FLOAT_EQ(v2.length(), 1.0f);
+
+    vec4 v3(1.0f, 0.0f, 0.0f, 0.0f);
+    vec4 v4(0.0f, 1.0f, 0.0f, 0.0f);
+    EXPECT_FLOAT_EQ(v3.dot_product(v4), 0.0f);
 }

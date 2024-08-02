@@ -33,7 +33,7 @@ class registry
   public:
     unsigned short create_entity()
     {
-        assert(!m_freeIDs.empty() && "No more entities available.");
+        assert(!m_free_i_ds_.empty() && "No more entities available.");
         const unsigned short id = m_free_i_ds_.back();
         m_free_i_ds_.pop_back();
         m_entities_.push_back(id);
@@ -83,28 +83,28 @@ template <typename T> bool registry::has_sparse_set() const
 
 template <class T> void registry::create_sparse_set()
 {
-    assert(m_SparseSets.find(std::type_index(typeid(T))) == m_SparseSets.end() &&
+    assert(m_sparse_sets_.find(std::type_index(typeid(T))) == m_sparse_sets_.end() &&
            "Error: Sparse set already exists for this type.");
     m_sparse_sets_[std::type_index(typeid(T))] = std::make_unique<sparse_set<T>>();
 }
 
 template <typename T> sparse_set<T> &registry::get_sparse_set() const
 {
-    assert(m_SparseSets.find(std::type_index(typeid(T))) != m_SparseSets.end() &&
+    assert(m_sparse_sets_.find(std::type_index(typeid(T))) != m_sparse_sets_.end() &&
            "Error: Sparse set does not exist for this type.");
     return *static_cast<sparse_set<T> *>(m_sparse_sets_.at(std::type_index(typeid(T))).get());
 }
 
 template <typename T> void registry::add_component(unsigned short id, const T &component_data)
 {
-    assert(m_Entities.end() != std::find(m_Entities.begin(), m_Entities.end(), ID) && "Entity does not exist.");
+    assert(m_entities_.end() != std::find(m_entities_.begin(), m_entities_.end(), id) && "Entity does not exist.");
     auto &set = get_sparse_set<T>();
     command_queue_.push(std::make_unique<add_component_command<T>>(set, id, component_data));
 }
 
 template <typename T> T &registry::get_component(unsigned short id) const
 {
-    assert(hasComponent<T>(ID) && "Entity does not have component.");
+    assert(has_component<T>(id) && "Entity does not have component.");
     return get_sparse_set<T>().get_item(id);
 }
 
@@ -143,8 +143,8 @@ template <typename T> bool registry::has_component(unsigned short id) const
 
 template <typename T> void registry::remove_component(unsigned short id)
 {
-    assert(m_Entities.end() != std::find(m_Entities.begin(), m_Entities.end(), ID) && "Entity does not exist.");
-    assert(hasComponent<T>(ID) && "Entity does not have component.");
+    assert(m_entities_.end() != std::find(m_entities_.begin(), m_entities_.end(), id) && "Entity does not exist.");
+    assert(has_component<T>(id) && "Entity does not have component.");
     auto &set = get_sparse_set<T>();
     command_queue_.push(std::make_unique<remove_component_command<T>>(set, id));
 }
