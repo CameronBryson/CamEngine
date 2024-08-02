@@ -204,7 +204,9 @@ public:
 
     vec3 cross_product(const vec3 &other) const
     {
-        return {y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x};
+        return {y * other.z - z * other.y,
+            z * other.x - x * other.z,
+            x * other.y - y * other.x};
     }
 };
 

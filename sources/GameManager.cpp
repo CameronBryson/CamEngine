@@ -28,6 +28,7 @@ void game_manager::init() const
 void game_manager::update(const float dt) const
 {
     m_current_scene_->update(dt);
+    m_current_scene_->late_update(dt);
 }
 
 void game_manager::render() const

@@ -3,12 +3,12 @@
 #include "raylib.h"
 #include <vector>
 
-static constexpr float movespeed = 5.0f;
+static constexpr float movespeed = 1.0f;
 
 void s_player::update(const registry &registry, const float dt)
 {
-    auto &rigidbodies = registry.get_sparse_set<c_rigid_body>();
-    auto ids = registry.get_entity_ids<c_player, c_rigid_body>();
+    auto& velocities = registry.get_sparse_set<c_velocity>();
+    auto ids = registry.get_entity_ids<c_player, c_kinetic_body,c_velocity>();
 
     const bool w = IsKeyDown(KEY_W);
     const bool a = IsKeyDown(KEY_A);
@@ -19,20 +19,20 @@ void s_player::update(const registry &registry, const float dt)
 
     for (const auto id : ids)
     {
-        auto &[mass, drag, acceleration, force] = rigidbodies.get_item(id);
-
+        auto &[velocity] = velocities.get_item(id);
+        velocity = {0,0,0};
         if (w)
-            acceleration.y -= movespeed * dt;
+            velocity.y -= movespeed * dt;
         if (a)
-            acceleration.x -= movespeed * dt;
+            velocity.x -= movespeed * dt;
         if (s)
-            acceleration.y += movespeed * dt;
+            velocity.y += movespeed * dt;
         if (d)
-            acceleration.x += movespeed * dt;
+            velocity.x += movespeed * dt;
         if (q)
-            acceleration.z -= movespeed * dt;
+            velocity.z -= movespeed * dt;
         if (e)
-            acceleration.z += movespeed * dt;
+            velocity.z += movespeed * dt;
     }
 }
 

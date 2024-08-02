@@ -47,27 +47,33 @@ void play_scene::init()
     //
     const auto enemy2 = m_registry_.create_entity();
     m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {0,0.2,0}, .rotation = {0,0,0}, .scale = {1,1,1}});
-    m_registry_.add_component<c_rigid_body>(enemy2, c_rigid_body{.drag = 0.9f});
+    m_registry_.add_component<c_kinetic_body>(enemy2, c_kinetic_body());
     m_registry_.add_component<c_velocity>(enemy2, c_velocity());
     m_registry_.add_component<c_enemy>(enemy2, c_enemy());
     //m_registry_.add_component<c_sphere>(enemy2, c_sphere{.radius = 1.1f});
     m_registry_.add_component<c_quad>(enemy2, c_quad{.extents = {0.3f, 0.1f, 0.2f}});
+    m_registry_.add_component<c_collider>(enemy2, c_collider());
 
     const auto enemy3 = m_registry_.create_entity();
     m_registry_.add_component<c_transform>(enemy3, c_transform{.position = {0,-0.2,0}, .rotation = {0,0,0}, .scale = {1,1,1}});
-    m_registry_.add_component<c_rigid_body>(enemy3, c_rigid_body{.drag = 0.9f});
+    m_registry_.add_component<c_kinetic_body>(enemy3, c_kinetic_body());
     m_registry_.add_component<c_velocity>(enemy3, c_velocity());
     m_registry_.add_component<c_enemy>(enemy3, c_enemy());
     m_registry_.add_component<c_sphere>(enemy3, c_sphere{.radius = 0.1f});
+    m_registry_.add_component<c_collider>(enemy3, c_collider());
 
 }
 
 void play_scene::update(const float dt)
 {
     timer update_timer(stats::stat_type::UPDATE);
+    m_registry_.process_collision_resolutions();
     s_camera::update(m_camera_, dt);
     s_player::update(m_registry_, dt);
     s_physics::update(m_registry_, dt);
+}
+void play_scene::late_update(const float dt)
+{
     s_collision::update(m_registry_);
     m_registry_.process_commands();
 }
@@ -92,7 +98,7 @@ void play_scene::init_sparse_sets()
 {
     m_registry_.create_sparse_set<c_transform>();
     m_registry_.create_sparse_set<c_render>();
-    m_registry_.create_sparse_set<c_rigid_body>();
+    m_registry_.create_sparse_set<c_dynamic_body>();
     m_registry_.create_sparse_set<c_player>();
     m_registry_.create_sparse_set<c_sprite>();
     m_registry_.create_sparse_set<c_static_body>();

@@ -1,4 +1,5 @@
 #pragma once
+#include "Collision.hpp"
 #include "Commands.hpp"
 #include "ISparseSet.hpp"
 #include "SparseSet.hpp"
@@ -31,6 +32,7 @@ class registry
     }
 
   public:
+
     unsigned short create_entity()
     {
         assert(!m_free_i_ds_.empty() && "No more entities available.");
@@ -52,11 +54,26 @@ class registry
             command_queue_.pop();
         }
     }
-
+    void add_collision_manifold(const collision_manifold &manifold)
+    {
+        collision_queue_.push(manifold);
+    }
+    void process_collision_resolutions()
+    {
+        while (!collision_queue_.empty())
+        {
+            const auto &manifold = collision_queue_.front();
+            printf("Depth: %f\n", manifold.penetration_depth_);
+            printf("Normal%f\n %f\n %f\n", manifold.normal.x, manifold.normal.y, manifold.normal.z);
+            manifold.resolve_collision();
+            collision_queue_.pop();
+        }
+    }
   public:
     template <typename T> void create_sparse_set();
 
     template <typename T> void add_component(unsigned short id, const T &component_data);
+
 
     template <typename T> T &get_component(unsigned short id) const;
 
@@ -75,6 +92,8 @@ class registry
     std::vector<unsigned short> m_entities_;
     std::unordered_map<std::type_index, std::unique_ptr<i_sparse_set>> m_sparse_sets_;
     std::queue<std::unique_ptr<i_command>> command_queue_;
+    std::queue<collision_manifold> collision_queue_;
+
 };
 template <typename T> bool registry::has_sparse_set() const
 {

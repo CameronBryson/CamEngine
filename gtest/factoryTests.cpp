@@ -10,7 +10,7 @@ class FactoryTests : public ::testing::Test {
         reg.create_sparse_set<c_player>();
         reg.create_sparse_set<c_transform>();
         reg.create_sparse_set<c_velocity>();
-        reg.create_sparse_set<c_rigid_body>();
+        reg.create_sparse_set<c_dynamic_body>();
         reg.create_sparse_set<c_quad>();
     }
 };
@@ -22,7 +22,7 @@ TEST_F(FactoryTests, CreatePlayer) {
     EXPECT_TRUE(reg.has_component<c_player>(player_id));
     EXPECT_TRUE(reg.has_component<c_transform>(player_id));
     EXPECT_TRUE(reg.has_component<c_velocity>(player_id));
-    EXPECT_TRUE(reg.has_component<c_rigid_body>(player_id));
+    EXPECT_TRUE(reg.has_component<c_dynamic_body>(player_id));
     EXPECT_TRUE(reg.has_component<c_quad>(player_id));
 
     // Verify the values of the components
@@ -31,7 +31,7 @@ TEST_F(FactoryTests, CreatePlayer) {
     EXPECT_EQ(transform.rotation, vec3(0, 0, 90));
     EXPECT_EQ(transform.scale, vec3(1, 1, 1));
 
-    const auto& rigid_body = reg.get_component<c_rigid_body>(player_id);
+    const auto& rigid_body = reg.get_component<c_dynamic_body>(player_id);
     EXPECT_FLOAT_EQ(rigid_body.drag, 0.99f);
 
     const auto& quad = reg.get_component<c_quad>(player_id);

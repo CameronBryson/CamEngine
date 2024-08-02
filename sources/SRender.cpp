@@ -53,7 +53,7 @@ void s_render::update(const registry &registry, const camera &camera)
             {
                 project(vertex, view_matrix, projection_matrix);
             }
-            if (is_triangle_visable(quad_triangle, camera))
+            if (!is_triangle_visable(quad_triangle, camera))
                 triangle_queue.push_back(quad_triangle);
         }
     }
@@ -118,7 +118,7 @@ bool s_render::is_triangle_visable(const std::vector<vec3> &triangle, const came
     vec3 ab = triangle[1] - triangle[0];
     vec3 ac = triangle[2] - triangle[0];
     float sign = ab.x * ac.y - ac.x * ab.y;
-    return sign < 0;
+    return sign >  0;
 }
 
 // Update the project function in `sources/SRender.cpp`

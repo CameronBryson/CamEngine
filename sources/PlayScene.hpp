@@ -10,6 +10,7 @@ class play_scene final : public i_scene
     ~play_scene() override;
     void init() override;
     void update(float dt) override;
+    void late_update(float dt) override;
     void render() override;
     void shutdown() override;
     registry &get_registry() override;

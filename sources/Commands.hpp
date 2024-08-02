@@ -47,6 +47,7 @@ template <typename T> class remove_component_command final : public i_command
     unsigned short m_id_;
 };
 
+
 class delete_entity_command final : public i_command
 {
   public:

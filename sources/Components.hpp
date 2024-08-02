@@ -1,5 +1,6 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
+#include "Color.hpp"
 #include "Vectors.hpp"
 
 // Component for entities affected by gravity
@@ -7,7 +8,6 @@ struct c_gravity
 {
     vec3 gravity = {0, -9.81f, 0};
 };
-
 // Component for player-specific data
 struct c_player
 {
@@ -17,17 +17,17 @@ struct c_player
 struct c_render
 {
     int layer = 0;
+    color color;
+
 };
 
 // Component for physical properties
-struct c_rigid_body
+struct c_dynamic_body
 {
     float mass = 1.0f; // Default mass to avoid division by zero
     float drag = 0.0f;
     vec3 acceleration = {0, 0, 0};
-    vec3 force = {0, 0, 0};
 };
-
 // Component for sprite-related data
 struct c_sprite
 {
@@ -36,6 +36,7 @@ struct c_sprite
 // Marker component for static bodies (e.g., walls)
 struct c_static_body
 {
+    //does not care about forces
 };
 
 // Component for position, rotation, and scale
@@ -49,6 +50,7 @@ struct c_transform
 // Marker component for kinetic bodies (e.g., moving platforms)
 struct c_kinetic_body
 {
+    //only cares about velocity
 };
 
 // Component for velocity
@@ -60,6 +62,8 @@ struct c_velocity
 // Component for collider-related data
 struct c_collider
 {
+    bool is_trigger = false;
+    unsigned int bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
 };
 
 struct c_health
@@ -87,7 +91,7 @@ struct c_capsule
 struct c_plane
 {
     vec3 normal;
-    float distance{};
+    float distance;
 };
 
 #endif // COMPONENTS_HPP
