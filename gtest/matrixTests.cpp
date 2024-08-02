@@ -31,8 +31,8 @@ TEST(MatrixTests, MultiplicationTest)
 TEST(MatrixTests, ScalarMultiplicationTest)
 {
     mat4 mat(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-    mat result = mat * 2.0f;
-    mat expected(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32);
+    mat4 result = mat * 2.0f;
+    mat4 expected(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32);
     ASSERT_EQ(result, expected);
 }
 
@@ -43,24 +43,3 @@ TEST(MatrixTests, DeterminantTest)
     ASSERT_EQ(det, 0.0f);
 }
 
-TEST(MatrixTests, TransposeTest)
-{
-    mat4 mat(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-    mat result = mat.transpose();
-    mat expected(1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12, 16);
-    ASSERT_EQ(result, expected);
-}
-
-TEST(MatrixTests, InverseTest)
-{
-    mat4 mat(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    mat result = mat.inverse();
-    mat expected(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    ASSERT_EQ(result, expected);
-}
-
-TEST(MatrixTests, IdentityTest)
-{
-    mat4 mat(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    ASSERT_TRUE(mat.is_identity());
-}

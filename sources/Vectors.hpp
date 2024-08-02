@@ -77,6 +77,10 @@ public:
         y /= other.y;
         return *this;
     }
+    bool operator==(const vec2 &other) const
+    {
+        return x == other.x && y == other.y;
+    }
 
     [[nodiscard]] float length() const
     {
@@ -97,9 +101,9 @@ public:
         return x * other.x + y * other.y;
     }
 
-    vec2 cross_product(const vec2 &other) const
+    float cross_product(const vec2 &other) const
     {
-        return {y * other.x - x * other.y, x * other.y - y * other.x};
+        return {x * other.y - y * other.x};
     }
 };
 
@@ -182,6 +186,10 @@ public:
         z /= other.z;
         return *this;
     }
+    bool operator==(const vec3 &other) const
+    {
+        return x == other.x && y == other.y && z == other.z;
+    }
 
     [[nodiscard]] float length() const
     {
@@ -204,7 +212,9 @@ public:
 
     vec3 cross_product(const vec3 &other) const
     {
-        return {y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x};
+        return {x * other.z - z * other.y,
+                z * other.x - x * other.z,
+                x * other.y - y * other.x};
     }
 };
 
@@ -299,6 +309,10 @@ public:
         w /= other.w;
         return *this;
     }
+    bool operator==(const vec4 &other) const
+    {
+        return x == other.x && y == other.y && z == other.z && w == other.w;
+    }
 
     [[nodiscard]] float length() const
     {
@@ -321,8 +335,4 @@ public:
         return x * other.x + y * other.y + z * other.z + w * other.w;
     }
 
-    vec4 cross_product(const vec4 &other) const
-    {
-        return {y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x, 0.0f};
-    }
 };

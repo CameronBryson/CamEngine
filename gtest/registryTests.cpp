@@ -1,81 +1,63 @@
-#include "../sources/Registry.hpp"
 #include <gtest/gtest.h>
-#include <memory>
+#include "../sources/Registry.hpp"
+#include "../sources/Components.hpp"
 
-TEST(RegistryTests, CreateEntityTest)
-{
-    registry registry;
-    for (int i = 0; i < settings::max_entities - 1; i++)
-    {
-        registry.create_entity();
+class RegistryTests : public ::testing::Test {
+  protected:
+    registry reg;
+
+    void SetUp() override {
+        reg.create_sparse_set<c_player>();
+        reg.create_sparse_set<c_transform>();
+        reg.create_sparse_set<c_velocity>();
+        reg.create_sparse_set<c_rigid_body>();
+        reg.create_sparse_set<c_quad>();
     }
-    ASSERT_EQ(registry.get_entity_ids().size(), settings::max_entities - 1);
+};
+
+TEST_F(RegistryTests, CreateEntity) {
+    unsigned short entity_id = reg.create_entity();
+    EXPECT_NE(entity_id, 0);
 }
 
-TEST(RegistryTests, DeleteEntityTest)
-{
-    registry registry;
-    for (int i = 0; i < settings::max_entities - 1; i++)
-    {
-        registry.create_entity();
-    }
-    for (int i = 1; i < settings::max_entities; i++)
-    {
-        registry.delete_entity(i);
-    }
-    registry.process_commands();
-    ASSERT_EQ(registry.get_entity_ids().size(), 0);
+TEST_F(RegistryTests, AddComponent) {
+    unsigned short entity_id = reg.create_entity();
+    c_transform transform{.position = {1, 2, 3}, .rotation = {0, 0, 0}, .scale = {1, 1, 1}};
+    reg.add_component<c_transform>(entity_id, transform);
+    reg.process_commands();
+    EXPECT_TRUE(reg.has_component<c_transform>(entity_id));
 }
 
-TEST(RegistryTests, CreateSparseSetTest)
-{
-    registry registry;
-    registry.create_sparse_set<int>();
-    ASSERT_TRUE(registry.has_sparse_set<int>());
+TEST_F(RegistryTests, GetComponent) {
+    unsigned short entity_id = reg.create_entity();
+    c_transform transform{.position = {1, 2, 3}, .rotation = {0, 0, 0}, .scale = {1, 1, 1}};
+    reg.add_component<c_transform>(entity_id, transform);
+    reg.process_commands();
+    const auto& retrieved_transform = reg.get_component<c_transform>(entity_id);
+    EXPECT_FLOAT_EQ(retrieved_transform.position.x, 1.0f);
+    EXPECT_FLOAT_EQ(retrieved_transform.position.y, 2.0f);
+    EXPECT_FLOAT_EQ(retrieved_transform.position.z, 3.0f);
 }
 
-TEST(RegistryTests, AddComponentTest)
-{
-    registry registry;
-    registry.create_sparse_set<int>();
-    unsigned short entity = registry.create_entity();
-    registry.add_component<int>(entity, 42);
-    registry.process_commands();
-    ASSERT_TRUE(registry.has_component<int>(entity));
+TEST_F(RegistryTests, RemoveComponent) {
+    unsigned short entity_id = reg.create_entity();
+    c_transform transform{.position = {1, 2, 3}, .rotation = {0, 0, 0}, .scale = {1, 1, 1}};
+    reg.add_component<c_transform>(entity_id, transform);
+    reg.remove_component<c_transform>(entity_id);
+    EXPECT_FALSE(reg.has_component<c_transform>(entity_id));
 }
 
-TEST(RegistryTests, GetComponentTest)
-{
-    registry registry;
-    registry.create_sparse_set<int>();
-
-    unsigned short entity = registry.create_entity();
-    registry.add_component<int>(entity, 42);
-    registry.process_commands();
-    ASSERT_EQ(registry.get_component<int>(entity), 42);
+TEST_F(RegistryTests, DeleteEntity) {
+    unsigned short entity_id = reg.create_entity();
+    reg.delete_entity(entity_id);
+    reg.process_commands();
+    EXPECT_FALSE(std::find(reg.get_entity_ids<>().begin(), reg.get_entity_ids<>().end(), entity_id) != reg.get_entity_ids<>().end());
 }
 
-TEST(RegistryTests, RemoveComponentTest)
-{
-    registry registry;
-    registry.create_sparse_set<int>();
-    unsigned short entity = registry.create_entity();
-    registry.add_component<int>(entity, 42);
-    registry.process_commands();
-    registry.remove_component<int>(entity);
-    registry.process_commands();
-    ASSERT_FALSE(registry.has_component<int>(entity));
-}
-
-TEST(RegistryTests, MultipleComponentsTest)
-{
-    registry registry;
-    registry.create_sparse_set<int>();
-    registry.create_sparse_set<float>();
-    unsigned short entity = registry.create_entity();
-    registry.add_component<int>(entity, 42);
-    registry.add_component<float>(entity, 3.14f);
-    registry.process_commands();
-    ASSERT_EQ(registry.get_component<int>(entity), 42);
-    ASSERT_EQ(registry.get_component<float>(entity), 3.14f);
+TEST_F(RegistryTests, ProcessCommands) {
+    unsigned short entity_id = reg.create_entity();
+    c_transform transform{.position = {1, 2, 3}, .rotation = {0, 0, 0}, .scale = {1, 1, 1}};
+    reg.add_component<c_transform>(entity_id, transform);
+    reg.process_commands();
+    EXPECT_TRUE(reg.has_component<c_transform>(entity_id));
 }

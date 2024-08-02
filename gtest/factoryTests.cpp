@@ -1,45 +1,39 @@
-#include "../sources/Components.hpp"
+#include <gtest/gtest.h>
 #include "../sources/Factory.hpp"
 #include "../sources/Registry.hpp"
-#include <gtest/gtest.h>
 
-TEST(FactoryTests, CreatePlayerTest)
-{
-    registry registry;
-    registry.create_sparse_set<c_player>();
-    registry.create_sparse_set<c_transform>();
-    registry.create_sparse_set<c_velocity>();
-    registry.create_sparse_set<c_rigid_body>();
-    registry.create_sparse_set<c_quad>();
-    unsigned short player_id = factory::create_player(registry);
-    registry.process_commands();
-    ASSERT_TRUE(registry.has_component<c_player>(player_id));
-    ASSERT_TRUE(registry.has_component<c_transform>(player_id));
-    ASSERT_TRUE(registry.has_component<c_velocity>(player_id));
-    ASSERT_TRUE(registry.has_component<c_rigid_body>(player_id));
-    ASSERT_TRUE(registry.has_component<c_quad>(player_id));
-}
+class FactoryTests : public ::testing::Test {
+  protected:
+    registry reg;
 
-TEST(FactoryTests, PlayerComponentsDefaultValuesTest)
-{
-    registry registry;
-    registry.create_sparse_set<c_player>();
-    registry.create_sparse_set<c_transform>();
-    registry.create_sparse_set<c_velocity>();
-    registry.create_sparse_set<c_rigid_body>();
-    registry.create_sparse_set<c_quad>();
-    unsigned short player_id = factory::create_player(registry);
-    registry.process_commands();
+    void SetUp() override {
+        reg.create_sparse_set<c_player>();
+        reg.create_sparse_set<c_transform>();
+        reg.create_sparse_set<c_velocity>();
+        reg.create_sparse_set<c_rigid_body>();
+        reg.create_sparse_set<c_quad>();
+    }
+};
 
-    const c_player &player = registry.get_component<c_player>(player_id);
-    const c_transform &transform = registry.get_component<c_transform>(player_id);
-    const c_velocity &velocity = registry.get_component<c_velocity>(player_id);
-    const c_rigid_body &rigidBody = registry.get_component<c_rigid_body>(player_id);
-    const c_quad &aabb = registry.get_component<c_quad>(player_id);
+TEST_F(FactoryTests, CreatePlayer) {
+    unsigned short player_id = factory::create_player(reg);
+    reg.process_commands();
+    // Verify the player entity has the correct components
+    EXPECT_TRUE(reg.has_component<c_player>(player_id));
+    EXPECT_TRUE(reg.has_component<c_transform>(player_id));
+    EXPECT_TRUE(reg.has_component<c_velocity>(player_id));
+    EXPECT_TRUE(reg.has_component<c_rigid_body>(player_id));
+    EXPECT_TRUE(reg.has_component<c_quad>(player_id));
 
-    // Check default values
-    ASSERT_EQ(rigidBody.drag, 0.9f);
-    ASSERT_EQ(aabb.extents.x, 1.0f);
-    ASSERT_EQ(aabb.extents.y, 1.0f);
-    ASSERT_EQ(aabb.extents.z, 1.0f);
+    // Verify the values of the components
+    const auto& transform = reg.get_component<c_transform>(player_id);
+    EXPECT_EQ(transform.position, vec3(0, 0, 0));
+    EXPECT_EQ(transform.rotation, vec3(0, 0, 90));
+    EXPECT_EQ(transform.scale, vec3(1, 1, 1));
+
+    const auto& rigid_body = reg.get_component<c_rigid_body>(player_id);
+    EXPECT_FLOAT_EQ(rigid_body.drag, 0.99f);
+
+    const auto& quad = reg.get_component<c_quad>(player_id);
+    EXPECT_EQ(quad.extents, vec3(0.1f, 0.2f, 0.3f));
 }
