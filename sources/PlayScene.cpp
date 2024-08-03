@@ -45,22 +45,18 @@ void play_scene::init()
     // m_registry_.add_component<c_enemy>(enemy, c_enemy());
     // m_registry_.add_component<c_aabb>(enemy, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
     //
-    const auto enemy2 = m_registry_.create_entity();
-    m_registry_.add_component<c_transform>(enemy2, c_transform{.position = {0,0.2,0}, .rotation = {0,0,0}, .scale = {1,1,1}});
-    m_registry_.add_component<c_kinetic_body>(enemy2, c_kinetic_body());
-    m_registry_.add_component<c_velocity>(enemy2, c_velocity());
-    m_registry_.add_component<c_enemy>(enemy2, c_enemy());
-    //m_registry_.add_component<c_sphere>(enemy2, c_sphere{.radius = 1.1f});
-    m_registry_.add_component<c_quad>(enemy2, c_quad{.extents = {0.3f, 0.1f, 0.2f}});
-    m_registry_.add_component<c_collider>(enemy2, c_collider());
-
-    const auto enemy3 = m_registry_.create_entity();
-    m_registry_.add_component<c_transform>(enemy3, c_transform{.position = {0,-0.2,0}, .rotation = {0,0,0}, .scale = {1,1,1}});
-    m_registry_.add_component<c_kinetic_body>(enemy3, c_kinetic_body());
-    m_registry_.add_component<c_velocity>(enemy3, c_velocity());
-    m_registry_.add_component<c_enemy>(enemy3, c_enemy());
-    m_registry_.add_component<c_sphere>(enemy3, c_sphere{.radius = 0.1f});
-    m_registry_.add_component<c_collider>(enemy3, c_collider());
+    factory::create_sphere(m_registry_, vec3{1.0f, 0.0f, 0.0f}, 0.2f);
+    factory::create_quad(m_registry_, vec3{-1.0f, 0.0f, 0.0f}, vec3{0.1f, 0.3f, 0.1f});
+    factory::create_sphere(m_registry_, vec3{0.5f, 0.0f, 0.0f}, 0.2f);
+    factory::create_quad(m_registry_, vec3{-0.5f, 0.0f, 0.0f}, vec3{0.1f, 0.3f, 0.1f});
+    factory::create_sphere(m_registry_, vec3{0.2f, 0.0f, 0.0f}, 0.2f);
+    factory::create_quad(m_registry_, vec3{-0.2f, 0.0f, 0.0f}, vec3{0.1f, 0.3f, 0.1f});
+    factory::create_sphere(m_registry_, vec3{1.0f, 1.0f, 0.0f}, 0.2f);
+    factory::create_quad(m_registry_, vec3{-1.0f, 0.0f, 1.0f}, vec3{0.1f, 0.3f, 0.1f});
+    factory::create_sphere(m_registry_, vec3{0.5f, 0.0f, 1.0f}, 0.2f);
+    factory::create_quad(m_registry_, vec3{-0.5f, 0.0f, 1.0f}, vec3{0.1f, 0.3f, 0.1f});
+    factory::create_sphere(m_registry_, vec3{0.2f, 0.0f, 1.0f}, 0.2f);
+    factory::create_quad(m_registry_, vec3{-0.2f, 0.0f, 1.0f}, vec3{0.1f, 0.3f, 0.1f});
 
 }
 
@@ -98,11 +94,9 @@ void play_scene::init_sparse_sets()
 {
     m_registry_.create_sparse_set<c_transform>();
     m_registry_.create_sparse_set<c_render>();
-    m_registry_.create_sparse_set<c_dynamic_body>();
+    m_registry_.create_sparse_set<c_rigid_body>();
     m_registry_.create_sparse_set<c_player>();
     m_registry_.create_sparse_set<c_sprite>();
-    m_registry_.create_sparse_set<c_static_body>();
-    m_registry_.create_sparse_set<c_kinetic_body>();
     m_registry_.create_sparse_set<c_velocity>();
     m_registry_.create_sparse_set<c_collider>();
     m_registry_.create_sparse_set<c_health>();

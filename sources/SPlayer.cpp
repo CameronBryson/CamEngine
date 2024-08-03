@@ -8,7 +8,7 @@ static constexpr float movespeed = 1.0f;
 void s_player::update(const registry &registry, const float dt)
 {
     auto& velocities = registry.get_sparse_set<c_velocity>();
-    auto ids = registry.get_entity_ids<c_player, c_kinetic_body,c_velocity>();
+    auto ids = registry.get_entity_ids<c_player, c_velocity>();
 
     const bool w = IsKeyDown(KEY_W);
     const bool a = IsKeyDown(KEY_A);

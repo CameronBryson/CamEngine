@@ -10,25 +10,26 @@ void s_collision::update(registry &registry)
     auto &obbs = registry.get_sparse_set<c_quad>();
     auto &transforms = registry.get_sparse_set<c_transform>();
     auto &spheres = registry.get_sparse_set<c_sphere>();
-    auto &static_bodies = registry.get_sparse_set<c_static_body>();
 
-    std::vector<unsigned short> obb_ids = registry.get_entity_ids<c_quad, c_transform,c_collider>();
-    std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform,c_collider>();
+    std::vector<unsigned short> obb_ids = registry.get_entity_ids<c_quad, c_transform, c_collider>();
+    std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform, c_collider>();
 
     // Check OBB-OBB intersections
     for (size_t i = 0; i < obb_ids.size(); ++i)
     {
         auto &obb = obbs.get_item(obb_ids[i]);
         auto &transform = transforms.get_item(obb_ids[i]);
+        auto &collider = colliders.get_item(obb_ids[i]);
 
-        for (size_t j = i + 1; j < obb_ids.size(); ++j)
+        for (size_t j = i+1; j < obb_ids.size(); ++j)
         {
             auto &inner_obb = obbs.get_item(obb_ids[j]);
             auto &inner_transform = transforms.get_item(obb_ids[j]);
-            if (intersects_obb_in_obb(obb, inner_obb, transform, inner_transform,registry))
+            auto &inner_collider = colliders.get_item(obb_ids[j]);
+            if (intersects_obb_in_obb(obb, inner_obb, transform, inner_transform,collider,inner_collider, registry))
             {
 
-                //printf("OBB %d intersects OBB%d\n", obb_ids[i], obb_ids[j]);
+                // printf("OBB %d intersects OBB%d\n", obb_ids[i], obb_ids[j]);
             }
         }
     }
@@ -37,13 +38,18 @@ void s_collision::update(registry &registry)
     for (size_t i = 0; i < obb_ids.size(); ++i)
     {
         auto &obb = obbs.get_item(obb_ids[i]);
-        auto &transform = transforms.get_item(obb_ids[i]);
+        auto &obb_transform = transforms.get_item(obb_ids[i]);
+        auto &obb_collider = colliders.get_item(obb_ids[i]);
 
-        for (size_t j = i + 1; j < sphere_ids.size(); ++j)
+        for (size_t j = i+1; j < sphere_ids.size(); ++j)
         {
-            if (intersects_obb_in_sphere(obb, spheres.get_item(sphere_ids[j]), transform, transforms.get_item(sphere_ids[j]),registry))
+            auto &sphere = spheres.get_item(sphere_ids[j]);
+            auto &sphere_transform = transforms.get_item(sphere_ids[j]);
+            auto &sphere_collider = colliders.get_item(sphere_ids[j]);
+            if (intersects_obb_in_sphere(obb, sphere, obb_transform,
+                                         sphere_transform,obb_collider,sphere_collider, registry))
             {
-                //printf("OBB %d intersects Sphere %d\n", i, j);
+                // printf("OBB %d intersects Sphere %d\n", i, j);
             }
         }
     }
@@ -51,23 +57,60 @@ void s_collision::update(registry &registry)
     for (size_t i = 0; i < sphere_ids.size(); ++i)
     {
         auto &sphere = spheres.get_item(sphere_ids[i]);
-        auto &transform = transforms.get_item(sphere_ids[i]);
-
-        for (size_t j = i + 1; j < obb_ids.size(); ++j)
+        auto &sphere_transform = transforms.get_item(sphere_ids[i]);
+        auto &sphere_collider = colliders.get_item(sphere_ids[i]);
+        for (size_t j = i+1; j < obb_ids.size(); ++j)
         {
-            if (intersects_obb_in_sphere(obbs.get_item(obb_ids[j]), sphere, transforms.get_item(obb_ids[j]), transform,registry))
+            auto &obb = obbs.get_item(obb_ids[j]);
+            auto &obb_transform = transforms.get_item(obb_ids[j]);
+            auto &obb_collider = colliders.get_item(obb_ids[j]);
+            if (intersects_obb_in_sphere(obb, sphere, obb_transform, sphere_transform, obb_collider, sphere_collider, registry))
             {
-               // printf("Sphere %d intersects OBB %d\n", i, j);
+                // printf("Sphere %d intersects OBB %d\n", i, j);
             }
         }
     }
 }
-
-
-
-bool s_collision::intersects_sphere_in_sphere(const c_sphere &sphere1, const c_sphere &sphere2,
-                                              c_transform &transform1, c_transform &transform2,registry &registry)
+bool s_collision::point_in_aabb(vec3 min, vec3 max, vec3 position, vec3 point)
 {
+    // Calculate the local coordinates of the point relative to the AABB
+    vec3 local_point = point - position;
+
+    // Check if the local coordinates are within the bounds of the AABB
+    return (local_point.x >= min.x && local_point.x <= max.x) &&
+           (local_point.y >= min.y && local_point.y <= max.y) &&
+           (local_point.z >= min.z && local_point.z <= max.z);
+}
+bool s_collision::intersects_aabb_in_aabb(const vec3 &min1, const vec3 &max1, const vec3 &min2, const vec3 &max2)
+{
+    // Check for overlap along the x-axis
+    bool overlap_x = (min1.x <= max2.x) && (max1.x >= min2.x);
+
+    // Check for overlap along the y-axis
+    bool overlap_y = (min1.y <= max2.y) && (max1.y >= min2.y);
+
+    // Check for overlap along the z-axis
+    bool overlap_z = (min1.z <= max2.z) && (max1.z >= min2.z);
+
+    // If there is overlap along all three axes, the AABBs intersect
+    return overlap_x && overlap_y && overlap_z;
+}
+bool s_collision::intersects_sphere_in_sphere(const c_sphere &sphere1, const c_sphere &sphere2, c_transform &transform1,
+                                              c_transform &transform2, c_collider &collider1, c_collider &collider2,
+                                              registry &registry)
+{
+    const object_collision_type type1 = collider1.collision_type;
+    const object_collision_type type2 = collider2.collision_type;
+    if(type1 == object_collision_type::STATIC && type2 == object_collision_type::STATIC)
+    {
+        return false;
+    }
+    const auto object_bitmask = collider1.collision_bitmask;
+    const auto other_object_bitmask = collider2.collision_bitmask;
+    if ((object_bitmask & other_object_bitmask) == 0)
+    {
+        return false;
+    }
     const vec3 center1 = transform1.position;
     const vec3 center2 = transform2.position;
     const float radius1 = sphere1.radius;
@@ -84,13 +127,27 @@ bool s_collision::intersects_sphere_in_sphere(const c_sphere &sphere1, const c_s
     float penetration_depth = radius_sum - distance;
     vec3 penetration_axis = (center2 - center1).normalized();
 
-    //transform1.position = transform1.position + penetration_axis * (penetration_depth * 0.5f);
-    //transform2.position = transform2.position - penetration_axis * (penetration_depth * 0.5f);
-    registry.add_collision_manifold({penetration_axis, penetration_depth, transform1, transform2});
+    if(penetration_depth > 0.000001)
+    {
+        registry.add_collision_manifold({penetration_axis, penetration_depth, transform1, transform2, type1, type2});
+    }
     return true;
 }
 bool s_collision::intersects_obb_in_obb(const c_quad &obb1, const c_quad &obb2, c_transform &transform1,
-                                                   c_transform &transform2,registry &registry) {
+                                        c_transform &transform2, c_collider &collider1, c_collider &collider2,
+                                        registry &registry) {
+    const object_collision_type type1 = collider1.collision_type;
+    const object_collision_type type2 = collider2.collision_type;
+    if(type1 == object_collision_type::STATIC && type2 == object_collision_type::STATIC)
+    {
+        return false;
+    }
+    const auto object_bitmask = collider1.collision_bitmask;
+    const auto other_object_bitmask = collider2.collision_bitmask;
+    if ((object_bitmask & other_object_bitmask) == 0)
+    {
+        return false;
+    }
     // Extract rotation matrices
     const mat4 rotation_matrix1 = mat4::create_rotation_matrix(transform1.rotation);
     const mat4 rotation_matrix2 = mat4::create_rotation_matrix(transform2.rotation);
@@ -136,12 +193,10 @@ bool s_collision::intersects_obb_in_obb(const c_quad &obb1, const c_quad &obb2, 
         }
     }
 
-    if (min_penetration_depth != 0) {
-        registry.add_collision_manifold({penetration_axis, min_penetration_depth, transform1, transform2});
+    if (min_penetration_depth > 0.000001) {
+        registry.add_collision_manifold({penetration_axis, min_penetration_depth, transform1, transform2, type1, type2});
     }
 
-    //transform1.position = transform1.position + penetration_axis * (min_penetration_depth * 0.5f);
-    //transform2.position = transform2.position - penetration_axis * (min_penetration_depth * 0.5f);
     return true;
 }
 std::vector<vec3> s_collision::get_obb_points_in_world_space(const c_quad &obb, const c_transform &transform)
@@ -195,16 +250,28 @@ bool s_collision::test_axis(const vec3 &axis, const std::vector<vec3> &points1, 
     if (axis_overlap < overlap) {
         overlap = axis_overlap;
         penetration_axis = axis;
-        if(min1 < min2)
+        if(min2 > min1)
         {
             penetration_axis = axis*-1.0f;
         }
     }
     return true;
 }
-bool s_collision::intersects_obb_in_sphere(const c_quad &obb, c_sphere &sphere,
-                                                      c_transform &obb_transform,
-                                                      c_transform &sphere_transform,registry &registry) {
+bool s_collision::intersects_obb_in_sphere(const c_quad &obb, c_sphere &sphere, c_transform &obb_transform,
+                                           c_transform &sphere_transform, c_collider &obb_collider,
+                                           c_collider &sphere_collider, registry &registry) {
+    const object_collision_type type1 = obb_collider.collision_type;
+    const object_collision_type type2 = sphere_collider.collision_type;
+    if(type1 == object_collision_type::STATIC && type2 == object_collision_type::STATIC)
+    {
+        return false;
+    }
+    const auto object_bitmask = obb_collider.collision_bitmask;
+    const auto other_object_bitmask = sphere_collider.collision_bitmask;
+    if ((object_bitmask & other_object_bitmask) == 0)
+    {
+        return false;
+    }
     // Extract OBB data
     const vec3 center_obb = obb_transform.position;
     const vec3 extents_obb = obb.extents * 0.5f;
@@ -235,13 +302,11 @@ bool s_collision::intersects_obb_in_sphere(const c_quad &obb, c_sphere &sphere,
     float distance = std::sqrt(distance_squared);
     float penetration_depth = radius_sphere - distance;
     vec3 penetration_axis = (rotation_matrix_obb * difference).normalized();
-    if(penetration_depth !=0)
+    if(penetration_depth > 0.000001)
     {
-        registry.add_collision_manifold({penetration_axis, penetration_depth, sphere_transform, obb_transform});
+        registry.add_collision_manifold({penetration_axis, penetration_depth, obb_transform, sphere_transform, type1, type2});
     }
     // Adjust positions for penetration resolution
-    //obb_transform.position = obb_transform.position - penetration_axis * (penetration_depth * 0.5f);
-    //sphere_transform.position = sphere_transform.position + penetration_axis * (penetration_depth * 0.5f);
 
     return true;
 }

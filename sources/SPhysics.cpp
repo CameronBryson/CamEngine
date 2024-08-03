@@ -13,7 +13,7 @@ void s_physics::update_kinematic_bodies(const registry &registry, float dt)
 {
     auto &positions = registry.get_sparse_set<c_transform>();
     auto &velocities = registry.get_sparse_set<c_velocity>();
-    const auto ids = registry.get_entity_ids<c_kinetic_body, c_transform, c_velocity>();
+    const auto ids = registry.get_entity_ids<c_transform, c_velocity>();
 
     for (const auto id : ids)
     {
@@ -25,10 +25,10 @@ void s_physics::update_kinematic_bodies(const registry &registry, float dt)
 }
 void s_physics::update_dynamic_bodies(const registry &registry, float dt)
 {
-    auto& dynamic_bodies = registry.get_sparse_set<c_dynamic_body>();
+    auto& dynamic_bodies = registry.get_sparse_set<c_rigid_body>();
     auto &positions = registry.get_sparse_set<c_transform>();
     auto &velocities = registry.get_sparse_set<c_velocity>();
-    const auto ids = registry.get_entity_ids<c_dynamic_body, c_transform, c_velocity>();
+    const auto ids = registry.get_entity_ids<c_rigid_body, c_transform, c_velocity>();
 
     for (const auto id : ids)
     {

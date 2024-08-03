@@ -2,6 +2,11 @@
 #define COMPONENTS_HPP
 #include "Color.hpp"
 #include "Vectors.hpp"
+enum class object_collision_type {
+    STATIC,
+    KINEMATIC,
+    DYNAMIC
+};
 
 // Component for entities affected by gravity
 struct c_gravity
@@ -22,7 +27,7 @@ struct c_render
 };
 
 // Component for physical properties
-struct c_dynamic_body
+struct c_rigid_body
 {
     float mass = 1.0f; // Default mass to avoid division by zero
     float drag = 0.0f;
@@ -33,11 +38,6 @@ struct c_sprite
 {
 };
 
-// Marker component for static bodies (e.g., walls)
-struct c_static_body
-{
-    //does not care about forces
-};
 
 // Component for position, rotation, and scale
 struct c_transform
@@ -45,12 +45,6 @@ struct c_transform
     vec3 position = {0, 0, 0};
     vec3 rotation = {0, 0, 0};
     vec3 scale = {1, 1, 1};
-};
-
-// Marker component for kinetic bodies (e.g., moving platforms)
-struct c_kinetic_body
-{
-    //only cares about velocity
 };
 
 // Component for velocity
@@ -63,7 +57,9 @@ struct c_velocity
 struct c_collider
 {
     bool is_trigger = false;
-    unsigned int bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
+    unsigned int collision_bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
+    object_collision_type collision_type = object_collision_type::STATIC;
+
 };
 
 struct c_health

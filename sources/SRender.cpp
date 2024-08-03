@@ -28,7 +28,7 @@ void s_render::update(const registry &registry, const camera &camera)
         auto &[position, rotation, scale] = positions.get_item(id);
         mat4 model_matrix = mat4::create_translation_matrix(position) * mat4::create_rotation_matrix(rotation) *
                            mat4::create_scale_matrix(scale);
-        for (auto &sphere_triangle : faces::get_sphere_triangles(radius, 10, 10))
+        for (auto &sphere_triangle : faces::get_sphere_triangles(radius, 5, 9))
         {
             update_triangle(sphere_triangle, model_matrix);
             for (auto &vertex : sphere_triangle)

@@ -10,7 +10,7 @@ class RegistryTests : public ::testing::Test {
         reg.create_sparse_set<c_player>();
         reg.create_sparse_set<c_transform>();
         reg.create_sparse_set<c_velocity>();
-        reg.create_sparse_set<c_dynamic_body>();
+        reg.create_sparse_set<c_rigid_body>();
         reg.create_sparse_set<c_quad>();
     }
 };
