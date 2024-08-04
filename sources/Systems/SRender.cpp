@@ -1,9 +1,12 @@
 #include "SRender.hpp"
-#include "Graphics/Faces.hpp"
 #include "Components.hpp"
-#include "Math/MathUtil.hpp"
+#include "Engine/EngineUtil.hpp"
 #include "Engine/Stats.hpp"
+#include "Graphics/Faces.hpp"
+#include "Math/MathUtil.hpp"
 #include "raylib.h"
+
+#include "Graphics/GraphicsUtil.hpp"
 #include <string>
 
 void s_render::init()
@@ -68,12 +71,12 @@ void s_render::shutdown()
 
 void s_render::draw_statistics()
 {
-    const std::string stats_text = "FPS: " + std::to_string(GetFPS()) + "\n" +
-                             "DeltaTime: " + std::to_string(GetFrameTime()) + "\n" +
+    const std::string stats_text = "FPS: " + std::to_string(engine_util::get_fps()) + "\n" +
+                             "DeltaTime: " + std::to_string(engine_util::get_deltatime()) + "\n" +
                              "Update: " + std::to_string(stats::timer_vector[stats::stat_type::UPDATE].count()) + " MS\n" +
                              "Render: " + std::to_string(stats::timer_vector[stats::stat_type::RENDER].count()) + " MS\n" +
                              "Benchmark: " + std::to_string(stats::timer_vector[stats::stat_type::BENCHMARK].count()) + " MS";
-    DrawText(stats_text.c_str(), 50, 0, 50, {255, 0, 0, 255});
+    graphics_util::draw_text(stats_text.c_str(), 50, 0, 50, {255, 0, 0, 255});
 }
 
 void s_render::update_triangle(std::vector<vec3> &triangle, const mat4 &local_matrix)
@@ -86,19 +89,17 @@ void s_render::update_triangle(std::vector<vec3> &triangle, const mat4 &local_ma
 
 void s_render::draw_triangles(const std::deque<std::vector<vec3>> &draw_queue)
 {
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
+    graphics_util::clear_background({0,0,0});
     for (const auto &triangle : draw_queue)
     {
         for (int i = 0; i < triangle.size(); ++i)
         {
             const vec3 start = triangle[i];
             const vec3 end = triangle[(i + 1) % triangle.size()];
-            DrawLine(start.x, start.y, end.x, end.y, RED);
+            graphics_util::draw_line({start.x,start.y},{end.x,end.y}, {1,0,0});
         }
     }
     draw_statistics();
-    EndDrawing();
 }
 
 void s_render::project_triangles(std::deque<std::vector<vec3>> &triangle_queue, const mat4 &view_matrix,
@@ -129,6 +130,6 @@ void s_render::project(vec3 &vertex, const mat4 &view_matrix, const mat4 &projec
     tempVertex = projection_matrix * tempVertex;
     tempVertex /= tempVertex.w;
     // Convert the normalized device coordinates to screen space coordinates
-    vertex.x = (tempVertex.x + 1.0f) * 0.5f * GetScreenWidth();
-    vertex.y = (1.0f - tempVertex.y) * 0.5f * GetScreenHeight();
+    vertex.x = (tempVertex.x + 1.0f) * 0.5f * graphics_util::get_screen_width();
+    vertex.y = (1.0f - tempVertex.y) * 0.5f * graphics_util::get_screen_height();
 }

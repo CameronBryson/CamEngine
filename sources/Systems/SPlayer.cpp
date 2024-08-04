@@ -10,12 +10,12 @@ void s_player::update(const registry &registry, const float dt)
     auto& velocities = registry.get_sparse_set<c_velocity>();
     auto ids = registry.get_entity_ids<c_player, c_velocity>();
 
-    const bool w = IsKeyDown(KEY_W);
-    const bool a = IsKeyDown(KEY_A);
-    const bool s = IsKeyDown(KEY_S);
-    const bool d = IsKeyDown(KEY_D);
-    const bool q = IsKeyDown(KEY_Q);
-    const bool e = IsKeyDown(KEY_E);
+    bool w;
+    bool a;
+    bool s;
+    bool d;
+    bool q;
+    bool e;
 
     for (const auto id : ids)
     {

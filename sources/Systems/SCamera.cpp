@@ -11,33 +11,44 @@ void s_camera::update(camera &camera, const float dt)
     const vec3 right = forward.cross_product(camera.up).normalized();
     const vec3 up = camera.up;
     bool moved = false;
+    bool I;
+    bool K;
+    bool J;
+    bool L;
+    bool U;
+    bool O;
+    bool UP;
+    bool DOWN;
+    bool LEFT;
+    bool RIGHT;
+
     // Move camera
-    if (IsKeyDown(KEY_I))
+    if (I)
     {
         camera.position += forward * camera_movespeed * dt;
         moved = true;
     }
-    if (IsKeyDown(KEY_K))
+    if (K)
     {
         camera.position -= forward * camera_movespeed * dt;
         moved = true;
     }
-    if (IsKeyDown(KEY_J))
+    if (J)
     {
         camera.position += right * camera_movespeed * dt;
         moved = true;
     }
-    if (IsKeyDown(KEY_L))
+    if (L)
     {
         camera.position -= right * camera_movespeed * dt;
         moved = true;
     }
-    if (IsKeyDown(KEY_U))
+    if (U)
     {
         camera.position += up * camera_movespeed * dt;
         moved = true;
     }
-    if (IsKeyDown(KEY_O))
+    if (O)
     {
         camera.position -= up * camera_movespeed * dt;
         moved = true;
@@ -46,22 +57,22 @@ void s_camera::update(camera &camera, const float dt)
     camera.target = camera.position + forward;
 
     // Rotate camera
-    if (IsKeyDown(KEY_UP))
+    if (UP)
     {
         camera.target.y += camera_rotationspeed * dt;
         moved = true;
     }
-    if (IsKeyDown(KEY_DOWN))
+    if (DOWN)
     {
         camera.target.y -= camera_rotationspeed * dt;
         moved = true;
     }
-    if (IsKeyDown(KEY_LEFT))
+    if (LEFT)
     {
         camera.target.x -= camera_rotationspeed * dt;
         moved = true;
     }
-    if (IsKeyDown(KEY_RIGHT))
+    if (RIGHT)
     {
         camera.target.x += camera_rotationspeed * dt;
         moved = true;
