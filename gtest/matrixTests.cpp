@@ -1,4 +1,4 @@
-#include "../sources/Matrix.hpp"
+#include "../sources/Math/Matrix.hpp"
 #include <gtest/gtest.h>
 
 TEST(MatrixTests, AdditionTest)

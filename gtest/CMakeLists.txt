@@ -6,7 +6,7 @@ add_executable(google_testing main.cpp sampleTest.cpp
         vectorTests.cpp
         matrixTests.cpp
         collisionTests.cpp
-        ../sources/SCollision.cpp
+        ../sources/Systems/SCollision.cpp
         mathUtilTests.cpp
 )
 

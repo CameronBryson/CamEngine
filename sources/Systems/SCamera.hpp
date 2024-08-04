@@ -4,13 +4,14 @@
 
 #ifndef SCAMERA_HPP
 #define SCAMERA_HPP
-#include "Camera.hpp"
+#include "Graphics/Camera.hpp"
 
-#include <Registry.hpp>
+#include "Engine/Registry.hpp"
 
 class s_camera {
 public:
     static void update(camera &camera, const float dt);
+    static void look_at_mouse();
 
 };
 

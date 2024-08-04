@@ -1,7 +1,6 @@
 #pragma once
-#include "Vectors.hpp"
 #include "Components.hpp"
-
+#include "Math/Vectors.hpp"
 
 class collision_manifold {
 public:

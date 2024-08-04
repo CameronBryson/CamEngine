@@ -1,8 +1,8 @@
 #pragma once
-#include "Camera.hpp"
+#include "Graphics/Camera.hpp"
 #include "raylib.h"
 
-#include <Registry.hpp>
+#include "Engine/Registry.hpp""
 class s_render
 {
   public:

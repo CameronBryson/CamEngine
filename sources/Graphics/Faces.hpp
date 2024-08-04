@@ -1,6 +1,6 @@
 #pragma once
-#include "MathUtil.hpp"
-#include "Vectors.hpp"
+#include "Math/Vectors.hpp"
+#include "Math/MathUtil.hpp"
 #include <vector>
 
 class faces {

@@ -1,6 +1,6 @@
 #pragma once
 #include "Components.hpp"
-#include "Registry.hpp"
+#include "Engine/Registry.hpp"
 class s_collision
 {
   public:

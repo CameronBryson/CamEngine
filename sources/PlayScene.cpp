@@ -1,12 +1,10 @@
 #include "PlayScene.hpp"
 
 #include "Components.hpp"
-#include "Factory.hpp"
-#include "Registry.hpp"
-#include "SCamera.hpp"
-#include "SCollision.hpp"
-#include "Systems.hpp"
-#include "Timer.hpp"
+#include "Engine/Factory.hpp"
+#include "Engine/Registry.hpp"
+#include "Systems/Systems.hpp"
+#include "Engine/Timer.hpp"
 #include "raylib.h"
 play_scene::play_scene()
 {

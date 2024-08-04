@@ -1,5 +1,5 @@
+#include "../sources/Engine/Vectors.hpp"
 #include <gtest/gtest.h>
-#include "../sources/Vectors.hpp"
 
 // Test vec2 class
 TEST(Vec2Tests, Constructors) {

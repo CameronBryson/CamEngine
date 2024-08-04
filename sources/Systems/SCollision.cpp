@@ -1,8 +1,8 @@
 #include "SCollision.hpp"
 
-#include "Faces.hpp"
-#include "Matrix.hpp"
-#include "Collision.hpp"
+#include "../Engine/Collision.hpp"
+#include "../Graphics/Faces.hpp"
+#include "../Math/Matrix.hpp"
 
 void s_collision::update(registry &registry)
 {

@@ -1,7 +1,7 @@
 #pragma once
-#include "Camera.hpp"
-#include "IScene.hpp"
-#include "Registry.hpp"
+#include "Graphics/Camera.hpp"
+#include "Engine/IScene.hpp"
+#include "Engine/Registry.hpp"
 #include "raylib.h"
 class play_scene final : public i_scene
 {

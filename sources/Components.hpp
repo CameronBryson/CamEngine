@@ -1,7 +1,7 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
-#include "Color.hpp"
-#include "Vectors.hpp"
+#include "Graphics/Color.hpp"
+#include "Math/Vectors.hpp"
 enum class object_collision_type {
     STATIC,
     KINEMATIC,

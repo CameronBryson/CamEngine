@@ -1,8 +1,8 @@
 #include "SRender.hpp"
+#include "Graphics/Faces.hpp"
 #include "Components.hpp"
-#include "Faces.hpp"
-#include "MathUtil.hpp"
-#include "Stats.hpp"
+#include "Math/MathUtil.hpp"
+#include "Engine/Stats.hpp"
 #include "raylib.h"
 #include <string>
 
@@ -13,9 +13,8 @@ void s_render::init()
 
 void s_render::update(const registry &registry, const camera &camera)
 {
-    const auto view_matrix = mat4::create_view_matrix(camera.position, camera.target, camera.up);
-    const auto projection_matrix =
-        mat4::create_perspective_matrix(camera.fov, camera.aspect_ratio, camera.near_plane, camera.far_plane);
+    const auto view_matrix = camera.view_matrix;
+    const auto projection_matrix = camera.projection_matrix;
 
     auto &positions = registry.get_sparse_set<c_transform>();
     auto &spheres = registry.get_sparse_set<c_sphere>();
