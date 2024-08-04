@@ -71,9 +71,3 @@ void s_camera::update(camera &camera, const float dt)
         camera.update_view_matrix();
     }
 }
-vec3 s_camera::get_mouse_position_in_world_space(const camera &camera, const float screen_width,
-                                                 const float screen_height, const vec2 mouse_pos, vec3 &position,
-                                                 vec3 &direction)
-{
-    return vec3();
-}
