@@ -71,8 +71,8 @@ void s_render::shutdown()
 
 void s_render::draw_statistics()
 {
-    const std::string stats_text = "FPS: " + std::to_string(engine_util::get_fps()) + "\n" +
-                             "DeltaTime: " + std::to_string(engine_util::get_deltatime()) + "\n" +
+    const std::string stats_text = //"FPS: " + std::to_string(engine_util::get_fps()) + "\n" +
+                             //"DeltaTime: " + std::to_string(engine_util::get_deltatime()) + "\n" +
                              "Update: " + std::to_string(stats::timer_vector[stats::stat_type::UPDATE].count()) + " MS\n" +
                              "Render: " + std::to_string(stats::timer_vector[stats::stat_type::RENDER].count()) + " MS\n" +
                              "Benchmark: " + std::to_string(stats::timer_vector[stats::stat_type::BENCHMARK].count()) + " MS";
@@ -89,7 +89,7 @@ void s_render::update_triangle(std::vector<vec3> &triangle, const mat4 &local_ma
 
 void s_render::draw_triangles(const std::deque<std::vector<vec3>> &draw_queue)
 {
-    graphics_util::clear_background({1,1,1,1});
+    graphics_util::clear_background();
     for (const auto &triangle : draw_queue)
     {
         for (int i = 0; i < triangle.size(); ++i)
@@ -130,6 +130,6 @@ void s_render::project(vec3 &vertex, const mat4 &view_matrix, const mat4 &projec
     tempVertex = projection_matrix * tempVertex;
     tempVertex /= tempVertex.w;
     // Convert the normalized device coordinates to screen space coordinates
-    vertex.x = (tempVertex.x + 1.0f) * 0.5f * graphics_util::get_screen_width();
-    vertex.y = (1.0f - tempVertex.y) * 0.5f * graphics_util::get_screen_height();
+    vertex.x = (tempVertex.x + 1.0f) * 0.5f * settings::window_width;
+    vertex.y = (1.0f - tempVertex.y) * 0.5f * settings::window_height;
 }

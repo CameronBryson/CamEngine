@@ -1,49 +1,39 @@
 #include "GameManager.hpp"
-game_manager *game_manager::m_instance_ = nullptr;
-game_manager::game_manager()
-{
-    m_current_scene_ = nullptr;
-}
+#include "Engine/Timer.hpp"
+#include "EngineUtil.hpp"
 
-game_manager::~game_manager()
-{
-    shutdown();
-}
+#include <iostream>
 
-game_manager *game_manager::get_instance()
-{
-    if (m_instance_ == nullptr)
-    {
-        m_instance_ = new game_manager();
-    }
-    return m_instance_;
-}
-
+GLFWwindow* game_manager::game_window = nullptr;
+i_scene* game_manager::m_current_scene_ = nullptr;
 
 void game_manager::init()
 {
-    if(!glfwInit())
+    glfwSetErrorCallback(engine_util::error_callback);
+    if (!glfwInit())
     {
-       exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
-    game_window = glfwCreateWindow(settings::window_width,settings::window_height,"Game Window", nullptr,nullptr);
-    if(!game_window)
+    game_window = glfwCreateWindow(settings::window_width, settings::window_height, "Game Window", nullptr, nullptr);
+    if (!game_window)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+    glfwSetKeyCallback(game_window, engine_util::key_callback);
     glfwMakeContextCurrent(game_window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
+    glClearColor(1, 1, 1, 1);
     m_current_scene_->init();
 }
 
-void game_manager::update(const float dt) const
+void game_manager::update(float dt)
 {
     m_current_scene_->update(dt);
     m_current_scene_->late_update(dt);
 }
 
-void game_manager::render() const
+void game_manager::render()
 {
     m_current_scene_->render();
 }
@@ -52,23 +42,52 @@ void game_manager::shutdown()
 {
     m_current_scene_->shutdown();
     delete m_current_scene_;
-    // delete m_instance;
+    glfwDestroyWindow(game_window);
+    glfwTerminate();
 }
+
 void game_manager::game_loop()
 {
-    int count = 0;
-    while(!glfwWindowShouldClose(game_window))
+    const double fps_limit = 1.0 / settings::max_fps;
+    double last_update_time = glfwGetTime();
+    double last_frame_time = glfwGetTime();
+    double last_fps_time = glfwGetTime();
+    int frame_count = 0;
+
+    while (!glfwWindowShouldClose(game_window))
     {
-        glViewport(0,0,settings::window_width, settings::window_height);
-        update(0.0f);
-        render();
-        glfwSwapBuffers(game_window);
+        double now = glfwGetTime();
+        double delta_time = now - last_update_time;
+
         glfwPollEvents();
-        count++;
-        printf("%d\n", count);
+        glfwGetFramebufferSize(game_window, &settings::window_width, &settings::window_height);
+        glViewport(0, 0, settings::window_width, settings::window_height);
+
+        if (m_current_scene_)
+        {
+            update(static_cast<float>(delta_time));
+            render();
+        }
+
+        if ((now - last_frame_time) >= fps_limit)
+        {
+            glfwSwapBuffers(game_window);
+            last_frame_time = now;
+            frame_count++;
+        }
+
+        if ((now - last_fps_time) >= 1.0)
+        {
+            double fps = frame_count / (now - last_fps_time);
+            printf("FPS: %f\n", fps);
+            frame_count = 0;
+            last_fps_time = now;
+        }
+
+        last_update_time = now;
     }
 }
-float game_manager::get_delta_time() const
+GLFWwindow *game_manager::get_glfw_window()
 {
-    return delta_time_;
+    return game_window;
 }

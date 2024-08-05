@@ -20,17 +20,8 @@ public:
     static void draw_text(const char *text, int posX, int posY, int fontSize, color color)
     {
     }
-    static int get_screen_width()
+    static void clear_background()
     {
-        return settings::window_width;
-    }
-    static int get_screen_height()
-    {
-        return settings::window_height;
-    }
-    static void clear_background(color color)
-    {
-        glClearColor(color.r,color.g,color.b,color.a);
         glClear(GL_COLOR_BUFFER_BIT);
     }
     static vec2 convert_point_to_screen(vec2 &point)

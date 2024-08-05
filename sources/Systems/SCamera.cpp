@@ -1,5 +1,8 @@
 #include "SCamera.hpp"
+
+#include "Engine/EngineUtil.hpp"
 #include "Math/MathUtil.hpp"
+#include <Engine/GameManager.hpp>
 #include <raylib.h>
 
 static constexpr float camera_movespeed = 5.0f;
@@ -11,16 +14,16 @@ void s_camera::update(camera &camera, const float dt)
     const vec3 right = forward.cross_product(camera.up).normalized();
     const vec3 up = camera.up;
     bool moved = false;
-    bool I;
-    bool K;
-    bool J;
-    bool L;
-    bool U;
-    bool O;
-    bool UP;
-    bool DOWN;
-    bool LEFT;
-    bool RIGHT;
+    bool I = engine_util::is_key_pressed('I');
+    bool K = engine_util::is_key_pressed('K');
+    bool J = engine_util::is_key_pressed('J');
+    bool L = engine_util::is_key_pressed('L');
+    bool U = engine_util::is_key_pressed('U');
+    bool O = engine_util::is_key_pressed('O');
+    bool UP = engine_util::is_key_pressed(GLFW_KEY_UP);
+    bool DOWN = engine_util::is_key_pressed(GLFW_KEY_DOWN);
+    bool LEFT = engine_util::is_key_pressed(GLFW_KEY_LEFT);
+    bool RIGHT = engine_util::is_key_pressed(GLFW_KEY_RIGHT);
 
     // Move camera
     if (I)
