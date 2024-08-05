@@ -89,14 +89,14 @@ void s_render::update_triangle(std::vector<vec3> &triangle, const mat4 &local_ma
 
 void s_render::draw_triangles(const std::deque<std::vector<vec3>> &draw_queue)
 {
-    graphics_util::clear_background({0,0,0});
+    graphics_util::clear_background({1,1,1,1});
     for (const auto &triangle : draw_queue)
     {
         for (int i = 0; i < triangle.size(); ++i)
         {
             const vec3 start = triangle[i];
             const vec3 end = triangle[(i + 1) % triangle.size()];
-            graphics_util::draw_line({start.x,start.y},{end.x,end.y}, {1,0,0});
+            graphics_util::draw_line({start.x,start.y},{end.x,end.y}, {1,0,0,1});
         }
     }
     draw_statistics();

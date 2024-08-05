@@ -7,12 +7,7 @@ int main()
     const auto game_manager = game_manager::get_instance();
     game_manager->load_scene<play_scene>();
     game_manager->init();
-    while (true)
-    {
-        //game_manager->update(GetFrameTime());
-        game_manager->render();
-    }
+    game_manager->game_loop();
     game_manager->shutdown();
-    //CloseWindow();
     return 0;
 }

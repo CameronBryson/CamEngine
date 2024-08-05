@@ -36,9 +36,9 @@ endif()
 # Enable shared library build
 set(BUILD_SHARED_LIBS ON)
 
+find_package(glfw3 3.3 REQUIRED)
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
 
 
 # Adding our source files
@@ -60,7 +60,7 @@ add_executable(${PROJECT_NAME}
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL glfw)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw)
 
 # Setting ASSETS_PATH
 target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/") # Set the asset path macro to the absolute path on the dev machine
