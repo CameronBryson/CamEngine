@@ -14,49 +14,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-static const float vertices[] = {
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f
-    };
     // world space positions of our cubes
     static glm::vec3 cubePositions[] = {
         glm::vec3( 0.0f,  0.0f,  0.0f),
@@ -70,7 +27,52 @@ static const float vertices[] = {
         glm::vec3( 1.5f,  0.2f, -1.5f),
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
-unsigned int VBO, VAO;
+    GLfloat vertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  // A 0
+        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  // B 1
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  // C 2
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  // D 3
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  // E 4
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,   // F 5
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,   // G 6
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,   // H 7
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,  // D 8
+        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  // A 9
+        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f,  // E 10
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  // H 11
+        0.5f, -0.5f, -0.5f,  0.0f, 0.0f,   // B 12
+        0.5f,  0.5f, -0.5f,  1.0f, 0.0f,   // C 13
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,   // G 14
+        0.5f, -0.5f,  0.5f,  0.0f, 1.0f,   // F 15
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  // A 16
+        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,   // B 17
+        0.5f, -0.5f,  0.5f,  1.0f, 1.0f,   // F 18
+        -0.5f, -0.5f,  0.5f,  0.0f, 1.0f,  // E 19
+        0.5f,  0.5f, -0.5f,   0.0f, 0.0f,  // C 20
+        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f,  // D 21
+        -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  // H 22
+        0.5f,  0.5f,  0.5f,   0.0f, 1.0f,  // G 23
+    };
+    static const unsigned int indices[] = {
+        // front and back
+        0, 3, 2,
+        2, 1, 0,
+        4, 5, 6,
+        6, 7 ,4,
+        // left and right
+        11, 8, 9,
+        9, 10, 11,
+        12, 13, 14,
+        14, 15, 12,
+        // bottom and top
+        16, 17, 18,
+        18, 19, 16,
+        20, 21, 22,
+        22, 23, 20
+    };
+unsigned int VBO, VAO,EBO;
 shader_program *shader;
 // Update the init function to initialize both shader programs
 void s_render::init() {
@@ -79,15 +81,22 @@ void s_render::init() {
     shader = new shader_program("C:\\Personal-Programming\\C++\\raylib\\raylib-cmake\\sources\\Shaders\\vertex_shader.glsl", "C:\\Personal-Programming\\C++\\raylib\\raylib-cmake\\sources\\Shaders\\fragment_shader.glsl");
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+
+    glBindVertexArray(0);
 }
 
 // Update the update function to draw twice
@@ -100,9 +109,10 @@ void s_render::update(const registry &registry, Camera &camera)
     auto proj_matrix = camera.GetProjectionMatrix();
     auto &positions = registry.get_sparse_set<c_transform>();
     auto &quads = registry.get_sparse_set<c_quad>();
-    shader->use();
     shader->setMat4("projection", proj_matrix);
     shader->setMat4("view", view_matrix);
+    shader->use();
+    glBindVertexArray(VAO);
     for (unsigned int i = 0; i <10; i++)
     {
         auto model = glm::mat4(1.0f);
@@ -111,14 +121,16 @@ void s_render::update(const registry &registry, Camera &camera)
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         shader->setMat4("model", model);
 
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     }
+    glBindVertexArray(0);
 }
 
 void s_render::shutdown()
 {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 }
 
 void s_render::draw_statistics()
