@@ -37,10 +37,9 @@ endif()
 set(BUILD_SHARED_LIBS ON)
 
 find_package(glfw3 3.3 REQUIRED)
-find_package(GLEW REQUIRED)
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
-
+find_package(glad CONFIG REQUIRED)
 # Adding our source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/sources/*.cpp") # Define PROJECT_SOURCES as a list of all source files
 set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLUDE to be the path to the include directory of the project
@@ -50,20 +49,17 @@ add_executable(${PROJECT_NAME}
         sources/Graphics/Camera.hpp
         sources/Graphics/Faces.hpp
         sources/Systems/SCamera.hpp
-        sources/Math/Matrix.hpp
-        sources/Math/Vectors.hpp
         sources/Graphics/Color.hpp
         sources/Engine/Collision.hpp
         sources/Graphics/Ray.hpp
         sources/Graphics/GraphicsUtil.hpp
         sources/Engine/EngineUtil.hpp
-        sources/Shaders/ShaderProgram.cpp
         sources/Shaders/ShaderProgram.hpp
         sources/platform.hpp
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw GLEW::GLEW)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw glad::glad)
 
 # Setting ASSETS_PATH
 target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/") # Set the asset path macro to the absolute path on the dev machine

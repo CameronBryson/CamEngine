@@ -10,119 +10,115 @@
 #include "Shaders/ShaderProgram.hpp"
 
 #include <string>
-static shader_program* shader;
-static GLuint quadVAO, quadVBO, quadEBO;
-static GLuint sphereVAO, sphereVBO, sphereEBO;
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-void s_render::init()
-{
+float vertices[] = {
+        -0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+        -0.5f,  0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+
+        -0.5f, -0.5f,  0.5f,
+         0.5f, -0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f,
+
+        -0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+
+         0.5f,  0.5f,  0.5f,
+         0.5f,  0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+
+        -0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f,  0.5f,
+         0.5f, -0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f,
+        -0.5f, -0.5f, -0.5f,
+
+        -0.5f,  0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+         0.5f,  0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f, -0.5f
+    };
+    // world space positions of our cubes
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
+unsigned int VBO, VAO;
+shader_program *shader;
+// Update the init function to initialize both shader programs
+void s_render::init() {
     printf("Render init\n");
+
     shader = new shader_program("/home/cam/Documents/GitHub/raylib-cmake-template-master/sources/Shaders/vertex_shader.glsl", "/home/cam/Documents/GitHub/raylib-cmake-template-master/sources/Shaders/fragment_shader.glsl");
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
 
-    // Set up quad vertex data and buffers
-    std::vector<float> quadVertices = faces::get_quad_vertices();
-    std::vector<unsigned int> quadIndices = faces::get_quad_indices();
+    glBindVertexArray(VAO);
 
-    glGenVertexArrays(1, &quadVAO);
-    glGenBuffers(1, &quadVBO);
-    glGenBuffers(1, &quadEBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindVertexArray(quadVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, quadVertices.size() * sizeof(float), quadVertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, quadIndices.size() * sizeof(unsigned int), quadIndices.data(), GL_STATIC_DRAW);
-
+    // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    // Set up sphere vertex data and buffers
-    std::vector<float> sphereVertices = faces::get_sphere_vertices(10, 10);
-    std::vector<unsigned int> sphereIndices = faces::get_sphere_indices(10, 10);
-
-    glGenVertexArrays(1, &sphereVAO);
-    glGenBuffers(1, &sphereVBO);
-    glGenBuffers(1, &sphereEBO);
-
-    glBindVertexArray(sphereVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-    glBufferData(GL_ARRAY_BUFFER, sphereVertices.size() * sizeof(float), sphereVertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphereIndices.size() * sizeof(unsigned int), sphereIndices.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 }
 
-void s_render::update(const registry &registry, const camera &camera)
+// Update the update function to draw twice
+void s_render::update(const registry &registry, Camera &camera)
 {
-    graphics_util::clear_background();
-    const auto view_matrix = camera.view_matrix;
-    const auto projection_matrix = camera.projection_matrix;
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+    // Draw using shader_program
+    auto view_matrix = camera.GetViewMatrix();
+    auto proj_matrix = glm::perspective(glm::radians(camera.Zoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
     auto &positions = registry.get_sparse_set<c_transform>();
-    auto &spheres = registry.get_sparse_set<c_sphere>();
-    auto &aabbs = registry.get_sparse_set<c_quad>();
+    auto &quads = registry.get_sparse_set<c_quad>();
     shader->use();
-    shader->setViewMatrix(view_matrix.data());
-    shader->setProjectionMatrix(projection_matrix.data());
-
-
-    const auto sphereIndicesSize = faces::get_sphere_indices(10, 10).size();
-    const auto quadIndicesSize = faces::get_quad_indices().size();
-
-    for (const auto id : registry.get_entity_ids<c_sphere>())
+    shader->setMat4("projection", proj_matrix);
+    shader->setMat4("view", view_matrix);
+    for (unsigned int i = 0; i <10; i++)
     {
-        auto &[radius] = spheres.get_item(id);
-        auto &[position, rotation, scale] = positions.get_item(id);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, cubePositions[i]);
+        float angle = 20.0f * i;
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        shader->setMat4("model", model);
 
-        mat4 model_matrix = mat4::create_translation_matrix(position) * mat4::create_rotation_matrix(rotation) *
-                           mat4::create_scale_matrix(scale);
-
-        shader->setModelMatrix(model_matrix.data());
-        glBindVertexArray(sphereVAO);
-        glDrawElements(GL_LINES, sphereIndicesSize, GL_UNSIGNED_INT, 0);
-    }
-
-    for (const auto id : registry.get_entity_ids<c_quad>())
-    {
-        auto &[extents] = aabbs.get_item(id);
-        auto &[position, rotation, scale] = positions.get_item(id);
-        mat4 translation_matrix = mat4::create_translation_matrix(position);
-        mat4 rotation_matrix = mat4::create_rotation_matrix(rotation);
-        mat4 scale_matrix = mat4::create_scale_matrix(scale);
-
-        mat4 model_matrix = mat4::create_translation_matrix(position) * mat4::create_rotation_matrix(rotation) *
-                           mat4::create_scale_matrix(scale);
-        mat4 test_matrix = mat4::create_identity_matrix();
-
-        shader->setModelMatrix(model_matrix.data());
-        glBindVertexArray(quadVAO);
-        glDrawElements(GL_LINES, quadIndicesSize, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 }
 
 void s_render::shutdown()
 {
-    glDeleteVertexArrays(1, &quadVAO);
-    glDeleteBuffers(1, &quadVBO);
-    glDeleteBuffers(1, &quadEBO);
-
-    glDeleteVertexArrays(1, &sphereVAO);
-    glDeleteBuffers(1, &sphereVBO);
-    glDeleteBuffers(1, &sphereEBO);
-
-    delete shader;
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 }
 
 void s_render::draw_statistics()

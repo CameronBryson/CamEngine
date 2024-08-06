@@ -1,8 +1,7 @@
 #pragma once
-#include "Graphics/Camera.hpp"
 #include "Engine/IScene.hpp"
 #include "Engine/Registry.hpp"
-#include "raylib.h"
+#include "Graphics/Camera.hpp"
 class play_scene final : public i_scene
 {
   public:
@@ -20,5 +19,5 @@ class play_scene final : public i_scene
 
   private:
     registry m_registry_;
-    camera m_camera_;
+    Camera m_camera_;
 };

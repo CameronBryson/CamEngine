@@ -27,13 +27,13 @@ TEST_F(FactoryTests, CreatePlayer) {
 
     // Verify the values of the components
     const auto& transform = reg.get_component<c_transform>(player_id);
-    EXPECT_EQ(transform.position, vec3(0, 0, 0));
-    EXPECT_EQ(transform.rotation, vec3(0, 0, 90));
-    EXPECT_EQ(transform.scale, vec3(1, 1, 1));
+    EXPECT_EQ(transform.position, glm::vec3(0, 0, 0));
+    EXPECT_EQ(transform.rotation, glm::vec3(0, 0, 90));
+    EXPECT_EQ(transform.scale, glm::vec3(1, 1, 1));
 
     const auto& rigid_body = reg.get_component<c_rigid_body>(player_id);
     EXPECT_FLOAT_EQ(rigid_body.drag, 0.99f);
 
     const auto& quad = reg.get_component<c_quad>(player_id);
-    EXPECT_EQ(quad.extents, vec3(0.1f, 0.2f, 0.3f));
+    EXPECT_EQ(quad.extents, glm::vec3(0.1f, 0.2f, 0.3f));
 }

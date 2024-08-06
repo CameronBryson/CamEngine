@@ -23,7 +23,7 @@ TEST_F(SparseSetTests, AddComponent) {
     reg.process_commands();
     EXPECT_TRUE(reg.has_component<c_transform>(entity_id));
     const auto& retrieved_transform = reg.get_component<c_transform>(entity_id);
-    EXPECT_EQ(retrieved_transform.position, vec3(1, 2, 3));
+    EXPECT_EQ(retrieved_transform.position, glm::vec3(1, 2, 3));
 }
 
 TEST_F(SparseSetTests, RemoveComponent) {
@@ -42,9 +42,9 @@ TEST_F(SparseSetTests, GetComponent) {
     reg.add_component<c_transform>(entity_id, transform);
     reg.process_commands();
     const auto& retrieved_transform = reg.get_component<c_transform>(entity_id);
-    EXPECT_EQ(retrieved_transform.position, vec3(1, 2, 3));
-    EXPECT_EQ(retrieved_transform.rotation, vec3(0, 0, 0));
-    EXPECT_EQ(retrieved_transform.scale, vec3(1, 1, 1));
+    EXPECT_EQ(retrieved_transform.position, glm::vec3(1, 2, 3));
+    EXPECT_EQ(retrieved_transform.rotation, glm::vec3(0, 0, 0));
+    EXPECT_EQ(retrieved_transform.scale, glm::vec3(1, 1, 1));
 }
 
 TEST_F(SparseSetTests, SparseSetSize) {

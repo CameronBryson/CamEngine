@@ -1,14 +1,13 @@
 #pragma once
 #include "platform.hpp"
 #include "Color.hpp"
-#include "Math/Vectors.hpp"
 
 #include <cstring>
 
 class graphics_util
 {
 public:
-    static void draw_line(vec2 start, vec2 end, color color)
+    static void draw_line(glm::vec2 start, glm::vec2 end, color color)
     {
         convert_point_to_screen(start);
         convert_point_to_screen(end);
@@ -23,9 +22,9 @@ public:
     }
     static void clear_background()
     {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     }
-    static vec2 convert_point_to_screen(vec2 &point)
+    static glm::vec2 convert_point_to_screen(glm::vec2 &point)
     {
         point.x =  ((point.x / settings::window_width)*2.0f)-1.0f;
         point.y = ((point.y/settings::window_height)*2.0f)-1.0f;

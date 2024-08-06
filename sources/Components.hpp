@@ -1,7 +1,7 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
 #include "Graphics/Color.hpp"
-#include "Math/Vectors.hpp"
+#include "glm/glm.hpp"
 enum class object_collision_type {
     STATIC,
     KINEMATIC,
@@ -11,7 +11,7 @@ enum class object_collision_type {
 // Component for entities affected by gravity
 struct c_gravity
 {
-    vec3 gravity = {0, -9.81f, 0};
+    glm::vec3 gravity = {0, -9.81f, 0};
 };
 // Component for player-specific data
 struct c_player
@@ -31,7 +31,7 @@ struct c_rigid_body
 {
     float mass = 1.0f; // Default mass to avoid division by zero
     float drag = 0.0f;
-    vec3 acceleration = {0, 0, 0};
+    glm::vec3 acceleration = {0, 0, 0};
 };
 // Component for sprite-related data
 struct c_sprite
@@ -42,15 +42,15 @@ struct c_sprite
 // Component for position, rotation, and scale
 struct c_transform
 {
-    vec3 position = {0, 0, 0};
-    vec3 rotation = {0, 0, 0};
-    vec3 scale = {1, 1, 1};
+    glm::vec3 position = {0, 0, 0};
+    glm::vec3 rotation = {0, 0, 0};
+    glm::vec3 scale = {1, 1, 1};
 };
 
 // Component for velocity
 struct c_velocity
 {
-    vec3 velocity = {0, 0, 0};
+    glm::vec3 velocity = {0, 0, 0};
 };
 
 // Component for collider-related data
@@ -73,7 +73,7 @@ struct c_enemy
 
 struct c_quad
 {
-    vec3 extents;
+    glm::vec3 extents;
 };
 struct c_sphere
 {
@@ -86,7 +86,7 @@ struct c_capsule
 };
 struct c_plane
 {
-    vec3 normal;
+    glm::vec3 normal;
     float distance;
 };
 

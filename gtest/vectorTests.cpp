@@ -70,47 +70,47 @@ TEST(Vec2Tests, UtilityFunctions) {
     EXPECT_FLOAT_EQ(v5, 1.0f);
 }
 
-// Test vec3 class
-TEST(Vec3Tests, Constructors) {
-    vec3 v1;
+// Test glm::vec3 class
+TEST(glm::vec3Tests, Constructors) {
+    glm::vec3 v1;
     EXPECT_FLOAT_EQ(v1.x, 0.0f);
     EXPECT_FLOAT_EQ(v1.y, 0.0f);
     EXPECT_FLOAT_EQ(v1.z, 0.0f);
 
-    vec3 v2(1.0f, 2.0f, 3.0f);
+    glm::vec3 v2(1.0f, 2.0f, 3.0f);
     EXPECT_FLOAT_EQ(v2.x, 1.0f);
     EXPECT_FLOAT_EQ(v2.y, 2.0f);
     EXPECT_FLOAT_EQ(v2.z, 3.0f);
 }
 
-TEST(Vec3Tests, ArithmeticOperators) {
-    vec3 v1(1.0f, 2.0f, 3.0f);
-    vec3 v2(4.0f, 5.0f, 6.0f);
+TEST(glm::vec3Tests, ArithmeticOperators) {
+    glm::vec3 v1(1.0f, 2.0f, 3.0f);
+    glm::vec3 v2(4.0f, 5.0f, 6.0f);
 
-    vec3 v3 = v1 + v2;
+    glm::vec3 v3 = v1 + v2;
     EXPECT_FLOAT_EQ(v3.x, 5.0f);
     EXPECT_FLOAT_EQ(v3.y, 7.0f);
     EXPECT_FLOAT_EQ(v3.z, 9.0f);
 
-    vec3 v4 = v1 - v2;
+    glm::vec3 v4 = v1 - v2;
     EXPECT_FLOAT_EQ(v4.x, -3.0f);
     EXPECT_FLOAT_EQ(v4.y, -3.0f);
     EXPECT_FLOAT_EQ(v4.z, -3.0f);
 
-    vec3 v5 = v1 * 2.0f;
+    glm::vec3 v5 = v1 * 2.0f;
     EXPECT_FLOAT_EQ(v5.x, 2.0f);
     EXPECT_FLOAT_EQ(v5.y, 4.0f);
     EXPECT_FLOAT_EQ(v5.z, 6.0f);
 
-    vec3 v6 = v1 / 2.0f;
+    glm::vec3 v6 = v1 / 2.0f;
     EXPECT_FLOAT_EQ(v6.x, 0.5f);
     EXPECT_FLOAT_EQ(v6.y, 1.0f);
     EXPECT_FLOAT_EQ(v6.z, 1.5f);
 }
 
-TEST(Vec3Tests, CompoundAssignmentOperators) {
-    vec3 v1(1.0f, 2.0f, 3.0f);
-    vec3 v2(4.0f, 5.0f, 6.0f);
+TEST(glm::vec3Tests, CompoundAssignmentOperators) {
+    glm::vec3 v1(1.0f, 2.0f, 3.0f);
+    glm::vec3 v2(4.0f, 5.0f, 6.0f);
 
     v1 += v2;
     EXPECT_FLOAT_EQ(v1.x, 5.0f);
@@ -133,19 +133,19 @@ TEST(Vec3Tests, CompoundAssignmentOperators) {
     EXPECT_FLOAT_EQ(v1.z, 3.0f);
 }
 
-TEST(Vec3Tests, UtilityFunctions) {
-    vec3 v1(3.0f, 4.0f, 0.0f);
+TEST(glm::vec3Tests, UtilityFunctions) {
+    glm::vec3 v1(3.0f, 4.0f, 0.0f);
     EXPECT_FLOAT_EQ(v1.length(), 5.0f);
     EXPECT_FLOAT_EQ(v1.length_squared(), 25.0f);
 
-    vec3 v2 = v1.normalized();
+    glm::vec3 v2 = v1.normalized();
     EXPECT_FLOAT_EQ(v2.length(), 1.0f);
 
-    vec3 v3(1.0f, 0.0f, 0.0f);
-    vec3 v4(0.0f, 1.0f, 0.0f);
+    glm::vec3 v3(1.0f, 0.0f, 0.0f);
+    glm::vec3 v4(0.0f, 1.0f, 0.0f);
     EXPECT_FLOAT_EQ(v3.dot_product(v4), 0.0f);
 
-    vec3 v5 = v3.cross_product(v4);
+    glm::vec3 v5 = v3.cross_product(v4);
     EXPECT_FLOAT_EQ(v5.x, 0.0f);
     EXPECT_FLOAT_EQ(v5.y, 0.0f);
     EXPECT_FLOAT_EQ(v5.z, 1.0f);

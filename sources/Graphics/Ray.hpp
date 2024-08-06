@@ -3,10 +3,10 @@
 class ray
 {
 public:
-    vec3 position;
-    vec3 direction;
-    ray(const vec3 &position, const vec3 &direction) : position(position), direction(direction.normalized()) {}
-    [[nodiscard]] vec3 get_point(const float distance) const
+    glm::vec3 position;
+    glm::vec3 direction;
+    ray(const glm::vec3 &position, const glm::vec3 &direction) : position(position), direction(direction.normalized()) {}
+    [[nodiscard]] glm::vec3 get_point(const float distance) const
     {
         return position + direction * distance;
     }

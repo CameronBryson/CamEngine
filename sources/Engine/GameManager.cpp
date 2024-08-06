@@ -14,20 +14,22 @@ void game_manager::init()
     {
         exit(EXIT_FAILURE);
     }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     game_window = glfwCreateWindow(settings::window_width, settings::window_height, "Game Window", nullptr, nullptr);
     if (!game_window)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+    glfwMakeContextCurrent(game_window);
     glfwSetKeyCallback(game_window, engine_util::key_callback);
     glfwSetFramebufferSizeCallback(game_window, graphics_util::framebuffer_size_callback);
-    glfwMakeContextCurrent(game_window);
-    if (glewInit()!= GLEW_OK)
-    {
-        exit(EXIT_FAILURE);
-    }
     glfwSwapInterval(0);
+    gladLoadGL();
     glClearColor(1, 1, 1, 1);
     m_current_scene_->init();
 }
@@ -64,16 +66,10 @@ void game_manager::game_loop()
         double now = glfwGetTime();
         double delta_time = now - last_update_time;
 
-        glfwPollEvents();
-
-        if (m_current_scene_)
+        if ((now - last_frame_time) >= fps_limit)
         {
             update(static_cast<float>(delta_time));
             render();
-        }
-
-        if ((now - last_frame_time) >= fps_limit)
-        {
             glfwSwapBuffers(game_window);
             last_frame_time = now;
             frame_count++;
@@ -88,6 +84,7 @@ void game_manager::game_loop()
         }
 
         last_update_time = now;
+        glfwPollEvents();
     }
 }
 GLFWwindow *game_manager::get_glfw_window()

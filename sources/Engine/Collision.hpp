@@ -1,10 +1,9 @@
 #pragma once
 #include "Components.hpp"
-#include "Math/Vectors.hpp"
 
 class collision_manifold {
 public:
-    collision_manifold(const vec3 normal, const float penetration_depth, c_transform &transform1, c_transform &transform2, object_collision_type type1, object_collision_type type2)
+    collision_manifold(const glm::vec3 normal, const float penetration_depth, c_transform &transform1, c_transform &transform2, object_collision_type type1, object_collision_type type2)
         : normal(normal), penetration_depth_(penetration_depth), transform1_(transform1), transform2_(transform2), type1(type1), type2(type2) {}
 
     void resolve_collision() const {
@@ -26,7 +25,7 @@ public:
     }
 
     float penetration_depth_ = 0;
-    vec3 normal;
+    glm::vec3 normal;
 
 private:
     void resolve_dynamic_vs_dynamic() const {

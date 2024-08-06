@@ -12,15 +12,15 @@ class CollisionTests : public ::testing::Test {
 
     void SetUp() override {
         // Initialize components
-        aabb1.extents = vec3(2.0f, 2.0f, 2.0f);
-        aabb2.extents = vec3(2.0f, 2.0f, 2.0f);
-        obb1.extents = vec3(2.0f, 2.0f, 2.0f);
-        obb2.extents = vec3(2.0f, 2.0f, 2.0f);
+        aabb1.extents = glm::vec3(2.0f, 2.0f, 2.0f);
+        aabb2.extents = glm::vec3(2.0f, 2.0f, 2.0f);
+        obb1.extents = glm::vec3(2.0f, 2.0f, 2.0f);
+        obb2.extents = glm::vec3(2.0f, 2.0f, 2.0f);
         sphere1.radius = 1.0f;
         sphere2.radius = 1.0f;
 
-        transform1.position = vec3(0.0f, 0.0f, 0.0f);
-        transform2.position = vec3(1.0f, 1.0f, 1.0f);
+        transform1.position = glm::vec3(0.0f, 0.0f, 0.0f);
+        transform2.position = glm::vec3(1.0f, 1.0f, 1.0f);
     }
 };
 
