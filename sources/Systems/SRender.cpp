@@ -131,6 +131,7 @@ void s_render::shutdown()
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
+    delete shader;
 }
 
 void s_render::draw_statistics()

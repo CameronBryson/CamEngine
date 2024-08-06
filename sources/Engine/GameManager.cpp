@@ -5,7 +5,7 @@
 #include <iostream>
 
 GLFWwindow* game_manager::game_window = nullptr;
-i_scene* game_manager::m_current_scene_ = nullptr;
+std::unique_ptr<i_scene> game_manager::m_current_scene_ = nullptr;
 
 void game_manager::init()
 {
@@ -48,7 +48,6 @@ void game_manager::render()
 void game_manager::shutdown()
 {
     m_current_scene_->shutdown();
-    delete m_current_scene_;
     glfwDestroyWindow(game_window);
     glfwTerminate();
 }
