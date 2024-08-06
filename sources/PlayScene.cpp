@@ -43,18 +43,18 @@ void play_scene::init()
     // m_registry_.add_component<c_enemy>(enemy, c_enemy());
     // m_registry_.add_component<c_aabb>(enemy, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
     //
-    factory::create_sphere(m_registry_, vec3{1.0f, 0.0f, 0.0f}, 0.2f);
-    factory::create_quad(m_registry_, vec3{-1.0f, 0.0f, 0.0f}, vec3{0.1f, 0.3f, 0.1f});
-    factory::create_sphere(m_registry_, vec3{0.5f, 0.0f, 0.0f}, 0.2f);
-    factory::create_quad(m_registry_, vec3{-0.5f, 0.0f, 0.0f}, vec3{0.1f, 0.3f, 0.1f});
-    factory::create_sphere(m_registry_, vec3{0.2f, 0.0f, 0.0f}, 0.2f);
-    factory::create_quad(m_registry_, vec3{-0.2f, 0.0f, 0.0f}, vec3{0.1f, 0.3f, 0.1f});
-    factory::create_sphere(m_registry_, vec3{1.0f, 1.0f, 0.0f}, 0.2f);
-    factory::create_quad(m_registry_, vec3{-1.0f, 0.0f, 1.0f}, vec3{0.1f, 0.3f, 0.1f});
-    factory::create_sphere(m_registry_, vec3{0.5f, 0.0f, 1.0f}, 0.2f);
-    factory::create_quad(m_registry_, vec3{-0.5f, 0.0f, 1.0f}, vec3{0.1f, 0.3f, 0.1f});
-    factory::create_sphere(m_registry_, vec3{0.2f, 0.0f, 1.0f}, 0.2f);
-    factory::create_quad(m_registry_, vec3{-0.2f, 0.0f, 1.0f}, vec3{0.1f, 0.3f, 0.1f});
+    // factory::create_sphere(m_registry_, vec3{1.0f, 0.0f, 0.0f}, 0.2f);
+    // factory::create_quad(m_registry_, vec3{-1.0f, 0.0f, 0.0f}, vec3{0.1f, 0.3f, 0.1f});
+    // factory::create_sphere(m_registry_, vec3{0.5f, 0.0f, 0.0f}, 0.2f);
+    // factory::create_quad(m_registry_, vec3{-0.5f, 0.0f, 0.0f}, vec3{0.1f, 0.3f, 0.1f});
+    // factory::create_sphere(m_registry_, vec3{0.2f, 0.0f, 0.0f}, 0.2f);
+    // factory::create_quad(m_registry_, vec3{-0.2f, 0.0f, 0.0f}, vec3{0.1f, 0.3f, 0.1f});
+    // factory::create_sphere(m_registry_, vec3{1.0f, 1.0f, 0.0f}, 0.2f);
+    // factory::create_quad(m_registry_, vec3{-1.0f, 0.0f, 1.0f}, vec3{0.1f, 0.3f, 0.1f});
+    // factory::create_sphere(m_registry_, vec3{0.5f, 0.0f, 1.0f}, 0.2f);
+    // factory::create_quad(m_registry_, vec3{-0.5f, 0.0f, 1.0f}, vec3{0.1f, 0.3f, 0.1f});
+    // factory::create_sphere(m_registry_, vec3{0.2f, 0.0f, 1.0f}, 0.2f);
+    // factory::create_quad(m_registry_, vec3{-0.2f, 0.0f, 1.0f}, vec3{0.1f, 0.3f, 0.1f});
 
 }
 

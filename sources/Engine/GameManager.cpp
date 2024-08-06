@@ -1,6 +1,6 @@
 #include "GameManager.hpp"
-#include "Engine/Timer.hpp"
 #include "EngineUtil.hpp"
+#include "Graphics/GraphicsUtil.hpp"
 
 #include <iostream>
 
@@ -21,7 +21,12 @@ void game_manager::init()
         exit(EXIT_FAILURE);
     }
     glfwSetKeyCallback(game_window, engine_util::key_callback);
+    glfwSetFramebufferSizeCallback(game_window, graphics_util::framebuffer_size_callback);
     glfwMakeContextCurrent(game_window);
+    if (glewInit()!= GLEW_OK)
+    {
+        exit(EXIT_FAILURE);
+    }
     glfwSwapInterval(0);
     glClearColor(1, 1, 1, 1);
     m_current_scene_->init();
@@ -60,8 +65,6 @@ void game_manager::game_loop()
         double delta_time = now - last_update_time;
 
         glfwPollEvents();
-        glfwGetFramebufferSize(game_window, &settings::window_width, &settings::window_height);
-        glViewport(0, 0, settings::window_width, settings::window_height);
 
         if (m_current_scene_)
         {

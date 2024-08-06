@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-Set(PROJECT_NAME my_raylib_game)
+set(PROJECT_NAME my_raylib_game)
 project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
@@ -17,12 +17,12 @@ if(MSVC)
         add_compile_options(/MDd /Od)
     else()
         add_compile_options(/MD
-                            /O2
-                            /Ob2
-                            /Oi
-                            /Ot
-                            /Oy
-                            /GL)
+                /O2
+                /Ob2
+                /Oi
+                /Ot
+                /Oy
+                /GL)
     endif()
 else()
     add_compile_options(-Wall -Wextra -Wpedantic -g)
@@ -37,9 +37,9 @@ endif()
 set(BUILD_SHARED_LIBS ON)
 
 find_package(glfw3 3.3 REQUIRED)
+find_package(GLEW REQUIRED)
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
-
 
 # Adding our source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/sources/*.cpp") # Define PROJECT_SOURCES as a list of all source files
@@ -57,10 +57,13 @@ add_executable(${PROJECT_NAME}
         sources/Graphics/Ray.hpp
         sources/Graphics/GraphicsUtil.hpp
         sources/Engine/EngineUtil.hpp
+        sources/Shaders/ShaderProgram.cpp
+        sources/Shaders/ShaderProgram.hpp
+        sources/platform.hpp
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw GLEW::GLEW)
 
 # Setting ASSETS_PATH
 target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/") # Set the asset path macro to the absolute path on the dev machine
@@ -69,4 +72,3 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_S
 enable_testing()
 
 add_subdirectory(gtest)
-

@@ -1,8 +1,9 @@
 #pragma once
+#include "platform.hpp"
 #include "Color.hpp"
 #include "Math/Vectors.hpp"
 
-#include <GL/gl.h>
+#include <cstring>
 
 class graphics_util
 {
@@ -29,6 +30,10 @@ public:
         point.x =  ((point.x / settings::window_width)*2.0f)-1.0f;
         point.y = ((point.y/settings::window_height)*2.0f)-1.0f;
         return point;
+    }
+    static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+    {
+        glViewport(0,0,width,height);
     }
 
 };

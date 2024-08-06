@@ -205,7 +205,8 @@ std::vector<vec3> s_collision::get_obb_points_in_world_space(const c_quad &obb, 
     mat4 rotation_matrix = mat4::create_rotation_matrix(transform.rotation);
 
     // Compute local OBB points
-    std::vector<vec3> local_points = faces::get_quad_vertices(obb.extents);
+    std::vector<vec3> local_points;
+    //std::vector<vec3> local_points = faces::get_quad_vertices(obb.extents);
 
     // Transform local points to world space
     std::vector<vec3> world_points;

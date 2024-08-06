@@ -1,5 +1,6 @@
 #pragma once
 #include "IScene.hpp"
+#include "platform.hpp"
 #include "GLFW/glfw3.h"
 
 class game_manager
