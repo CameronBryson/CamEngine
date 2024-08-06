@@ -14,7 +14,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-float vertices[] = {
+static const float vertices[] = {
         -0.5f, -0.5f, -0.5f,
          0.5f, -0.5f, -0.5f,
          0.5f,  0.5f, -0.5f,
@@ -58,7 +58,7 @@ float vertices[] = {
         -0.5f,  0.5f, -0.5f
     };
     // world space positions of our cubes
-    glm::vec3 cubePositions[] = {
+    static glm::vec3 cubePositions[] = {
         glm::vec3( 0.0f,  0.0f,  0.0f),
         glm::vec3( 2.0f,  5.0f, -15.0f),
         glm::vec3(-1.5f, -2.2f, -2.5f),
@@ -76,7 +76,7 @@ shader_program *shader;
 void s_render::init() {
     printf("Render init\n");
 
-    shader = new shader_program("/home/cam/Documents/GitHub/raylib-cmake-template-master/sources/Shaders/vertex_shader.glsl", "/home/cam/Documents/GitHub/raylib-cmake-template-master/sources/Shaders/fragment_shader.glsl");
+    shader = new shader_program("C:\\Personal-Programming\\C++\\raylib\\raylib-cmake\\sources\\Shaders\\vertex_shader.glsl", "C:\\Personal-Programming\\C++\\raylib\\raylib-cmake\\sources\\Shaders\\fragment_shader.glsl");
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
@@ -97,7 +97,7 @@ void s_render::update(const registry &registry, Camera &camera)
 
     // Draw using shader_program
     auto view_matrix = camera.GetViewMatrix();
-    auto proj_matrix = glm::perspective(glm::radians(camera.Zoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
+    auto proj_matrix = camera.GetProjectionMatrix();
     auto &positions = registry.get_sparse_set<c_transform>();
     auto &quads = registry.get_sparse_set<c_quad>();
     shader->use();
@@ -105,7 +105,7 @@ void s_render::update(const registry &registry, Camera &camera)
     shader->setMat4("view", view_matrix);
     for (unsigned int i = 0; i <10; i++)
     {
-        glm::mat4 model = glm::mat4(1.0f);
+        auto model = glm::mat4(1.0f);
         model = glm::translate(model, cubePositions[i]);
         float angle = 20.0f * i;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));

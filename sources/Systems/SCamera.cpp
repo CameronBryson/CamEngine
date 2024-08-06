@@ -4,8 +4,8 @@
 #include "Math/MathUtil.hpp"
 #include <Engine/GameManager.hpp>
 
-static constexpr float camera_movespeed = 10.0f;
-static constexpr float camera_rotationspeed = 1.0f;
+static constexpr float camera_movespeed = 100.0f;
+static constexpr float camera_rotationspeed = 500.0f;
 
 void s_camera::update(Camera &camera, const float dt)
 {
@@ -38,12 +38,12 @@ void s_camera::update(Camera &camera, const float dt)
     }
     if (J)
     {
-       camera_position += right * camera_movespeed * dt;
+       camera_position -= right * camera_movespeed * dt;
         moved = true;
     }
     if (L)
     {
-        camera_position -= right * camera_movespeed * dt;
+        camera_position += right * camera_movespeed * dt;
         moved = true;
     }
     if (U)
@@ -57,7 +57,26 @@ void s_camera::update(Camera &camera, const float dt)
         moved = true;
     }
 
-
+    if(UP)
+    {
+        camera.Pitch += camera_rotationspeed * dt;
+        moved = true;
+    }
+    if(DOWN)
+    {
+        camera.Pitch -= camera_rotationspeed * dt;
+        moved = true;
+    }
+    if(LEFT)
+    {
+        camera.Yaw -= camera_rotationspeed*dt;
+        moved = true;
+    }
+    if(RIGHT)
+    {
+        camera.Yaw += camera_rotationspeed*dt;
+        moved = true;
+    }
     if(moved)
     {
         camera.Position = camera_position;

@@ -10,8 +10,7 @@
 
 class s_camera {
 public:
-    static void update(Camera &camera, const float dt);
-    static void look_at_mouse();
+    static void update(Camera &camera, float dt);
 
 };
 
