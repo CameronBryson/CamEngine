@@ -3,7 +3,6 @@
 #include "Components.hpp"
 #include "Engine/EngineUtil.hpp"
 #include "Engine/Stats.hpp"
-#include "Graphics/Faces.hpp"
 #include "Math/MathUtil.hpp"
 
 #include "../Graphics/ShaderProgram.hpp"
@@ -13,6 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <string>
 
 // world space positions of our cubes
@@ -41,54 +41,45 @@ void s_render::init() {
 // Update the update function to draw twice
 void s_render::update(const registry &registry, Camera &camera)
 {
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    graphics_util::clear_background();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Draw using shader_program
     auto view_matrix = camera.GetViewMatrix();
     auto proj_matrix = camera.GetProjectionMatrix();
     auto &positions = registry.get_sparse_set<c_transform>();
-    auto &quads = registry.get_sparse_set<c_quad>();
     auto& shader = graphics_manager::get_shader("vertex");
     shader.setMat4("projection", proj_matrix);
     shader.setMat4("view", view_matrix);
     shader.use();
     auto object = graphics_manager::get_obj("sphere");
     object.enable();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-
-
-    for (unsigned int i = 0; i <10; i++)
+    for(auto sphere_id: registry.get_entity_ids<c_sphere, c_transform>())
     {
+        auto &transform = positions.get_item(sphere_id);
         auto model = glm::mat4(1.0f);
-        model = glm::translate(model, cubePositions[i]);
-        float angle = 20.0f * i;
-        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        model = glm::translate(model, transform.position);
         shader.setMat4("model", model);
-
         glDrawElements(GL_TRIANGLES, object.get_count(), GL_UNSIGNED_INT, 0);
     }
     object.disable();
-    auto object2 = graphics_manager::get_obj("cube");
-    object2.enable();
-    for (unsigned int i = 0; i <10; i++)
+    object = graphics_manager::get_obj("cube");
+    object.enable();
+    for(auto quad_id: registry.get_entity_ids<c_quad, c_transform>())
     {
+        auto &transform = positions.get_item(quad_id);
         auto model = glm::mat4(1.0f);
-        model = glm::translate(model, cubePositions[i]);
-        float angle = 20.0f * i;
-        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        model = glm::scale(model, transform.scale);
+        model = glm::translate(model, transform.position);
+        model = model *  glm::eulerAngleXYZ(transform.rotation.x,transform.rotation.y,transform.rotation.z);
         shader.setMat4("model", model);
-
-        glDrawElements(GL_TRIANGLES, object2.get_count(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, object.get_count(), GL_UNSIGNED_INT, 0);
     }
-    object2.disable();
+    object.disable();
 }
 
 void s_render::shutdown()
 {
-    //glDeleteVertexArrays(1, &VAO);
-    //glDeleteBuffers(1, &VBO);
-    //glDeleteBuffers(1, &EBO);
 }
 
 void s_render::draw_statistics()

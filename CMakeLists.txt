@@ -48,7 +48,6 @@ set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLU
 # Declaring our executable
 add_executable(${PROJECT_NAME}
         sources/Graphics/Camera.hpp
-        sources/Graphics/Faces.hpp
         sources/Systems/SCamera.hpp
         sources/Graphics/Color.hpp
         sources/Engine/Collision.hpp

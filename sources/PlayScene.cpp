@@ -8,7 +8,7 @@
 play_scene::play_scene()
 {
     printf("PlayScene created\n");
-    m_camera_ = Camera(glm::vec3(0.0f,0.0f,3.0f));
+    m_camera_ = Camera(glm::vec3(0.0f,0.0f,1.50f));
 }
 play_scene::~play_scene()
 {
@@ -45,14 +45,14 @@ void play_scene::init()
     //
     //factory::create_sphere(m_registry_, glm::vec3{0.0f, 0.0f, 0.0f}, 0.2f);
     // factory::create_sphere(m_registry_, glm::vec3{0.5f, 0.0f, 0.0f}, 0.2f);
-    // factory::create_quad(m_registry_, glm::vec3{-0.5f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-    // factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 0.0f}, 0.2f);
-    // factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-    // factory::create_sphere(m_registry_, glm::vec3{1.0f, 1.0f, 0.0f}, 0.2f);
-    // factory::create_quad(m_registry_, glm::vec3{-1.0f, 0.0f, 1.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-    // factory::create_sphere(m_registry_, glm::vec3{0.5f, 0.0f, 1.0f}, 0.2f);
+     //factory::create_quad(m_registry_, glm::vec3{-0.5f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
+     //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 0.0f}, 0.2f);
+     //factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
+     //factory::create_sphere(m_registry_, glm::vec3{1.0f, 1.0f, 0.0f}, 0.2f);
+     //factory::create_quad(m_registry_, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec3{1.0f, 1.0f, 1.0f});
+     factory::create_sphere(m_registry_, glm::vec3{0.5f, 0.0f, 1.0f}, 1.0f);
     // factory::create_quad(m_registry_, glm::vec3{-0.5f, 0.0f, 1.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-    // factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 1.0f}, 0.2f);
+     //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 1.0f}, 0.2f);
     // factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 1.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
 
 }

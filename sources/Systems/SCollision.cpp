@@ -1,7 +1,9 @@
 #include "SCollision.hpp"
 
 #include "../Engine/Collision.hpp"
-#include "../Graphics/Faces.hpp"
+
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 void s_collision::update(registry &registry)
 {
@@ -14,17 +16,18 @@ void s_collision::update(registry &registry)
     std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform, c_collider>();
 
     // Check OBB-OBB intersections
-    for (size_t i = 0; i < obb_ids.size(); ++i)
+    for (auto id : obb_ids)
     {
-        auto &obb = obbs.get_item(obb_ids[i]);
-        auto &transform = transforms.get_item(obb_ids[i]);
-        auto &collider = colliders.get_item(obb_ids[i]);
+        auto &obb = obbs.get_item(id);
+        auto &transform = transforms.get_item(id);
+        auto &collider = colliders.get_item(id);
 
-        for (size_t j = i+1; j < obb_ids.size(); ++j)
+        for (auto id2 : obb_ids)
         {
-            auto &inner_obb = obbs.get_item(obb_ids[j]);
-            auto &inner_transform = transforms.get_item(obb_ids[j]);
-            auto &inner_collider = colliders.get_item(obb_ids[j]);
+            if(id == id2) continue;
+            auto &inner_obb = obbs.get_item(id2);
+            auto &inner_transform = transforms.get_item(id2);
+            auto &inner_collider = colliders.get_item(id2);
             if (intersects_obb_in_obb(obb, inner_obb, transform, inner_transform,collider,inner_collider, registry))
             {
 
@@ -33,18 +36,19 @@ void s_collision::update(registry &registry)
         }
     }
 
-    // Check Sphere-AABB intersections
-    for (size_t i = 0; i < obb_ids.size(); ++i)
+    // Check OBB-SPHERE intersections
+    for (auto id : obb_ids)
     {
-        auto &obb = obbs.get_item(obb_ids[i]);
-        auto &obb_transform = transforms.get_item(obb_ids[i]);
-        auto &obb_collider = colliders.get_item(obb_ids[i]);
+        auto &obb = obbs.get_item(id);
+        auto &obb_transform = transforms.get_item(id);
+        auto &obb_collider = colliders.get_item(id);
 
-        for (size_t j = i+1; j < sphere_ids.size(); ++j)
+        for (auto id2 : sphere_ids)
         {
-            auto &sphere = spheres.get_item(sphere_ids[j]);
-            auto &sphere_transform = transforms.get_item(sphere_ids[j]);
-            auto &sphere_collider = colliders.get_item(sphere_ids[j]);
+            if(id==id2) continue;
+            auto &sphere = spheres.get_item(id2);
+            auto &sphere_transform = transforms.get_item(id2);
+            auto &sphere_collider = colliders.get_item(id2);
             if (intersects_obb_in_sphere(obb, sphere, obb_transform,
                                          sphere_transform,obb_collider,sphere_collider, registry))
             {
@@ -52,20 +56,20 @@ void s_collision::update(registry &registry)
             }
         }
     }
-
-    for (size_t i = 0; i < sphere_ids.size(); ++i)
+    //sphere-sphere
+    for (auto id : sphere_ids)
     {
-        auto &sphere = spheres.get_item(sphere_ids[i]);
-        auto &sphere_transform = transforms.get_item(sphere_ids[i]);
-        auto &sphere_collider = colliders.get_item(sphere_ids[i]);
-        for (size_t j = i+1; j < obb_ids.size(); ++j)
+        auto &sphere = spheres.get_item(id);
+        auto &sphere_transform = transforms.get_item(id);
+        auto &sphere_collider = colliders.get_item(id);
+        for (auto id2 : sphere_ids)
         {
-            auto &obb = obbs.get_item(obb_ids[j]);
-            auto &obb_transform = transforms.get_item(obb_ids[j]);
-            auto &obb_collider = colliders.get_item(obb_ids[j]);
-            if (intersects_obb_in_sphere(obb, sphere, obb_transform, sphere_transform, obb_collider, sphere_collider, registry))
+            auto &sphere2 = spheres.get_item(id2);
+            auto &sphere2_transform = transforms.get_item(id2);
+            auto &sphere2_collider = colliders.get_item(id2);
+            if (intersects_sphere_in_sphere(sphere, sphere2, sphere_transform, sphere2_transform, sphere_collider, sphere2_collider, registry))
             {
-                // printf("Sphere %d intersects OBB %d\n", i, j);
+                 printf("Sphere %d intersects SPHERE %d\n", id, id2);
             }
         }
     }
@@ -114,9 +118,7 @@ bool s_collision::intersects_sphere_in_sphere(const c_sphere &sphere1, const c_s
     const glm::vec3 center2 = transform2.position;
     const float radius1 = sphere1.radius;
     const float radius2 = sphere2.radius;
-
-    //const float distance_squared = (center1 - center2).length_squared();
-    float distance_squared;
+    const float distance_squared = glm::length2(center1 - center2);
     const float radius_sum = radius1 + radius2;
 
     if (distance_squared > (radius_sum * radius_sum)) {
@@ -148,83 +150,91 @@ bool s_collision::intersects_obb_in_obb(const c_quad &obb1, const c_quad &obb2, 
     {
         return false;
     }
-    // // Extract rotation matrices
-    // const mat4 rotation_matrix1 = mat4::create_rotation_matrix(transform1.rotation);
-    // const mat4 rotation_matrix2 = mat4::create_rotation_matrix(transform2.rotation);
-    //
-    // const auto vertices1 = get_obb_points_in_world_space(obb1, transform1);
-    // const auto vertices2 = get_obb_points_in_world_space(obb2, transform2);
-    //
-    // // Extract axes
-    // glm::vec3 axes1[3] = {
-    //     rotation_matrix1.get_right_axis(),
-    //     rotation_matrix1.get_up_axis(),
-    //     rotation_matrix1.get_forward_axis(),
-    // };
-    //
-    // glm::vec3 axes2[3] = {
-    //     rotation_matrix2.get_right_axis(),
-    //     rotation_matrix2.get_up_axis(),
-    //     rotation_matrix2.get_forward_axis()
-    // };
-    //
-    // float min_penetration_depth = std::numeric_limits<float>::max();
-    // glm::vec3 penetration_axis;
-    //
-    // // Check for intersection using SAT
-    // for (const auto &axis : axes1) {
-    //     if (!test_axis(axis, vertices1, vertices2, min_penetration_depth,penetration_axis)||
-    //         !test_axis(axis*-1.0f, vertices1, vertices2, min_penetration_depth,penetration_axis))
-    //         return false;
-    // }
-    //
-    // for (const auto &axis : axes2) {
-    //     if (!test_axis(axis, vertices1, vertices2, min_penetration_depth,penetration_axis)||
-    //         !test_axis(axis*-1.0f, vertices1, vertices2, min_penetration_depth,penetration_axis))
-    //         return false;
-    // }
-    //
-    // for (const auto &axis1 : axes1) {
-    //     for (const auto &axis2 : axes2) {
-    //         glm::vec3 axis = axis1.cross_product(axis2);
-    //         if (!test_axis(axis, vertices1, vertices2, min_penetration_depth,penetration_axis)||
-    //            !test_axis(axis*-1.0f, vertices1, vertices2, min_penetration_depth,penetration_axis))
-    //             return false;
-    //     }
-    // }
-    //
-    // if (min_penetration_depth > 0.000001) {
-    //     registry.add_collision_manifold({penetration_axis, min_penetration_depth, transform1, transform2, type1, type2});
-    // }
+    // Extract rotation matrices
+    const glm::mat4 rotation_matrix1 = glm::eulerAngleXYZ(transform1.rotation.x,transform1.rotation.y,transform1.rotation.z);
+    const glm::mat4 rotation_matrix2= glm::eulerAngleXYZ(transform2.rotation.x,transform2.rotation.y,transform2.rotation.z);
+
+    const auto vertices1 = get_obb_points_in_world_space(obb1, transform1);
+    const auto vertices2 = get_obb_points_in_world_space(obb2, transform2);
+
+    // Extract axes
+    glm::vec3 axes1[3] = {
+        rotation_matrix1[0],
+        rotation_matrix1[1],
+        rotation_matrix1[2]
+    };
+
+    glm::vec3 axes2[3] = {
+        rotation_matrix2[0],
+        rotation_matrix2[1],
+        rotation_matrix2[2]
+    };
+
+    float min_penetration_depth = std::numeric_limits<float>::max();
+    glm::vec3 penetration_axis;
+
+    // Check for intersection using SAT
+    for (const auto &axis : axes1) {
+        if (!test_axis(axis, vertices1, vertices2, min_penetration_depth,penetration_axis)||
+            !test_axis(axis*-1.0f, vertices1, vertices2, min_penetration_depth,penetration_axis))
+            return false;
+    }
+
+    for (const auto &axis : axes2) {
+        if (!test_axis(axis, vertices1, vertices2, min_penetration_depth,penetration_axis)||
+            !test_axis(axis*-1.0f, vertices1, vertices2, min_penetration_depth,penetration_axis))
+            return false;
+    }
+
+    for (const auto &axis1 : axes1) {
+        for (const auto &axis2 : axes2) {
+            glm::vec3 axis = cross(axis1, axis2);
+            if (!test_axis(axis, vertices1, vertices2, min_penetration_depth,penetration_axis)||
+               !test_axis(axis*-1.0f, vertices1, vertices2, min_penetration_depth,penetration_axis))
+                return false;
+        }
+    }
+
+    if (min_penetration_depth > 0.000001) {
+        registry.add_collision_manifold({penetration_axis, min_penetration_depth, transform1, transform2, type1, type2});
+    }
 
     return true;
 }
 std::vector<glm::vec3> s_collision::get_obb_points_in_world_space(const c_quad &obb, const c_transform &transform)
 {
     // Extract rotation matrix from the transform
-    //mat4 rotation_matrix = mat4::create_rotation_matrix(transform.rotation);
+    const glm::mat4 rotation_matrix = glm::eulerAngleXYZ(transform.rotation.x,transform.rotation.y,transform.rotation.z);
 
-    // Compute local OBB points
-    std::vector<glm::vec3> local_points;
-    //std::vector<glm::vec3> local_points = faces::get_quad_vertices(obb.extents);
+    // Compute local OBB points from obb.extents
+    std::vector<glm::vec3> local_points = {
+        glm::vec3(-obb.extents.x, -obb.extents.y, -obb.extents.z),
+        glm::vec3( obb.extents.x, -obb.extents.y, -obb.extents.z),
+        glm::vec3( obb.extents.x,  obb.extents.y, -obb.extents.z),
+        glm::vec3(-obb.extents.x,  obb.extents.y, -obb.extents.z),
+        glm::vec3(-obb.extents.x, -obb.extents.y,  obb.extents.z),
+        glm::vec3( obb.extents.x, -obb.extents.y,  obb.extents.z),
+        glm::vec3( obb.extents.x,  obb.extents.y,  obb.extents.z),
+        glm::vec3(-obb.extents.x,  obb.extents.y,  obb.extents.z)
+    };
 
     // Transform local points to world space
     std::vector<glm::vec3> world_points;
     world_points.reserve(local_points.size());
     for (const auto &point : local_points)
     {
-        // glm::vec3 scaled_point = point * transform.scale;
-        // glm::vec3 rotated_point = rotation_matrix * scaled_point;
-        // glm::vec3 world_point = rotated_point + transform.position;
-        //world_points.push_back(world_point);
+         glm::vec3 scaled_point = point * transform.scale;
+         glm::vec3 rotated_point = rotation_matrix * glm::vec4(scaled_point,1);
+         glm::vec3 world_point = rotated_point + transform.position;
+        world_points.push_back(world_point);
     }
 
     return world_points;
 }
 bool s_collision::test_axis(const glm::vec3 &axis, const std::vector<glm::vec3> &points1, const std::vector<glm::vec3> &points2, float &overlap, glm::vec3 &penetration_axis) {
-     // if (axis.length_squared() < 0.00001f) {
-     //     return true;
-     // }
+     if (length2(axis) < 0.00001f) {
+         return true;
+     }
 
     float min1 = std::numeric_limits<float>::max();
     float max1 = std::numeric_limits<float>::lowest();
@@ -276,15 +286,14 @@ bool s_collision::intersects_obb_in_sphere(const c_quad &obb, c_sphere &sphere, 
     // Extract OBB data
     const glm::vec3 center_obb = obb_transform.position;
     const glm::vec3 extents_obb = obb.extents * 0.5f;
-    //const mat4 rotation_matrix_obb = mat4::create_rotation_matrix(obb_transform.rotation);
+    const glm::mat4 rotation_matrix_obb = glm::eulerAngleXYZ(obb_transform.rotation.x,obb_transform.rotation.y,obb_transform.rotation.z);
 
     // Extract sphere data
     const glm::vec3 center_sphere = sphere_transform.position;
     const float radius_sphere = sphere.radius;
 
     // Transform sphere center to OBB local space
-    //glm::vec3 local_center_sphere = rotation_matrix_obb.transpose() * (center_sphere - center_obb);
-    glm::vec3 local_center_sphere;
+    glm::vec3 local_center_sphere = (glm::transpose(rotation_matrix_obb) * glm::vec4(center_sphere-center_obb,1));
 
     // Find the closest point on the OBB to the sphere center
     glm::vec3 closest_point = local_center_sphere;
@@ -294,8 +303,7 @@ bool s_collision::intersects_obb_in_sphere(const c_quad &obb, c_sphere &sphere, 
 
     // Compute the vector from the sphere center to the closest point
     glm::vec3 difference = local_center_sphere - closest_point;
-    //float distance_squared = difference.length_squared();
-    float distance_squared;
+    float distance_squared = glm::length2(difference);
 
     // Check if the distance is less than the sphere radius
     if (distance_squared > radius_sphere * radius_sphere) {
@@ -304,8 +312,7 @@ bool s_collision::intersects_obb_in_sphere(const c_quad &obb, c_sphere &sphere, 
 
     float distance = std::sqrt(distance_squared);
     float penetration_depth = radius_sphere - distance;
-    //glm::vec3 penetration_axis = (rotation_matrix_obb * difference).normalized();
-    glm::vec3 penetration_axis;
+    glm::vec3 penetration_axis = glm::normalize(rotation_matrix_obb * glm::vec4(difference,1));
     if(penetration_depth > 0.000001)
     {
         registry.add_collision_manifold({penetration_axis, penetration_depth, obb_transform, sphere_transform, type1, type2});
