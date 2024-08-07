@@ -6,14 +6,14 @@
 #include <unordered_map>
 #include <vector>
 
-class graphics_object;
+class mesh;
 class graphics_manager
 {
 public:
     // resource storage
     static std::unordered_map<std::string, std::unique_ptr<shader_program>> shader_map;
     static std::unordered_map<std::string, std::unique_ptr<texture>> texture_map;
-    static std::unordered_map<std::string, std::unique_ptr<graphics_object>> object_map;
+    static std::unordered_map<std::string, std::unique_ptr<mesh>> mesh_map;
     // loads (and generates) a shader program from file loading vertex and fragment shader's source code.
     static shader_program& load_shader (const char *vShaderFile, const char *fShaderFile, std::string name);
     // retrieves a stored shader
@@ -22,8 +22,8 @@ public:
     static texture& load_texture(const char *file, bool alpha, const std::string name);
     // retrieves a stored texture
     static texture& get_texture(const std::string name);
-    static graphics_object& load_obj(const char* file, std::string name);
-    static graphics_object& get_obj(std::string name);
+    static mesh& load_mesh(const char* file, std::string name);
+    static mesh& get_mesh(std::string name);
     // properly de-allocates all loaded resources
     static void Clear();
 
@@ -33,10 +33,10 @@ private:
     graphics_manager() { }
 };
 
-class graphics_object
+class mesh
 {
 public:
-    graphics_object(const char* obj_file)
+    mesh(const char* obj_file)
     {
         std::vector<float> vertices;
         std::vector<unsigned int> indices;
@@ -61,17 +61,11 @@ public:
 
         glBindVertexArray(0);
     }
-    void enable()
+    void draw()
     {
         glBindVertexArray(VAO);
-    }
-    void disable()
-    {
+        glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT,0);
         glBindVertexArray(0);
-    }
-    unsigned int get_count()
-    {
-        return index_count;
     }
 private:
     unsigned int VAO = 0, VBO = 0, EBO = 0, index_count;

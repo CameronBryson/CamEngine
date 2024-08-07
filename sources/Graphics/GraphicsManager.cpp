@@ -1,7 +1,7 @@
 #include "GraphicsManager.hpp"
 std::unordered_map<std::string,std::unique_ptr<shader_program>> graphics_manager::shader_map;
 std::unordered_map<std::string, std::unique_ptr<texture>> graphics_manager::texture_map;
-std::unordered_map<std::string, std::unique_ptr<graphics_object>> graphics_manager::object_map;
+std::unordered_map<std::string, std::unique_ptr<mesh>> graphics_manager::mesh_map;
 shader_program& graphics_manager::load_shader(const char *vShaderFile, const char *fShaderFile, std::string name)
 {
     shader_map[name] = std::make_unique<shader_program>(vShaderFile,fShaderFile);
@@ -20,14 +20,14 @@ texture &graphics_manager::get_texture(const std::string name)
 {
     return *texture_map[name];
 }
-graphics_object &graphics_manager::load_obj(const char *file, std::string name)
+mesh &graphics_manager::load_mesh(const char *file, std::string name)
 {
-    object_map[name] = std::make_unique<graphics_object>(file);
-    return *object_map[name];
+    mesh_map[name] = std::make_unique<mesh>(file);
+    return *mesh_map[name];
 }
-graphics_object &graphics_manager::get_obj(std::string name)
+mesh &graphics_manager::get_mesh(std::string name)
 {
-    return *object_map[name];
+    return *mesh_map[name];
 }
 void graphics_manager::Clear()
 {
