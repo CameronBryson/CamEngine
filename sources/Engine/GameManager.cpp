@@ -1,6 +1,8 @@
 #include "GameManager.hpp"
 #include "EngineUtil.hpp"
 #include "Graphics/GraphicsUtil.hpp"
+#include <thread>
+#include <chrono>
 
 #include <iostream>
 
@@ -52,38 +54,43 @@ void game_manager::shutdown()
     glfwTerminate();
 }
 
+
+// Update the game_loop function to limit FPS
 void game_manager::game_loop()
 {
     const double fps_limit = 1.0 / settings::max_fps;
-    double last_update_time = glfwGetTime();
-    double last_frame_time = glfwGetTime();
-    double last_fps_time = glfwGetTime();
+    double delta_time = 0.0f;
+    double last_frame = 0.0f;
+    double elapsed_time = 0.0f;
     int frame_count = 0;
 
     while (!glfwWindowShouldClose(game_window))
     {
-        double now = glfwGetTime();
-        double delta_time = now - last_update_time;
+        double current_frame = glfwGetTime();
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
+        elapsed_time += delta_time;
+        frame_count++;
 
-        if ((now - last_frame_time) >= fps_limit)
+        if (elapsed_time >= 1.0)
         {
-            update(static_cast<float>(delta_time));
-            render();
-            glfwSwapBuffers(game_window);
-            last_frame_time = now;
-            frame_count++;
-        }
-
-        if ((now - last_fps_time) >= 1.0)
-        {
-            double fps = frame_count / (now - last_fps_time);
-            printf("FPS: %f\n", fps);
+            int fps = frame_count;
+            std::cout << "FPS: " << fps << std::endl;
             frame_count = 0;
-            last_fps_time = now;
+            elapsed_time = 0.0;
         }
 
-        last_update_time = now;
         glfwPollEvents();
+        update(static_cast<float>(delta_time));
+        render();
+        glfwSwapBuffers(game_window);
+
+        // Limit FPS
+        double frame_time = glfwGetTime() - current_frame;
+        if (frame_time < fps_limit)
+        {
+            std::this_thread::sleep_for(std::chrono::duration<double>(fps_limit - frame_time));
+        }
     }
 }
 GLFWwindow *game_manager::get_glfw_window()

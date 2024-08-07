@@ -11,4 +11,6 @@ class s_render
 
   private:
     static void draw_statistics();
+    static void load_shaders();
+    static void load_textures();
 };
