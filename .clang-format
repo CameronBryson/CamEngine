@@ -1,1 +1,33 @@
-BasedOnStyle: Microsoft
+# Format Style Options - Created with Clang Power Tools
+---
+BasedOnStyle: Google
+AccessModifierOffset: -2
+AlignAfterOpenBracket: DontAlign
+AlignEscapedNewlines: DontAlign
+AlignOperands: DontAlign
+AlignTrailingComments: false
+AllowAllArgumentsOnNextLine: false
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+BreakBeforeBraces: Allman
+ColumnLimit: 160
+Cpp11BracedListStyle: false
+DeriveLineEnding: false
+EmptyLineBeforeAccessModifier: Never
+FixNamespaceComments: false
+IncludeBlocks: Preserve
+IndentCaseLabels: false
+IndentPPDirectives: AfterHash
+IndentWidth: 4
+LineEnding: CRLF
+MaxEmptyLinesToKeep: 3
+PointerAlignment: Middle
+ReflowComments: false
+SortIncludes: false
+SpaceAfterLogicalNot: true
+SpaceBeforeParens: Never
+SpacesBeforeTrailingComments: 1
+SpacesInConditionalStatement: true
+UseTab: Always
+...
