@@ -57,6 +57,8 @@ add_executable(${PROJECT_NAME}
         sources/Graphics/ShaderProgram.hpp
         sources/platform.hpp
         sources/Graphics/Texure.hpp
+        sources/Graphics/Model.hpp
+        sources/Graphics/Material.hpp
 )
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})

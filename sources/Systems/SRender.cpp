@@ -9,23 +9,22 @@
 #include "Graphics/GraphicsUtil.hpp"
 
 #include <Graphics/GraphicsManager.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <string>
-
 void s_render::init() {
     printf("Render init\n");
     load_shaders();
     load_textures();
-    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/torus.obj", "torus");
-    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/pyramid.obj", "pyramid");
-    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube.obj", "cube");
-    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/sphere.obj", "sphere");
-    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/shotgun.obj", "shotgun");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube2.obj", "cube2");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube3.obj", "cube3");
+    graphics_manager::load_mesh("C:\\Personal-Programming\\C++\\raylib\\raylib-cmake\\assets\\cube.obj", "cube");
+    //graphics_manager::load_mesh("C:\\Personal-Programming\\C++\\raylib\\raylib-cmake\\assets\\chiron.obj", "chiron");
+    graphics_manager::load_mesh("C:\\Personal-Programming\\C++\\raylib\\raylib-cmake\\assets\\deagle.obj", "deagle");
+
+
+
 
 
 
@@ -55,8 +54,8 @@ void s_render::update(const registry &registry, Camera &camera)
         }
     };
 
-    draw_object("cube3", registry.get_entity_ids<c_sphere, c_transform>());
-    draw_object("cube2", registry.get_entity_ids<c_quad, c_transform>());
+    draw_object("deagle", registry.get_entity_ids<c_sphere, c_transform>());
+    draw_object("deagle", registry.get_entity_ids<c_quad, c_transform>());
 }
 
 void s_render::shutdown()
@@ -75,9 +74,17 @@ void s_render::draw_statistics()
 void s_render::load_shaders()
 {
     graphics_manager::load_shader(
-        "/home/cam/Documents/GitHub/raylib-cmake-template-master/sources/Shaders/vertex_shader.glsl",
-        "/home/cam/Documents/GitHub/raylib-cmake-template-master/sources/Shaders/fragment_shader.glsl", "vertex");
+        "C:\\Personal-Programming\\C++\\raylib\\raylib-cmake\\sources\\Shaders\\vertex_shader.glsl",
+        "C:\\Personal-Programming\\C++\\raylib\\raylib-cmake\\sources\\Shaders\\fragment_shader.glsl", "vertex");
 }
 void s_render::load_textures()
 {
+}
+void s_render::draw_models(const registry &registry, Camera &camera)
+{
+    //draw the meshes that belong to the models
+}
+void s_render::draw_colliders(const registry &registry, Camera &camera)
+{
+    //quads, spheres and capsules
 }

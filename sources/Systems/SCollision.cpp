@@ -1,7 +1,7 @@
 #include "SCollision.hpp"
 
 #include "../Engine/Collision.hpp"
-
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
@@ -320,4 +320,14 @@ bool s_collision::intersects_obb_in_sphere(const c_quad &obb, c_sphere &sphere, 
     // Adjust positions for penetration resolution
 
     return true;
+}
+bool s_collision::intersects_sphere_in_capsule(const c_sphere &sphere, c_capsule &capsule, c_transform &sphere_transform, c_transform &capsule_transform,
+    c_collider &sphere_collider, c_collider &capsule_collider, registry &registry)
+{
+    return false;
+}
+bool s_collision::intersects_obb_in_capsule(const c_quad &obb, c_capsule &capsule, c_transform &obb_transform, c_transform &capsule_transform,
+    c_collider &obb_collider, c_collider &capsule_collider, registry &registry)
+{
+    return false;
 }

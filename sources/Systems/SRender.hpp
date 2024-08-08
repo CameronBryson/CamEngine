@@ -12,6 +12,8 @@ class s_render
     static void shutdown();
 
   private:
+    static void draw_models(const registry &registry, Camera &camera);
+    static void draw_colliders(const registry &registry, Camera &camera);
     static void draw_statistics();
     static void load_shaders();
     static void load_textures();
