@@ -19,12 +19,14 @@ void s_render::init() {
     printf("Render init\n");
     load_shaders();
     load_textures();
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/torus.obj", "torus");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/pyramid.obj", "pyramid");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube.obj", "cube");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/sphere.obj", "sphere");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/shotgun.obj", "shotgun");
+    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/torus.obj", "torus");
+    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/pyramid.obj", "pyramid");
+    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube.obj", "cube");
+    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/sphere.obj", "sphere");
+    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/shotgun.obj", "shotgun");
     graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube2.obj", "cube2");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube3.obj", "cube3");
+
 
 
 }
@@ -53,8 +55,8 @@ void s_render::update(const registry &registry, Camera &camera)
         }
     };
 
-    draw_object("torus", registry.get_entity_ids<c_sphere, c_transform>());
-    draw_object("shotgun", registry.get_entity_ids<c_quad, c_transform>());
+    draw_object("cube3", registry.get_entity_ids<c_sphere, c_transform>());
+    draw_object("cube2", registry.get_entity_ids<c_quad, c_transform>());
 }
 
 void s_render::shutdown()

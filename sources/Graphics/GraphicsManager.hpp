@@ -5,7 +5,12 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
+#include <cstring>
+struct vertex {
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 texture_coordinates;
+};
 class mesh;
 class graphics_manager
 {
@@ -17,17 +22,17 @@ public:
     // loads (and generates) a shader program from file loading vertex and fragment shader's source code.
     static shader_program& load_shader (const char *vShaderFile, const char *fShaderFile, std::string name);
     // retrieves a stored shader
-    static shader_program& get_shader(const std::string name);
+    static shader_program& get_shader(std::string name);
     // loads (and generates) a texture from file
-    static texture& load_texture(const char *file, bool alpha, const std::string name);
+    static texture& load_texture(const char *file, bool alpha, std::string name);
     // retrieves a stored texture
-    static texture& get_texture(const std::string name);
+    static texture& get_texture(std::string name);
     static mesh& load_mesh(const char* file, std::string name);
     static mesh& get_mesh(std::string name);
     // properly de-allocates all loaded resources
     static void Clear();
 
-    static void load_obj(const char *file, std::vector<float> &verticies, std::vector<unsigned int> &indicies);
+    static void load_obj(const char *file, std::vector<vertex> &verticies);
 
 private:
     graphics_manager() { }
@@ -38,25 +43,27 @@ class mesh
 public:
     mesh(const char* obj_file)
     {
-        std::vector<float> vertices;
-        std::vector<unsigned int> indices;
-        graphics_manager::load_obj(obj_file,vertices,indices);
-        index_count = indices.size();
+        graphics_manager::load_obj(obj_file,vertices);
+        index_count = vertices.size();
+
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
-        glGenBuffers(1, &EBO);
 
         glBindVertexArray(VAO);
-
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertex)*vertices.size(),vertices.data(), GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indices.size(), indices.data(), GL_STATIC_DRAW);
 
         // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
+
+        // vertex normals
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, normal));
+        // vertex texture coords
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texture_coordinates));
 
 
         glBindVertexArray(0);
@@ -64,9 +71,11 @@ public:
     void draw()
     {
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT,0);
+        glDrawArrays(GL_TRIANGLES,0,index_count);
+        //glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT,0);
         glBindVertexArray(0);
     }
 private:
-    unsigned int VAO = 0, VBO = 0, EBO = 0, index_count;
+    unsigned int VAO = 0, VBO = 0, index_count;
+    std::vector<vertex> vertices;
 };
