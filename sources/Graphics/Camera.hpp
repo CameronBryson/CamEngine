@@ -29,6 +29,7 @@ public:
     // camera options
     float Zoom;
     glm::mat4 projection_matrix;
+    glm::mat4 view_matrix;
 
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), Zoom(ZOOM)
@@ -39,15 +40,17 @@ public:
         Pitch = pitch;
         updateCameraVectors();
         projection_matrix = glm::perspective(glm::radians(Zoom), (float)settings::window_width / (float)settings::window_height, 0.1f, 100.0f);
+        view_matrix = glm::lookAt(Position, Position + Front, Up);
 
     }
     // constructor with scalar values
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-    [[nodiscard]] glm::mat4 GetViewMatrix() const
+    [[nodiscard]] glm::mat4 &GetViewMatrix()
     {
-        return glm::lookAt(Position, Position + Front, Up);
+        view_matrix =  glm::lookAt(Position, Position + Front, Up);
+        return view_matrix;
     }
-    [[nodiscard]] glm::mat4 GetProjectionMatrix() const {
+    [[nodiscard]] glm::mat4 &GetProjectionMatrix(){
         return projection_matrix;
     }
 

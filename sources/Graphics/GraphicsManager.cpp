@@ -35,8 +35,8 @@ void graphics_manager::Clear()
     for (auto &iter : shader_map)
         glDeleteProgram(iter.second->ID);
     // (properly) delete all textures
-    for (auto &iter : texture_map)
-        glDeleteTextures(1, &iter.second->ID);
+    for (auto &iter : texture_map){}
+        //glDeleteTextures(1, &iter.second->ID);
 }
 // void graphics_manager::load_obj(const char *file, std::vector<vertex> &vertices, std::vector<unsigned int> &indices)
 // {

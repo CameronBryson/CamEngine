@@ -2,6 +2,7 @@
 #define COMPONENTS_HPP
 #include "Graphics/Color.hpp"
 #include "glm/glm.hpp"
+#include <string>
 enum class object_collision_type {
     STATIC,
     KINEMATIC,
@@ -89,5 +90,8 @@ struct c_plane
     glm::vec3 normal;
     float distance;
 };
-
+struct c_model
+{
+    std::string name;
+};
 #endif // COMPONENTS_HPP

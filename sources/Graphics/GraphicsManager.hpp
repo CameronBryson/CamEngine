@@ -34,6 +34,7 @@ public:
 
     static void load_obj(const char *file, std::vector<vertex> &verticies);
 
+
 private:
     graphics_manager() { }
 };
@@ -78,4 +79,5 @@ public:
 private:
     unsigned int VAO = 0, VBO = 0, index_count;
     std::vector<vertex> vertices;
+    std::vector<unsigned int> indices;
 };

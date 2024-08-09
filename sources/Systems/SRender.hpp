@@ -12,6 +12,7 @@ class s_render
     static void shutdown();
 
   private:
+    static void draw_object(const std::string &mesh_name, const std::vector<unsigned short> &entity_ids, sparse_set<c_transform> &positions, shader_program &shader);
     static void draw_models(const registry &registry, Camera &camera);
     static void draw_colliders(const registry &registry, Camera &camera);
     static void draw_statistics();
