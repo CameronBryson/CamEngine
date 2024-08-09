@@ -1,5 +1,4 @@
-#ifndef COMPONENTS_HPP
-#define COMPONENTS_HPP
+#pragma once
 #include "Graphics/Color.hpp"
 #include "glm/glm.hpp"
 #include <string>
@@ -23,8 +22,7 @@ struct c_player
 struct c_render
 {
     int layer = 0;
-    color color;
-
+    color color_color;
 };
 
 // Component for physical properties
@@ -94,4 +92,3 @@ struct c_model
 {
     std::string name;
 };
-#endif // COMPONENTS_HPP

@@ -4,7 +4,7 @@
 class collision_manifold {
 public:
     collision_manifold(const glm::vec3 normal, const float penetration_depth, c_transform &transform1, c_transform &transform2, object_collision_type type1, object_collision_type type2)
-        : normal(normal), penetration_depth_(penetration_depth), transform1_(transform1), transform2_(transform2), type1(type1), type2(type2) {}
+        : penetration_depth_(penetration_depth), normal(normal), type1(type1), type2(type2), transform1_(transform1), transform2_(transform2) {}
 
     void resolve_collision() const {
         if (type1 == object_collision_type::DYNAMIC && type2 == object_collision_type::DYNAMIC) {

@@ -3,6 +3,7 @@
 #include "Graphics/GraphicsUtil.hpp"
 #include <thread>
 #include <chrono>
+#include "platform.hpp"
 
 #include <iostream>
 
@@ -31,7 +32,7 @@ void game_manager::init()
     glfwSetKeyCallback(game_window, engine_util::key_callback);
     glfwSetFramebufferSizeCallback(game_window, graphics_util::framebuffer_size_callback);
     glfwSwapInterval(0);
-    gladLoadGL();
+    gladLoadGL(glfwGetProcAddress);
     glClearColor(1, 1, 1, 1);
     m_current_scene_->init();
 }

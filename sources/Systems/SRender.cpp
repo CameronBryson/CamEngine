@@ -19,13 +19,15 @@ void s_render::init() {
     printf("Render init\n");
     load_shaders();
     load_textures();
-    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube.obj", "cube");
-    //graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/chair.obj", "chair");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube.obj", "cube");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/chair.obj", "chair");
     graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/tree.obj", "tree");
     graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/deagle.obj", "deagle");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/sphere.obj", "sphere");
 
 
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // Enable backface culling
     glEnable(GL_CULL_FACE);
 
@@ -50,22 +52,39 @@ void s_render::update(const registry &registry, Camera &camera)
     auto &proj_matrix = camera.GetProjectionMatrix();
     auto &positions = registry.get_sparse_set<c_transform>();
     auto &shader = graphics_manager::get_shader("vertex");
+    auto &models = registry.get_sparse_set<c_model>();
     shader.setMat4("projection", proj_matrix);
     shader.setMat4("view", view_matrix);
     shader.use();
-    auto draw_object = [&](const std::string &mesh_name, const auto &entity_ids) {
-        auto &mesh = graphics_manager::get_mesh(mesh_name);
-        for (auto id : entity_ids) {
-            auto &transform = positions.get_item(id);
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), transform.position) *
-                              glm::scale(glm::mat4(1.0f), transform.scale) *
-                              glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
-            shader.setMat4("model", model);
+    for (auto id : registry.get_entity_ids<c_model,c_transform>())
+    {
+        auto& model = models.get_item(id);
+        auto& transform = positions.get_item(id);
+        glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
+                                 glm::scale(glm::mat4(1.0f), transform.scale) *
+                                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+        shader.setMat4("model",model_matrix);
+        auto &mesh = graphics_manager::get_mesh(model.name);
+        mesh.draw();
+    }
+    for (auto id : registry.get_entity_ids<c_collider,c_transform>())
+    {
+        auto& transform = registry.get_component<c_transform>(id);
+        glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
+                                 glm::scale(glm::mat4(1.0f), transform.scale) *
+                                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+        shader.setMat4("model",model_matrix);
+        if(registry.has_component<c_quad>(id))
+        {
+            auto& mesh = graphics_manager::get_mesh("cube");
             mesh.draw();
         }
-    };
-    draw_object("tree", registry.get_entity_ids<c_sphere, c_transform>());
-    draw_object("deagle", registry.get_entity_ids<c_quad, c_transform>());
+        else if(registry.has_component<c_sphere>(id))
+        {
+            auto& mesh = graphics_manager::get_mesh("sphere");
+            mesh.draw();
+        }
+    }
 }
 void s_render::shutdown()
 {

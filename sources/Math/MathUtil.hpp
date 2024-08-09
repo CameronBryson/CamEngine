@@ -42,7 +42,7 @@ class MathUtil
 
     static float random_float(const float min, const float max)
     {
-        return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+        return min + static_cast<float>(rand()) / (static_cast<float>(static_cast<float>(RAND_MAX) / (max - min)));
     }
 
     static float smooth_step(const float edge0, const float edge1, float x)

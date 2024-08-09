@@ -9,10 +9,11 @@ class factory
     {
         const auto id = registry.create_entity();
         registry.add_component<c_player>(id, c_player());
-        registry.add_component<c_transform>(id, c_transform{.position = {0,0,0}, .rotation = {0,0,0}, .scale = {1.0,1.0,1.0}});
+        registry.add_component<c_transform>(id, c_transform{.position = {0,0,0}, .rotation = {45,57,24}, .scale = {1.0,1.0,1.0}});
         registry.add_component<c_velocity>(id, c_velocity());
         registry.add_component<c_quad>(id, c_quad{.extents = {1.0f, 1.0f, 1.0f}});
         registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
+        registry.add_component<c_model>(id, c_model{.name = "deagle"});
         return id;
     }
     static unsigned short create_sphere(registry &registry, glm::vec3 position, float radius)
@@ -21,6 +22,7 @@ class factory
         registry.add_component<c_transform>(id, c_transform{.position = position, .scale = {1.0,1.0,1.0}});
         registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
         registry.add_component<c_collider>(id, c_collider());
+        registry.add_component<c_model>(id, c_model{.name = "chair"});
         return id;
     }
     static unsigned short create_quad(registry &registry, glm::vec3 position, glm::vec3 extents)
@@ -29,6 +31,7 @@ class factory
         registry.add_component<c_transform>(id, c_transform{.position = position, .rotation = {15,76,26}});
         registry.add_component<c_quad>(id, c_quad{.extents = extents});
         registry.add_component<c_collider>(id, c_collider());
+        registry.add_component<c_model>(id, c_model{.name = "cube"});
         return id;
     }
 };
