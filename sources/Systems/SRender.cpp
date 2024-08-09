@@ -23,7 +23,7 @@ void s_render::init() {
     graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/chair.obj", "chair");
     graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/tree.obj", "tree");
     graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/deagle.obj", "deagle");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/sphere.obj", "sphere");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/sphere2.obj", "sphere");
 
 
 
@@ -69,18 +69,27 @@ void s_render::update(const registry &registry, Camera &camera)
     }
     for (auto id : registry.get_entity_ids<c_collider,c_transform>())
     {
-        auto& transform = registry.get_component<c_transform>(id);
-        glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
-                                 glm::scale(glm::mat4(1.0f), transform.scale) *
-                                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
-        shader.setMat4("model",model_matrix);
+        
         if(registry.has_component<c_quad>(id))
         {
+            auto& quad= registry.get_component<c_quad>(id);
+            auto& transform = registry.get_component<c_transform>(id);
+        glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
+                                 glm::scale(glm::mat4(1.0f), quad.extents*transform.scale) *
+                                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+        shader.setMat4("model",model_matrix);
+
             auto& mesh = graphics_manager::get_mesh("cube");
             mesh.draw();
         }
         else if(registry.has_component<c_sphere>(id))
         {
+            auto& sphere = registry.get_component<c_sphere>(id);
+            auto& transform = registry.get_component<c_transform>(id);
+        glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
+                                 glm::scale(glm::mat4(1.0f),transform.scale*sphere.radius) *
+                                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+        shader.setMat4("model",model_matrix);
             auto& mesh = graphics_manager::get_mesh("sphere");
             mesh.draw();
         }

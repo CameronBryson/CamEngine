@@ -16,18 +16,17 @@ void s_collision::update(registry &registry)
     std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform, c_collider>();
 
     // Check OBB-OBB intersections
-    for (auto id : obb_ids)
+    for (int i = 0; i < obb_ids.size(); ++i)
     {
-        auto &obb = obbs.get_item(id);
-        auto &transform = transforms.get_item(id);
-        auto &collider = colliders.get_item(id);
+        auto &obb = obbs.get_item(obb_ids[i]);
+        auto &transform = transforms.get_item(obb_ids[i]);
+        auto &collider = colliders.get_item(obb_ids[i]);
 
-        for (auto id2 : obb_ids)
+        for (int j = i+1; j < obb_ids.size(); ++j)
         {
-            if(id == id2) continue;
-            auto &inner_obb = obbs.get_item(id2);
-            auto &inner_transform = transforms.get_item(id2);
-            auto &inner_collider = colliders.get_item(id2);
+            auto &inner_obb = obbs.get_item(obb_ids[j]);
+            auto &inner_transform = transforms.get_item(obb_ids[j]);
+            auto &inner_collider = colliders.get_item(obb_ids[j]);
             if (intersects_obb_in_obb(obb, inner_obb, transform, inner_transform,collider,inner_collider, registry))
             {
 
@@ -310,7 +309,7 @@ bool s_collision::intersects_obb_in_sphere(const c_quad &obb, c_sphere &sphere, 
         return false;
     }
 
-    float distance = std::sqrt(distance_squared);
+    float distance = glm::length(difference);
     float penetration_depth = radius_sphere - distance;
     glm::vec3 penetration_axis = glm::normalize(rotation_matrix_obb * glm::vec4(difference,1));
     if(penetration_depth > 0.000001)

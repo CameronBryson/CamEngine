@@ -49,8 +49,8 @@ void play_scene::init()
      //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 0.0f}, 0.2f);
      //factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
      //factory::create_sphere(m_registry_, glm::vec3{1.0f, 1.0f, 0.0f}, 0.2f);
-     //factory::create_quad(m_registry_, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec3{1.0f, 1.0f, 1.0f});
-     factory::create_sphere(m_registry_, glm::vec3{0.0f, 0.0f, 0.0f}, 1.5f);
+     //factory::create_quad(m_registry_, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec3{0.65f, 0.2f, 1.0f});
+     factory::create_sphere(m_registry_, glm::vec3{0.0f, 0.0f, 0.0f}, 2.0f);
     // factory::create_quad(m_registry_, glm::vec3{-0.5f, 0.0f, 1.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
      //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 1.0f}, 0.2f);
     // factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 1.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
