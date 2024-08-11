@@ -35,7 +35,7 @@ void play_scene::init()
     // {
     //     m_registry_.delete_entity(i);
     // }
-    factory::create_player(m_registry_);
+    //factory::create_player(m_registry_);
     // const auto enemy = m_registry_.create_entity();
     // m_registry_.add_component<c_transform>(enemy, c_transform{.position = {0.0f, 0.0f, 0.0f}});
     // m_registry_.add_component<c_rigid_body>(enemy, c_rigid_body{.drag = 0.9f});

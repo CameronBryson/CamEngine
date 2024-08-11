@@ -15,19 +15,24 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <string>
+#include "Graphics/Model.hpp"
 void s_render::init() {
     printf("Render init\n");
     load_shaders();
     load_textures();
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube.obj", "cube");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/chair.obj", "chair");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/tree.obj", "tree");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/deagle.obj", "deagle");
-    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/sphere2.obj", "sphere");
+    graphics_manager::load_material("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/untitled.mtl","temp");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube.obj", "temp", "cube");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/chair.obj", "temp","chair");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/tree.obj", "temp","tree");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/deagle.obj", "temp","deagle");
+    graphics_manager::load_mesh("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/sphere2.obj", "temp","sphere");
+
+    graphics_manager::create_model({"cube"}, "player");
+    graphics_manager::create_model({"sphere"}, "sphere");
 
 
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // Enable backface culling
     glEnable(GL_CULL_FACE);
 
@@ -64,8 +69,7 @@ void s_render::update(const registry &registry, Camera &camera)
                                  glm::scale(glm::mat4(1.0f), transform.scale) *
                                  glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         shader.setMat4("model",model_matrix);
-        auto &mesh = graphics_manager::get_mesh(model.name);
-        mesh.draw();
+        graphics_manager::get_model(model.name).draw(shader);
     }
     for (auto id : registry.get_entity_ids<c_collider,c_transform>())
     {
@@ -80,7 +84,7 @@ void s_render::update(const registry &registry, Camera &camera)
         shader.setMat4("model",model_matrix);
 
             auto& mesh = graphics_manager::get_mesh("cube");
-            mesh.draw();
+            mesh.draw(shader);
         }
         else if(registry.has_component<c_sphere>(id))
         {
@@ -91,7 +95,7 @@ void s_render::update(const registry &registry, Camera &camera)
                                  glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         shader.setMat4("model",model_matrix);
             auto& mesh = graphics_manager::get_mesh("sphere");
-            mesh.draw();
+            mesh.draw(shader);
         }
     }
 }

@@ -16,13 +16,13 @@ void s_collision::update(registry &registry)
     std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform, c_collider>();
 
     // Check OBB-OBB intersections
-    for (int i = 0; i < obb_ids.size(); ++i)
+    for (std::vector<unsigned short>::size_type i = 0; i < obb_ids.size(); ++i)
     {
         auto &obb = obbs.get_item(obb_ids[i]);
         auto &transform = transforms.get_item(obb_ids[i]);
         auto &collider = colliders.get_item(obb_ids[i]);
 
-        for (int j = i+1; j < obb_ids.size(); ++j)
+        for (std::vector<unsigned short>::size_type j = i+1; j < obb_ids.size(); ++j)
         {
             auto &inner_obb = obbs.get_item(obb_ids[j]);
             auto &inner_transform = transforms.get_item(obb_ids[j]);

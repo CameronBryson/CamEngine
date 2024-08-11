@@ -63,8 +63,8 @@ class registry
         while (!collision_queue_.empty())
         {
             const auto &manifold = collision_queue_.front();
-            printf("Depth: %f\n", manifold.penetration_depth_);
-            printf("Normal%f\n %f\n %f\n", manifold.normal.x, manifold.normal.y, manifold.normal.z);
+            //printf("Depth: %f\n", manifold.penetration_depth_);
+            //printf("Normal%f\n %f\n %f\n", manifold.normal.x, manifold.normal.y, manifold.normal.z);
             manifold.resolve_collision();
             collision_queue_.pop();
         }

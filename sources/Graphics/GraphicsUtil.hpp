@@ -22,6 +22,7 @@ public:
     }
     static void clear_background()
     {
+        glBindFramebuffer(GL_FRAMEBUFFER,0);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     }
     static glm::vec2 convert_point_to_screen(glm::vec2 &point)

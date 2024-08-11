@@ -13,7 +13,7 @@ class factory
         registry.add_component<c_velocity>(id, c_velocity());
         registry.add_component<c_quad>(id, c_quad{.extents = {1.5f, 1.5f, 1.5f}});
         registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
-        registry.add_component<c_model>(id, c_model{.name = "deagle"});
+        registry.add_component<c_model>(id, c_model{.name = "player"});
         return id;
     }
     static unsigned short create_sphere(registry &registry, glm::vec3 position, float radius)
@@ -22,7 +22,7 @@ class factory
         registry.add_component<c_transform>(id, c_transform{.position = position, .scale = {1.0,1.0,1.0}});
         registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
         registry.add_component<c_collider>(id, c_collider());
-        registry.add_component<c_model>(id, c_model{.name = "chair"});
+        registry.add_component<c_model>(id, c_model{.name = "sphere"});
         return id;
     }
     static unsigned short create_quad(registry &registry, glm::vec3 position, glm::vec3 extents)

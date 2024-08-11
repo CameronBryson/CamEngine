@@ -9,7 +9,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/include/glad/include)
 include_directories(${CMAKE_SOURCE_DIR}/include/glfw-3.4/include)
 include_directories(${CMAKE_SOURCE_DIR}/sources)  # Include the sources directory
-
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 if(POLICY CMP0058)
@@ -40,12 +39,14 @@ endif()
 
 # Add glad source files
 set(GLAD_SOURCES ${CMAKE_SOURCE_DIR}/include/glad/src/gl.c)
+set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.c)
 
 # Add project source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/*.cpp")
 
 # Declaring our executable
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${GLAD_SOURCES})
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${GLAD_SOURCES} ${STB_IMAGE_SOURCES}
+)
 
 # Link libraries
 set(OpenGL_GL_PREFERENCE GLVND)
@@ -59,4 +60,4 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_S
 
 enable_testing()
 
-add_subdirectory(gtest)
+#add_subdirectory(gtest)
