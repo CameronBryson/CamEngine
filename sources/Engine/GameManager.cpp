@@ -7,13 +7,13 @@
 
 #include <iostream>
 
-GLFWwindow* game_manager::game_window = nullptr;
+GLFWwindow * game_manager::game_window = nullptr;
 std::unique_ptr<i_scene> game_manager::m_current_scene_ = nullptr;
 
 void game_manager::init()
 {
     glfwSetErrorCallback(engine_util::error_callback);
-    if (!glfwInit())
+    if( ! glfwInit() )
     {
         exit(EXIT_FAILURE);
     }
@@ -23,7 +23,7 @@ void game_manager::init()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     game_window = glfwCreateWindow(settings::window_width, settings::window_height, "Game Window", nullptr, nullptr);
-    if (!game_window)
+    if( ! game_window )
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -65,7 +65,7 @@ void game_manager::game_loop()
     double elapsed_time = 0.0f;
     int frame_count = 0;
 
-    while (!glfwWindowShouldClose(game_window))
+    while( ! glfwWindowShouldClose(game_window) )
     {
         double current_frame = glfwGetTime();
         delta_time = current_frame - last_frame;
@@ -73,7 +73,7 @@ void game_manager::game_loop()
         elapsed_time += delta_time;
         frame_count++;
 
-        if (elapsed_time >= 1.0)
+        if( elapsed_time >= 1.0 )
         {
             int fps = frame_count;
             std::cout << "FPS: " << fps << std::endl;
@@ -88,13 +88,14 @@ void game_manager::game_loop()
 
         // Limit FPS
         double frame_time = glfwGetTime() - current_frame;
-        if (frame_time < fps_limit)
+        if( frame_time < fps_limit )
         {
             std::this_thread::sleep_for(std::chrono::duration<double>(fps_limit - frame_time));
         }
     }
 }
-GLFWwindow *game_manager::get_glfw_window()
+
+GLFWwindow * game_manager::get_glfw_window()
 {
     return game_window;
 }

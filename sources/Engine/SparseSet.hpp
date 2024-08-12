@@ -8,9 +8,10 @@
 #include <typeinfo>
 #include <vector>
 
-template <class T> class sparse_set final : public i_sparse_set
+template <class T>
+class sparse_set final : public i_sparse_set
 {
-  public:
+public:
     sparse_set()
     {
         printf("Sparse set created of type: %s\n", typeid(T).name());
@@ -18,6 +19,7 @@ template <class T> class sparse_set final : public i_sparse_set
         m_sparse_.resize(settings::max_entities);
         m_items_.resize(settings::max_entities);
     }
+
     ~sparse_set() override
     {
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
@@ -56,7 +58,7 @@ template <class T> class sparse_set final : public i_sparse_set
         return id < settings::max_entities && m_sparse_[id] < m_size_ && m_dense_[m_sparse_[id]] == id;
     }
 
-    T &get_item(const unsigned short id)
+    T& get_item(const unsigned short id)
     {
         assert(id < settings::max_entities && "ID is out of range.");
         assert(m_sparse_[id] < m_size_ && "ID does not exist in the sparse set.");
@@ -75,7 +77,7 @@ template <class T> class sparse_set final : public i_sparse_set
         return ids;
     }
 
-    [[nodiscard]] std::vector<unsigned short> get_intersection(const std::vector<unsigned short> &other) const override
+    [[nodiscard]] std::vector<unsigned short> get_intersection(const std::vector<unsigned short>& other) const override
     {
         auto ids = get_ids();
         std::vector<unsigned short> intersection;
@@ -84,7 +86,7 @@ template <class T> class sparse_set final : public i_sparse_set
         return intersection;
     }
 
-  private:
+private:
     std::vector<unsigned short> m_dense_;
     std::vector<unsigned short> m_sparse_;
     std::vector<T> m_items_;
