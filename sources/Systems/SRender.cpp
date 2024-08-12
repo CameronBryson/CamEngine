@@ -58,6 +58,7 @@ void s_render::init()
 
     // Optionally, specify the front face winding order (default is GL_CCW)
     glFrontFace(GL_CCW);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void s_render::update(const registry & registry, Camera & camera)
