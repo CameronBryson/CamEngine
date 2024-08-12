@@ -6,7 +6,7 @@
 class mesh
 {
 public:
-    mesh(const std::vector<vertex>& vertices) : vertices(vertices)
+    mesh(const std::vector<vertex>& vertices, const std::string& material_name) : vertices(vertices), material_name(material_name)
     {
         index_count = vertices.size();
         setup_mesh();
@@ -44,6 +44,7 @@ public:
         glDrawArrays(GL_TRIANGLES, 0, index_count);
         //glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT,0);
         glBindVertexArray(0);
+        graphics_manager::get_material(material_name).unbind();
     }
 
     void set_material(const std::string& name)

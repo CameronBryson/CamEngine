@@ -25,12 +25,11 @@ public:
 
     void bind(shader_program& shader)
     {
-        shader.use();
         if (diffuse_texture)
         {
+            shader.setInt("material.diffuse", 0);
             glActiveTexture(GL_TEXTURE0);
             diffuse_texture->bind();
-            shader.setInt("material.diffuse", 0);
         }
         else
         {
@@ -39,9 +38,9 @@ public:
 
         if (specular_texture)
         {
+            shader.setInt("material.specular", 1);
             glActiveTexture(GL_TEXTURE1);
             specular_texture->bind();
-            shader.setInt("material.specular", 1);
         }
         else
         {
@@ -50,6 +49,17 @@ public:
 
         shader.setFloat("material.shininess", shininess);
         shader.setVec3("material.ambient", ambient_color);
+    }
+    void unbind()
+    {
+        if(diffuse_texture)
+        {
+            diffuse_texture->unbind();
+        }
+        if(specular_texture)
+        {
+            specular_texture->unbind();
+        }
     }
 
     float get_shininess() const

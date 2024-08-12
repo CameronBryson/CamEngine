@@ -28,7 +28,7 @@ public:
     static texture& load_texture(const char* file, bool alpha, const std::string& name);
     // retrieves a stored texture
     static texture& get_texture(const std::string& name);
-    static mesh& create_mesh(const std::string& name, const std::vector<vertex>& vertices);
+    static mesh& create_mesh(const std::string& name, const std::vector<vertex>& vertices, const std::string& material_name);
     static mesh& get_mesh(const std::string& name);
     // properly de-allocates all loaded resources
     static model& create_model(const std::vector<std::string>& mesh_names, const std::string& name);

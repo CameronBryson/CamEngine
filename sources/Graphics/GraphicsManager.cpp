@@ -30,9 +30,9 @@ texture & graphics_manager::get_texture(const std::string & name)
     return *texture_map[name];
 }
 
-mesh & graphics_manager::create_mesh(const std::string & name, const std::vector<vertex> & vertices)
+mesh & graphics_manager::create_mesh(const std::string & name, const std::vector<vertex> & vertices, const std::string& material_name)
 {
-    mesh_map[name] = std::make_unique<mesh>(vertices);
+    mesh_map[name] = std::make_unique<mesh>(vertices,material_name);
     mesh_map[name]->set_material("Material");
     return *mesh_map[name];
 }
@@ -80,6 +80,7 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
     std::vector<glm::vec3> temp_normals;
     std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
     std::vector<vertex> vertices;
+    std::string currentMaterial = "Default";
 
     std::string line, currentMeshName;
     bool firstObject = true;
@@ -94,7 +95,7 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
             v.normal = (normalIndices[i] < temp_normals.size()) ? temp_normals[normalIndices[i]] : glm::vec3(0.0f);
             vertices.push_back(v);
         }
-        create_mesh(currentMeshName, vertices);
+        create_mesh(currentMeshName, vertices, currentMaterial);
         mesh_names.push_back(currentMeshName);
         vertices.clear();
         vertexIndices.clear();
@@ -146,6 +147,10 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
                 uvIndices.push_back(uvIndex - 1);
                 normalIndices.push_back(normalIndex - 1);
             }
+        }
+        else if( prefix == "usemtl" )
+        {
+            line_stream >> currentMaterial;
         }
     }
 

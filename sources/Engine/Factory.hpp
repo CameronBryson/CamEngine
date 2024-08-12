@@ -13,8 +13,8 @@ public:
                                                 .position = {0, 0, 0}, .rotation = {0, 0, 0}, .scale = {1.0, 1.0, 1.0}
                                             });
         registry.add_component<c_velocity>(id, c_velocity());
-        registry.add_component<c_quad>(id, c_quad{.extents = {1.5f, 1.5f, 1.5f}});
-        registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
+        //registry.add_component<c_quad>(id, c_quad{.extents = {1.5f, 1.5f, 1.5f}});
+        //registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
         registry.add_component<c_model>(id, c_model{.name = "player"});
         return id;
     }
