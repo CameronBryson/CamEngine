@@ -30,10 +30,9 @@ texture & graphics_manager::get_texture(const std::string & name)
     return *texture_map[name];
 }
 
-mesh & graphics_manager::create_mesh(const std::string & name, const std::vector<vertex> & vertices, const std::string& material_name)
+mesh & graphics_manager::create_mesh(std::string name,  std::vector<vertex> vertices, std::string material_name)
 {
     mesh_map[name] = std::make_unique<mesh>(vertices,material_name);
-    mesh_map[name]->set_material("Material");
     return *mesh_map[name];
 }
 
@@ -91,19 +90,14 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
         {
             vertex v{};
             v.position = temp_vertices[vertexIndices[i]];
-            v.texture_coordinates = (uvIndices[i] < temp_uvs.size()) ? temp_uvs[uvIndices[i]] : glm::vec2(0.0f);
-            v.normal = (normalIndices[i] < temp_normals.size()) ? temp_normals[normalIndices[i]] : glm::vec3(0.0f);
+            v.texture_coordinates = temp_uvs[uvIndices[i]];
+            v.normal = temp_normals[normalIndices[i]];
             vertices.push_back(v);
         }
+        //create_mesh(currentMeshName, vertices, "Default");
+
         create_mesh(currentMeshName, vertices, currentMaterial);
         mesh_names.push_back(currentMeshName);
-        vertices.clear();
-        vertexIndices.clear();
-        uvIndices.clear();
-        normalIndices.clear();
-        temp_vertices.clear();
-        temp_uvs.clear();
-        temp_normals.clear();
     };
 
     while( std::getline(obj_file, line) )

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <stdexcept>
-#include "stb_image.h"
+#include <stb_image.h>
 #include "platform.hpp"
 
 class texture
@@ -14,11 +14,11 @@ public:
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // Load image
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(true);
         data = stbi_load(file, &width, &height, &nrChannels, 0);
         if (!data)
         {
