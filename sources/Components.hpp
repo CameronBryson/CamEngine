@@ -2,7 +2,9 @@
 #include "Graphics/Color.hpp"
 #include "glm/glm.hpp"
 #include <string>
-enum class object_collision_type {
+
+enum class object_collision_type
+{
     STATIC,
     KINEMATIC,
     DYNAMIC
@@ -13,6 +15,7 @@ struct c_gravity
 {
     glm::vec3 gravity = {0, -9.81f, 0};
 };
+
 // Component for player-specific data
 struct c_player
 {
@@ -32,6 +35,7 @@ struct c_rigid_body
     float drag = 0.0f;
     glm::vec3 acceleration = {0, 0, 0};
 };
+
 // Component for sprite-related data
 struct c_sprite
 {
@@ -58,7 +62,6 @@ struct c_collider
     bool is_trigger = false;
     unsigned int collision_bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
     object_collision_type collision_type = object_collision_type::STATIC;
-
 };
 
 struct c_health
@@ -74,20 +77,24 @@ struct c_quad
 {
     glm::vec3 extents;
 };
+
 struct c_sphere
 {
     float radius;
 };
+
 struct c_capsule
 {
     float radius;
     float height;
 };
+
 struct c_plane
 {
     glm::vec3 normal;
     float distance;
 };
+
 struct c_model
 {
     std::string name;

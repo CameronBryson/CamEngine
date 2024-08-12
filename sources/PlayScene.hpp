@@ -2,9 +2,10 @@
 #include "Engine/IScene.hpp"
 #include "Engine/Registry.hpp"
 #include "Graphics/Camera.hpp"
+
 class play_scene final : public i_scene
 {
-  public:
+public:
     play_scene();
     ~play_scene() override;
     void init() override;
@@ -12,12 +13,12 @@ class play_scene final : public i_scene
     void late_update(float dt) override;
     void render() override;
     void shutdown() override;
-    registry &get_registry() override;
+    registry& get_registry() override;
 
-  private:
+private:
     void init_sparse_sets();
 
-  private:
+private:
     registry m_registry_;
     Camera m_camera_;
 };

@@ -4,7 +4,7 @@
 
 class stats
 {
-  public:
+public:
     enum stat_type
     {
         UPDATE,
@@ -13,5 +13,6 @@ class stats
         DELTATIME,
         COUNT
     };
+
     static std::vector<std::chrono::duration<float, std::ratio<1, 100>>> timer_vector;
 };

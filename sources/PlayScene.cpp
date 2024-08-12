@@ -5,18 +5,20 @@
 #include "Engine/Registry.hpp"
 #include "Systems/Systems.hpp"
 #include "Engine/Timer.hpp"
+
 play_scene::play_scene()
 {
     printf("PlayScene created\n");
-    m_camera_ = Camera(glm::vec3(0.0f,0.0f,1.50f));
+    m_camera_ = Camera(glm::vec3(0.0f, 0.0f, 1.50f));
 }
+
 play_scene::~play_scene()
 {
     printf("PlayScene destroyed\n");
 }
+
 void play_scene::init()
 {
-
     init_sparse_sets();
 
     s_render::init();
@@ -35,7 +37,7 @@ void play_scene::init()
     // {
     //     m_registry_.delete_entity(i);
     // }
-    //factory::create_player(m_registry_);
+    factory::create_player(m_registry_);
     // const auto enemy = m_registry_.create_entity();
     // m_registry_.add_component<c_transform>(enemy, c_transform{.position = {0.0f, 0.0f, 0.0f}});
     // m_registry_.add_component<c_rigid_body>(enemy, c_rigid_body{.drag = 0.9f});
@@ -45,16 +47,15 @@ void play_scene::init()
     //
     //factory::create_sphere(m_registry_, glm::vec3{0.0f, 0.0f, 0.0f}, 0.2f);
     // factory::create_sphere(m_registry_, glm::vec3{0.5f, 0.0f, 0.0f}, 0.2f);
-     //factory::create_quad(m_registry_, glm::vec3{-0.5f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-     //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 0.0f}, 0.2f);
-     //factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-     //factory::create_sphere(m_registry_, glm::vec3{1.0f, 1.0f, 0.0f}, 0.2f);
-     //factory::create_quad(m_registry_, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec3{0.65f, 0.2f, 1.0f});
-     factory::create_sphere(m_registry_, glm::vec3{0.0f, 0.0f, 0.0f}, 2.0f);
+    //factory::create_quad(m_registry_, glm::vec3{-0.5f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
+    //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 0.0f}, 0.2f);
+    //factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
+    //factory::create_sphere(m_registry_, glm::vec3{1.0f, 1.0f, 0.0f}, 0.2f);
+    //factory::create_quad(m_registry_, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec3{0.65f, 0.2f, 1.0f});
+    //factory::create_sphere(m_registry_, glm::vec3{0.0f, 0.0f, 0.0f}, 2.0f);
     // factory::create_quad(m_registry_, glm::vec3{-0.5f, 0.0f, 1.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-     //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 1.0f}, 0.2f);
+    //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 1.0f}, 0.2f);
     // factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 1.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-
 }
 
 void play_scene::update(const float dt)
@@ -65,6 +66,7 @@ void play_scene::update(const float dt)
     s_player::update(m_registry_, dt);
     s_physics::update(m_registry_, dt);
 }
+
 void play_scene::late_update(const float dt)
 {
     s_collision::update(m_registry_);
@@ -83,10 +85,12 @@ void play_scene::shutdown()
     s_player::shutdown();
     s_physics::shutdown();
 }
-registry &play_scene::get_registry()
+
+registry & play_scene::get_registry()
 {
     return m_registry_;
 }
+
 void play_scene::init_sparse_sets()
 {
     m_registry_.create_sparse_set<c_transform>();

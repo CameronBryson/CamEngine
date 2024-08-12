@@ -5,33 +5,46 @@
 #include "platform.hpp"
 #include "ShaderProgram.hpp"
 
-class material {
+class material
+{
 public:
-    material(const char* file) {
-        graphics_manager::load_mtl(file, diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
-        if (!diffuse_path.empty()) {
+    material(const std::string& diffuse_path, const std::string& specular_path, float shininess,
+             glm::vec3 ambient_color, glm::vec3 diffuse_color, glm::vec3 specular_color)
+        : diffuse_path(diffuse_path), specular_path(specular_path), shininess(shininess),
+          ambient_color(ambient_color), diffuse_color(diffuse_color), specular_color(specular_color)
+    {
+        if (!diffuse_path.empty())
+        {
             diffuse_texture = std::make_unique<texture>(diffuse_path.c_str(), true);
         }
-        if (!specular_path.empty()) {
+        if (!specular_path.empty())
+        {
             specular_texture = std::make_unique<texture>(specular_path.c_str(), true);
         }
     }
 
-    void bind(shader_program &shader) {
+    void bind(shader_program& shader)
+    {
         shader.use();
-        if (diffuse_texture) {
+        if (diffuse_texture)
+        {
             glActiveTexture(GL_TEXTURE0);
             diffuse_texture->bind();
             shader.setInt("material.diffuse", 0);
-        } else {
+        }
+        else
+        {
             shader.setVec3("material.diffuse", diffuse_color);
         }
 
-        if (specular_texture) {
+        if (specular_texture)
+        {
             glActiveTexture(GL_TEXTURE1);
             specular_texture->bind();
             shader.setInt("material.specular", 1);
-        } else {
+        }
+        else
+        {
             shader.setVec3("material.specular", specular_color);
         }
 
@@ -39,7 +52,8 @@ public:
         shader.setVec3("material.ambient", ambient_color);
     }
 
-    float get_shininess() const {
+    float get_shininess() const
+    {
         return shininess;
     }
 

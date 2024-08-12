@@ -4,7 +4,7 @@
 
 class MathUtil
 {
-  public:
+public:
     // Constants
     static constexpr float pi = 3.14159265358979323846f;
     static constexpr float two_pi = 6.28318530717958647692f;
@@ -87,5 +87,4 @@ class MathUtil
     {
         return std::fabs(value);
     }
-
 };

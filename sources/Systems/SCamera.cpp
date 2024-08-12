@@ -7,7 +7,7 @@
 static constexpr float camera_movespeed = 100.0f;
 static constexpr float camera_rotationspeed = 500.0f;
 
-void s_camera::update(Camera &camera, const float dt)
+void s_camera::update(Camera & camera, const float dt)
 {
     glm::vec3 camera_position = camera.Position;
     const glm::vec3 forward = camera.Front;
@@ -26,58 +26,58 @@ void s_camera::update(Camera &camera, const float dt)
     bool RIGHT = engine_util::is_key_pressed(GLFW_KEY_RIGHT);
 
     // Move camera
-    if (I)
+    if( I )
     {
         camera_position += forward * camera_movespeed * dt;
         moved = true;
     }
-    if (K)
+    if( K )
     {
-        camera_position-= forward * camera_movespeed * dt;
+        camera_position -= forward * camera_movespeed * dt;
         moved = true;
     }
-    if (J)
+    if( J )
     {
-       camera_position -= right * camera_movespeed * dt;
+        camera_position -= right * camera_movespeed * dt;
         moved = true;
     }
-    if (L)
+    if( L )
     {
         camera_position += right * camera_movespeed * dt;
         moved = true;
     }
-    if (U)
+    if( U )
     {
         camera_position += up * camera_movespeed * dt;
         moved = true;
     }
-    if (O)
+    if( O )
     {
         camera_position -= up * camera_movespeed * dt;
         moved = true;
     }
 
-    if(UP)
+    if( UP )
     {
         camera.Pitch += camera_rotationspeed * dt;
         moved = true;
     }
-    if(DOWN)
+    if( DOWN )
     {
         camera.Pitch -= camera_rotationspeed * dt;
         moved = true;
     }
-    if(LEFT)
+    if( LEFT )
     {
-        camera.Yaw -= camera_rotationspeed*dt;
+        camera.Yaw -= camera_rotationspeed * dt;
         moved = true;
     }
-    if(RIGHT)
+    if( RIGHT )
     {
-        camera.Yaw += camera_rotationspeed*dt;
+        camera.Yaw += camera_rotationspeed * dt;
         moved = true;
     }
-    if(moved)
+    if( moved )
     {
         camera.Position = camera_position;
         camera.updateCameraVectors();

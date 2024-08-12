@@ -4,18 +4,19 @@
 #include "platform.hpp"
 
 #include <Graphics/GraphicsManager.hpp>
+
 class s_render
 {
-  public:
+public:
     static void init();
-    static void update(const registry &registry, Camera &camera);
+    static void update(const registry& registry, Camera& camera);
     static void shutdown();
 
-  private:
-    static void draw_object(const std::string &mesh_name, const std::vector<unsigned short> &entity_ids, sparse_set<c_transform> &positions, shader_program &shader);
-    static void draw_models(const registry &registry, Camera &camera);
-    static void draw_colliders(const registry &registry, Camera &camera);
+private:
+    static void draw_object(const std::string& mesh_name, const std::vector<unsigned short>& entity_ids,
+                            sparse_set<c_transform>& positions, shader_program& shader);
+    static void draw_models(const registry& registry, Camera& camera);
+    static void draw_colliders(const registry& registry, Camera& camera);
     static void draw_statistics();
     static void load_shaders();
-    static void load_textures();
 };

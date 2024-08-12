@@ -1,6 +1,6 @@
-
 #include "Engine/GameManager.hpp"
 #include "PlayScene.hpp"
+
 int main()
 {
     //InitWindow(settings::window_width, settings::window_height, "raylib [core] example - basic window");

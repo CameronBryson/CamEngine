@@ -8,12 +8,11 @@
 
 #include "Engine/Registry.hpp"
 
-class s_camera {
+class s_camera
+{
 public:
-    static void update(Camera &camera, float dt);
-
+    static void update(Camera& camera, float dt);
 };
-
 
 
 #endif //SCAMERA_HPP

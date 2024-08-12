@@ -4,12 +4,13 @@
 
 class timer
 {
-  public:
+public:
     explicit timer(const stats::stat_type type)
     {
         start_ = std::chrono::system_clock::now();
         stat_type_ = type;
     };
+
     ~timer()
     {
         end_ = std::chrono::system_clock::now();
@@ -18,7 +19,7 @@ class timer
         stats::timer_vector[stat_type_] = final;
     }
 
-  private:
+private:
     std::chrono::time_point<std::chrono::system_clock> start_, end_;
     stats::stat_type stat_type_;
 };

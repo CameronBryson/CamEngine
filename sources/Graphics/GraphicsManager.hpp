@@ -10,6 +10,7 @@ class mesh;
 class model;
 class material;
 class texture;
+
 class graphics_manager
 {
 public:
@@ -20,28 +21,29 @@ public:
     static std::unordered_map<std::string, std::unique_ptr<model>> model_map;
     static std::unordered_map<std::string, std::unique_ptr<material>> material_map;
     // loads (and generates) a shader program from file loading vertex and fragment shader's source code.
-    static shader_program& load_shader (const char *vShaderFile, const char *fShaderFile, const std::string& name);
+    static shader_program& load_shader(const char* vShaderFile, const char* fShaderFile, const std::string& name);
     // retrieves a stored shader
     static shader_program& get_shader(const std::string& name);
     // loads (and generates) a texture from file
-    static texture& load_texture(const char *file, bool alpha, const std::string& name);
+    static texture& load_texture(const char* file, bool alpha, const std::string& name);
     // retrieves a stored texture
     static texture& get_texture(const std::string& name);
-    static mesh& load_mesh(const char* file, const std::string& material_name, const std::string& name);
+    static mesh& create_mesh(const std::string& name, const std::vector<vertex>& vertices);
     static mesh& get_mesh(const std::string& name);
     // properly de-allocates all loaded resources
     static model& create_model(const std::vector<std::string>& mesh_names, const std::string& name);
     static model& get_model(const std::string& name);
-    static material& load_material(const char* file, const std::string& name);
+    static material& create_material(std::string& name, std::string& diffuse_path, std::string& specular_path,
+                                     float& shininess, glm::vec3& ambient_color, glm::vec3& diffuse_color,
+                                     glm::vec3& specular_color);
     static material& get_material(const std::string& name);
     static void Clear();
 
-    static void load_obj(const char *file, std::vector<vertex> &verticies);
-    static void load_mtl(const char *file, std::string &diffuse_path, std::string &specular_path, float &shininess, glm::vec3 &ambient_clor, glm::vec3 &diffuse_color, glm::vec3 &specular_color);
-
+    static std::vector<std::string> load_obj(const char* file);
+    static std::vector<std::string> load_mtl(const char* file);
 
 private:
-    graphics_manager() { }
+    graphics_manager()
+    {
+    }
 };
-
-
