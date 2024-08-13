@@ -22,7 +22,8 @@ void s_render::init()
 {
     printf("Render init\n");
     load_shaders();
-
+    //graphics_manager::load_mtl("assets/Default.mtl");
+    //graphics_manager::create_model_from_obj("assets/cube.obj", "player");
     graphics_manager::create_model_from_obj("assets/patek.obj", "player");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

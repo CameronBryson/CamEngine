@@ -29,6 +29,8 @@ public:
     }
     static std::string build_path(const std::string& path)
     {
-        return (std::filesystem::current_path() / path).string();
+        auto current_path = std::filesystem::current_path();
+        auto parent_path = current_path.parent_path().parent_path();
+        return (parent_path / path).make_preferred().string();
     }
 };

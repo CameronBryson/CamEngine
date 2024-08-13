@@ -74,6 +74,7 @@ void graphics_manager::Clear()
 
 std::vector<std::string> graphics_manager::load_obj(const char * file)
 {
+    auto test = engine_util::build_path(file);
     std::ifstream obj_file(engine_util::build_path(file));
     if( ! obj_file.is_open() )
     {

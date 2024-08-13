@@ -19,7 +19,7 @@ public:
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         int width, height, nrChannels;
         stbi_set_flip_vertically_on_load(true);
-        data = stbi_load(file, &width, &height, &nrChannels, 0);
+        data = stbi_load(engine_util::build_path(file).c_str(), &width, &height, &nrChannels, 0);
         if (!data)
         {
             throw std::runtime_error("Failed to load texture: " + std::string(file));
