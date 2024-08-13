@@ -1,4 +1,7 @@
 #include "GraphicsManager.hpp"
+
+#include <Engine/EngineUtil.hpp>
+
 #include "Model.hpp"
 #include "Texture.hpp"
 #include "Material.hpp"
@@ -66,7 +69,7 @@ void graphics_manager::Clear()
 
 std::vector<std::string> graphics_manager::load_obj(const char * file)
 {
-    std::ifstream obj_file(file);
+    std::ifstream obj_file(engine_util::build_path(file));
     if( ! obj_file.is_open() )
     {
         std::cerr << "Failed to open file: " << file << std::endl;
@@ -146,6 +149,12 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
         {
             line_stream >> currentMaterial;
         }
+        else if (prefix == "mtllib")
+        {
+            std::string mtl_file;
+            line_stream >> mtl_file;
+            load_mtl(mtl_file.c_str());
+        }
     }
 
     if( ! currentMeshName.empty() ) process_mesh();
@@ -167,7 +176,8 @@ material & graphics_manager::get_material(const std::string & name)
 
 std::vector<std::string> graphics_manager::load_mtl(const char * file)
 {
-    std::ifstream mtl_file(file);
+
+    std::ifstream mtl_file(engine_util::build_path(file));
     if( ! mtl_file.is_open() )
     {
         std::cerr << "Failed to open file: " << file << std::endl;

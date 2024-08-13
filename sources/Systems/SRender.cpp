@@ -16,38 +16,16 @@
 #include <glm/gtx/euler_angles.hpp>
 #include <string>
 #include "Graphics/Model.hpp"
+#include "Engine/EngineUtil.hpp"
 
 void s_render::init()
 {
     printf("Render init\n");
     load_shaders();
-    graphics_manager::load_mtl("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/Default.mtl");
-    graphics_manager::load_mtl("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/patek.mtl");
-    //graphics_manager::load_mtl("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/torus.mtl");
-    //graphics_manager::load_mtl("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cone.mtl");
-    //graphics_manager::load_mtl("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/test.mtl");
-    //graphics_manager::load_mtl("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/goat.mtl");
-    graphics_manager::load_mtl("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/triple.mtl");
 
-
-    //graphics_manager::load_obj("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/sphere2.obj");
-    //graphics_manager::load_obj("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cube.obj");
-    //graphics_manager::load_obj("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/goat.obj");
-    //graphics_manager::load_obj("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/torus.obj");
-    //graphics_manager::load_obj("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/cone.obj");
-    auto test = graphics_manager::load_obj("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/triple.obj");
-
-
-
-    auto patek = graphics_manager::load_obj("/home/cam/Documents/GitHub/raylib-cmake-template-master/assets/patek.obj");
-
-
-
-
-
+    graphics_manager::load_mtl("assets/Default.mtl");
+    auto patek = graphics_manager::load_obj("assets/patek.obj");
     graphics_manager::create_model(patek, "player");
-
-
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // Enable backface culling
@@ -128,8 +106,8 @@ void s_render::draw_statistics()
 void s_render::load_shaders()
 {
     graphics_manager::load_shader(
-        "/home/cam/Documents/GitHub/raylib-cmake-template-master/sources/Shaders/vertex_shader.glsl",
-        "/home/cam/Documents/GitHub/raylib-cmake-template-master/sources/Shaders/fragment_shader.glsl", "vertex");
+        "sources/Shaders/vertex_shader.glsl",
+        "sources/Shaders/fragment_shader.glsl", "vertex");
 }
 
 void s_render::draw_models(const registry & registry, Camera & camera)

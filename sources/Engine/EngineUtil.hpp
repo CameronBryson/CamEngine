@@ -1,4 +1,6 @@
 #pragma once
+#include <filesystem>
+
 #include "GameManager.hpp"
 
 #include <GLFW/glfw3.h>
@@ -24,5 +26,9 @@ public:
             return true;
         }
         return false;
+    }
+    static std::string build_path(const std::string& path)
+    {
+        return (std::filesystem::current_path() / path).string();
     }
 };

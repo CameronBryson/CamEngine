@@ -1,6 +1,6 @@
 # Blender 3.4.1
 # www.blender.org
-mtllib patek.mtl
+mtllib assets/patek.mtl
 o with_uv_Object003
 v 0.223987 0.480342 0.431945
 v 0.211112 0.486347 0.428617
