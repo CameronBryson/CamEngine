@@ -32,6 +32,7 @@ public:
     static mesh& get_mesh(const std::string& name);
     // properly de-allocates all loaded resources
     static model& create_model(const std::vector<std::string>& mesh_names, const std::string& name);
+    static model& create_model_from_obj(const char* file, const std::string& name);
     static model& get_model(const std::string& name);
     static material& create_material(std::string& name, std::string& diffuse_path, std::string& specular_path,
                                      float& shininess, glm::vec3& ambient_color, glm::vec3& diffuse_color,

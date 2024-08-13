@@ -50,6 +50,11 @@ model & graphics_manager::create_model(const std::vector<std::string> & mesh_nam
     return *model_map[name];
 }
 
+model & graphics_manager::create_model_from_obj(const char * file, const std::string & name)
+{
+    return create_model(load_obj(file), name);
+}
+
 model & graphics_manager::get_model(const std::string & name)
 {
     return *model_map[name];

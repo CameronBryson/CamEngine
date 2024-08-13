@@ -23,9 +23,7 @@ void s_render::init()
     printf("Render init\n");
     load_shaders();
 
-    graphics_manager::load_mtl("assets/Default.mtl");
-    auto patek = graphics_manager::load_obj("assets/patek.obj");
-    graphics_manager::create_model(patek, "player");
+    graphics_manager::create_model_from_obj("assets/patek.obj", "player");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // Enable backface culling
@@ -45,28 +43,59 @@ void s_render::update(const registry & registry, Camera & camera)
 
     auto & view_matrix = camera.GetViewMatrix();
     auto & proj_matrix = camera.GetProjectionMatrix();
-    auto & positions = registry.get_sparse_set<c_transform>();
+    auto & transforms = registry.get_sparse_set<c_transform>();
     auto & shader = graphics_manager::get_shader("vertex");
-    auto & models = registry.get_sparse_set<c_model>();
+    auto & lights = registry.get_sparse_set<c_directional_light>();
+    auto light_ids = registry.get_entity_ids<c_directional_light>();
+
+    shader.use();
     shader.setMat4("projection", proj_matrix);
     shader.setMat4("view", view_matrix);
-    shader.use();
+    shader.setInt("numDirLights", light_ids.size());
+    shader.setVec3("viewPos", camera.Position);
+
+    for( int i = 0; i < light_ids.size(); ++i )
+    {
+        auto & light = lights.get_item(light_ids[i]);
+        std::string index = std::to_string(i);
+        shader.setVec3("dirLights[" + index + "].direction", light.direction);
+        shader.setVec3("dirLights[" + index + "].ambient", light.ambient);
+        shader.setVec3("dirLights[" + index + "].diffuse", light.diffuse);
+        shader.setVec3("dirLights[" + index + "].specular", light.specular);
+    }
+    draw_models(registry, transforms, shader);
+    draw_colliders(registry,transforms,shader);
+}
+
+void s_render::shutdown()
+{
+}
+
+void s_render::draw_models(const registry & registry, sparse_set<c_transform> & transforms, shader_program & shader)
+{
+    auto& models = registry.get_sparse_set<c_model>();
     for( auto id : registry.get_entity_ids<c_model, c_transform>() )
     {
         auto & model = models.get_item(id);
-        auto & transform = positions.get_item(id);
+        auto & transform = transforms.get_item(id);
         glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
             glm::scale(glm::mat4(1.0f), transform.scale) *
             glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         shader.setMat4("model", model_matrix);
         graphics_manager::get_model(model.name).draw(shader);
     }
+}
+
+void s_render::draw_colliders(const registry & registry, sparse_set<c_transform> & transforms, shader_program & shader)
+{
+    auto & quads = registry.get_sparse_set<c_quad>();
+    auto & spheres = registry.get_sparse_set<c_sphere>();
     for( auto id : registry.get_entity_ids<c_collider, c_transform>() )
     {
         if( registry.has_component<c_quad>(id) )
         {
-            auto & quad = registry.get_component<c_quad>(id);
-            auto & transform = registry.get_component<c_transform>(id);
+            auto & quad = quads.get_item(id);
+            auto & transform = transforms.get_item(id);
             glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
                 glm::scale(glm::mat4(1.0f), quad.extents * transform.scale) *
                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
@@ -77,8 +106,8 @@ void s_render::update(const registry & registry, Camera & camera)
         }
         else if( registry.has_component<c_sphere>(id) )
         {
-            auto & sphere = registry.get_component<c_sphere>(id);
-            auto & transform = registry.get_component<c_transform>(id);
+            auto & sphere = spheres.get_item(id);
+            auto & transform = transforms.get_item(id);
             glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
                 glm::scale(glm::mat4(1.0f), transform.scale * sphere.radius) *
                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
@@ -87,10 +116,6 @@ void s_render::update(const registry & registry, Camera & camera)
             mesh.draw(shader);
         }
     }
-}
-
-void s_render::shutdown()
-{
 }
 
 void s_render::draw_statistics()
@@ -106,16 +131,6 @@ void s_render::draw_statistics()
 void s_render::load_shaders()
 {
     graphics_manager::load_shader(
-        "sources/Shaders/vertex_shader.glsl",
-        "sources/Shaders/fragment_shader.glsl", "vertex");
-}
-
-void s_render::draw_models(const registry & registry, Camera & camera)
-{
-    //draw the meshes that belong to the models
-}
-
-void s_render::draw_colliders(const registry & registry, Camera & camera)
-{
-    //quads, spheres and capsules
+        "sources/Shaders/vertex_shader.vs",
+        "sources/Shaders/fragment_shader.fs", "vertex");
 }

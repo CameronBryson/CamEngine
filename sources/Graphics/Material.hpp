@@ -10,7 +10,7 @@ class material
 public:
     material(const std::string& diffuse_path, const std::string& specular_path, float shininess,
              glm::vec3 ambient_color, glm::vec3 diffuse_color, glm::vec3 specular_color)
-        : diffuse_path(diffuse_path), specular_path(specular_path), shininess(shininess),
+        : shininess(shininess),
           ambient_color(ambient_color), diffuse_color(diffuse_color), specular_color(specular_color)
     {
         if (!diffuse_path.empty())
@@ -23,7 +23,7 @@ public:
         }
     }
 
-    void bind(shader_program& shader)
+    void bind(const shader_program& shader) const
     {
         if (diffuse_texture)
         {
@@ -50,7 +50,7 @@ public:
         shader.setFloat("material.shininess", shininess);
         shader.setVec3("material.ambient", ambient_color);
     }
-    void unbind()
+    void unbind() const
     {
         if(diffuse_texture)
         {
@@ -62,14 +62,12 @@ public:
         }
     }
 
-    float get_shininess() const
+    [[nodiscard]] float get_shininess() const
     {
         return shininess;
     }
 
 private:
-    std::string diffuse_path;
-    std::string specular_path;
     float shininess;
     glm::vec3 ambient_color;
     glm::vec3 diffuse_color;

@@ -38,4 +38,10 @@ public:
         registry.add_component<c_model>(id, c_model{.name = "cube"});
         return id;
     }
+    static unsigned short create_light(registry& registry, glm::vec3 direction)
+    {
+        const auto id =registry.create_entity();
+        registry.add_component<c_directional_light>(id, c_directional_light{.direction = direction, .ambient = glm::vec3 {0.2,0.2,0.2}, .diffuse = glm::vec3 {0.5,0.5,0.5}, .specular = glm::vec3{1.0f,1.0f,1.0f}} );
+        return id;
+    }
 };

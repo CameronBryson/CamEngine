@@ -36,12 +36,6 @@ struct c_rigid_body
     glm::vec3 acceleration = {0, 0, 0};
 };
 
-// Component for sprite-related data
-struct c_sprite
-{
-};
-
-
 // Component for position, rotation, and scale
 struct c_transform
 {
@@ -98,4 +92,11 @@ struct c_plane
 struct c_model
 {
     std::string name;
+};
+struct c_directional_light
+{
+    glm::vec3 direction;
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
 };

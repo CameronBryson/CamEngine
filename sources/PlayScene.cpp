@@ -38,6 +38,8 @@ void play_scene::init()
     //     m_registry_.delete_entity(i);
     // }
     factory::create_player(m_registry_);
+    factory::create_light(m_registry_,glm::vec3{0,-0.2,-1.0});
+    factory::create_light(m_registry_,glm::vec3{0.0,0.2,-1.0});
     // const auto enemy = m_registry_.create_entity();
     // m_registry_.add_component<c_transform>(enemy, c_transform{.position = {0.0f, 0.0f, 0.0f}});
     // m_registry_.add_component<c_rigid_body>(enemy, c_rigid_body{.drag = 0.9f});
@@ -97,7 +99,6 @@ void play_scene::init_sparse_sets()
     m_registry_.create_sparse_set<c_render>();
     m_registry_.create_sparse_set<c_rigid_body>();
     m_registry_.create_sparse_set<c_player>();
-    m_registry_.create_sparse_set<c_sprite>();
     m_registry_.create_sparse_set<c_velocity>();
     m_registry_.create_sparse_set<c_collider>();
     m_registry_.create_sparse_set<c_health>();
@@ -106,4 +107,5 @@ void play_scene::init_sparse_sets()
     m_registry_.create_sparse_set<c_sphere>();
     m_registry_.create_sparse_set<c_capsule>();
     m_registry_.create_sparse_set<c_model>();
+    m_registry_.create_sparse_set<c_directional_light>();
 }
