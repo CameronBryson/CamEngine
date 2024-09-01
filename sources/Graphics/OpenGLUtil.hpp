@@ -3,8 +3,9 @@
 #include "Color.hpp"
 
 #include <cstring>
+#include "Graphics/ShaderProgram.hpp"
 
-class graphics_util
+class opengl_util
 {
 public:
     static void draw_line(glm::vec2 start, glm::vec2 end, color color)
@@ -38,5 +39,9 @@ public:
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {
         glViewport(0, 0, width, height);
+    }
+    static void delete_shader_program(unsigned ID)
+    {
+        glDeleteProgram(ID);
     }
 };

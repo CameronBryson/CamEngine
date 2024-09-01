@@ -37,15 +37,10 @@ void s_physics::update_dynamic_bodies(const registry & registry, float dt)
         auto & [mass,drag,acceleration] = dynamic_bodies.get_item(id);
         auto & [position, rotation, scale] = positions.get_item(id);
         auto & [velocity] = velocities.get_item(id);
-        for( const auto id : ids )
-        {
-            velocity += acceleration * dt;
-            velocity *= std::pow(1 - drag, dt);
-            position += velocity;
-            acceleration = { 0, 0, 0 };
-        }
-
+        velocity += acceleration * dt;
+        velocity *= std::pow(1 - drag, dt);
         position += velocity;
+        acceleration = { 0, 0, 0 };
     }
 }
 

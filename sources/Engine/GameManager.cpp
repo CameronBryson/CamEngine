@@ -1,6 +1,6 @@
 #include "GameManager.hpp"
 #include "EngineUtil.hpp"
-#include "Graphics/GraphicsUtil.hpp"
+#include "Graphics/OpenGLUtil.hpp"
 #include <thread>
 #include <chrono>
 #include "platform.hpp"
@@ -30,7 +30,7 @@ void game_manager::init()
     }
     glfwMakeContextCurrent(game_window);
     glfwSetKeyCallback(game_window, engine_util::key_callback);
-    glfwSetFramebufferSizeCallback(game_window, graphics_util::framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(game_window, opengl_util::framebuffer_size_callback);
     glfwSwapInterval(0);
     gladLoadGL(glfwGetProcAddress);
     glClearColor(1, 1, 1, 1);

@@ -6,7 +6,7 @@
 #include "Math/MathUtil.hpp"
 
 #include "../Graphics/ShaderProgram.hpp"
-#include "Graphics/GraphicsUtil.hpp"
+#include "Graphics/OpenGLUtil.hpp"
 
 #include <Graphics/GraphicsManager.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -40,7 +40,7 @@ void s_render::init()
 
 void s_render::update(const registry & registry, Camera & camera)
 {
-    graphics_util::clear_background();
+    opengl_util::clear_background();
 
     auto & view_matrix = camera.GetViewMatrix();
     auto & proj_matrix = camera.GetProjectionMatrix();
@@ -126,7 +126,7 @@ void s_render::draw_statistics()
         "Update: " + std::to_string(stats::timer_vector[stats::stat_type::UPDATE].count()) + " MS\n" +
         "Render: " + std::to_string(stats::timer_vector[stats::stat_type::RENDER].count()) + " MS\n" +
         "Benchmark: " + std::to_string(stats::timer_vector[stats::stat_type::BENCHMARK].count()) + " MS";
-    graphics_util::draw_text(stats_text.c_str(), 50, 0, 50, { 255, 0, 0, 255 });
+    opengl_util::draw_text(stats_text.c_str(), 50, 0, 50, { 255, 0, 0, 255 });
 }
 
 void s_render::load_shaders()

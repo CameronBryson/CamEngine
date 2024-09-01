@@ -5,6 +5,7 @@
 #include "Model.hpp"
 #include "Texture.hpp"
 #include "Material.hpp"
+#include "OpenGLUtil.hpp"
 std::unordered_map<std::string, std::unique_ptr<shader_program>> graphics_manager::shader_map;
 std::unordered_map<std::string, std::unique_ptr<texture>> graphics_manager::texture_map;
 std::unordered_map<std::string, std::unique_ptr<mesh>> graphics_manager::mesh_map;
@@ -64,7 +65,7 @@ void graphics_manager::Clear()
 {
     // (properly) delete all shaders
     for( auto & iter : shader_map )
-        glDeleteProgram(iter.second->ID);
+        opengl_util::delete_shader_program(iter.second->ID);
     // (properly) delete all textures
     for( auto & iter : texture_map )
     {
