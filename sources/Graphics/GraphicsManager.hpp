@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "Color.hpp"
+
 struct vertex;
 class mesh;
 class model;
@@ -25,7 +25,7 @@ public:
     // retrieves a stored shader
     static shader_program& get_shader(const std::string& name);
     // loads (and generates) a texture from file
-    static texture& load_texture(const char* file, bool alpha, const std::string& name);
+    static texture& load_texture(const char* file, const std::string& name);
     // retrieves a stored texture
     static texture& get_texture(const std::string& name);
     static mesh& create_mesh(std::string name, std::vector<vertex> vertices, std::string material_name);
@@ -45,6 +45,5 @@ public:
 
 private:
     graphics_manager()
-    {
-    }
+    = default;
 };

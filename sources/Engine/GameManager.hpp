@@ -22,6 +22,7 @@ public:
     }
 
     static GLFWwindow* get_glfw_window();
+    static void set_glfw_window(GLFWwindow* window);
 
 private:
     static GLFWwindow* game_window;

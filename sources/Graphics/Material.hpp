@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <memory>
+
+#include "OpenGLUtil.hpp"
 #include "Texture.hpp"
 #include "platform.hpp"
 #include "ShaderProgram.hpp"
@@ -15,51 +17,21 @@ public:
     {
         if (!diffuse_path.empty())
         {
-            diffuse_texture = std::make_unique<texture>(diffuse_path.c_str(), true);
+            diffuse_texture = std::make_unique<texture>(diffuse_path);
         }
         if (!specular_path.empty())
         {
-            specular_texture = std::make_unique<texture>(specular_path.c_str(), true);
+            specular_texture = std::make_unique<texture>(specular_path);
         }
     }
 
     void bind(const shader_program& shader) const
     {
-        if (diffuse_texture)
-        {
-            shader.setInt("material.diffuse", 0);
-            glActiveTexture(GL_TEXTURE0);
-            diffuse_texture->bind();
-        }
-        else
-        {
-            shader.setVec3("material.diffuse", diffuse_color);
-        }
-
-        if (specular_texture)
-        {
-            shader.setInt("material.specular", 1);
-            glActiveTexture(GL_TEXTURE1);
-            specular_texture->bind();
-        }
-        else
-        {
-            shader.setVec3("material.specular", specular_color);
-        }
-
-        shader.setFloat("material.shininess", shininess);
-        shader.setVec3("material.ambient", ambient_color);
+        opengl_util::bind_material(shader,diffuse_texture.get(),specular_texture.get(),ambient_color,diffuse_color, specular_color, shininess);
     }
     void unbind() const
     {
-        if(diffuse_texture)
-        {
-            diffuse_texture->unbind();
-        }
-        if(specular_texture)
-        {
-            specular_texture->unbind();
-        }
+       opengl_util::unbind_material(diffuse_texture.get(),specular_texture.get());
     }
 
     [[nodiscard]] float get_shininess() const

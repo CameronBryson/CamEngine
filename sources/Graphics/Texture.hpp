@@ -1,53 +1,31 @@
 #pragma once
 #include <string>
-#include <stdexcept>
-#include <stb_image.h>
+
+#include "OpenGLUtil.hpp"
 #include "platform.hpp"
 
 class texture
 {
 public:
-    texture(const char* file, bool alpha)
+    explicit texture(const std::string& file)
     {
-        glGenTextures(1, &texture_id);
-        glBindTexture(GL_TEXTURE_2D, texture_id);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true);
-        data = stbi_load(engine_util::build_path(file).c_str(), &width, &height, &nrChannels, 0);
-        if (!data)
-        {
-            throw std::runtime_error("Failed to load texture: " + std::string(file));
-        }
-
-        GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        unbind();
-
-        stbi_image_free(data);
+        opengl_util::create_texture(file,data,texture_id);
     }
 
     void bind() const
     {
-        glBindTexture(GL_TEXTURE_2D, texture_id);
+        opengl_util::bind_texture(texture_id);
     }
-    void unbind() const
+    static void unbind()
     {
-        glBindTexture(GL_TEXTURE_2D, 0);
+        opengl_util::unbind_texture();
     }
-    void delete_texture()
+    void delete_texture() const
     {
-        glDeleteTextures(1, &texture_id);
+        opengl_util::delete_texture(texture_id);
     }
 
 private:
     GLuint texture_id = 0;
-    unsigned char* data;
+    unsigned char* data = nullptr;
 };

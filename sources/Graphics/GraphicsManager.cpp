@@ -23,9 +23,9 @@ shader_program & graphics_manager::get_shader(const std::string & name)
     return *shader_map[name];
 }
 
-texture & graphics_manager::load_texture(const char * file, bool alpha, const std::string & name)
+texture & graphics_manager::load_texture(const char * file, const std::string & name)
 {
-    texture_map[name] = std::make_unique<texture>(file, alpha);
+    texture_map[name] = std::make_unique<texture>(file);
     return *texture_map[name];
 }
 

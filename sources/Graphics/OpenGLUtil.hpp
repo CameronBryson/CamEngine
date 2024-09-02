@@ -1,47 +1,67 @@
 #pragma once
 #include "platform.hpp"
-#include "Color.hpp"
-
+#include "glm/glm.hpp"
+#include <vector>
+#include <string>
+#include "platform.hpp"
 #include <cstring>
-#include "Graphics/ShaderProgram.hpp"
+#include "Color.hpp"
+struct vertex;
+class material;
+class texture;
+class shader_program;
 
 class opengl_util
 {
 public:
-    static void draw_line(glm::vec2 start, glm::vec2 end, color color)
-    {
-        convert_point_to_screen(start);
-        convert_point_to_screen(end);
-        glBegin(GL_LINES);
-        glColor3f(color.r, color.g, color.b);
-        glVertex2f(start.x, start.y);
-        glVertex2f(end.x, end.y);
-        glEnd();
-    }
+    static void init();
+    static void draw_line(glm::vec2 start, glm::vec2 end, color color);
 
-    static void draw_text(const char* text, int posX, int posY, int fontSize, color color)
-    {
-    }
+    static void draw_text(const char* text, int posX, int posY, int fontSize, color color);
 
-    static void clear_background()
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
+    static void clear_background();
 
-    static glm::vec2 convert_point_to_screen(glm::vec2& point)
-    {
-        point.x = ((point.x / settings::window_width) * 2.0f) - 1.0f;
-        point.y = ((point.y / settings::window_height) * 2.0f) - 1.0f;
-        return point;
-    }
+    static glm::vec2 convert_point_to_screen(glm::vec2& point);
 
-    static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-    {
-        glViewport(0, 0, width, height);
-    }
-    static void delete_shader_program(unsigned ID)
-    {
-        glDeleteProgram(ID);
-    }
+    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+    static void delete_shader_program(unsigned ID);
+
+    static void setup_mesh(const std::vector<vertex>& vertices, unsigned int& VAO, unsigned int& VBO);
+
+    static void draw_mesh(const shader_program& shader, const std::string& material_name, unsigned int VAO, unsigned int index_count);
+
+    static void bind_texture(GLuint texture);
+
+    static void unbind_texture();
+
+    static void delete_texture(GLuint texture);
+
+    static void create_texture(const std::string& file, unsigned char* data, GLuint& texture_id);
+
+    static void bind_material(const shader_program& shader, const texture* diffuse_texture, const texture* specular_texture, glm::vec3 ambient_color, glm::vec3 diffuse_color, glm::vec3 specular_color, float shininess);
+
+    static void unbind_material(const texture* diffuse_texture, const texture* specular_texture);
+
+    static unsigned int create_shader(const std::string& vertex_shader, const std::string& fragment_shader);
+
+    static void check_shader_compile_error(unsigned shader, std::string type);
+
+    static void use_shader(unsigned shader);
+
+    static void set_shader_bool(unsigned int shader_id, const std::string& name, bool value);
+
+    static void set_shader_int(unsigned int shader_id, const std::string& name, int value);
+
+    static void set_shader_float(unsigned int shader_id, const std::string& name, float value);
+
+    static void set_shader_vec2(unsigned int shader_id, const std::string& name, const glm::vec2& value);
+
+    static void set_shader_vec3(unsigned int shader_id, const std::string& name, const glm::vec3& value);
+
+    static void set_shader_vec4(unsigned int shader_id, const std::string& name, const glm::vec4& value);
+
+    static void set_shader_mat4(unsigned int shader_id, const std::string& name, const glm::mat4& value);
 };
+
+

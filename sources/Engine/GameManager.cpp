@@ -12,28 +12,7 @@ std::unique_ptr<i_scene> game_manager::m_current_scene_ = nullptr;
 
 void game_manager::init()
 {
-    glfwSetErrorCallback(engine_util::error_callback);
-    if( ! glfwInit() )
-    {
-        exit(EXIT_FAILURE);
-    }
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    game_window = glfwCreateWindow(settings::window_width, settings::window_height, "Game Window", nullptr, nullptr);
-    if( ! game_window )
-    {
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-    glfwMakeContextCurrent(game_window);
-    glfwSetKeyCallback(game_window, engine_util::key_callback);
-    glfwSetFramebufferSizeCallback(game_window, opengl_util::framebuffer_size_callback);
-    glfwSwapInterval(0);
-    gladLoadGL(glfwGetProcAddress);
-    glClearColor(1, 1, 1, 1);
+    opengl_util::init();
     m_current_scene_->init();
 }
 
@@ -98,4 +77,9 @@ void game_manager::game_loop()
 GLFWwindow * game_manager::get_glfw_window()
 {
     return game_window;
+}
+
+void game_manager::set_glfw_window(GLFWwindow * window)
+{
+    game_window = window;
 }

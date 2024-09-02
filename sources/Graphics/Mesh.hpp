@@ -1,12 +1,14 @@
 #pragma once
-#include "GraphicsManager.hpp"
+#include <utility>
+
 #include "Material.hpp"
+#include "OpenGLUtil.hpp"
 #include "Vertex.hpp"
 
 class mesh
 {
 public:
-    mesh(const std::vector<vertex>& vertices, const std::string& material_name) : vertices(vertices), material_name(material_name)
+    mesh(const std::vector<vertex>& vertices, std::string  material_name) : vertices(vertices), material_name(std::move(material_name))
     {
         index_count = vertices.size();
         setup_mesh();
@@ -14,37 +16,12 @@ public:
 
     void setup_mesh()
     {
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-
-
-        // position attribute
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
-
-        // vertex normals
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, normal));
-        // vertex texture coords
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texture_coordinates));
-
-
-        glBindVertexArray(0);
+        opengl_util::setup_mesh(vertices, VAO, VBO);
     }
 
-    void draw(shader_program& shader)
+    void draw(shader_program& shader) const
     {
-        graphics_manager::get_material(material_name).bind(shader);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, index_count);
-        //glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT,0);
-        glBindVertexArray(0);
-        graphics_manager::get_material(material_name).unbind();
+        opengl_util::draw_mesh(shader, material_name, VAO, index_count);
     }
 
     void set_material(const std::string& name)
