@@ -22,9 +22,11 @@ void s_render::init()
 {
     printf("Render init\n");
     load_shaders();
-    //graphics_manager::load_mtl("assets/Default.mtl");
+    graphics_manager::load_mtl("assets/Default.mtl");
     //graphics_manager::create_model_from_obj("assets/cube.obj", "player");
     graphics_manager::create_model_from_obj("assets/patek.obj", "player");
+    graphics_manager::create_model_from_obj("assets/sphere.obj", "sphere");
+    graphics_manager::create_model_from_obj("assets/cube.obj", "cube");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // Enable backface culling
@@ -45,27 +47,34 @@ void s_render::update(const registry & registry, Camera & camera)
     auto & view_matrix = camera.GetViewMatrix();
     auto & proj_matrix = camera.GetProjectionMatrix();
     auto & transforms = registry.get_sparse_set<c_transform>();
-    auto & shader = graphics_manager::get_shader("vertex");
+    auto & texture_shader = graphics_manager::get_shader("texture");
+    auto & collider_shader = graphics_manager::get_shader("collider");
     auto & lights = registry.get_sparse_set<c_directional_light>();
     auto light_ids = registry.get_entity_ids<c_directional_light>();
 
-    shader.use();
-    shader.setMat4("projection", proj_matrix);
-    shader.setMat4("view", view_matrix);
-    shader.setInt("numDirLights", light_ids.size());
-    shader.setVec3("viewPos", camera.Position);
+    texture_shader.use();
+    texture_shader.setMat4("projection", proj_matrix);
+    texture_shader.setMat4("view", view_matrix);
+    texture_shader.setInt("numDirLights", light_ids.size());
+    texture_shader.setVec3("viewPos", camera.Position);
 
     for( int i = 0; i < light_ids.size(); ++i )
     {
         auto & light = lights.get_item(light_ids[i]);
         std::string index = std::to_string(i);
-        shader.setVec3("dirLights[" + index + "].direction", light.direction);
-        shader.setVec3("dirLights[" + index + "].ambient", light.ambient);
-        shader.setVec3("dirLights[" + index + "].diffuse", light.diffuse);
-        shader.setVec3("dirLights[" + index + "].specular", light.specular);
+        texture_shader.setVec3("dirLights[" + index + "].direction", light.direction);
+        texture_shader.setVec3("dirLights[" + index + "].ambient", light.ambient);
+        texture_shader.setVec3("dirLights[" + index + "].diffuse", light.diffuse);
+        texture_shader.setVec3("dirLights[" + index + "].specular", light.specular);
     }
-    draw_models(registry, transforms, shader);
-    draw_colliders(registry,transforms,shader);
+    draw_models(registry, transforms, texture_shader);
+
+    collider_shader.use();
+    collider_shader.setMat4("projection", proj_matrix);
+    collider_shader.setMat4("view", view_matrix);
+    collider_shader.setInt("numDirLights", light_ids.size());
+    collider_shader.setVec3("viewPos", camera.Position);
+    draw_colliders(registry, transforms, collider_shader);
 }
 
 void s_render::shutdown()
@@ -98,8 +107,8 @@ void s_render::draw_colliders(const registry & registry, sparse_set<c_transform>
             auto & quad = quads.get_item(id);
             auto & transform = transforms.get_item(id);
             glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
-                glm::scale(glm::mat4(1.0f), quad.extents * transform.scale) *
-                glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+                glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z)
+                * glm::scale(glm::mat4(1.0f), quad.extents * transform.scale);
             shader.setMat4("model", model_matrix);
 
             auto & mesh = graphics_manager::get_mesh("Cube");
@@ -110,8 +119,8 @@ void s_render::draw_colliders(const registry & registry, sparse_set<c_transform>
             auto & sphere = spheres.get_item(id);
             auto & transform = transforms.get_item(id);
             glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
-                glm::scale(glm::mat4(1.0f), transform.scale * sphere.radius) *
-                glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+                glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z) *
+                glm::scale(glm::mat4(1.0f), transform.scale * sphere.radius);
             shader.setMat4("model", model_matrix);
             auto & mesh = graphics_manager::get_mesh("Sphere");
             mesh.draw(shader);
@@ -133,5 +142,8 @@ void s_render::load_shaders()
 {
     graphics_manager::load_shader(
         "sources/Shaders/vertex_shader.vs",
-        "sources/Shaders/fragment_shader.fs", "vertex");
+        "sources/Shaders/texture_shader.fs", "texture");
+    graphics_manager::load_shader(
+            "sources/Shaders/vertex_shader.vs",
+            "sources/Shaders/collider_shader.fs", "collider");
 }

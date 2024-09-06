@@ -38,7 +38,7 @@ void play_scene::init()
     //     m_registry_.delete_entity(i);
     // }
     factory::create_player(m_registry_);
-    factory::create_light(m_registry_,glm::vec3{0,-0.2,-1.0});
+    factory::create_directional_light(m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.2,0.2,0.2}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{1.0,1.0,1.0});
     //factory::create_light(m_registry_,glm::vec3{0.0,0.2,-1.0});
     // const auto enemy = m_registry_.create_entity();
     // m_registry_.add_component<c_transform>(enemy, c_transform{.position = {0.0f, 0.0f, 0.0f}});
@@ -47,9 +47,9 @@ void play_scene::init()
     // m_registry_.add_component<c_enemy>(enemy, c_enemy());
     // m_registry_.add_component<c_aabb>(enemy, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
     //
-    //factory::create_sphere(m_registry_, glm::vec3{0.0f, 0.0f, 0.0f}, 0.2f);
+    //factory::create_sphere(m_registry_, glm::vec3{1.5f, 0.0f, 0.0f}, 1.0f);
     // factory::create_sphere(m_registry_, glm::vec3{0.5f, 0.0f, 0.0f}, 0.2f);
-    //factory::create_quad(m_registry_, glm::vec3{-0.5f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
+    factory::create_quad(m_registry_, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{3.0f, 0.4f, 0.2f});
     //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 0.0f}, 0.2f);
     //factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
     //factory::create_sphere(m_registry_, glm::vec3{1.0f, 1.0f, 0.0f}, 0.2f);
