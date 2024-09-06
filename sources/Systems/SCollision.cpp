@@ -304,16 +304,11 @@ bool s_collision::intersects_obb_in_sphere(const c_quad & obb, c_sphere & sphere
         return false;
     }
     // Extract OBB data
-    const glm::vec3 center_obb = obb_transform.position;
     const glm::vec3 extents_obb = obb.extents * 0.5f;
     const glm::mat4 rotation_matrix_obb = glm::eulerAngleXYZ(obb_transform.rotation.x, obb_transform.rotation.y, obb_transform.rotation.z);
 
-    // Extract sphere data
-    const glm::vec3 center_sphere = sphere_transform.position;
-    const float radius_sphere = sphere.radius;
-
     // Transform sphere center to OBB local space
-    glm::vec3 local_center_sphere = (glm::transpose(rotation_matrix_obb) * glm::vec4(center_sphere - center_obb, 1));
+    glm::vec3 local_center_sphere = (glm::transpose(rotation_matrix_obb) * glm::vec4(sphere_transform.position - obb_transform.position, 1));
 
     // Find the closest point on the OBB to the sphere center
     glm::vec3 closest_point = local_center_sphere;
@@ -321,24 +316,17 @@ bool s_collision::intersects_obb_in_sphere(const c_quad & obb, c_sphere & sphere
     closest_point.y = std::max(-extents_obb.y, std::min(local_center_sphere.y, extents_obb.y));
     closest_point.z = std::max(-extents_obb.z, std::min(local_center_sphere.z, extents_obb.z));
 
-    // Compute the vector from the sphere center to the closest point
     glm::vec3 difference = local_center_sphere - closest_point;
-    float distance_squared = glm::length2(difference);
-
-    // Check if the distance is less than the sphere radius
-    if( distance_squared > radius_sphere * radius_sphere )
+    float penetration_depth = sphere.radius - glm::length(difference);
+    if(penetration_depth < 0)
     {
         return false;
     }
-
-    float distance = glm::length(difference);
-    float penetration_depth = radius_sphere - distance;
     glm::vec3 penetration_axis = glm::normalize(rotation_matrix_obb * glm::vec4(difference, 1));
     if( penetration_depth > 0.000001 )
     {
         registry.add_collision_manifold({ penetration_axis, penetration_depth, obb_transform, sphere_transform, type1, type2 });
     }
-    // Adjust positions for penetration resolution
 
     return true;
 }

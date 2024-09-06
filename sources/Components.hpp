@@ -1,5 +1,4 @@
 #pragma once
-#include "Graphics/Color.hpp"
 #include "glm/glm.hpp"
 #include <string>
 
@@ -25,7 +24,7 @@ struct c_player
 struct c_render
 {
     int layer = 0;
-    color color_color;
+    glm::vec3 color_color;
 };
 
 // Component for physical properties

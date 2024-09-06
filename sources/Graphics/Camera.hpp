@@ -1,6 +1,4 @@
-#ifndef CAMERA_H
-#define CAMERA_H
-
+#pragma once
 #include "platform.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -75,4 +73,3 @@ public:
         Up = glm::normalize(glm::cross(Right, Front));
     }
 };
-#endif

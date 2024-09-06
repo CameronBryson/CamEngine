@@ -35,7 +35,7 @@ void opengl_util::init()
     game_manager::set_glfw_window(game_window);
 }
 
-void opengl_util::draw_line(glm::vec2 start, glm::vec2 end, color color)
+void opengl_util::draw_line(glm::vec2 start, glm::vec2 end, glm::vec3 color)
 {
     convert_point_to_screen(start);
     convert_point_to_screen(end);
@@ -46,7 +46,7 @@ void opengl_util::draw_line(glm::vec2 start, glm::vec2 end, color color)
     glEnd();
 }
 
-void opengl_util::draw_text(const char* text, int posX, int posY, int fontSize, color color)
+void opengl_util::draw_text(const char* text, int posX, int posY, int fontSize, glm::vec3 color)
 {
 }
 

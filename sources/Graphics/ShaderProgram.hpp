@@ -1,6 +1,4 @@
-#ifndef SHADER_H
-#define SHADER_H
-
+#pragma once
 #include <glm/glm.hpp>
 #include "platform.hpp"
 #include <string>
@@ -106,4 +104,3 @@ public:
     }
 
 };
-#endif

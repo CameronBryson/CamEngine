@@ -3,9 +3,7 @@
 #include "glm/glm.hpp"
 #include <vector>
 #include <string>
-#include "platform.hpp"
 #include <cstring>
-#include "Color.hpp"
 struct vertex;
 class material;
 class texture;
@@ -15,9 +13,9 @@ class opengl_util
 {
 public:
     static void init();
-    static void draw_line(glm::vec2 start, glm::vec2 end, color color);
+    static void draw_line(glm::vec2 start, glm::vec2 end, glm::vec3 color);
 
-    static void draw_text(const char* text, int posX, int posY, int fontSize, color color);
+    static void draw_text(const char* text, int posX, int posY, int fontSize, glm::vec3 color);
 
     static void clear_background();
 
