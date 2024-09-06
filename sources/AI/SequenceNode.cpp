@@ -1,13 +1,6 @@
 #pragma once
 #include "SequenceNode.hpp"
 
-void sequence_node::start() {
-
-}
-status sequence_node::update(float dt) {
-    status status;
-    return status;
-}
-void sequence_node::terminate(status status) {
-
+behavior_status sequence_node::update() {
+    return behavior_status::failure;
 }

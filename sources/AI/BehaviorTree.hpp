@@ -1,8 +1,8 @@
 #pragma once
-#include "INode.hpp"
+#include "Node.hpp"
 class BehaviorTree {
 public:
 private:
-    i_node* root_node;
+    node* root_node;
 };
 

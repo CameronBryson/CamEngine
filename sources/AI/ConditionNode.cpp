@@ -1,13 +1,6 @@
 
 #include "ConditionNode.hpp"
 
-void condition_node::start() {
-
-}
-status condition_node::update(float dt) {
-    status status;
-    return status;
-}
-void condition_node::terminate(status status) {
-
+behavior_status condition_node::update() {
+    return behavior_status::failure;
 }

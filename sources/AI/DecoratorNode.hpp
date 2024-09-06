@@ -1,11 +1,7 @@
 #pragma once
-#include "INode.hpp"
+#include "Node.hpp"
 #include <vector>
-class decorator_node : public i_node{
+class decorator_node : public node{
 public:
-    void start() override;
-    status update(float dt) override;
-    void terminate(status status) override;
-private:
-    std::vector<i_node> children;
+    enum behavior_status update() override;
 };
