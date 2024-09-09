@@ -1,5 +1,7 @@
 #include "PlayScene.hpp"
 
+#include <Engine/Event.hpp>
+
 #include "Components.hpp"
 #include "Engine/Factory.hpp"
 #include "Engine/Registry.hpp"
@@ -39,25 +41,23 @@ void play_scene::init()
     // }
     factory::create_player(m_registry_);
     factory::create_directional_light(m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.2,0.2,0.2}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{1.0,1.0,1.0});
-    //factory::create_light(m_registry_,glm::vec3{0.0,0.2,-1.0});
-    // const auto enemy = m_registry_.create_entity();
-    // m_registry_.add_component<c_transform>(enemy, c_transform{.position = {0.0f, 0.0f, 0.0f}});
-    // m_registry_.add_component<c_rigid_body>(enemy, c_rigid_body{.drag = 0.9f});
-    // m_registry_.add_component<c_velocity>(enemy, c_velocity());
-    // m_registry_.add_component<c_enemy>(enemy, c_enemy());
-    // m_registry_.add_component<c_aabb>(enemy, c_aabb{.extents = {1.0f, 1.0f, 1.0f}});
-    //
-    //factory::create_sphere(m_registry_, glm::vec3{1.5f, 0.0f, 0.0f}, 1.0f);
-    // factory::create_sphere(m_registry_, glm::vec3{0.5f, 0.0f, 0.0f}, 0.2f);
-    factory::create_quad(m_registry_, glm::vec3{-0.8f, 0.0f, 0.0f}, glm::vec3{3.0f, 0.4f, 0.2f});
-    factory::create_sphere(m_registry_, glm::vec3{0.8f, 0.0f, 0.0f}, 1.0f);
-    //factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 0.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-    //factory::create_sphere(m_registry_, glm::vec3{1.0f, 1.0f, 0.0f}, 0.2f);
-    //factory::create_quad(m_registry_, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec3{0.65f, 0.2f, 1.0f});
-    //factory::create_sphere(m_registry_, glm::vec3{0.0f, 0.0f, 0.0f}, 2.0f);
-    // factory::create_quad(m_registry_, glm::vec3{-0.5f, 0.0f, 1.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
-    //factory::create_sphere(m_registry_, glm::vec3{0.2f, 0.0f, 1.0f}, 0.2f);
-    // factory::create_quad(m_registry_, glm::vec3{-0.2f, 0.0f, 1.0f}, glm::vec3{0.1f, 0.3f, 0.1f});
+    //factory::create_quad(m_registry_, glm::vec3{-0.8f, 0.0f, 0.0f}, glm::vec3{3.0f, 0.4f, 0.2f});
+    //factory::create_sphere(m_registry_, glm::vec3{0.8f, 0.0f, 0.0f}, 1.0f);
+    auto floor = m_registry_.create_entity();
+    m_registry_.add_component<c_transform>(floor, c_transform{.position = glm::vec3(0.0f, -3.0f, 0.0f), .rotation = glm::vec3(0.0f, 0.0f, 0.0f)});
+    m_registry_.add_component<c_quad>(floor, c_quad{.extents = {10,0.1,10}});
+    m_registry_.add_component<c_collider>(floor, c_collider());
+    // Add listeners
+    m_event.AddListener("Hello", []() {
+        printf("Collision Enter Event Triggered\n");
+    });
+
+    m_event.AddListener("Goodbye", []() {
+        printf("Collision Exit Event Triggered\n");
+    });
+    m_event.AddListener("Goodbye", []() {
+        printf("Collision Exit Event Triggered\n");
+    });
 }
 
 void play_scene::update(const float dt)
@@ -67,6 +67,9 @@ void play_scene::update(const float dt)
     s_camera::update(m_camera_, dt);
     s_player::update(m_registry_, dt);
     s_physics::update(m_registry_, dt);
+    m_event.SendEvent("Hello");
+    m_event.SendEvent("Test");
+    m_event.SendEvent("Goodbye");
 }
 
 void play_scene::late_update(const float dt)
@@ -97,7 +100,6 @@ void play_scene::init_sparse_sets()
 {
     m_registry_.create_sparse_set<c_transform>();
     m_registry_.create_sparse_set<c_render>();
-    m_registry_.create_sparse_set<c_rigid_body>();
     m_registry_.create_sparse_set<c_player>();
     m_registry_.create_sparse_set<c_velocity>();
     m_registry_.create_sparse_set<c_collider>();
@@ -108,4 +110,7 @@ void play_scene::init_sparse_sets()
     m_registry_.create_sparse_set<c_capsule>();
     m_registry_.create_sparse_set<c_model>();
     m_registry_.create_sparse_set<c_directional_light>();
+    m_registry_.create_sparse_set<c_dynamic_body>();
+    m_registry_.create_sparse_set<c_kinematic_body>();
+    m_registry_.create_sparse_set<c_ground>();
 }

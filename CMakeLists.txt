@@ -39,7 +39,9 @@ endif()
 
 # Add glad source files
 set(GLAD_SOURCES ${CMAKE_SOURCE_DIR}/include/glad/src/gl.c)
-set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h)
+set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h
+        sources/Engine/CollisionEvent.hpp
+)
 
 # Add project source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/*.cpp")

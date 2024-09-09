@@ -1,8 +1,14 @@
 #pragma once
+#include <Engine/Event.hpp>
+
 #include "Engine/IScene.hpp"
 #include "Engine/Registry.hpp"
 #include "Graphics/Camera.hpp"
-
+enum class CollisionEventType
+{
+    Enter,
+    Exit
+};
 class play_scene final : public i_scene
 {
 public:
@@ -21,4 +27,5 @@ private:
 private:
     registry m_registry_;
     Camera m_camera_;
+    EventDispatcher<std::string> m_event;
 };

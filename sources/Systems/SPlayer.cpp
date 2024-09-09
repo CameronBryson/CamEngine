@@ -6,6 +6,7 @@
 #include <vector>
 
 static constexpr float movespeed = 1.0f;
+static constexpr float jump = 15.0f;
 
 void s_player::update(const registry & registry, const float dt)
 {
@@ -18,23 +19,26 @@ void s_player::update(const registry & registry, const float dt)
     bool d = engine_util::is_key_pressed('D');
     bool q = engine_util::is_key_pressed('Q');
     bool e = engine_util::is_key_pressed('E');
+    bool space = engine_util::is_key_pressed(' ');
 
     for( const auto id : ids )
     {
         auto & [velocity] = velocities.get_item(id);
         velocity = { 0, 0, 0 };
         if( w )
-            velocity.y += movespeed * dt;
+            velocity.z -= movespeed * dt;
         if( a )
             velocity.x -= movespeed * dt;
         if( s )
-            velocity.y -= movespeed * dt;
+            velocity.z += movespeed * dt;
         if( d )
             velocity.x += movespeed * dt;
         if( q )
-            velocity.z -= movespeed * dt;
+            velocity.y -= movespeed * dt;
         if( e )
-            velocity.z += movespeed * dt;
+            velocity.y += movespeed * dt;
+        if (space)
+            velocity.y += jump * dt;
     }
 }
 
