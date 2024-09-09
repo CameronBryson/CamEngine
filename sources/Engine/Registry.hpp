@@ -15,6 +15,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include "CollisionEvents.hpp"
+#include "Event.hpp"
+#include "EventHandler.hpp"
+
 class registry
 {
 public:
@@ -24,6 +28,9 @@ public:
         m_entities_.reserve(settings::max_entities);
         m_free_i_ds_.resize(settings::max_entities - 1);
         std::iota(m_free_i_ds_.begin(), m_free_i_ds_.end(), 1);
+        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Enter, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
+        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Exit, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
+
     };
 
     ~registry()
@@ -56,18 +63,25 @@ public:
             command_queue_.pop();
         }
     }
-
-    void add_collision_manifold(const collision_manifold& manifold)
+    void on_collision_event(const Event<CollisionEvents>& event)
     {
-        collision_queue_.push(manifold);
+        if (event.GetType() == CollisionEvents::Enter)
+        {
+            collision_queue_.push(event.ToType<CollisionEnterEvent>().manifold);
+        }
+        else if (event.GetType() == CollisionEvents::Exit)
+        {
+            printf("Collision Exit\n");
+        }
     }
 
     void process_collision_resolutions()
     {
         while (!collision_queue_.empty())
         {
-            const auto& manifold = collision_queue_.front();
+            auto& manifold = collision_queue_.front();
             manifold.resolve_collision();
+            EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(manifold));
             collision_queue_.pop();
         }
     }

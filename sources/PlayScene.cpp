@@ -3,11 +3,12 @@
 #include <Engine/Event.hpp>
 
 #include "Components.hpp"
+#include "Engine/CollisionEvents.hpp"
+#include "Engine/EventHandler.hpp"
 #include "Engine/Factory.hpp"
 #include "Engine/Registry.hpp"
 #include "Systems/Systems.hpp"
 #include "Engine/Timer.hpp"
-
 play_scene::play_scene()
 {
     printf("PlayScene created\n");
@@ -47,17 +48,6 @@ void play_scene::init()
     m_registry_.add_component<c_transform>(floor, c_transform{.position = glm::vec3(0.0f, -3.0f, 0.0f), .rotation = glm::vec3(0.0f, 0.0f, 0.0f)});
     m_registry_.add_component<c_quad>(floor, c_quad{.extents = {10,0.1,10}});
     m_registry_.add_component<c_collider>(floor, c_collider());
-    // Add listeners
-    m_event.AddListener("Hello", []() {
-        printf("Collision Enter Event Triggered\n");
-    });
-
-    m_event.AddListener("Goodbye", []() {
-        printf("Collision Exit Event Triggered\n");
-    });
-    m_event.AddListener("Goodbye", []() {
-        printf("Collision Exit Event Triggered\n");
-    });
 }
 
 void play_scene::update(const float dt)
@@ -67,9 +57,6 @@ void play_scene::update(const float dt)
     s_camera::update(m_camera_, dt);
     s_player::update(m_registry_, dt);
     s_physics::update(m_registry_, dt);
-    m_event.SendEvent("Hello");
-    m_event.SendEvent("Test");
-    m_event.SendEvent("Goodbye");
 }
 
 void play_scene::late_update(const float dt)

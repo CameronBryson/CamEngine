@@ -40,7 +40,10 @@ endif()
 # Add glad source files
 set(GLAD_SOURCES ${CMAKE_SOURCE_DIR}/include/glad/src/gl.c)
 set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h
-        sources/Engine/CollisionEvent.hpp
+        sources/Engine/CollisionEvents.hpp
+        sources/Engine/CollisionEvents.hpp
+        sources/Engine/EventHandler.cpp
+        sources/Engine/EventHandler.hpp
 )
 
 # Add project source files
