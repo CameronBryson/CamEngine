@@ -33,7 +33,7 @@ public:
     static unsigned short create_quad(registry& registry, glm::vec3 position, glm::vec3 extents)
     {
         const auto id = registry.create_entity();
-        registry.add_component<c_transform>(id, c_transform{.position = position,.rotation = {0, 0, 0}, .scale = {1.0f,1.0f,1.0f}});
+        registry.add_component<c_transform>(id, c_transform{.position = position,.rotation = {54, 13, 127}, .scale = {1.0f,1.0f,1.0f}});
         registry.add_component<c_quad>(id, c_quad{.extents = extents});
         registry.add_component<c_collider>(id, c_collider());
         registry.add_component<c_model>(id, c_model{.name = "cube"});

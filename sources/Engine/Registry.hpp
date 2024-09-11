@@ -16,9 +16,17 @@
 #include <vector>
 
 #include "CollisionEvents.hpp"
+#include "RegistryEvents.hpp"
 #include "Event.hpp"
 #include "EventHandler.hpp"
-
+struct hash_pair {
+    std::size_t operator()(const std::pair<unsigned short, unsigned short>& p) const {
+        auto hash1 = std::hash<unsigned short>{}(p.first);
+        auto hash2 = std::hash<unsigned short>{}(p.second);
+        // Ensure the order does not change the hash
+        return hash1 ^ hash2 ^ std::hash<unsigned short>{}(std::min(p.first, p.second)) ^ std::hash<unsigned short>{}(std::max(p.first, p.second));
+    }
+};
 class registry
 {
 public:
@@ -30,6 +38,8 @@ public:
         std::iota(m_free_i_ds_.begin(), m_free_i_ds_.end(), 1);
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Enter, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Exit, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
+//        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::CreateEntity, std::bind(&registry::create_entity, this));
+//        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::DeleteEntity, std::bind(&registry::delete_entity, this, std::placeholders::_1));
 
     };
 
@@ -67,7 +77,10 @@ public:
     {
         if (event.GetType() == CollisionEvents::Enter)
         {
-            collision_queue_.push(event.ToType<CollisionEnterEvent>().manifold);
+            auto new_event = event.ToType<CollisionEnterEvent>();
+            auto pair = std::make_pair(new_event.id1, new_event.id2);
+            m_collision_map[pair] = std::make_unique<collision_manifold>(new_event.manifold);
+            //collision_queue_.push(event.ToType<CollisionEnterEvent>().manifold);
         }
         else if (event.GetType() == CollisionEvents::Exit)
         {
@@ -77,12 +90,10 @@ public:
 
     void process_collision_resolutions()
     {
-        while (!collision_queue_.empty())
+        for(auto& [key, value] : m_collision_map)
         {
-            auto& manifold = collision_queue_.front();
-            manifold.resolve_collision();
-            EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(manifold));
-            collision_queue_.pop();
+            value->resolve_collision();
+            value->penetration_depth_ = 0.0f;
         }
     }
 
@@ -117,7 +128,7 @@ private:
     std::vector<unsigned short> m_entities_;
     std::unordered_map<std::type_index, std::unique_ptr<i_sparse_set>> m_sparse_sets_;
     std::queue<std::unique_ptr<i_command>> command_queue_;
-    std::queue<collision_manifold> collision_queue_;
+    std::unordered_map<std::pair<unsigned short, unsigned short>, std::unique_ptr<collision_manifold>,hash_pair> m_collision_map;
 };
 
 template <typename T>

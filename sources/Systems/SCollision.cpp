@@ -108,8 +108,8 @@ bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, regist
 
     if( penetration_depth > 0.000001 )
     {
-        collision_manifold manifold{penetration_axis, penetration_depth, transform1, transform2, type1, type2, id1, id2};
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(manifold));
+        collision_manifold manifold{penetration_axis, penetration_depth, transform1, transform2, type1, type2};
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(manifold, id1, id2));
     }
     return true;
 }
@@ -188,8 +188,8 @@ bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, 
 
     if( min_penetration_depth > 0.000001 )
     {
-        collision_manifold manifold{penetration_axis, min_penetration_depth, transform1, transform2, type1, type2, id1, id2};
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(manifold));
+        collision_manifold manifold{penetration_axis, min_penetration_depth, transform1, transform2, type1, type2};
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(manifold, id1, id2));
     }
 
     return true;
@@ -314,8 +314,8 @@ bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id,
     glm::vec3 penetration_axis = glm::normalize(rotation_matrix_obb * glm::vec4(difference, 1));
     if( penetration_depth > 0.000001 )
     {
-        collision_manifold manifold{penetration_axis, penetration_depth, obb_transform, sphere_transform, type1, type2, quad_id, sphere_id};
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(manifold));
+        collision_manifold manifold{penetration_axis, penetration_depth, obb_transform, sphere_transform, type1, type2};
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(manifold,quad_id, sphere_id));
     }
     return true;
 }

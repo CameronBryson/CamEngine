@@ -5,11 +5,11 @@ class collision_manifold
 {
 public:
     collision_manifold(const glm::vec3 normal, const float penetration_depth, c_transform& transform1,
-                       c_transform& transform2, const object_collision_type type1, const object_collision_type type2, const unsigned id1, const unsigned id2)
+                       c_transform& transform2, const object_collision_type type1, const object_collision_type type2)
         : penetration_depth_(penetration_depth), normal(normal), type1(type1), type2(type2), transform1_(transform1),
-          transform2_(transform2), id1(id1), id2(id2)
+          transform2_(transform2)
     {
-        printf("Collision started between: %u %u\n", id1, id2);
+        //printf("Collision started between: %u %u\n", id1, id2);
         printf("Depth: %f\n", penetration_depth_);
         printf("Normal%f\n %f\n %f\n", normal.x, normal.y, normal.z);
         //send collision begin event
@@ -18,7 +18,7 @@ public:
     }
     ~collision_manifold()
     {
-        printf("Collision stopped between: %u %u\n", id1, id2);
+        //printf("Collision stopped between: %u %u\n", id1, id2);
         //send some type of collision end event
     }
 
@@ -86,6 +86,4 @@ private:
     object_collision_type type2;
     c_transform& transform1_;
     c_transform& transform2_;
-    unsigned id1;
-    unsigned id2;
 };
