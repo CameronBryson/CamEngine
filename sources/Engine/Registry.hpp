@@ -36,8 +36,8 @@ public:
         m_entities_.reserve(settings::max_entities);
         m_free_i_ds_.resize(settings::max_entities - 1);
         std::iota(m_free_i_ds_.begin(), m_free_i_ds_.end(), 1);
-        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Enter, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
-        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Exit, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
+        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Detected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
+        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::NotDetected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::CreateEntity, std::bind(&registry::create_entity, this));
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::DeleteEntity, std::bind(&registry::delete_entity, this, std::placeholders::_1));
 
@@ -75,16 +75,32 @@ public:
     }
     void on_collision_event(const Event<CollisionEvents>& event)
     {
-        if (event.GetType() == CollisionEvents::Enter)
+        if (event.GetType() == CollisionEvents::Detected)
         {
-            auto new_event = event.ToType<CollisionEnterEvent>();
+            auto new_event = event.ToType<CollisionDetectedEvent>();
             auto pair = std::make_pair(new_event.id1, new_event.id2);
+            if (!m_collision_map.contains(pair))
+            {
+                printf("Collision Enter\n");
+                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(new_event.id1, new_event.id2));
+            }
+            else
+            {
+                printf("Collision Stay\n");
+                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionStayEvent(new_event.id1, new_event.id2));
+            }
             m_collision_map[pair] = std::make_unique<collision_manifold>(new_event.manifold);
-            //collision_queue_.push(event.ToType<CollisionEnterEvent>().manifold);
         }
-        else if (event.GetType() == CollisionEvents::Exit)
+        else if (event.GetType() == CollisionEvents::NotDetected)
         {
-            printf("Collision Exit\n");
+            auto new_event = event.ToType<CollisionNotDetectedEvent>();
+            auto pair = std::make_pair(new_event.id1, new_event.id2);
+            if(m_collision_map.contains(pair))
+            {
+                printf("Collision Exit\n");
+                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
+                m_collision_map.erase(pair);
+            }
         }
     }
 
@@ -93,7 +109,7 @@ public:
         for(auto& [key, value] : m_collision_map)
         {
             value->resolve_collision();
-            value->penetration_depth_ = 0.0f;
+            //value->penetration_depth_ = 0.0f;
         }
     }
 

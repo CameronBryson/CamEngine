@@ -7,10 +7,10 @@
 
 void s_collision::update(registry & registry)
 {
-    // auto & colliders = registry.get_sparse_set<c_collider>();
     // auto & obbs = registry.get_sparse_set<c_quad>();
-    // auto & transforms = registry.get_sparse_set<c_transform>();
     // auto & spheres = registry.get_sparse_set<c_sphere>();
+    // auto & transforms = registry.get_sparse_set<c_transform>();
+     //auto & colliders = registry.get_sparse_set<c_collider>();
 
     std::vector<unsigned short> obb_ids = registry.get_entity_ids<c_quad, c_transform, c_collider>();
     std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform, c_collider>();
@@ -71,46 +71,38 @@ bool s_collision::intersects_aabb_in_aabb(const glm::vec3 & min1, const glm::vec
 
 bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, registry& registry)
 {
-    auto & sphere1 = registry.get_component<c_sphere>(id1);
-    auto & sphere2 = registry.get_component<c_sphere>(id2);
-    auto & transform1 = registry.get_component<c_transform>(id1);
-    auto & transform2 = registry.get_component<c_transform>(id2);
-    auto & collider1 = registry.get_component<c_collider>(id1);
-    auto & collider2 = registry.get_component<c_collider>(id2);
+    auto& sphere1 = registry.get_component<c_sphere>(id1);
+    auto& sphere2 = registry.get_component<c_sphere>(id2);
+    auto& transform1 = registry.get_component<c_transform>(id1);
+    auto& transform2 = registry.get_component<c_transform>(id2);
+    auto& collider1 = registry.get_component<c_collider>(id1);
+    auto& collider2 = registry.get_component<c_collider>(id2);
 
-    const object_collision_type type1 = collider1.collision_type;
-    const object_collision_type type2 = collider2.collision_type;
-    if( type1 == object_collision_type::STATIC && type2 == object_collision_type::STATIC )
+    if ((collider1.collision_type == object_collision_type::STATIC && collider2.collision_type == object_collision_type::STATIC) ||
+        (collider1.collision_bitmask & collider2.collision_bitmask) == 0)
     {
-        return false;
-    }
-    const auto object_bitmask = collider1.collision_bitmask;
-    const auto other_object_bitmask = collider2.collision_bitmask;
-    if( (object_bitmask & other_object_bitmask) == 0 )
-    {
-        return false;
-    }
-    const glm::vec3 center1 = transform1.position;
-    const glm::vec3 center2 = transform2.position;
-    const float radius1 = sphere1.radius;
-    const float radius2 = sphere2.radius;
-    const float distance_squared = glm::length2(center1 - center2);
-    const float radius_sum = radius1 + radius2;
-
-    if( distance_squared > (radius_sum * radius_sum) )
-    {
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
     }
 
-    float distance = std::sqrt(distance_squared);
-    float penetration_depth = radius_sum - distance;
-    glm::vec3 penetration_axis = normalize((center2 - center1));
+    const float distance_squared = glm::length2(transform1.position - transform2.position);
+    const float radius_sum = sphere1.radius + sphere2.radius;
 
-    if( penetration_depth > 0.000001 )
+    if (distance_squared > (radius_sum * radius_sum))
     {
-        collision_manifold manifold{penetration_axis, penetration_depth, transform1, transform2, type1, type2};
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(manifold, id1, id2));
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
+        return false;
     }
+
+    float penetration_depth = radius_sum - std::sqrt(distance_squared);
+    glm::vec3 penetration_axis = glm::normalize(transform2.position - transform1.position);
+
+    if (penetration_depth >= 0)
+    {
+        collision_manifold manifold{penetration_axis, penetration_depth, transform1, transform2, collider1.collision_type, collider2.collision_type};
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
+    }
+
     return true;
 }
 
@@ -129,12 +121,14 @@ bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, 
     const object_collision_type type2 = collider2.collision_type;
     if( type1 == object_collision_type::STATIC && type2 == object_collision_type::STATIC )
     {
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
     }
     const auto object_bitmask = collider1.collision_bitmask;
     const auto other_object_bitmask = collider2.collision_bitmask;
     if( (object_bitmask & other_object_bitmask) == 0 )
     {
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
     }
     // Extract rotation matrices
@@ -165,14 +159,20 @@ bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, 
     {
         if( ! test_axis(axis, vertices1, vertices2, min_penetration_depth, penetration_axis) ||
             ! test_axis(axis * -1.0f, vertices1, vertices2, min_penetration_depth, penetration_axis) )
+        {
+            EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
             return false;
+        }
     }
 
     for( const auto & axis : axes2 )
     {
         if( ! test_axis(axis, vertices1, vertices2, min_penetration_depth, penetration_axis) ||
             ! test_axis(axis * -1.0f, vertices1, vertices2, min_penetration_depth, penetration_axis) )
+        {
+            EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
             return false;
+        }
     }
 
     for( const auto & axis1 : axes1 )
@@ -182,14 +182,17 @@ bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, 
             glm::vec3 axis = cross(axis1, axis2);
             if( ! test_axis(axis, vertices1, vertices2, min_penetration_depth, penetration_axis) ||
                 ! test_axis(axis * -1.0f, vertices1, vertices2, min_penetration_depth, penetration_axis) )
+            {
+                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1,id2));
                 return false;
+            }
         }
     }
 
-    if( min_penetration_depth > 0.000001 )
+    if( min_penetration_depth >= 0 )
     {
         collision_manifold manifold{penetration_axis, min_penetration_depth, transform1, transform2, type1, type2};
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(manifold, id1, id2));
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
     }
 
     return true;
@@ -273,49 +276,37 @@ bool s_collision::test_axis(const glm::vec3 & axis, const std::vector<glm::vec3>
 
 bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id, registry& registry)
 {
-    auto & obb = registry.get_component<c_quad>(quad_id);
-    auto & sphere = registry.get_component<c_sphere>(sphere_id);
-    auto & obb_transform = registry.get_component<c_transform>(quad_id);
-    auto & sphere_transform = registry.get_component<c_transform>(sphere_id);
-    auto & obb_collider = registry.get_component<c_collider>(quad_id);
-    auto & sphere_collider = registry.get_component<c_collider>(sphere_id);
+    auto& obb = registry.get_component<c_quad>(quad_id);
+    auto& sphere = registry.get_component<c_sphere>(sphere_id);
+    auto& obb_transform = registry.get_component<c_transform>(quad_id);
+    auto& sphere_transform = registry.get_component<c_transform>(sphere_id);
+    auto& obb_collider = registry.get_component<c_collider>(quad_id);
+    auto& sphere_collider = registry.get_component<c_collider>(sphere_id);
 
-    const object_collision_type type1 = obb_collider.collision_type;
-    const object_collision_type type2 = sphere_collider.collision_type;
-    if( type1 == object_collision_type::STATIC && type2 == object_collision_type::STATIC )
+    if ((obb_collider.collision_type == object_collision_type::STATIC && sphere_collider.collision_type == object_collision_type::STATIC) ||
+        (obb_collider.collision_bitmask & sphere_collider.collision_bitmask) == 0)
     {
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(quad_id, sphere_id));
         return false;
     }
-    const auto object_bitmask = obb_collider.collision_bitmask;
-    const auto other_object_bitmask = sphere_collider.collision_bitmask;
-    if( (object_bitmask & other_object_bitmask) == 0 )
-    {
-        return false;
-    }
-    // Extract OBB data
+
     const glm::vec3 extents_obb = obb.extents * 0.5f;
     const glm::mat4 rotation_matrix_obb = glm::eulerAngleXYZ(obb_transform.rotation.x, obb_transform.rotation.y, obb_transform.rotation.z);
 
-    // Transform sphere center to OBB local space
-    glm::vec3 local_center_sphere = (glm::transpose(rotation_matrix_obb) * glm::vec4(sphere_transform.position - obb_transform.position, 1));
+    glm::vec3 local_center_sphere = glm::transpose(rotation_matrix_obb) * glm::vec4(sphere_transform.position - obb_transform.position, 1.0f);
 
-    // Find the closest point on the OBB to the sphere center
-    glm::vec3 closest_point = local_center_sphere;
-    closest_point.x = std::max(-extents_obb.x, std::min(local_center_sphere.x, extents_obb.x));
-    closest_point.y = std::max(-extents_obb.y, std::min(local_center_sphere.y, extents_obb.y));
-    closest_point.z = std::max(-extents_obb.z, std::min(local_center_sphere.z, extents_obb.z));
+    glm::vec3 closest_point = glm::clamp(local_center_sphere, -extents_obb, extents_obb);
 
     glm::vec3 difference = local_center_sphere - closest_point;
     float penetration_depth = sphere.radius - glm::length(difference);
-    if(penetration_depth < 0)
+    if (penetration_depth < 0)
     {
+        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(quad_id, sphere_id));
         return false;
     }
-    glm::vec3 penetration_axis = glm::normalize(rotation_matrix_obb * glm::vec4(difference, 1));
-    if( penetration_depth > 0.000001 )
-    {
-        collision_manifold manifold{penetration_axis, penetration_depth, obb_transform, sphere_transform, type1, type2};
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(manifold,quad_id, sphere_id));
-    }
+
+    glm::vec3 penetration_axis = glm::normalize(rotation_matrix_obb * glm::vec4(difference, 1.0f));
+    collision_manifold manifold{penetration_axis, penetration_depth, obb_transform, sphere_transform, obb_collider.collision_type, sphere_collider.collision_type};
+    EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, quad_id, sphere_id));
     return true;
 }
