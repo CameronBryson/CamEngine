@@ -5,7 +5,6 @@
 enum class object_collision_type
 {
     STATIC,
-    KINEMATIC,
     DYNAMIC
 };
 
@@ -86,26 +85,13 @@ struct c_directional_light
     glm::vec3 diffuse;
     glm::vec3 specular;
 };
-struct c_kinematic_body
-{
-
-};
 struct c_dynamic_body
 {
     float mass = 1.0f; // Default mass to avoid division by zero
     float drag = 0.0f;
     glm::vec3 acceleration = {0, 0, 0};
-    glm::vec3 gravity = {0,0,0};
+    //glm::vec3 gravity = {0,0,0};
     //glm::vec3 gravity = {0, -9.81f, 0};
-    bool is_grounded = false;
     //need listener to check if this entities collider collides with something with ground tag and update grounded bool
-};
-struct c_static_body
-{
-
-};
-struct c_ground
-{
-
 };
 

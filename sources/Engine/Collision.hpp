@@ -28,32 +28,15 @@ public:
         {
             resolve_dynamic_vs_dynamic();
         }
-        else if (type1 == object_collision_type::DYNAMIC && (type2 == object_collision_type::STATIC || type2 ==
-            object_collision_type::KINEMATIC))
+        else if (type1 == object_collision_type::DYNAMIC)
         {
             resolve_dynamic_vs_not_dynamic(transform1_);
         }
-        else if (type2 == object_collision_type::DYNAMIC && (type1 == object_collision_type::STATIC || type1 ==
-            object_collision_type::KINEMATIC))
+        else if (type2 == object_collision_type::DYNAMIC)
         {
             resolve_dynamic_vs_not_dynamic(transform2_);
         }
-        else if (type1 == object_collision_type::KINEMATIC && type2 == object_collision_type::KINEMATIC)
-        {
-            resolve_kinematic_vs_kinematic();
-        }
-        else if (type1 == object_collision_type::KINEMATIC && type2 == object_collision_type::STATIC)
-        {
-            resolve_kinematic_vs_static(transform1_);
-        }
-        else if (type2 == object_collision_type::KINEMATIC && type1 == object_collision_type::STATIC)
-        {
-            resolve_kinematic_vs_static(transform2_);
-        }
-        else if (type1 == object_collision_type::STATIC && type2 == object_collision_type::STATIC)
-        {
-            // No movement for static vs static
-        }
+        // No action needed for STATIC vs STATIC
     }
 
     float penetration_depth_ = 0;
@@ -69,17 +52,6 @@ private:
     void resolve_dynamic_vs_not_dynamic(c_transform& dynamic_transform) const
     {
         dynamic_transform.position -= normal * penetration_depth_;
-    }
-
-    void resolve_kinematic_vs_kinematic() const
-    {
-        transform1_.position += normal * penetration_depth_ * 0.5f;
-        transform2_.position -= normal * penetration_depth_ * 0.5f;
-    }
-
-    void resolve_kinematic_vs_static(c_transform& kinematic_transform) const
-    {
-        kinematic_transform.position += normal * penetration_depth_;
     }
 
     object_collision_type type1;

@@ -21,7 +21,9 @@ void s_render::init()
     load_shaders();
     graphics_manager::load_mtl("assets/Default.mtl");
     //graphics_manager::create_model_from_obj("assets/cube.obj", "player");
-    graphics_manager::create_model_from_obj("assets/patek.obj", "player");
+    graphics_manager::create_model_from_obj("assets/Ship.obj", "player");
+
+    //graphics_manager::create_model_from_obj("assets/patek.obj", "player");
     graphics_manager::create_model_from_obj("assets/sphere.obj", "sphere");
     graphics_manager::create_model_from_obj("assets/cube.obj", "cube");
 
@@ -65,13 +67,14 @@ void s_render::update(const registry & registry, Camera & camera)
         texture_shader.setVec3("dirLights[" + index + "].specular", light.specular);
     }
     draw_models(registry, transforms, texture_shader);
-
+#ifdef _DEBUG
     collider_shader.use();
     collider_shader.setMat4("projection", proj_matrix);
     collider_shader.setMat4("view", view_matrix);
     collider_shader.setInt("numDirLights", light_ids.size());
     collider_shader.setVec3("viewPos", camera.Position);
     draw_colliders(registry, transforms, collider_shader);
+#endif
 }
 
 void s_render::shutdown()
