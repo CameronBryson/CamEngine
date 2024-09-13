@@ -6,6 +6,7 @@
 #include <vector>
 
 static constexpr float movespeed = 8.0f;
+static constexpr float rotation_speed = 0.25f;
 
 void s_player::update(const registry & registry, const float dt)
 {
@@ -18,17 +19,36 @@ void s_player::update(const registry & registry, const float dt)
     bool d = engine_util::is_key_pressed('D');
     bool q = engine_util::is_key_pressed('Q');
     bool e = engine_util::is_key_pressed('E');
+    bool space = engine_util::is_key_pressed(KEY_SPACE);
 
     for( const auto id : ids )
     {
         auto & acceleration = dynamic_bodies.get_item(id).acceleration;
+        auto & angular_acceleration = dynamic_bodies.get_item(id).angular_acceleration;
         //velocity = { 0, 0, 0 };
-        if( w ) acceleration.z -= movespeed * dt;
-        if( a ) acceleration.x -= movespeed * dt;
-        if( s ) acceleration.z += movespeed * dt;
-        if( d ) acceleration.x += movespeed * dt;
-        if( q ) acceleration.y -= movespeed * dt;
-        if( e ) acceleration.y += movespeed * dt;
+        if( w ){
+            acceleration.y += movespeed * dt;
+            angular_acceleration.x += rotation_speed * dt;
+        }
+        if( a ){
+            acceleration.x -= movespeed * dt;
+            angular_acceleration.z -= rotation_speed * dt;
+        }
+        if( s ) {
+            acceleration.y -= movespeed * dt;
+            angular_acceleration.x -= rotation_speed * dt;
+        }
+        if( d ) {
+            acceleration.x += movespeed * dt;
+            angular_acceleration.z += rotation_speed * dt;
+        }
+        if( q ){
+            acceleration.z += movespeed * dt;
+
+        }
+        if( e || space){
+            acceleration.z -= movespeed * dt;
+        }
     }
 }
 

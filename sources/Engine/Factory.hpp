@@ -16,7 +16,7 @@ public:
         registry.add_component<c_quad>(id, c_quad{.extents = {3.0f, 3.0f, 3.0f}});
         registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
         registry.add_component<c_model>(id, c_model{.name = "player"});
-        registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f});
+        registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f, .angluar_drag = 0.8f});
         return id;
     }
 

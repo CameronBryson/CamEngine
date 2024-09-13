@@ -18,13 +18,18 @@ void s_physics::update_dynamic_bodies(const registry & registry, float dt)
 
     for( const auto id : ids )
     {
-        auto & [drag, velocity ,acceleration] = dynamic_bodies.get_item(id);
+        auto & [drag, velocity ,acceleration, angular_drag, angular_velocity, angular_acceleration] = dynamic_bodies.get_item(id);
         auto & [position, rotation, scale] = transforms.get_item(id);
 
         velocity += acceleration * dt;
         velocity *= std::pow(1 - drag, dt);
         position += velocity;
         acceleration = { 0, 0, 0 };
+
+        angular_velocity += angular_acceleration * dt;
+        angular_velocity *= std::pow(1 - angular_drag, dt);
+        rotation += angular_velocity;
+        angular_acceleration = { 0, 0, 0 };
     }
 }
 

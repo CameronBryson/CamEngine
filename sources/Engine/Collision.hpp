@@ -13,11 +13,7 @@ public:
         printf("Depth: %f\n", penetration_depth_);
         printf("Normal%f\n %f\n %f\n", normal.x, normal.y, normal.z);
     }
-    ~collision_manifold()
-    {
-        //printf("Collision stopped between: %u %u\n", id1, id2);
-        //send some type of collision end event
-    }
+    ~collision_manifold() = default;
 
     void resolve_collision() const
     {

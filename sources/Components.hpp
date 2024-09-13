@@ -85,6 +85,9 @@ struct c_dynamic_body
     float drag = 0.0f;
     glm::vec3 velocity = {0, 0, 0};
     glm::vec3 acceleration = {0, 0, 0};
+    float angluar_drag = 0.0f;
+    glm::vec3 angular_velocity = {0,0,0};
+    glm::vec3 angular_acceleration = {0,0,0};
     //glm::vec3 gravity = {0,0,0};
     //glm::vec3 gravity = {0, -9.81f, 0};
     //need listener to check if this entities collider collides with something with ground tag and update grounded bool
