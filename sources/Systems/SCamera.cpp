@@ -9,11 +9,11 @@ static constexpr float camera_rotationspeed = 500.0f;
 
 void s_camera::update(Camera & camera, const float dt)
 {
-    glm::vec3 camera_position = camera.Position;
+    glm::vec3 camera_position = camera.camera_follow_target_ ? camera.camera_follow_target_->position + camera.follow_offset : camera.Position;
     const glm::vec3 forward = camera.Front;
     const glm::vec3 right = camera.Right;
     const glm::vec3 up = camera.Up;
-    bool moved = false;
+
     bool I = engine_util::is_key_pressed('I');
     bool K = engine_util::is_key_pressed('K');
     bool J = engine_util::is_key_pressed('J');
@@ -25,61 +25,27 @@ void s_camera::update(Camera & camera, const float dt)
     bool LEFT = engine_util::is_key_pressed(GLFW_KEY_LEFT);
     bool RIGHT = engine_util::is_key_pressed(GLFW_KEY_RIGHT);
 
-    // Move camera
-    if( I )
-    {
-        camera_position += forward * camera_movespeed * dt;
-        moved = true;
-    }
-    if( K )
-    {
-        camera_position -= forward * camera_movespeed * dt;
-        moved = true;
-    }
-    if( J )
-    {
-        camera_position -= right * camera_movespeed * dt;
-        moved = true;
-    }
-    if( L )
-    {
-        camera_position += right * camera_movespeed * dt;
-        moved = true;
-    }
-    if( U )
-    {
-        camera_position += up * camera_movespeed * dt;
-        moved = true;
-    }
-    if( O )
-    {
-        camera_position -= up * camera_movespeed * dt;
-        moved = true;
+    if (camera.camera_follow_target_ == nullptr) {
+        if (I) camera_position += forward * camera_movespeed * dt;
+        if (K) camera_position -= forward * camera_movespeed * dt;
+        if (J) camera_position -= right * camera_movespeed * dt;
+        if (L) camera_position += right * camera_movespeed * dt;
+        if (U) camera_position += up * camera_movespeed * dt;
+        if (O) camera_position -= up * camera_movespeed * dt;
+    } else {
+        if (I) camera.follow_offset += forward * camera_movespeed * dt;
+        if (K) camera.follow_offset -= forward * camera_movespeed * dt;
+        if (J) camera.follow_offset -= right * camera_movespeed * dt;
+        if (L) camera.follow_offset += right * camera_movespeed * dt;
+        if (U) camera.follow_offset += up * camera_movespeed * dt;
+        if (O) camera.follow_offset -= up * camera_movespeed * dt;
     }
 
-    if( UP )
-    {
-        camera.Pitch += camera_rotationspeed * dt;
-        moved = true;
-    }
-    if( DOWN )
-    {
-        camera.Pitch -= camera_rotationspeed * dt;
-        moved = true;
-    }
-    if( LEFT )
-    {
-        camera.Yaw -= camera_rotationspeed * dt;
-        moved = true;
-    }
-    if( RIGHT )
-    {
-        camera.Yaw += camera_rotationspeed * dt;
-        moved = true;
-    }
-    if( moved )
-    {
-        camera.Position = camera_position;
-        camera.updateCameraVectors();
-    }
+    if (UP) camera.Pitch += camera_rotationspeed * dt;
+    if (DOWN) camera.Pitch -= camera_rotationspeed * dt;
+    if (LEFT) camera.Yaw -= camera_rotationspeed * dt;
+    if (RIGHT) camera.Yaw += camera_rotationspeed * dt;
+
+    camera.Position = camera_position;
+    camera.updateCameraVectors();
 }

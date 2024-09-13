@@ -43,12 +43,14 @@ void play_scene::init()
     // }
     factory::create_sphere(m_registry_, glm::vec3{0.8f, 0.8f, 0.8}, 3.0f);
     factory::create_quad(m_registry_, glm::vec3{-0.8f, 0.0f, 0.0f}, glm::vec3{3.0f, 0.4f, 0.2f});
-    factory::create_player(m_registry_);
+    auto player = factory::create_player(m_registry_);
     factory::create_directional_light(m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{1.0,1.0,1.0}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{1.0,1.0,1.0});
     auto floor = m_registry_.create_entity();
     m_registry_.add_component<c_transform>(floor, c_transform{.position = glm::vec3(0.0f, -3.0f, 0.0f), .rotation = glm::vec3(0.0f, 0.0f, 0.0f)});
     m_registry_.add_component<c_quad>(floor, c_quad{.extents = {10,0.1,10}});
     m_registry_.add_component<c_collider>(floor, c_collider());
+    m_registry_.process_commands();
+    m_camera_.camera_follow_target_ = &m_registry_.get_component<c_transform>(player);
 }
 
 void play_scene::update(const float dt)

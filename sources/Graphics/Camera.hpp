@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "GameSettings.hpp"
+#include "Components.hpp"
 
 
 // Default camera values
@@ -28,6 +29,8 @@ public:
     float Zoom;
     glm::mat4 projection_matrix;
     glm::mat4 view_matrix;
+    c_transform * camera_follow_target_;
+    glm::vec3 follow_offset;
 
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
@@ -37,6 +40,8 @@ public:
         WorldUp = up;
         Yaw = yaw;
         Pitch = pitch;
+        camera_follow_target_ = nullptr;
+        follow_offset = {0, 6, 30};
         updateCameraVectors();
         projection_matrix = glm::perspective(glm::radians(Zoom),
                                              (float)settings::window_width / (float)settings::window_height, 0.1f,
