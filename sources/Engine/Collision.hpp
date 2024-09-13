@@ -9,12 +9,9 @@ public:
         : penetration_depth_(penetration_depth), normal(normal), type1(type1), type2(type2), transform1_(transform1),
           transform2_(transform2)
     {
-        //printf("Collision started between: %u %u\n", id1, id2);
+
         printf("Depth: %f\n", penetration_depth_);
         printf("Normal%f\n %f\n %f\n", normal.x, normal.y, normal.z);
-        //send collision begin event
-
-        //temp testing thing:::
     }
     ~collision_manifold()
     {
@@ -30,11 +27,11 @@ public:
         }
         else if (type1 == object_collision_type::DYNAMIC)
         {
-            resolve_dynamic_vs_not_dynamic(transform1_);
+            resolve_dynamic_vs_not_dynamic(true);
         }
         else if (type2 == object_collision_type::DYNAMIC)
         {
-            resolve_dynamic_vs_not_dynamic(transform2_);
+            resolve_dynamic_vs_not_dynamic(false);
         }
         // No action needed for STATIC vs STATIC
     }
@@ -45,13 +42,20 @@ public:
 private:
     void resolve_dynamic_vs_dynamic() const
     {
-        transform1_.position += normal * penetration_depth_ * 0.5f;
-        transform2_.position -= normal * penetration_depth_ * 0.5f;
+        transform1_.position -= normal * penetration_depth_ * 0.5f;
+        transform2_.position += normal * penetration_depth_ * 0.5f;
     }
 
-    void resolve_dynamic_vs_not_dynamic(c_transform& dynamic_transform) const
+    void resolve_dynamic_vs_not_dynamic(bool is_first) const
     {
-        dynamic_transform.position -= normal * penetration_depth_;
+        if(is_first)
+        {
+            transform1_.position -= normal * penetration_depth_;
+        }
+        else
+        {
+            transform2_.position += normal * penetration_depth_;
+        }
     }
 
     object_collision_type type1;

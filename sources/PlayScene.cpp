@@ -41,10 +41,10 @@ void play_scene::init()
     // {
     //     m_registry_.delete_entity(i);
     // }
+    factory::create_sphere(m_registry_, glm::vec3{0.8f, 0.8f, 0.8}, 3.0f);
+    factory::create_quad(m_registry_, glm::vec3{-0.8f, 0.0f, 0.0f}, glm::vec3{3.0f, 0.4f, 0.2f});
     factory::create_player(m_registry_);
     factory::create_directional_light(m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{1.0,1.0,1.0}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{1.0,1.0,1.0});
-    //factory::create_quad(m_registry_, glm::vec3{-0.8f, 0.0f, 0.0f}, glm::vec3{3.0f, 0.4f, 0.2f});
-    factory::create_sphere(m_registry_, glm::vec3{0.8f, 0.0f, 0.0f}, 1.0f);
     auto floor = m_registry_.create_entity();
     m_registry_.add_component<c_transform>(floor, c_transform{.position = glm::vec3(0.0f, -3.0f, 0.0f), .rotation = glm::vec3(0.0f, 0.0f, 0.0f)});
     m_registry_.add_component<c_quad>(floor, c_quad{.extents = {10,0.1,10}});

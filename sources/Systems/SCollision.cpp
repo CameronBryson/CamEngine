@@ -16,13 +16,21 @@ void s_collision::update(registry & registry)
     std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform, c_collider>();
 
     // Check OBB-OBB intersections
-    for( std::vector<unsigned short>::size_type i = 0; i < obb_ids.size(); ++i )
+    for( auto id : obb_ids )
     {
-        for( std::vector<unsigned short>::size_type j = i + 1; j < obb_ids.size(); ++j )
+        for( auto id2 : obb_ids )
         {
-            intersects_obb_in_obb(obb_ids[i], obb_ids[j], registry);
+            if( id == id2 ) continue;
+            intersects_obb_in_obb(id, id2, registry);
         }
     }
+//    for( std::vector<unsigned short>::size_type i = 0; i < obb_ids.size(); ++i )
+//    {
+//        for( std::vector<unsigned short>::size_type j = i + 1; j < obb_ids.size(); ++j )
+//        {
+//            intersects_obb_in_obb(obb_ids[i], obb_ids[j], registry);
+//        }
+//    }
 
     // Check OBB-SPHERE intersections
     for( auto id : obb_ids )
@@ -38,6 +46,7 @@ void s_collision::update(registry & registry)
     {
         for( auto id2 : sphere_ids )
         {
+            if(id == id2) continue;
             intersects_sphere_in_sphere(id,id2, registry);
         }
     }
@@ -189,7 +198,7 @@ bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, 
         }
     }
 
-    if( min_penetration_depth >= 0 )
+    if( min_penetration_depth > 0 )
     {
         collision_manifold manifold{penetration_axis, min_penetration_depth, transform1, transform2, type1, type2};
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
@@ -266,7 +275,7 @@ bool s_collision::test_axis(const glm::vec3 & axis, const std::vector<glm::vec3>
     {
         overlap = axis_overlap;
         penetration_axis = axis;
-        if( min2 > min1 )
+        if( min2 < min1 )
         {
             penetration_axis = axis * -1.0f;
         }
