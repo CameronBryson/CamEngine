@@ -9,6 +9,7 @@ static constexpr float camera_rotationspeed = 500.0f;
 
 void s_camera::update(Camera & camera, const float dt)
 {
+    //eventually change to lerp
     glm::vec3 camera_position = camera.camera_follow_target_ ? camera.camera_follow_target_->position + camera.follow_offset : camera.Position;
     const glm::vec3 forward = camera.Front;
     const glm::vec3 right = camera.Right;

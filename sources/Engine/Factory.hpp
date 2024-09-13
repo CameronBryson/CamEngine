@@ -10,14 +10,13 @@ public:
         const auto id = registry.create_entity();
         registry.add_component<c_player>(id, c_player());
         registry.add_component<c_transform>(id, c_transform{
-                                                .position = {0, 10, 0}, .rotation = {0, 3.14, 0}, .scale = {1.0, 1.0, 1.0}
+                                                .position = {0, 5, 10}, .rotation = {0, 3.14, 0}, .scale = {1.0, 1.0, 1.0}
                                             });
-        registry.add_component<c_velocity>(id, c_velocity());
         //registry.add_component<c_sphere>(id, c_sphere{.radius = 2.0f});
         registry.add_component<c_quad>(id, c_quad{.extents = {3.0f, 3.0f, 3.0f}});
         registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
         registry.add_component<c_model>(id, c_model{.name = "player"});
-        registry.add_component<c_dynamic_body>(id,c_dynamic_body());
+        registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f});
         return id;
     }
 

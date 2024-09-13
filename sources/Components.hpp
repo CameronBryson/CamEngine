@@ -29,11 +29,6 @@ struct c_transform
     glm::vec3 scale = {1, 1, 1};
 };
 
-// Component for velocity
-struct c_velocity
-{
-    glm::vec3 velocity = {0, 0, 0};
-};
 
 // Component for collider-related data
 struct c_collider
@@ -87,8 +82,8 @@ struct c_directional_light
 };
 struct c_dynamic_body
 {
-    float mass = 1.0f; // Default mass to avoid division by zero
     float drag = 0.0f;
+    glm::vec3 velocity = {0, 0, 0};
     glm::vec3 acceleration = {0, 0, 0};
     //glm::vec3 gravity = {0,0,0};
     //glm::vec3 gravity = {0, -9.81f, 0};

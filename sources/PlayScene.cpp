@@ -91,7 +91,6 @@ void play_scene::init_sparse_sets()
     m_registry_.create_sparse_set<c_transform>();
     m_registry_.create_sparse_set<c_render>();
     m_registry_.create_sparse_set<c_player>();
-    m_registry_.create_sparse_set<c_velocity>();
     m_registry_.create_sparse_set<c_collider>();
     m_registry_.create_sparse_set<c_health>();
     m_registry_.create_sparse_set<c_enemy>();
