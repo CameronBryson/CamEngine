@@ -26,6 +26,7 @@ void s_render::init()
     //graphics_manager::create_model_from_obj("assets/patek.obj", "player");
     graphics_manager::create_model_from_obj("assets/sphere.obj", "sphere");
     graphics_manager::create_model_from_obj("assets/cube.obj", "cube");
+    graphics_manager::create_model_from_obj("assets/quad.obj", "quad");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // Enable backface culling
@@ -48,8 +49,16 @@ void s_render::update(const registry & registry, Camera & camera)
     auto & transforms = registry.get_sparse_set<c_transform>();
     auto & texture_shader = graphics_manager::get_shader("texture");
     auto & collider_shader = graphics_manager::get_shader("collider");
+    auto & shader_2d = graphics_manager::get_shader("2D");
     auto & lights = registry.get_sparse_set<c_directional_light>();
-    auto light_ids = registry.get_entity_ids<c_directional_light>();
+    const auto light_ids = registry.get_entity_ids<c_directional_light>();
+
+    float aspect = (float) settings::window_width / (float) settings::window_height;
+    glm::mat4 ortho_projection = glm::ortho(-aspect, aspect, -1.0f, 1.0f, -1.0f, 1.0f);
+
+
+    glEnable(GL_DEPTH_TEST);
+
 
     texture_shader.use();
     texture_shader.setMat4("projection", proj_matrix);
@@ -67,14 +76,27 @@ void s_render::update(const registry & registry, Camera & camera)
         texture_shader.setVec3("dirLights[" + index + "].specular", light.specular);
     }
     draw_models(registry, transforms, texture_shader);
-#ifdef _DEBUG
+//#ifdef _DEBUG
     collider_shader.use();
     collider_shader.setMat4("projection", proj_matrix);
     collider_shader.setMat4("view", view_matrix);
-    collider_shader.setInt("numDirLights", light_ids.size());
-    collider_shader.setVec3("viewPos", camera.Position);
     draw_colliders(registry, transforms, collider_shader);
-#endif
+//#endif
+    glDisable(GL_DEPTH_TEST);
+
+
+    shader_2d.use();
+
+    shader_2d.setMat4("projection", ortho_projection);
+    shader_2d.setMat4("view", glm::mat4(1.0f));
+    shader_2d.setMat4("model", glm::mat4(1.0f));
+
+    // shader_2d.setMat4("projection", proj_matrix);
+    // shader_2d.setMat4("view", view_matrix);
+    // shader_2d.setMat4("model", glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 1.0f)));
+
+    auto & mesh = graphics_manager::get_mesh("Quad");
+    mesh.draw(shader_2d);
 }
 
 void s_render::shutdown()
@@ -83,6 +105,7 @@ void s_render::shutdown()
 
 void s_render::draw_models(const registry & registry, sparse_set<c_transform> & transforms, shader_program & shader)
 {
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     auto& models = registry.get_sparse_set<c_model>();
     for( auto id : registry.get_entity_ids<c_model, c_transform>() )
     {
@@ -98,6 +121,7 @@ void s_render::draw_models(const registry & registry, sparse_set<c_transform> & 
 
 void s_render::draw_colliders(const registry & registry, sparse_set<c_transform> & transforms, shader_program & shader)
 {
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     auto & quads = registry.get_sparse_set<c_quad>();
     auto & spheres = registry.get_sparse_set<c_sphere>();
     for( auto id : registry.get_entity_ids<c_collider, c_transform>())
@@ -141,9 +165,12 @@ void s_render::draw_statistics()
 void s_render::load_shaders()
 {
     graphics_manager::load_shader(
-        "sources/Shaders/vertex_shader.vs",
-        "sources/Shaders/texture_shader.fs", "texture");
+        "sources/Shaders/vertex.vs",
+        "sources/Shaders/3D_texture.fs", "texture");
     graphics_manager::load_shader(
-            "sources/Shaders/vertex_shader.vs",
-            "sources/Shaders/collider_shader.fs", "collider");
+            "sources/Shaders/vertex.vs",
+            "sources/Shaders/collider.fs", "collider");
+    graphics_manager::load_shader(
+        "sources/Shaders/2D.vs",
+        "sources/Shaders/2D.fs", "2D");
 }
