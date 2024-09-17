@@ -89,7 +89,14 @@ void s_render::update(const registry & registry, Camera & camera)
 
     shader_2d.setMat4("projection", ortho_projection);
     shader_2d.setMat4("view", glm::mat4(1.0f));
-    shader_2d.setMat4("model", glm::mat4(1.0f));
+    double x;
+    double y;
+    glfwGetCursorPos(game_manager::get_glfw_window(),&x,&y);
+    x = (x / settings::window_width) * 2.0 *aspect - aspect;
+    y = 1.0 - (y / settings::window_height) * 2.0;
+    glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f)) *
+                             glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f));
+    shader_2d.setMat4("model", model_matrix);
 
     // shader_2d.setMat4("projection", proj_matrix);
     // shader_2d.setMat4("view", view_matrix);

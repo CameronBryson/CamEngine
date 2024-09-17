@@ -5,13 +5,16 @@
 
 #include <vector>
 
-static constexpr float movespeed = 8.0f;
+static constexpr float forward_movespeed = 1.0f;
+static constexpr float movespeed = 10.0f;
 static constexpr float rotation_speed = 0.25f;
 
 void s_player::update(const registry & registry, const float dt)
 {
     auto & dynamic_bodies = registry.get_sparse_set<c_dynamic_body>();
-    auto ids = registry.get_entity_ids<c_player, c_dynamic_body>();
+    auto & players = registry.get_sparse_set<c_player>();
+    auto & transforms = registry.get_sparse_set<c_transform>();
+    auto ids = registry.get_entity_ids<c_player, c_dynamic_body, c_transform>();
 
     bool w = engine_util::is_key_pressed('W');
     bool a = engine_util::is_key_pressed('A');
@@ -23,33 +26,35 @@ void s_player::update(const registry & registry, const float dt)
 
     for( const auto id : ids )
     {
-        auto & acceleration = dynamic_bodies.get_item(id).acceleration;
-        auto & angular_acceleration = dynamic_bodies.get_item(id).angular_acceleration;
+        //maybe add some kind of cap so that the ship doesnt rotate beyond 90 degrees
+        auto & player = players.get_item(id);
+        auto & dynamic_body = dynamic_bodies.get_item(id);
         //velocity = { 0, 0, 0 };
         if( w ){
-            acceleration.y += movespeed * dt;
-            angular_acceleration.x += rotation_speed * dt;
+            dynamic_body.acceleration.y += movespeed * dt;
+            dynamic_body.angular_acceleration.x += rotation_speed * dt;
         }
         if( a ){
-            acceleration.x -= movespeed * dt;
-            angular_acceleration.z -= rotation_speed * dt;
+            dynamic_body.acceleration.x -= movespeed * dt;
+            dynamic_body.angular_acceleration.z -= rotation_speed * dt;
         }
         if( s ) {
-            acceleration.y -= movespeed * dt;
-            angular_acceleration.x -= rotation_speed * dt;
+            dynamic_body.acceleration.y -= movespeed * dt;
+            dynamic_body.angular_acceleration.x -= rotation_speed * dt;
         }
         if( d ) {
-            acceleration.x += movespeed * dt;
-            angular_acceleration.z += rotation_speed * dt;
+            dynamic_body.acceleration.x += movespeed * dt;
+            dynamic_body.angular_acceleration.z += rotation_speed * dt;
         }
         if( q ){
-            acceleration.z += movespeed * dt;
+            dynamic_body.acceleration.z += forward_movespeed * dt;
 
         }
         if( e || space){
-            acceleration.z -= movespeed * dt;
+            dynamic_body.acceleration.z -= forward_movespeed * dt;
         }
     }
+
 }
 
 void s_player::shutdown()

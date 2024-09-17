@@ -31,6 +31,8 @@ public:
     glm::mat4 view_matrix;
     c_transform * camera_follow_target_;
     glm::vec3 follow_offset;
+    double previous_mouse_x = 0;
+    double previous_mouse_y = 0;
 
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),

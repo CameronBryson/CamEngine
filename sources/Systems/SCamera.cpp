@@ -47,6 +47,16 @@ void s_camera::update(Camera & camera, const float dt)
     if (LEFT) camera.Yaw -= camera_rotationspeed * dt;
     if (RIGHT) camera.Yaw += camera_rotationspeed * dt;
 
+//    double current_mouse_x, current_mouse_y;
+//    glfwGetCursorPos(game_manager::get_glfw_window(), &current_mouse_x, &current_mouse_y);
+//    double delta_x = current_mouse_x - camera.previous_mouse_x;
+//    double delta_y = current_mouse_y - camera.previous_mouse_y;
+//    camera.previous_mouse_x = current_mouse_x;
+//    camera.previous_mouse_y = current_mouse_y;
+//
+//    camera.Yaw += delta_x * camera_rotationspeed * dt * 0.1;
+//    camera.Pitch += delta_y * camera_rotationspeed * dt * 0.1;
+
     camera.Position = camera_position;
     camera.updateCameraVectors();
 }

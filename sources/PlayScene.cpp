@@ -12,7 +12,7 @@
 play_scene::play_scene()
 {
     printf("PlayScene created\n");
-    m_camera_ = Camera(glm::vec3(0.0f, 0.0f, 1.50f));
+    m_camera_ = Camera(glm::vec3(0.0f, 0.0f, -1.50f));
 }
 
 play_scene::~play_scene()
