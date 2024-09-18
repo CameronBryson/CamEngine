@@ -68,6 +68,9 @@ struct c_plane
     glm::vec3 normal;
     float distance;
 };
+struct c_ui{
+    bool follow_cursor = false;
+};
 
 struct c_model
 {
@@ -92,4 +95,5 @@ struct c_dynamic_body
     //glm::vec3 gravity = {0, -9.81f, 0};
     //need listener to check if this entities collider collides with something with ground tag and update grounded bool
 };
+
 

@@ -49,6 +49,9 @@ void play_scene::init()
     m_registry_.add_component<c_transform>(floor, c_transform{.position = glm::vec3(0.0f, -3.0f, 0.0f), .rotation = glm::vec3(0.0f, 0.0f, 0.0f)});
     m_registry_.add_component<c_quad>(floor, c_quad{.extents = {10,0.1,10}});
     m_registry_.add_component<c_collider>(floor, c_collider());
+    auto crosshair = m_registry_.create_entity();
+    m_registry_.add_component<c_transform>(crosshair,c_transform{.scale = glm::vec3(0.1f,0.1f,0.1f)});
+    m_registry_.add_component<c_ui>(crosshair,c_ui{.follow_cursor=true});
     m_registry_.process_commands();
     m_camera_.camera_follow_target_ = &m_registry_.get_component<c_transform>(player);
 }
@@ -60,6 +63,7 @@ void play_scene::update(const float dt)
     s_camera::update(m_camera_, dt);
     s_player::update(m_registry_, dt);
     s_physics::update(m_registry_, dt);
+    s_ui::update(m_registry_);
 }
 
 void play_scene::late_update(const float dt)
@@ -100,4 +104,5 @@ void play_scene::init_sparse_sets()
     m_registry_.create_sparse_set<c_model>();
     m_registry_.create_sparse_set<c_directional_light>();
     m_registry_.create_sparse_set<c_dynamic_body>();
+    m_registry_.create_sparse_set<c_ui>();
 }

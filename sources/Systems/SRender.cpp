@@ -28,7 +28,7 @@ void s_render::init()
     graphics_manager::create_model_from_obj("assets/cube.obj", "cube");
     graphics_manager::create_model_from_obj("assets/quad.obj", "quad");
 
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // Enable backface culling
     glEnable(GL_CULL_FACE);
 
@@ -47,63 +47,49 @@ void s_render::update(const registry & registry, Camera & camera)
     auto & view_matrix = camera.GetViewMatrix();
     auto & proj_matrix = camera.GetProjectionMatrix();
     auto & transforms = registry.get_sparse_set<c_transform>();
-    auto & texture_shader = graphics_manager::get_shader("texture");
-    auto & collider_shader = graphics_manager::get_shader("collider");
-    auto & shader_2d = graphics_manager::get_shader("2D");
+    auto & texture_shader_3D = graphics_manager::get_shader("3D_texture");
+    auto & color_shader_3D = graphics_manager::get_shader("3D_color");
+    auto & color_shader_2D = graphics_manager::get_shader("2D_color");
+    auto & texture_shader_2D = graphics_manager::get_shader("2D_texture");
     auto & lights = registry.get_sparse_set<c_directional_light>();
     const auto light_ids = registry.get_entity_ids<c_directional_light>();
 
-    float aspect = (float) settings::window_width / (float) settings::window_height;
-    glm::mat4 ortho_projection = glm::ortho(-aspect, aspect, -1.0f, 1.0f, -1.0f, 1.0f);
+    glm::mat4 ortho_projection = glm::ortho(-settings::aspect_ratio, settings::aspect_ratio, -1.0f, 1.0f, -1.0f, 1.0f);
 
 
     glEnable(GL_DEPTH_TEST);
 
 
-    texture_shader.use();
-    texture_shader.setMat4("projection", proj_matrix);
-    texture_shader.setMat4("view", view_matrix);
-    texture_shader.setInt("numDirLights", light_ids.size());
-    texture_shader.setVec3("viewPos", camera.Position);
+    texture_shader_3D.use();
+    texture_shader_3D.setMat4("projection", proj_matrix);
+    texture_shader_3D.setMat4("view", view_matrix);
+    texture_shader_3D.setInt("numDirLights", light_ids.size());
+    texture_shader_3D.setVec3("viewPos", camera.Position);
 
     for( int i = 0; i < light_ids.size(); ++i )
     {
         auto & light = lights.get_item(light_ids[i]);
         std::string index = std::to_string(i);
-        texture_shader.setVec3("dirLights[" + index + "].direction", light.direction);
-        texture_shader.setVec3("dirLights[" + index + "].ambient", light.ambient);
-        texture_shader.setVec3("dirLights[" + index + "].diffuse", light.diffuse);
-        texture_shader.setVec3("dirLights[" + index + "].specular", light.specular);
+        texture_shader_3D.setVec3("dirLights[" + index + "].direction", light.direction);
+        texture_shader_3D.setVec3("dirLights[" + index + "].ambient", light.ambient);
+        texture_shader_3D.setVec3("dirLights[" + index + "].diffuse", light.diffuse);
+        texture_shader_3D.setVec3("dirLights[" + index + "].specular", light.specular);
     }
-    draw_models(registry, transforms, texture_shader);
+    draw_models(registry, transforms, texture_shader_3D);
 //#ifdef _DEBUG
-    collider_shader.use();
-    collider_shader.setMat4("projection", proj_matrix);
-    collider_shader.setMat4("view", view_matrix);
-    draw_colliders(registry, transforms, collider_shader);
+    color_shader_3D.use();
+    color_shader_3D.setMat4("projection", proj_matrix);
+    color_shader_3D.setMat4("view", view_matrix);
+    draw_colliders(registry, transforms, color_shader_3D);
 //#endif
-    glDisable(GL_DEPTH_TEST);
 
 
-    shader_2d.use();
 
-    shader_2d.setMat4("projection", ortho_projection);
-    shader_2d.setMat4("view", glm::mat4(1.0f));
-    double x;
-    double y;
-    glfwGetCursorPos(game_manager::get_glfw_window(),&x,&y);
-    x = (x / settings::window_width) * 2.0 *aspect - aspect;
-    y = 1.0 - (y / settings::window_height) * 2.0;
-    glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f)) *
-                             glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f));
-    shader_2d.setMat4("model", model_matrix);
+    color_shader_2D.use();
 
-    // shader_2d.setMat4("projection", proj_matrix);
-    // shader_2d.setMat4("view", view_matrix);
-    // shader_2d.setMat4("model", glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 1.0f)));
-
-    auto & mesh = graphics_manager::get_mesh("Quad");
-    mesh.draw(shader_2d);
+    color_shader_2D.setMat4("projection", ortho_projection);
+    color_shader_2D.setMat4("view", glm::mat4(1.0f));
+    draw_ui(registry, transforms, color_shader_2D);
 }
 
 void s_render::shutdown()
@@ -159,6 +145,20 @@ void s_render::draw_colliders(const registry & registry, sparse_set<c_transform>
     }
 }
 
+void s_render::draw_ui(const registry &registry, sparse_set<c_transform> &transforms, shader_program &shader) {
+    glDisable(GL_DEPTH_TEST);
+    auto &ui = registry.get_sparse_set<c_ui>();
+    for (auto id : registry.get_entity_ids<c_ui, c_transform>()) {
+        auto &transform = transforms.get_item(id);
+        glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
+                                 glm::scale(glm::mat4(1.0f), transform.scale) *
+                                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+        shader.setMat4("model", model_matrix);
+        auto &mesh = graphics_manager::get_mesh("Quad");
+        mesh.draw(shader);
+    }
+}
+
 void s_render::draw_statistics()
 {
     const std::string stats_text = //"FPS: " + std::to_string(engine_util::get_fps()) + "\n" +
@@ -173,11 +173,14 @@ void s_render::load_shaders()
 {
     graphics_manager::load_shader(
         "sources/Shaders/vertex.vs",
-        "sources/Shaders/3D_texture.fs", "texture");
+        "sources/Shaders/3D_texture.fs", "3D_texture");
     graphics_manager::load_shader(
             "sources/Shaders/vertex.vs",
-            "sources/Shaders/collider.fs", "collider");
+            "sources/Shaders/3D_color.fs", "3D_color");
     graphics_manager::load_shader(
-        "sources/Shaders/2D.vs",
-        "sources/Shaders/2D.fs", "2D");
+        "sources/Shaders/vertex.vs",
+        "sources/Shaders/2D_color.fs", "2D_color");
+    graphics_manager::load_shader(
+            "sources/Shaders/vertex.vs",
+            "sources/Shaders/2D_color.fs", "2D_color");
 }

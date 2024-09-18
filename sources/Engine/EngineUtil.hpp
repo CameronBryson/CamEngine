@@ -27,6 +27,14 @@ public:
         }
         return false;
     }
+    static bool is_mouse_button_pressed(int button)
+    {
+        if (glfwGetMouseButton(game_manager::get_glfw_window(), button) == GLFW_PRESS)
+        {
+            return true;
+        }
+        return false;
+    }
     static std::string build_path(const std::string& path)
     {
         #ifdef _WIN32

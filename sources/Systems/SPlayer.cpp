@@ -22,7 +22,9 @@ void s_player::update(const registry & registry, const float dt)
     bool d = engine_util::is_key_pressed('D');
     bool q = engine_util::is_key_pressed('Q');
     bool e = engine_util::is_key_pressed('E');
-    bool space = engine_util::is_key_pressed(KEY_SPACE);
+    bool space =  engine_util::is_key_pressed(GLFW_KEY_SPACE);
+    bool left_click = engine_util::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_LEFT);
+    bool right_click = engine_util::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_RIGHT);
 
     for( const auto id : ids )
     {
@@ -52,6 +54,13 @@ void s_player::update(const registry & registry, const float dt)
         }
         if( e || space){
             dynamic_body.acceleration.z -= forward_movespeed * dt;
+        }
+        if(left_click){
+            printf("left click\n");
+            EventHandler::GetInstance()->registry_dispatcher;
+        }
+        if(right_click){
+            printf("right click\n");
         }
     }
 
