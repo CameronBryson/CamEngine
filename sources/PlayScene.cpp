@@ -26,6 +26,7 @@ void play_scene::init()
     init_sparse_sets();
 
     s_render::init();
+    factory::bind_events();
     timer benchmark_timer(stats::stat_type::BENCHMARK);
     // for (int i = 1; i < settings::max_entities - 3; i++)
     // {

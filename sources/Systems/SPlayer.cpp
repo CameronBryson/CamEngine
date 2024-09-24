@@ -9,7 +9,7 @@ static constexpr float forward_movespeed = 1.0f;
 static constexpr float movespeed = 10.0f;
 static constexpr float rotation_speed = 0.25f;
 
-void s_player::update(const registry & registry, const float dt)
+void s_player::update(registry & registry, const float dt)
 {
     auto & dynamic_bodies = registry.get_sparse_set<c_dynamic_body>();
     auto & players = registry.get_sparse_set<c_player>();
@@ -55,9 +55,10 @@ void s_player::update(const registry & registry, const float dt)
         if( e || space){
             dynamic_body.acceleration.z -= forward_movespeed * dt;
         }
-        if(left_click){
+        if(left_click)
+        {
             printf("left click\n");
-            EventHandler::GetInstance()->registry_dispatcher;
+            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(registry,transforms.get_item(id).position+glm::vec3(0,0,-5), {0,0,-1}, 0.1));
         }
         if(right_click){
             printf("right click\n");

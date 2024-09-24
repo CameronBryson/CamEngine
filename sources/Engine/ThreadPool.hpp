@@ -11,6 +11,5 @@ private:
     std::vector<std::thread> threads;
     std::vector<std::function<void()>> tasks;
     std::mutex mutex;
-    std::condition_variable condition;
     bool stop = false;
 };

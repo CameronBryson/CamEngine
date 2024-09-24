@@ -16,9 +16,9 @@
 #include <vector>
 
 #include "CollisionEvents.hpp"
-#include "RegistryEvents.hpp"
-#include "Event.hpp"
 #include "EventHandler.hpp"
+
+
 struct hash_pair {
     std::size_t operator()(const std::pair<unsigned short, unsigned short>& p) const {
         auto hash1 = std::hash<unsigned short>{}(p.first);
@@ -30,6 +30,7 @@ struct hash_pair {
 class registry
 {
 public:
+
     registry()
     {
         printf("Registry created\n");
@@ -82,12 +83,12 @@ public:
             if (!m_collision_map.contains(pair))
             {
                 printf("Collision Enter\n");
-                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(new_event.id1, new_event.id2));
+                //EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(new_event.id1, new_event.id2));
             }
             else
             {
                 printf("Collision Stay\n");
-                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionStayEvent(new_event.id1, new_event.id2));
+                //EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionStayEvent(new_event.id1, new_event.id2));
             }
             m_collision_map[pair] = std::make_unique<collision_manifold>(new_event.manifold);
         }
@@ -98,11 +99,12 @@ public:
             if(m_collision_map.contains(pair))
             {
                 printf("Collision Exit\n");
-                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
+                //EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
                 m_collision_map.erase(pair);
             }
         }
     }
+
 
     void process_collision_resolutions()
     {
