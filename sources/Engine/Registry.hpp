@@ -18,7 +18,13 @@
 #include "CollisionEvents.hpp"
 #include "EventHandler.hpp"
 
-
+enum class KeyAction
+{
+    None,
+    Start,
+    Hold,
+    End
+};
 struct hash_pair {
     std::size_t operator()(const std::pair<unsigned short, unsigned short>& p) const {
         auto hash1 = std::hash<unsigned short>{}(p.first);
@@ -39,12 +45,13 @@ public:
         std::iota(m_free_i_ds_.begin(), m_free_i_ds_.end(), 1);
         for (int i = 0; i < 512; ++i)
         {
-            m_key_map[i] = false;
+            m_key_map[i] = KeyAction::None;
         }
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Detected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::NotDetected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyPress, std::bind(&registry::on_input_press_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyRelease, std::bind(&registry::on_input_release_event, this, std::placeholders::_1));
+        EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyHold, std::bind(&registry::on_input_hold_event, this, std::placeholders::_1));
 
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::CreateEntity, std::bind(&registry::create_entity, this));
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::DeleteEntity, std::bind(&registry::delete_entity, this, std::placeholders::_1));
@@ -114,22 +121,39 @@ public:
     void on_input_press_event(const Event<InputEvents>& event)
     {
         auto event_data = event.ToType<KeyPressEvent>();
-        if(m_key_map[event_data.key] == false)
+        if(m_key_map[event_data.key] == KeyAction::None || m_key_map[event_data.key] == KeyAction::End)
         {
-            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyStartEvent(event_data.key));
+            //EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyStartEvent(event_data.key));
+            m_key_map[event_data.key] = KeyAction::Start;
         }
-        m_key_map[event_data.key] = true;
+        else if (m_key_map[event_data.key] == KeyAction::Start || m_key_map[event_data.key] == KeyAction::Hold)
+        {
+            m_key_map[event_data.key] = KeyAction::Hold;
+        }
     }
     void on_input_release_event(const Event<InputEvents>& event)
     {
         auto event_data = event.ToType<KeyRelease>();
-        if(m_key_map[event_data.key] == true)
+        if(m_key_map[event_data.key] == KeyAction::Start || m_key_map[event_data.key] == KeyAction::Hold)
         {
-            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyEndEvent(event_data.key));
+            //EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyEndEvent(event_data.key));
+            m_key_map[event_data.key] = KeyAction::End;
         }
-        m_key_map[event_data.key] = false;
+        else
+        {
+            m_key_map[event_data.key] = KeyAction::None;
+            //this isnt working cause there isnt a new event being sent
+        }
     }
-
+    void on_input_hold_event(const Event<InputEvents>& event)
+    {
+        auto event_data = event.ToType<KeyHoldEvent>();
+        if(m_key_map[event_data.key] == KeyAction::Start || m_key_map[event_data.key] == KeyAction::Hold)
+        {
+            m_key_map[event_data.key] = KeyAction::Hold;
+            //EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyHoldEvent(event_data.key));
+        }
+    }
 
     void process_collision_resolutions()
     {
@@ -138,6 +162,10 @@ public:
             value->resolve_collision();
             //value->penetration_depth_ = 0.0f;
         }
+    }
+    KeyAction get_key_action(int key)
+    {
+        return m_key_map[key];
     }
 
 public:
@@ -172,7 +200,7 @@ private:
     std::unordered_map<std::type_index, std::unique_ptr<i_sparse_set>> m_sparse_sets_;
     std::queue<std::unique_ptr<i_command>> command_queue_;
     std::unordered_map<std::pair<unsigned short, unsigned short>, std::unique_ptr<collision_manifold>,hash_pair> m_collision_map;
-    std::unordered_map<int, bool> m_key_map;
+    std::unordered_map<int, KeyAction> m_key_map;
     //some kind of key storage
 };
 

@@ -7,10 +7,10 @@
 
 void s_collision::update(registry & registry)
 {
-    // auto & obbs = registry.get_sparse_set<c_quad>();
-    // auto & spheres = registry.get_sparse_set<c_sphere>();
-    // auto & transforms = registry.get_sparse_set<c_transform>();
-     //auto & colliders = registry.get_sparse_set<c_collider>();
+     auto & quads = registry.get_sparse_set<c_quad>();
+     auto & spheres = registry.get_sparse_set<c_sphere>();
+     auto & transforms = registry.get_sparse_set<c_transform>();
+     auto & colliders = registry.get_sparse_set<c_collider>();
 
     std::vector<unsigned short> obb_ids = registry.get_entity_ids<c_quad, c_transform, c_collider>();
     std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform, c_collider>();
@@ -21,7 +21,7 @@ void s_collision::update(registry & registry)
         for( auto id2 : obb_ids )
         {
             if( id == id2 ) continue;
-            intersects_obb_in_obb(id, id2, registry);
+            intersects_obb_in_obb(id, id2, quads, transforms, colliders);
         }
     }
 //    for( std::vector<unsigned short>::size_type i = 0; i < obb_ids.size(); ++i )
@@ -38,7 +38,7 @@ void s_collision::update(registry & registry)
         for( auto id2 : sphere_ids )
         {
             if( id == id2 ) continue;
-            intersects_obb_in_sphere(id, id2, registry);
+            intersects_obb_in_sphere(id, id2, quads, spheres, transforms, colliders);
         }
     }
     //sphere-sphere
@@ -47,7 +47,7 @@ void s_collision::update(registry & registry)
         for( auto id2 : sphere_ids )
         {
             if(id == id2) continue;
-            intersects_sphere_in_sphere(id,id2, registry);
+            intersects_sphere_in_sphere(id,id2, spheres, transforms, colliders);
         }
     }
 }
@@ -78,14 +78,14 @@ bool s_collision::intersects_aabb_in_aabb(const glm::vec3 & min1, const glm::vec
     return overlap_x && overlap_y && overlap_z;
 }
 
-bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, registry& registry)
+bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, sparse_set<c_sphere>& spheres, sparse_set<c_transform>& transforms, sparse_set<c_collider>& colliders)
 {
-    auto& sphere1 = registry.get_component<c_sphere>(id1);
-    auto& sphere2 = registry.get_component<c_sphere>(id2);
-    auto& transform1 = registry.get_component<c_transform>(id1);
-    auto& transform2 = registry.get_component<c_transform>(id2);
-    auto& collider1 = registry.get_component<c_collider>(id1);
-    auto& collider2 = registry.get_component<c_collider>(id2);
+    auto& sphere1 = spheres.get_item(id1);
+    auto& sphere2 = spheres.get_item(id2);
+    auto& transform1 = transforms.get_item(id1);
+    auto& transform2 = transforms.get_item(id2);
+    auto& collider1 = colliders.get_item(id1);
+    auto& collider2 = colliders.get_item(id2);
 
     if ((collider1.collision_type == object_collision_type::STATIC && collider2.collision_type == object_collision_type::STATIC) ||
         (collider1.collision_bitmask & collider2.collision_bitmask) == 0)
@@ -115,15 +115,15 @@ bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, regist
     return true;
 }
 
-bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, registry & registry)
+bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, sparse_set<c_quad>& quads, sparse_set<c_transform>& transforms, sparse_set<c_collider>& colliders)
 {
 
-    auto & obb1 = registry.get_component<c_quad>(id1);
-    auto & obb2 = registry.get_component<c_quad>(id2);
-    auto & transform1 = registry.get_component<c_transform>(id1);
-    auto & transform2 = registry.get_component<c_transform>(id2);
-    auto & collider1 = registry.get_component<c_collider>(id1);
-    auto & collider2 = registry.get_component<c_collider>(id2);
+    auto& obb1 = quads.get_item(id1);
+    auto& obb2 = quads.get_item(id2);
+    auto& transform1 = transforms.get_item(id1);
+    auto& transform2 = transforms.get_item(id2);
+    auto& collider1 = colliders.get_item(id1);
+    auto& collider2 = colliders.get_item(id2);
 
 
     const object_collision_type type1 = collider1.collision_type;
@@ -283,14 +283,14 @@ bool s_collision::test_axis(const glm::vec3 & axis, const std::vector<glm::vec3>
     return true;
 }
 
-bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id, registry& registry)
+bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id, sparse_set<c_quad>& quads, sparse_set<c_sphere>& spheres, sparse_set<c_transform>& transforms, sparse_set<c_collider>& colliders)
 {
-    auto& obb = registry.get_component<c_quad>(quad_id);
-    auto& sphere = registry.get_component<c_sphere>(sphere_id);
-    auto& obb_transform = registry.get_component<c_transform>(quad_id);
-    auto& sphere_transform = registry.get_component<c_transform>(sphere_id);
-    auto& obb_collider = registry.get_component<c_collider>(quad_id);
-    auto& sphere_collider = registry.get_component<c_collider>(sphere_id);
+    auto& obb = quads.get_item(quad_id);
+    auto& sphere = spheres.get_item(sphere_id);
+    auto& obb_transform = transforms.get_item(quad_id);
+    auto& sphere_transform = transforms.get_item(sphere_id);
+    auto& obb_collider = colliders.get_item(quad_id);
+    auto& sphere_collider = colliders.get_item(sphere_id);
 
     if ((obb_collider.collision_type == object_collision_type::STATIC && sphere_collider.collision_type == object_collision_type::STATIC) ||
         (obb_collider.collision_bitmask & sphere_collider.collision_bitmask) == 0)
