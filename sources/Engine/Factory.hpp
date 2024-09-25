@@ -65,7 +65,7 @@ public:
         registry.add_component<c_sphere>(id, c_sphere{.radius = 1});
         registry.add_component<c_model>(id, c_model{.name = "sphere"});
         registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
-        registry.add_component<c_dynamic_body>(id, c_dynamic_body{.velocity = direction * speed});
+        registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.0f, .velocity = direction * speed,.angluar_drag = 0.0f});
         //registry.add_component<c_projectile>(id, c_projectile{.direction = direction, .speed = speed});
         return id;
     }

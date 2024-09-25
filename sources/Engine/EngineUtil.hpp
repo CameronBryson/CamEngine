@@ -2,6 +2,7 @@
 #include <filesystem>
 
 #include "GameManager.hpp"
+#include "EventHandler.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -17,11 +18,38 @@ public:
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
+        if (action == GLFW_PRESS)
+        {
+            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyPressEvent(key));
+        }
+        if (action == GLFW_REPEAT)
+        {
+            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyHoldEvent(key));
+        }
+        if (action == GLFW_RELEASE)
+        {
+            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyRelease(key));
+        }
     }
-
+    static bool is_key_release(int key)
+    {
+        if (glfwGetKey(game_manager::get_glfw_window(), key) == GLFW_RELEASE)
+        {
+            return true;
+        }
+        return false;
+    }
     static bool is_key_pressed(int key)
     {
         if (glfwGetKey(game_manager::get_glfw_window(), key) == GLFW_PRESS)
+        {
+            return true;
+        }
+        return false;
+    }
+    static bool is_mouse_button_release(int button)
+    {
+        if (glfwGetMouseButton(game_manager::get_glfw_window(), button) == GLFW_RELEASE)
         {
             return true;
         }

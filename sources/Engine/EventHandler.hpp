@@ -5,6 +5,7 @@
 #include "CollisionEvents.hpp"
 #include "RegistryEvents.hpp"
 #include "FactoryEvents.hpp"
+#include "InputEvents.hpp"
 
 class EventHandler {
 public:
@@ -13,6 +14,7 @@ public:
         EventDispatcher<CollisionEvents> collision_dispatcher;
         EventDispatcher<RegistryEvents> registry_dispatcher;
         EventDispatcher<FactoryEvents> factory_dispatcher;
+        EventDispatcher<InputEvents> input_dispatcher;
 
 private:
     static std::unique_ptr<EventHandler> s_Instance;

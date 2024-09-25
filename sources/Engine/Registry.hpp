@@ -37,8 +37,15 @@ public:
         m_entities_.reserve(settings::max_entities);
         m_free_i_ds_.resize(settings::max_entities - 1);
         std::iota(m_free_i_ds_.begin(), m_free_i_ds_.end(), 1);
+        for (int i = 0; i < 512; ++i)
+        {
+            m_key_map[i] = false;
+        }
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Detected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::NotDetected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
+        EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyPress, std::bind(&registry::on_input_press_event, this, std::placeholders::_1));
+        EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyRelease, std::bind(&registry::on_input_release_event, this, std::placeholders::_1));
+
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::CreateEntity, std::bind(&registry::create_entity, this));
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::DeleteEntity, std::bind(&registry::delete_entity, this, std::placeholders::_1));
 
@@ -83,12 +90,12 @@ public:
             if (!m_collision_map.contains(pair))
             {
                 printf("Collision Enter\n");
-                //EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(new_event.id1, new_event.id2));
+                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(new_event.id1, new_event.id2));
             }
             else
             {
                 printf("Collision Stay\n");
-                //EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionStayEvent(new_event.id1, new_event.id2));
+                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionStayEvent(new_event.id1, new_event.id2));
             }
             m_collision_map[pair] = std::make_unique<collision_manifold>(new_event.manifold);
         }
@@ -99,10 +106,28 @@ public:
             if(m_collision_map.contains(pair))
             {
                 printf("Collision Exit\n");
-                //EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
+                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
                 m_collision_map.erase(pair);
             }
         }
+    }
+    void on_input_press_event(const Event<InputEvents>& event)
+    {
+        auto event_data = event.ToType<KeyPressEvent>();
+        if(m_key_map[event_data.key] == false)
+        {
+            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyStartEvent(event_data.key));
+        }
+        m_key_map[event_data.key] = true;
+    }
+    void on_input_release_event(const Event<InputEvents>& event)
+    {
+        auto event_data = event.ToType<KeyRelease>();
+        if(m_key_map[event_data.key] == true)
+        {
+            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyEndEvent(event_data.key));
+        }
+        m_key_map[event_data.key] = false;
     }
 
 
@@ -147,6 +172,8 @@ private:
     std::unordered_map<std::type_index, std::unique_ptr<i_sparse_set>> m_sparse_sets_;
     std::queue<std::unique_ptr<i_command>> command_queue_;
     std::unordered_map<std::pair<unsigned short, unsigned short>, std::unique_ptr<collision_manifold>,hash_pair> m_collision_map;
+    std::unordered_map<int, bool> m_key_map;
+    //some kind of key storage
 };
 
 template <typename T>

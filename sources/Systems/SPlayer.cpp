@@ -8,7 +8,12 @@
 static constexpr float forward_movespeed = 1.0f;
 static constexpr float movespeed = 10.0f;
 static constexpr float rotation_speed = 0.25f;
-
+void s_player::init()
+{
+    EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyStart, on_input_start_event);
+    EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyHold, on_input_hold_event);
+    EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyEnd, on_input_end_event);
+}
 void s_player::update(registry & registry, const float dt)
 {
     auto & dynamic_bodies = registry.get_sparse_set<c_dynamic_body>();
@@ -69,4 +74,23 @@ void s_player::update(registry & registry, const float dt)
 
 void s_player::shutdown()
 {
+}
+
+void s_player::on_input_start_event(const Event<InputEvents> & event)
+{
+    auto event_data = event.ToType<KeyPressEvent>();
+    if(event_data.key == GLFW_MOUSE_BUTTON_LEFT)
+    {
+        printf("left click\n");
+    }
+}
+
+void s_player::on_input_hold_event(const Event<InputEvents> & event)
+{
+    auto event_data = event.ToType<KeyHoldEvent>();
+}
+
+void s_player::on_input_end_event(const Event<InputEvents> & event)
+{
+    auto event_data = event.ToType<KeyRelease>();
 }
