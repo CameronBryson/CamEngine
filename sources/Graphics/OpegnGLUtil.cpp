@@ -25,6 +25,7 @@ void opengl_util::init()
     }
     glfwMakeContextCurrent(game_window);
     glfwSetKeyCallback(game_window, engine_util::key_callback);
+    glfwSetMouseButtonCallback(game_window, engine_util::mouse_key_callback);
     glfwSetFramebufferSizeCallback(game_window, opengl_util::framebuffer_size_callback);
     glfwSwapInterval(0);
     gladLoadGL(glfwGetProcAddress);

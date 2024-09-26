@@ -51,7 +51,6 @@ public:
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::NotDetected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyPress, std::bind(&registry::on_input_press_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyRelease, std::bind(&registry::on_input_release_event, this, std::placeholders::_1));
-        EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyHold, std::bind(&registry::on_input_hold_event, this, std::placeholders::_1));
 
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::CreateEntity, std::bind(&registry::create_entity, this));
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::DeleteEntity, std::bind(&registry::delete_entity, this, std::placeholders::_1));
@@ -121,12 +120,12 @@ public:
     void on_input_press_event(const Event<InputEvents>& event)
     {
         auto event_data = event.ToType<KeyPressEvent>();
-        if(m_key_map[event_data.key] == KeyAction::None || m_key_map[event_data.key] == KeyAction::End)
+        if(m_key_map[event_data.key] == KeyAction::None)
         {
             //EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyStartEvent(event_data.key));
             m_key_map[event_data.key] = KeyAction::Start;
         }
-        else if (m_key_map[event_data.key] == KeyAction::Start || m_key_map[event_data.key] == KeyAction::Hold)
+        else
         {
             m_key_map[event_data.key] = KeyAction::Hold;
         }
@@ -145,15 +144,6 @@ public:
             //this isnt working cause there isnt a new event being sent
         }
     }
-    void on_input_hold_event(const Event<InputEvents>& event)
-    {
-        auto event_data = event.ToType<KeyHoldEvent>();
-        if(m_key_map[event_data.key] == KeyAction::Start || m_key_map[event_data.key] == KeyAction::Hold)
-        {
-            m_key_map[event_data.key] = KeyAction::Hold;
-            //EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyHoldEvent(event_data.key));
-        }
-    }
 
     void process_collision_resolutions()
     {
@@ -166,6 +156,20 @@ public:
     KeyAction get_key_action(int key)
     {
         return m_key_map[key];
+    }
+    void reset_key_states()
+    {
+        for (auto& [key, action] : m_key_map)
+        {
+            if (action == KeyAction::Start)
+            {
+                action = KeyAction::Hold;
+            }
+            else if (action == KeyAction::End)
+            {
+                action = KeyAction::None;
+            }
+        }
     }
 
 public:

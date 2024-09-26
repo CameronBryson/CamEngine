@@ -22,13 +22,20 @@ public:
         {
             EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyPressEvent(key));
         }
-        if (action == GLFW_REPEAT)
-        {
-            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyHoldEvent(key));
-        }
         if (action == GLFW_RELEASE)
         {
             EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyRelease(key));
+        }
+    }
+    static void mouse_key_callback(GLFWwindow* window, int button, int action, int mods)
+    {
+        if (action == GLFW_PRESS)
+        {
+            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyPressEvent(button));
+        }
+        if (action == GLFW_RELEASE)
+        {
+            EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyRelease(button));
         }
     }
     static bool is_key_release(int key)

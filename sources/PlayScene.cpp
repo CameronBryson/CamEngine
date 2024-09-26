@@ -71,6 +71,7 @@ void play_scene::late_update(const float dt)
 {
     s_collision::update(m_registry_);
     m_registry_.process_commands();
+    m_registry_.reset_key_states();
 }
 
 void play_scene::render()
