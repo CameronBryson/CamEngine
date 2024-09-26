@@ -28,7 +28,7 @@ void s_render::init()
     graphics_manager::create_model_from_obj("assets/cube.obj", "cube");
     graphics_manager::create_model_from_obj("assets/quad.obj", "quad");
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Enable backface culling
     glEnable(GL_CULL_FACE);
 
@@ -98,6 +98,7 @@ void s_render::shutdown()
 
 void s_render::draw_models(const registry & registry, sparse_set<c_transform> & transforms, shader_program & shader)
 {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     auto& models = registry.get_sparse_set<c_model>();
     for( auto id : registry.get_entity_ids<c_model, c_transform>() )
@@ -114,6 +115,7 @@ void s_render::draw_models(const registry & registry, sparse_set<c_transform> & 
 
 void s_render::draw_colliders(const registry & registry, sparse_set<c_transform> & transforms, shader_program & shader)
 {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     auto & quads = registry.get_sparse_set<c_quad>();
     auto & spheres = registry.get_sparse_set<c_sphere>();
@@ -147,6 +149,7 @@ void s_render::draw_colliders(const registry & registry, sparse_set<c_transform>
 
 void s_render::draw_ui(const registry &registry, sparse_set<c_transform> &transforms, shader_program &shader) {
     glDisable(GL_DEPTH_TEST);
+
     auto &ui = registry.get_sparse_set<c_ui>();
     for (auto id : registry.get_entity_ids<c_ui, c_transform>()) {
         auto &transform = transforms.get_item(id);

@@ -62,7 +62,7 @@ void s_player::update(registry & registry, const float dt)
         if(left_click)
         {
             printf("left click\n");
-            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(registry,transforms.get_item(id).position+glm::vec3(0,0,-5), {0,0,-1}, 0.1));
+            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(registry,transforms.get_item(id).position+glm::vec3(0,5,-5), {0,0,-1}, 0.1));
         }
         if(right_click){
             printf("right click\n");
