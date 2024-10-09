@@ -17,6 +17,7 @@
 
 #include "CollisionEvents.hpp"
 #include "EventHandler.hpp"
+#include "Systems/SHealth.hpp"
 
 enum class KeyAction
 {
@@ -51,6 +52,7 @@ public:
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::NotDetected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyPress, std::bind(&registry::on_input_press_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyRelease, std::bind(&registry::on_input_release_event, this, std::placeholders::_1));
+        EventHandler::GetInstance()->health_dispatcher.AddListener(HealthEvents::HealthChange, &s_health::on_health_change_event);
 
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::CreateEntity, std::bind(&registry::create_entity, this));
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::DeleteEntity, std::bind(&registry::delete_entity, this, std::placeholders::_1));
@@ -115,6 +117,11 @@ public:
                 EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
                 m_collision_map.erase(pair);
             }
+        }
+        else if(event.GetType() == CollisionEvents::Enter)
+        {
+            auto new_event = event.ToType<CollisionEnterEvent>();
+            auto pair = std::make_pair(new_event.id1, new_event.id2);
         }
     }
     void on_input_press_event(const Event<InputEvents>& event)

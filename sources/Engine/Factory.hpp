@@ -22,6 +22,7 @@ public:
     {
         const auto id = registry.create_entity();
         registry.add_component<c_player>(id, c_player());
+        registry.add_component<c_health>(id, c_health{.health = 100});
         registry.add_component<c_transform>(id, c_transform{
                                                 .position = {0, 5, 10}, .rotation = {0, 3.14, 0}, .scale = {1.0, 1.0, 1.0}
                                             });
@@ -62,11 +63,24 @@ public:
     {
         const auto id = registry.create_entity();
         registry.add_component<c_transform>(id, c_transform{.position = position});
+        registry.add_component<c_damage>(id, c_damage{.damage = 100});
         registry.add_component<c_sphere>(id, c_sphere{.radius = 1});
         registry.add_component<c_model>(id, c_model{.name = "sphere"});
         registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
         registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.0f, .velocity = direction * speed,.angluar_drag = 0.0f});
         //registry.add_component<c_projectile>(id, c_projectile{.direction = direction, .speed = speed});
+        return id;
+    }
+    static unsigned short create_enemy_ship(registry& registry, glm::vec3 position, float radius, glm::vec3 direction, float speed)
+    {
+        const auto id = registry.create_entity();
+        registry.add_component<c_transform>(id, c_transform{.position = position,.scale = {2.0f,2.0f,2.0f}});
+        registry.add_component<c_health>(id, c_health{.health = 100});
+        registry.add_component<c_enemy>(id, c_enemy());
+        registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
+        registry.add_component<c_model>(id, c_model{.name = "sphere"});
+        registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
+        registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.0f, .velocity = direction * speed,.angluar_drag = 0.0f});
         return id;
     }
 };

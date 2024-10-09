@@ -1,7 +1,6 @@
 #pragma once
-#include "Graphics/Camera.hpp"
 
-#include "Engine/Registry.hpp"
+class Camera;
 
 class s_camera
 {

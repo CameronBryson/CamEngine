@@ -1,9 +1,9 @@
 #pragma once
-#include "Engine/Registry.hpp"
-#include "Graphics/Camera.hpp"
-#include "platform.hpp"
-
-#include <Graphics/GraphicsManager.hpp>
+#include "Engine/SparseSet.hpp"
+class Camera;
+class registry;
+class shader_program;
+class c_transform;
 
 class s_render
 {

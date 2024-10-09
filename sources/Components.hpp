@@ -40,7 +40,7 @@ struct c_collider
 
 struct c_health
 {
-    int health = 100;
+    float health = 100;
 };
 
 struct c_enemy
@@ -94,6 +94,10 @@ struct c_dynamic_body
     //glm::vec3 gravity = {0,0,0};
     //glm::vec3 gravity = {0, -9.81f, 0};
     //need listener to check if this entities collider collides with something with ground tag and update grounded bool
+};
+struct c_damage
+{
+    float damage = 10;
 };
 
 

@@ -9,6 +9,7 @@
 
 #include <Graphics/GraphicsManager.hpp>
 #include "Graphics/Model.hpp"
+#include "Graphics/Camera.hpp"
 #include <string>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>

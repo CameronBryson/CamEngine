@@ -3,6 +3,7 @@
 #include "Engine/EngineUtil.hpp"
 #include "Math/MathUtil.hpp"
 #include <Engine/GameManager.hpp>
+#include "Graphics/Camera.hpp"
 
 static constexpr float camera_movespeed = 100.0f;
 static constexpr float camera_rotationspeed = 500.0f;

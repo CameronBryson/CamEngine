@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Registry.hpp"
+class registry;
 class s_ui {
 public:
     static void init();

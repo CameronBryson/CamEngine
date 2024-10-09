@@ -1,6 +1,11 @@
 #pragma once
-#include "Components.hpp"
-#include "Engine/Registry.hpp"
+#include "Engine/SparseSet.hpp"
+#include "glm/glm.hpp"
+class registry;
+class c_sphere;
+class c_quad;
+class c_transform;
+class c_collider;
 
 class s_collision
 {

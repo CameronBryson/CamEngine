@@ -1,6 +1,7 @@
 #include "SCollision.hpp"
 
 #include "../Engine/Collision.hpp"
+#include "Engine/Registry.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/euler_angles.hpp>

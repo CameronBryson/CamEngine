@@ -44,6 +44,7 @@ void play_scene::init()
     // }
     factory::create_sphere(m_registry_, glm::vec3{0.8f, 0.8f, 0.8}, 3.0f);
     factory::create_quad(m_registry_, glm::vec3{-0.8f, 0.0f, 0.0f}, glm::vec3{3.0f, 0.4f, 0.2f});
+    factory::create_enemy_ship(m_registry_,  glm::vec3{0.0f, 3.0f, -10.0f},5, glm::vec3 {0.0f, 0.0f, 1.0f},0.01);
     auto player  = factory::create_player(m_registry_);
     factory::create_directional_light(m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{1.0,1.0,1.0}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{1.0,1.0,1.0});
     auto floor = m_registry_.create_entity();
@@ -107,4 +108,5 @@ void play_scene::init_sparse_sets()
     m_registry_.create_sparse_set<c_directional_light>();
     m_registry_.create_sparse_set<c_dynamic_body>();
     m_registry_.create_sparse_set<c_ui>();
+    m_registry_.create_sparse_set<c_damage>();
 }

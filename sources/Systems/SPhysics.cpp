@@ -1,5 +1,6 @@
 #include "SPhysics.hpp"
 #include "Components.hpp"
+#include "Engine/Registry.hpp"
 #include <cmath>
 #include <mutex>
 #include <vector>

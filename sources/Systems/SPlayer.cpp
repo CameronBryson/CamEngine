@@ -1,7 +1,7 @@
 #include "SPlayer.hpp"
 #include "Components.hpp"
 #include "Engine/EngineUtil.hpp"
-#include "raylib.h"
+#include "Engine/Registry.hpp"
 
 #include <vector>
 
