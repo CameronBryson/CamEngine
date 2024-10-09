@@ -12,9 +12,6 @@ class registry;
 class s_health {
 public:
     static void update(registry& registry, float dt);
-    static void on_health_change_event(const Event<HealthEvents>& event);
-    static void on_health_set_event(const Event<HealthEvents>& event);
-
 };
 
 

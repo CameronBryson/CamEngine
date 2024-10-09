@@ -65,6 +65,7 @@ void play_scene::update(const float dt)
     s_camera::update(m_camera_, dt);
     s_player::update(m_registry_, dt);
     s_physics::update(m_registry_, dt);
+    s_health::update(m_registry_, dt);
     s_ui::update(m_registry_);
 }
 

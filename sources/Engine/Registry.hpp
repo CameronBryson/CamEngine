@@ -50,10 +50,9 @@ public:
         }
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Detected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::NotDetected, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
+        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Enter, std::bind(&registry::on_collision_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyPress, std::bind(&registry::on_input_press_event, this, std::placeholders::_1));
         EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyRelease, std::bind(&registry::on_input_release_event, this, std::placeholders::_1));
-        EventHandler::GetInstance()->health_dispatcher.AddListener(HealthEvents::HealthChange, &s_health::on_health_change_event);
-
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::CreateEntity, std::bind(&registry::create_entity, this));
 //        EventHandler::GetInstance()->registry_dispatcher.AddListener(RegistryEvents::DeleteEntity, std::bind(&registry::delete_entity, this, std::placeholders::_1));
 
@@ -121,7 +120,24 @@ public:
         else if(event.GetType() == CollisionEvents::Enter)
         {
             auto new_event = event.ToType<CollisionEnterEvent>();
-            auto pair = std::make_pair(new_event.id1, new_event.id2);
+            bool has_health1 = has_component<c_health>(new_event.id1);
+            bool has_health2 = has_component<c_health>(new_event.id2);
+            bool has_damage1 = has_component<c_damage>(new_event.id1);
+            bool has_damage2 = has_component<c_damage>(new_event.id2);
+
+            if (has_health1 && has_damage2)
+            {
+                auto& health = get_component<c_health>(new_event.id1);
+                auto& damage = get_component<c_damage>(new_event.id2);
+                health.health-= damage.damage;
+            }
+
+            if (has_health2 && has_damage1)
+            {
+                auto& health = get_component<c_health>(new_event.id2);
+                auto& damage = get_component<c_damage>(new_event.id1);
+                health.health-= damage.damage;
+            }
         }
     }
     void on_input_press_event(const Event<InputEvents>& event)
