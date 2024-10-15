@@ -1,0 +1,76 @@
+#include "Factory.hpp"
+#include "Engine/Event.hpp"
+#include "Engine/FactoryEvents.hpp"
+#include "Registry.hpp"
+factory::factory(registry& m_registry) : m_registry_(m_registry) {
+    EventHandler::GetInstance()->factory_dispatcher.AddListener(FactoryEvents::CreateProjectile, [this](const Event<FactoryEvents>& event) {
+        this->on_factory_create_projectile_event(event);
+    });}
+void factory::on_factory_create_projectile_event(const Event<FactoryEvents> &event) {
+    auto event_data = event.ToType<CreateProjectileEvent>();
+    printf("Create Projectile Test\n");
+    create_projectile(m_registry_, event_data.position, event_data.direction, event_data.speed);
+}
+unsigned short factory::create_player(registry &registry) {
+    const auto id = registry.create_entity();
+    registry.add_component<c_player>(id, c_player());
+    registry.add_component<c_health>(id, c_health{.health = 100});
+    registry.add_component<c_transform>(id, c_transform{
+            .position = {0, 5, 10}, .rotation = {0, 3.14, 0}, .scale = {1.0, 1.0, 1.0}
+    });
+    //registry.add_component<c_sphere>(id, c_sphere{.radius = 2.0f});
+    registry.add_component<c_quad>(id, c_quad{.extents = {3.0f, 3.0f, 3.0f}});
+    registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
+    registry.add_component<c_model>(id, c_model{.name = "player"});
+    registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f, .angluar_drag = 0.8f});
+    return id;
+
+}
+unsigned short factory::create_sphere(registry &registry, glm::vec3 position, float radius) {
+    const auto id = registry.create_entity();
+    registry.add_component<c_transform>(id, c_transform{.position = position, .scale = {1.0, 1.0, 1.0}});
+    registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
+    registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::STATIC});
+    registry.add_component<c_model>(id, c_model{.name = "sphere"});
+    return id;
+}
+unsigned short factory::create_quad(registry &registry, glm::vec3 position, glm::vec3 extents) {
+    const auto id = registry.create_entity();
+    registry.add_component<c_transform>(id, c_transform{.position = position,.rotation = {54, 13, 127}, .scale = {1.0f,1.0f,1.0f}});
+    registry.add_component<c_quad>(id, c_quad{.extents = extents});
+    registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::STATIC});
+    registry.add_component<c_model>(id, c_model{.name = "cube"});
+    return id;
+}
+unsigned short factory::create_directional_light(registry &registry, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse,
+                                       glm::vec3 specular) {
+    const auto id =registry.create_entity();
+    registry.add_component<c_directional_light>(id, c_directional_light{.direction = direction, .ambient = ambient, .diffuse = diffuse, .specular = specular} );
+    return id;
+}
+unsigned short factory::create_projectile(registry &registry, glm::vec3 position, glm::vec3 direction, float speed) {
+    const auto id = registry.create_entity();
+    registry.add_component<c_transform>(id, c_transform{.position = position});
+    registry.add_component<c_damage>(id, c_damage{.damage = 100});
+    registry.add_component<c_sphere>(id, c_sphere{.radius = 1});
+    registry.add_component<c_model>(id, c_model{.name = "sphere"});
+    registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
+    registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.0f, .velocity = direction * speed,.angluar_drag = 0.0f});
+    //registry.add_component<c_projectile>(id, c_projectile{.direction = direction, .speed = speed});
+    return id;
+}
+unsigned short factory::create_enemy_ship(registry &registry, glm::vec3 position, float radius, glm::vec3 direction,
+                                float speed) {
+    const auto id = registry.create_entity();
+    registry.add_component<c_transform>(id, c_transform{.position = position,.scale = {2.0f,2.0f,2.0f}});
+    registry.add_component<c_health>(id, c_health{.health = 100});
+    registry.add_component<c_enemy>(id, c_enemy());
+    registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
+    registry.add_component<c_model>(id, c_model{.name = "sphere"});
+    registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC});
+    registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.0f, .velocity = direction * speed,.angluar_drag = 0.0f});
+    return id;
+}
+
+
+

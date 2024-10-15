@@ -8,14 +8,13 @@ class c_transform;
 class s_render
 {
 public:
-    static void init();
-    static void update(const registry& registry, Camera& camera);
-    static void shutdown();
+    void init();
+    void update(const registry& registry, Camera& camera);
+    void shutdown();
 
 private:
-    static void draw_models(const registry& registry, sparse_set<c_transform>& transforms, shader_program& shader);
-    static void draw_colliders(const registry& registry, sparse_set<c_transform>& transforms, shader_program& shader);
-    static void draw_ui(const registry& registry, sparse_set<c_transform>& transforms, shader_program& shader);
-    static void draw_statistics();
-    static void load_shaders();
+    void draw_models(const registry& registry, sparse_set<c_transform>& transforms, shader_program& shader);
+    void draw_colliders(const registry& registry, sparse_set<c_transform>& transforms, shader_program& shader);
+    void draw_ui(const registry& registry, sparse_set<c_transform>& transforms, shader_program& shader);
+    void load_shaders();
 };

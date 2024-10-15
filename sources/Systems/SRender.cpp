@@ -163,15 +163,6 @@ void s_render::draw_ui(const registry &registry, sparse_set<c_transform> &transf
     }
 }
 
-void s_render::draw_statistics()
-{
-    const std::string stats_text = //"FPS: " + std::to_string(engine_util::get_fps()) + "\n" +
-        //"DeltaTime: " + std::to_string(engine_util::get_deltatime()) + "\n" +
-        "Update: " + std::to_string(stats::timer_vector[stats::stat_type::UPDATE].count()) + " MS\n" +
-        "Render: " + std::to_string(stats::timer_vector[stats::stat_type::RENDER].count()) + " MS\n" +
-        "Benchmark: " + std::to_string(stats::timer_vector[stats::stat_type::BENCHMARK].count()) + " MS";
-    opengl_util::draw_text(stats_text.c_str(), 50, 0, 50, glm::vec3{ 255, 0, 0});
-}
 
 void s_render::load_shaders()
 {

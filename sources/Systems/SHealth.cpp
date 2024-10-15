@@ -1,6 +1,4 @@
-//
-// Created by cam on 08/10/24.
-//
+
 
 #include "SHealth.hpp"
 

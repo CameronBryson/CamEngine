@@ -1,19 +1,10 @@
-//
-// Created by cam on 08/10/24.
-//
-
-#ifndef SHEALTH_HPP
-#define SHEALTH_HPP
+#pragma once
 #include "Engine/HealthEvents.hpp"
 #include "Engine/Event.hpp"
 class registry;
 
-
 class s_health {
 public:
-    static void update(registry& registry, float dt);
+    void update(registry& registry, float dt);
 };
 
-
-
-#endif //SHEALTH_HPP
