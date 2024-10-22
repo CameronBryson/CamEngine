@@ -1,15 +1,28 @@
 #include "SPlayer.hpp"
 #include "Components.hpp"
 #include "Engine/EngineUtil.hpp"
+#include "Engine/EventHandler.hpp"
+#include "Engine/GameManager.hpp"
 #include "Engine/Registry.hpp"
+#include "GameSettings.hpp"
+#include "Graphics/Camera.hpp"
+#include "Graphics/GraphicsManager.hpp"
+#include "Graphics/OpenGLUtil.hpp"
+#include "glad/gl.h"
+#include "glm/ext/matrix_projection.hpp"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
+#include "glm/geometric.hpp"
+#include "glm/matrix.hpp"
 
+#include <GLFW/glfw3.h>
 #include <vector>
 
 static constexpr float forward_movespeed = 1.0f;
 static constexpr float movespeed = 10.0f;
 static constexpr float rotation_speed = 0.25f;
 
-void s_player::update(registry & registry, const float dt)
+void s_player::update(registry & registry, Camera& camera, const float dt)
 {
     auto & dynamic_bodies = registry.get_sparse_set<c_dynamic_body>();
     auto & players = registry.get_sparse_set<c_player>();
@@ -62,7 +75,31 @@ void s_player::update(registry & registry, const float dt)
         if(left_click)
         {
             printf("left click\n");
-            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,5,-5), {0,0,-1}, 0.1));
+            double x, y;
+            glfwGetCursorPos(game_manager::get_glfw_window(),&x,&y);
+            int width,height;
+            glfwGetWindowSize(game_manager::get_glfw_window(), &width, &height);
+            x = (x/width) * 2.0f -1.0f;
+            y = -(y / height) * 2.0+1.0f;
+            //ray cast mouse to 3d space
+            glm::mat4 invVP = glm::inverse(camera.GetProjectionMatrix() * camera.GetViewMatrix() * glm::translate(glm::mat4(1), transforms.get_item(id).position));
+            glm::vec4 screenPos = {x,y,1,1};
+            glm::vec4 worldPos = (invVP * screenPos);
+            worldPos.w = 1.0f/worldPos.w;
+            worldPos.x *= worldPos.w;
+            worldPos.y *= worldPos.w;
+            worldPos.z *= worldPos.w;
+            glm::vec3 direction =  glm::vec3(worldPos);
+
+            glm::vec3 dir = glm::normalize(direction);
+
+
+            //have to get camera to do screenPointToWorldPoint
+            
+
+            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,5,-5), dir, 0.1));
+
+//            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,5,-5), {0,0,-1}, 0.1));
         }
         if(right_click){
             printf("right click\n");

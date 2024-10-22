@@ -14,8 +14,13 @@ void s_ui::update(const registry & registry)
             auto & transform = transforms.get_item(id);
             double x, y;
             glfwGetCursorPos(game_manager::get_glfw_window(),&x,&y);
-            x = (x / settings::window_width) * 2.0 * settings::aspect_ratio - settings::aspect_ratio;
-            y = 1.0 - (y / settings::window_height) * 2.0;
+            int width,height;
+            glfwGetWindowSize(game_manager::get_glfw_window(), &width, &height);
+
+            float aspect_ratio = (float)width/(float)height;
+            //x = (x / width) * 2.0 * aspect_ratio - aspect_ratio;
+            x = (x/width) * 2.0f -1.0f;
+            y = -(y / height) * 2.0+1.0f;
             transform.position.x = x;
             transform.position.y = y;
         }

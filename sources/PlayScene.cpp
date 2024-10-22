@@ -14,7 +14,7 @@
 play_scene::play_scene()
 {
     printf("PlayScene created\n");
-    m_camera_ = std::make_unique<Camera>(glm::vec3 {0.0f, 0.0f, -1.50f});
+    m_camera_ = std::make_unique<Camera>(glm::vec3 {300.0f, 10.0f, 20.00f});
     //m_camera_ = Camera(glm::vec3(0.0f, 0.0f, -1.50f));
     m_registry_ = std::make_unique<registry>();
     m_factory_ = std::make_unique<factory>(get_registry());
@@ -74,7 +74,7 @@ void play_scene::update(const float dt)
     timer update_timer(stats::stat_type::UPDATE);
     m_registry_->process_collision_resolutions();
     m_system_camera_->update(*m_camera_, dt);
-    m_system_player_->update(*m_registry_, dt);
+    m_system_player_->update(*m_registry_, *m_camera_, dt);
     m_system_physics_->update(*m_registry_, dt);
     m_system_health_->update(*m_registry_, dt);
     m_system_ui_->update(*m_registry_);
