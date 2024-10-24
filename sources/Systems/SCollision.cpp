@@ -89,7 +89,7 @@ bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, sparse
     auto& collider2 = colliders.get_item(id2);
 
     if ((collider1.collision_type == object_collision_type::STATIC && collider2.collision_type == object_collision_type::STATIC) ||
-        (collider1.collision_bitmask & collider2.collision_bitmask) == 0)
+        (collider1.collision_bitmask & collider2.collision_bitmask) != 0)
     {
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
@@ -136,7 +136,7 @@ bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, 
     }
     const auto object_bitmask = collider1.collision_bitmask;
     const auto other_object_bitmask = collider2.collision_bitmask;
-    if( (object_bitmask & other_object_bitmask) == 0 )
+    if( (object_bitmask & other_object_bitmask) != 0 )
     {
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
@@ -294,7 +294,7 @@ bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id,
     auto& sphere_collider = colliders.get_item(sphere_id);
 
     if ((obb_collider.collision_type == object_collision_type::STATIC && sphere_collider.collision_type == object_collision_type::STATIC) ||
-        (obb_collider.collision_bitmask & sphere_collider.collision_bitmask) == 0)
+        (obb_collider.collision_bitmask & sphere_collider.collision_bitmask) != 0)
     {
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(quad_id, sphere_id));
         return false;

@@ -12,6 +12,7 @@ class s_physics;
 class s_render;
 class s_ui;
 class s_player;
+class s_enemy;
 class factory;
 
 class play_scene final : public i_scene
@@ -39,5 +40,6 @@ private:
     std::unique_ptr<s_physics> m_system_physics_;
     std::unique_ptr<s_render> m_system_render_;
     std::unique_ptr<s_ui> m_system_ui_;
+    std::unique_ptr<s_enemy> m_system_enemy_;
     std::unique_ptr<Camera> m_camera_;
 };

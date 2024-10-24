@@ -29,7 +29,7 @@ if(MSVC)
                 /GL)
     endif()
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic -g)
+    add_compile_options(-Wall -Wextra -Wpedantic -g -DCMAKE_EXPORT_COMPILE_COMMANDS=1)
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         add_compile_options(-O0)
     else()
@@ -39,7 +39,9 @@ endif()
 
 # Add glad source files
 set(GLAD_SOURCES ${CMAKE_SOURCE_DIR}/include/glad/src/gl.c)
-set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h)
+set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h
+        sources/Systems/SEnemy.cpp
+        sources/Systems/SEnemy.hpp)
 
 # Add project source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/*.cpp")

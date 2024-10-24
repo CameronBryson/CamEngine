@@ -60,6 +60,11 @@ public:
     static void set_shader_vec4(unsigned int shader_id, const std::string& name, const glm::vec4& value);
 
     static void set_shader_mat4(unsigned int shader_id, const std::string& name, const glm::mat4& value);
+
+    static glm::vec2 get_window_size();
+
+    static glm::vec2 get_mouse_pos();
+
 };
 
 

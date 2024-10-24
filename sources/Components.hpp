@@ -34,8 +34,9 @@ struct c_transform
 struct c_collider
 {
     bool is_trigger = false;
-    unsigned int collision_bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
     object_collision_type collision_type = object_collision_type::STATIC;
+    unsigned int collision_bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
+
 };
 
 struct c_health
@@ -45,6 +46,9 @@ struct c_health
 
 struct c_enemy
 {
+    unsigned short target;
+    float cooldown = 2.0f;
+    float time_since_shoot = 0.0f;
 };
 
 struct c_quad

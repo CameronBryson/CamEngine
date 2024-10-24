@@ -77,8 +77,8 @@ public:
         auto parent_path = current_path.parent_path().parent_path();
         return (parent_path / path).make_preferred().string();
         #else
-        return "../" + path;
-        //return (std::filesystem::current_path() / path).string();
+        //return "../" + path;
+        return (std::filesystem::current_path() / path).string();
         #endif
     }
 };

@@ -10,6 +10,7 @@
 #include "Systems/Systems.hpp"
 #include "Engine/Timer.hpp"
 #include "Graphics/Camera.hpp"
+#include "Systems/SEnemy.hpp"
 #include "Systems/Systems.hpp"
 play_scene::play_scene()
 {
@@ -25,6 +26,7 @@ play_scene::play_scene()
     m_system_render_ = std::make_unique<s_render>();
     m_system_ui_ = std::make_unique<s_ui>();
     m_system_player_ = std::make_unique<s_player>();
+    m_system_enemy_ = std::make_unique<s_enemy>();
 }
 
 play_scene::~play_scene()
@@ -39,32 +41,12 @@ void play_scene::init()
 
     m_system_render_->init();
     timer benchmark_timer(stats::stat_type::BENCHMARK);
-    // for (int i = 1; i < settings::max_entities - 3; i++)
-    // {
-    //
-    //     const auto entity = m_registry_.create_entity();
-    //     m_registry_.add_component<c_transform>(entity, c_transform());
-    //     m_registry_.add_component<c_rigid_body>(entity, c_rigid_body());
-    //     m_registry_.add_component<c_velocity>(entity, c_velocity());
-    //     m_registry_.add_component<c_player>(entity, c_player());
-    //     m_registry_.add_component<c_quad>(entity, c_quad());
-    // }
-    // for (int i = 1; i < settings::max_entities - 3; i++)
-    // {
-    //     m_registry_.delete_entity(i);
-    // }
-    m_factory_->create_sphere(*m_registry_, glm::vec3{0.8f, 0.8f, 0.8}, 3.0f);
-    m_factory_->create_quad(*m_registry_, glm::vec3{-0.8f, 0.0f, 0.0f}, glm::vec3{3.0f, 0.4f, 0.2f});
-    m_factory_->create_enemy_ship(*m_registry_,  glm::vec3{0.0f, 3.0f, -10.0f},5, glm::vec3 {0.0f, 0.0f, 1.0f},0.01);
     auto player  = m_factory_->create_player(*m_registry_);
-    m_factory_->create_directional_light(*m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{1.0,1.0,1.0}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{1.0,1.0,1.0});
-    auto floor = m_registry_->create_entity();
-    m_registry_->add_component<c_transform>(floor, c_transform{.position = glm::vec3(0.0f, -3.0f, 0.0f), .rotation = glm::vec3(0.0f, 0.0f, 0.0f)});
-    m_registry_->add_component<c_quad>(floor, c_quad{.extents = {10,0.1,10}});
-    m_registry_->add_component<c_collider>(floor, c_collider());
-    auto crosshair = m_registry_->create_entity();
-    m_registry_->add_component<c_transform>(crosshair,c_transform{.scale = glm::vec3(0.1f,0.1f,0.1f)});
-    m_registry_->add_component<c_ui>(crosshair,c_ui{.follow_cursor=true});
+     m_factory_->create_enemy_ship(*m_registry_,  glm::vec3{0.0f, 3.0f, -10.0f},1, glm::vec3 {0.0f, 0.0f, 1.0f},0.00,player);
+     m_factory_->create_directional_light(*m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{1.0,1.0,1.0}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{1.0,1.0,1.0});
+    // auto crosshair = m_registry_->create_entity();
+    // m_registry_->add_component<c_transform>(crosshair,c_transform{.scale = glm::vec3(0.1f,0.1f,0.1f)});
+    // m_registry_->add_component<c_ui>(crosshair,c_ui{.follow_cursor=true});
     m_registry_->process_commands();
     m_camera_->camera_follow_target_ = &m_registry_->get_component<c_transform>(player);
 }
@@ -77,6 +59,7 @@ void play_scene::update(const float dt)
     m_system_player_->update(*m_registry_, *m_camera_, dt);
     m_system_physics_->update(*m_registry_, dt);
     m_system_health_->update(*m_registry_, dt);
+    m_system_enemy_->update(*m_registry_, dt);
     m_system_ui_->update(*m_registry_);
 }
 

@@ -1,0 +1,32 @@
+//
+// Created by cam on 23/10/24.
+//
+#include "SEnemy.hpp"
+
+#include <Engine/Registry.hpp>
+
+void s_enemy::update(registry & registry, float dt)
+{
+    auto & enemies = registry.get_sparse_set<c_enemy>();
+    auto & transforms = registry.get_sparse_set<c_transform>();
+    auto ids = registry.get_entity_ids<c_enemy,c_transform>();
+    for (unsigned short id : ids)
+    {
+        auto & enemy = enemies.get_item(id);
+        auto & enemy_tranform = transforms.get_item(id);
+        auto & target_transform = transforms.get_item(enemy.target);
+        enemy.time_since_shoot+=dt;
+        if(enemy.time_since_shoot>enemy.cooldown)
+        {
+            //shoot
+            printf("Shoot\n");
+            glm::vec3 direction = glm::normalize(target_transform.position-enemy_tranform.position);
+
+            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+(direction*3.0f), direction, 0.1,settings::enemy_bitmask));
+
+            enemy.time_since_shoot = 0.0f;
+        }
+    }
+
+}
+

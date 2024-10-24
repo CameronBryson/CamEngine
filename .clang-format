@@ -20,7 +20,6 @@ IncludeBlocks: Preserve
 IndentCaseLabels: false
 IndentPPDirectives: AfterHash
 IndentWidth: 4
-LineEnding: CRLF
 MaxEmptyLinesToKeep: 3
 PointerAlignment: Middle
 ReflowComments: false

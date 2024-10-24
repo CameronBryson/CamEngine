@@ -43,7 +43,8 @@ public:
         Yaw = yaw;
         Pitch = pitch;
         camera_follow_target_ = nullptr;
-        follow_offset = {0, 6, 30};
+        follow_offset = {0,2,10};
+        //follow_offset = {0, 2, 10};
         updateCameraVectors();
         projection_matrix = glm::perspective(glm::radians(Zoom),
                                              (float)settings::window_width / (float)settings::window_height, 0.1f,

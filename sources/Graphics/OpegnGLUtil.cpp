@@ -284,5 +284,15 @@ void opengl_util::set_shader_mat4(unsigned int shader_id, const std::string & na
 {
     glUniformMatrix4fv(glGetUniformLocation(shader_id, name.c_str()), 1, GL_FALSE, &value[0][0]);
 }
+glm::vec2 opengl_util::get_window_size(){
+    int width,height;
+    glfwGetWindowSize(game_manager::get_glfw_window(), &width, &height);
+    return {width,height};
+}
+glm::vec2 opengl_util::get_mouse_pos(){
+    double x, y;
+    glfwGetCursorPos(game_manager::get_glfw_window(),&x,&y);
+    return {x,y};
+}
 
 

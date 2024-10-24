@@ -1,6 +1,7 @@
 
 #include "SUI.hpp"
 #include "Engine/GameManager.hpp"
+#include "Graphics/OpenGLUtil.hpp"
 void s_ui::init()
 {
 }
@@ -12,15 +13,10 @@ void s_ui::update(const registry & registry)
     {
         if(ui.get_item(id).follow_cursor){
             auto & transform = transforms.get_item(id);
-            double x, y;
-            glfwGetCursorPos(game_manager::get_glfw_window(),&x,&y);
-            int width,height;
-            glfwGetWindowSize(game_manager::get_glfw_window(), &width, &height);
-
-            float aspect_ratio = (float)width/(float)height;
-            //x = (x / width) * 2.0 * aspect_ratio - aspect_ratio;
-            x = (x/width) * 2.0f -1.0f;
-            y = -(y / height) * 2.0+1.0f;
+            glm::vec2 mouse_pos = opengl_util::get_mouse_pos();
+            glm::vec2 window_size = opengl_util::get_window_size();
+            float x = (mouse_pos.x/window_size.x) * 2.0f -1.0f;
+            float y = -(mouse_pos.y / window_size.y) * 2.0+1.0f;
             transform.position.x = x;
             transform.position.y = y;
         }

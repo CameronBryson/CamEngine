@@ -29,7 +29,6 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
     auto & transforms = registry.get_sparse_set<c_transform>();
     auto ids = registry.get_entity_ids<c_player, c_dynamic_body, c_transform>();
 
-    auto test = registry.get_key_action('w');
 
     bool w = registry.get_key_action('W') == KeyAction::Start || registry.get_key_action('W') == KeyAction::Hold;
     bool a = registry.get_key_action('A') == KeyAction::Start || registry.get_key_action('A') == KeyAction::Hold;
@@ -74,30 +73,30 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
         }
         if(left_click)
         {
+
             printf("left click\n");
-            double x, y;
-            glfwGetCursorPos(game_manager::get_glfw_window(),&x,&y);
-            int width,height;
-            glfwGetWindowSize(game_manager::get_glfw_window(), &width, &height);
-            x = (x/width) * 2.0f -1.0f;
-            y = -(y / height) * 2.0+1.0f;
+            glm::vec2 mouse_pos = opengl_util::get_mouse_pos();
+
+            glm::vec2 window_size = opengl_util::get_window_size();
+            float x = (mouse_pos.x/window_size.x) * 2.0f -1.0f;
+            float y = -(mouse_pos.y / window_size.y) * 2.0+1.0f;
+            std::cout<< x << " " << y << std::endl;
             //ray cast mouse to 3d space
-            glm::mat4 invVP = glm::inverse(camera.GetProjectionMatrix() * camera.GetViewMatrix() * glm::translate(glm::mat4(1), transforms.get_item(id).position));
+            glm::mat4 invVP = glm::inverse(camera.GetProjectionMatrix() * camera.GetViewMatrix() *glm::translate(glm::mat4(1),transforms.get_item(id).position ));
             glm::vec4 screenPos = {x,y,1,1};
             glm::vec4 worldPos = (invVP * screenPos);
-            worldPos.w = 1.0f/worldPos.w;
-            worldPos.x *= worldPos.w;
-            worldPos.y *= worldPos.w;
-            worldPos.z *= worldPos.w;
-            glm::vec3 direction =  glm::vec3(worldPos);
+             //worldPos.w = 1.0f/worldPos.w;
+             //worldPos.x *= worldPos.w;
+             //worldPos.y *= worldPos.w;
+             //worldPos.z *= worldPos.w;
 
-            glm::vec3 dir = glm::normalize(direction);
+            glm::vec3 direction = glm::normalize(glm::vec3(worldPos));
 
+            std::cout << direction.x << " " << direction.y << " " << direction.z  <<  " " << std::endl;
 
-            //have to get camera to do screenPointToWorldPoint
             
 
-            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,5,-5), dir, 0.1));
+            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,0,-3), direction, 0.1,settings::player_bitmask));
 
 //            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,5,-5), {0,0,-1}, 0.1));
         }
