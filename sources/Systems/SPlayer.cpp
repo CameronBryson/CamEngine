@@ -19,7 +19,7 @@
 #include <vector>
 
 static constexpr float forward_movespeed = 1.0f;
-static constexpr float movespeed = 10.0f;
+static constexpr float movespeed = 20.0f;
 static constexpr float rotation_speed = 0.25f;
 
 void s_player::update(registry & registry, Camera& camera, const float dt)
@@ -49,27 +49,27 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
         auto & dynamic_body = dynamic_bodies.get_item(id);
         //velocity = { 0, 0, 0 };
         if( w ){
-            dynamic_body.acceleration.y += movespeed * dt;
-            dynamic_body.angular_acceleration.x += rotation_speed * dt;
+            dynamic_body.acceleration.y += movespeed;
+            dynamic_body.angular_acceleration.x += rotation_speed;
         }
         if( a ){
-            dynamic_body.acceleration.x -= movespeed * dt;
-            dynamic_body.angular_acceleration.z -= rotation_speed * dt;
+            dynamic_body.acceleration.x -= movespeed;
+            dynamic_body.angular_acceleration.z -= rotation_speed;
         }
         if( s ) {
-            dynamic_body.acceleration.y -= movespeed * dt;
-            dynamic_body.angular_acceleration.x -= rotation_speed * dt;
+            dynamic_body.acceleration.y -= movespeed;
+            dynamic_body.angular_acceleration.x -= rotation_speed;
         }
         if( d ) {
-            dynamic_body.acceleration.x += movespeed * dt;
-            dynamic_body.angular_acceleration.z += rotation_speed * dt;
+            dynamic_body.acceleration.x += movespeed;
+            dynamic_body.angular_acceleration.z += rotation_speed;
         }
         if( q ){
-            dynamic_body.acceleration.z += forward_movespeed * dt;
+            dynamic_body.acceleration.z += forward_movespeed;
 
         }
         if( e || space){
-            dynamic_body.acceleration.z -= forward_movespeed * dt;
+            dynamic_body.acceleration.z -= forward_movespeed;
         }
         if(left_click)
         {
@@ -96,7 +96,7 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
 
             
 
-            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position, direction, 0.1,settings::player_bitmask));
+            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position, direction, 50.0f,settings::player_bitmask));
 
 //            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,5,-5), {0,0,-1}, 0.1));
         }

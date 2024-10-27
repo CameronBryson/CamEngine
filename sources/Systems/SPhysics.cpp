@@ -24,12 +24,12 @@ void s_physics::update_dynamic_bodies(const registry & registry, float dt)
 
         velocity += acceleration * dt;
         velocity *= std::pow(1 - drag, dt);
-        position += velocity;
+        position += velocity * dt;
         acceleration = { 0, 0, 0 };
 
         angular_velocity += angular_acceleration * dt;
         angular_velocity *= std::pow(1 - angular_drag, dt);
-        rotation += angular_velocity;
+        rotation += angular_velocity*dt;
         angular_acceleration = { 0, 0, 0 };
     }
 }

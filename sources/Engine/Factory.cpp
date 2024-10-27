@@ -22,7 +22,7 @@ unsigned short factory::create_player(registry &registry) {
     registry.add_component<c_quad>(id, c_quad{.extents = {3.0f, 3.0f, 3.0f}});
     registry.add_component<c_collider>(id, c_collider{.collision_type = object_collision_type::DYNAMIC, .collision_bitmask = settings::player_bitmask});
     registry.add_component<c_model>(id, c_model{.name = "player"});
-    registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f, .angluar_drag = 0.8f});
+    registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f, .angluar_drag = 0.9f});
     registry.add_component<c_damage>(id, c_damage{.damage = 1});
     return id;
 

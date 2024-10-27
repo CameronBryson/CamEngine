@@ -3,6 +3,8 @@
 #include "Engine/EngineUtil.hpp"
 #include "Math/MathUtil.hpp"
 #include <Engine/GameManager.hpp>
+#include <glm/ext/quaternion_common.hpp>
+
 #include "Graphics/Camera.hpp"
 
 static constexpr float camera_movespeed = 100.0f;
@@ -57,7 +59,7 @@ void s_camera::update(Camera & camera, const float dt)
 //
 //    camera.Yaw += delta_x * camera_rotationspeed * dt * 0.1;
 //    camera.Pitch += delta_y * camera_rotationspeed * dt * 0.1;
-
-    camera.Position = camera_position;
+    camera.Position = glm::mix(camera.Position, camera_position,1-std::pow(0.01,dt));
+    //camera.Position = camera_position;
     camera.updateCameraVectors();
 }
