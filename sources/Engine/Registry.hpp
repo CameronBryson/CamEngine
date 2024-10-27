@@ -95,12 +95,12 @@ public:
         auto pair = std::make_pair(new_event.id1, new_event.id2);
         if (!m_collision_map.contains(pair))
         {
-            printf("Collision Enter\n");
+            //printf("Collision Enter\n");
             EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(new_event.id1, new_event.id2));
         }
         else
         {
-            printf("Collision Stay\n");
+            //printf("Collision Stay\n");
             EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionStayEvent(new_event.id1, new_event.id2));
         }
         m_collision_map[pair] = std::make_unique<collision_manifold>(new_event.manifold);
@@ -110,7 +110,7 @@ public:
         auto pair = std::make_pair(new_event.id1, new_event.id2);
         if(m_collision_map.contains(pair))
         {
-            printf("Collision Exit\n");
+            //printf("Collision Exit\n");
             EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
             m_collision_map.erase(pair);
         }
@@ -172,7 +172,7 @@ public:
         for(auto& [key, value] : m_collision_map)
         {
             value->resolve_collision();
-            //value->penetration_depth_ = 0.0f;
+            value->penetration_depth_ = 0.0f;
         }
     }
     KeyAction get_key_action(int key)

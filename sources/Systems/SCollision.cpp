@@ -3,6 +3,7 @@
 #include "../Engine/Collision.hpp"
 #include "Engine/Registry.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
+#include <iostream>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
@@ -17,21 +18,21 @@ void s_collision::update(registry & registry)
     std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform, c_collider>();
 
     // Check OBB-OBB intersections
-    for( auto id : obb_ids )
+    // for( auto id : obb_ids )
+    // {
+    //     for( auto id2 : obb_ids )
+    //     {
+    //         if( id == id2 ) continue;
+    //         intersects_obb_in_obb(id, id2, quads, transforms, colliders);
+    //     }
+    // }
+    for( int i = 0; i < obb_ids.size(); ++i )
     {
-        for( auto id2 : obb_ids )
+        for( int j = i + 1; j < obb_ids.size(); ++j )
         {
-            if( id == id2 ) continue;
-            intersects_obb_in_obb(id, id2, quads, transforms, colliders);
+            intersects_obb_in_obb(obb_ids[i], obb_ids[j], quads,transforms,colliders);
         }
     }
-//    for( std::vector<unsigned short>::size_type i = 0; i < obb_ids.size(); ++i )
-//    {
-//        for( std::vector<unsigned short>::size_type j = i + 1; j < obb_ids.size(); ++j )
-//        {
-//            intersects_obb_in_obb(obb_ids[i], obb_ids[j], registry);
-//        }
-//    }
 
     // Check OBB-SPHERE intersections
     for( auto id : obb_ids )
@@ -43,14 +44,21 @@ void s_collision::update(registry & registry)
         }
     }
     //sphere-sphere
-    for( auto id : sphere_ids )
+    for (int i = 0; i < sphere_ids.size(); ++i)
     {
-        for( auto id2 : sphere_ids )
+        for (int j  = i + 1; j< sphere_ids.size(); ++j )
         {
-            if(id == id2) continue;
-            intersects_sphere_in_sphere(id,id2, spheres, transforms, colliders);
+            intersects_sphere_in_sphere(sphere_ids[i], sphere_ids[j], spheres, transforms, colliders);
         }
     }
+    // for( auto id : sphere_ids )
+    // {
+    //     for( auto id2 : sphere_ids )
+    //     {
+    //         if(id == id2) continue;
+    //         intersects_sphere_in_sphere(id,id2, spheres, transforms, colliders);
+    //     }
+    // }
 }
 
 bool s_collision::point_in_aabb(glm::vec3 min, glm::vec3 max, glm::vec3 position, glm::vec3 point)
@@ -110,6 +118,7 @@ bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, sparse
     if (penetration_depth >= 0)
     {
         collision_manifold manifold{penetration_axis, penetration_depth, transform1, transform2, collider1.collision_type, collider2.collision_type};
+        std::cout << id1 << " " << id2 << std::endl;
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
     }
 

@@ -19,10 +19,10 @@ void s_enemy::update(registry & registry, float dt)
         if(enemy.time_since_shoot>enemy.cooldown)
         {
             //shoot
-            printf("Shoot\n");
+            //printf("Shoot\n");
             glm::vec3 direction = glm::normalize(target_transform.position-enemy_tranform.position);
 
-            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+(direction*3.0f), direction, 0.1,settings::enemy_bitmask));
+            //EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position, direction, 0.1,settings::enemy_bitmask));
 
             enemy.time_since_shoot = 0.0f;
         }

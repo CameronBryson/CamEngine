@@ -8,7 +8,7 @@ factory::factory(registry& m_registry) : m_registry_(m_registry) {
     });}
 void factory::on_factory_create_projectile_event(const Event<FactoryEvents> &event) {
     auto event_data = event.ToType<CreateProjectileEvent>();
-    printf("Create Projectile Test\n");
+    //printf("Create Projectile Test\n");
     create_projectile(m_registry_, event_data.position, event_data.direction, event_data.speed,event_data.collision_bitmask);
 }
 unsigned short factory::create_player(registry &registry) {

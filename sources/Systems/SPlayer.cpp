@@ -74,7 +74,7 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
         if(left_click)
         {
 
-            printf("left click\n");
+            //printf("left click\n");
             glm::vec2 mouse_pos = opengl_util::get_mouse_pos();
 
             glm::vec2 window_size = opengl_util::get_window_size();
@@ -96,7 +96,7 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
 
             
 
-            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,0,-3), direction, 0.1,settings::player_bitmask));
+            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position, direction, 0.1,settings::player_bitmask));
 
 //            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,5,-5), {0,0,-1}, 0.1));
         }
