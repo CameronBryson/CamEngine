@@ -1,4 +1,5 @@
 #pragma once
+
 namespace settings
 {
     #define LAYER_PLAYER  0x00000001  // 1st bit for player layer

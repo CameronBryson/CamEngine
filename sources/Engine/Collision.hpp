@@ -1,4 +1,6 @@
 #pragma once
+#include "glm/glm.hpp"
+
 #include "Components.hpp"
 
 class collision_manifold
@@ -40,6 +42,12 @@ private:
     {
         transform1_.position -= normal * penetration_depth_ * 0.5f;
         transform2_.position += normal * penetration_depth_ * 0.5f;
+        glm::vec3 relativeVelocity = dynamic_body2->velocity- dynamic_body1->velocity;
+        float velocityAlongNormal = glm::dot(relativeVelocity,normal);
+        glm::vec3 impulse = velocityAlongNormal * normal;
+        dynamic_body1->velocity+=impulse;
+        dynamic_body2->velocity-=impulse;
+
     }
 
     void resolve_dynamic_vs_not_dynamic(bool is_first) const
@@ -47,10 +55,16 @@ private:
         if(is_first)
         {
             transform1_.position -= normal * penetration_depth_;
+
+            float velocityAlongNormal = glm::dot(dynamic_body1->velocity,normal);
+            dynamic_body1->velocity -= 2.0f * velocityAlongNormal * normal;
         }
         else
         {
             transform2_.position += normal * penetration_depth_;
+
+            float velocityAlongNormal = glm::dot(dynamic_body2->velocity,normal);
+            dynamic_body2->velocity -= 2.0f * velocityAlongNormal * normal;
         }
     }
 

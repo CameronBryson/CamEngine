@@ -41,6 +41,7 @@ unsigned short factory::create_quad(registry &registry, glm::vec3 position, glm:
     registry.add_component<c_quad>(id, c_quad{.extents = extents});
     registry.add_component<c_collider>(id, c_collider{ .collision_bitmask = settings::enemy_bitmask});
     registry.add_component<c_model>(id, c_model{.name = "cube"});
+    //registry.add_component<c_dynamic_body>(id,c_dynamic_body());
     return id;
 }
 unsigned short factory::create_directional_light(registry &registry, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse,
@@ -70,7 +71,7 @@ unsigned short factory::create_enemy_ship(registry &registry, glm::vec3 position
     registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
     registry.add_component<c_model>(id, c_model{.name = "player"});
     registry.add_component<c_collider>(id, c_collider{ .collision_bitmask = settings::enemy_bitmask});
-    registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.0f, .velocity = direction * speed,.angluar_drag = 0.0f});
+    registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f, .velocity = direction * speed,.angluar_drag = 0.0f});
     registry.add_component<c_damage>(id, c_damage{.damage = 1});
     return id;
 }
