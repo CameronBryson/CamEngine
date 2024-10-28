@@ -2,12 +2,6 @@
 #include "glm/glm.hpp"
 #include <string>
 
-enum class object_collision_type
-{
-    STATIC,
-    DYNAMIC
-};
-
 
 // Component for player-specific data
 struct c_player
@@ -34,7 +28,6 @@ struct c_transform
 struct c_collider
 {
     bool is_trigger = false;
-    object_collision_type collision_type = object_collision_type::STATIC;
     unsigned int collision_bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
 
 };

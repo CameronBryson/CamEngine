@@ -9,10 +9,11 @@
 
 void s_collision::update(registry & registry)
 {
-     auto & quads = registry.get_sparse_set<c_quad>();
-     auto & spheres = registry.get_sparse_set<c_sphere>();
-     auto & transforms = registry.get_sparse_set<c_transform>();
-     auto & colliders = registry.get_sparse_set<c_collider>();
+    auto & quads = registry.get_sparse_set<c_quad>();
+    auto & spheres = registry.get_sparse_set<c_sphere>();
+    auto & transforms = registry.get_sparse_set<c_transform>();
+    auto & colliders = registry.get_sparse_set<c_collider>();
+    auto & dynamic_bodies = registry.get_sparse_set<c_dynamic_body>();
 
     std::vector<unsigned short> obb_ids = registry.get_entity_ids<c_quad, c_transform, c_collider>();
     std::vector<unsigned short> sphere_ids = registry.get_entity_ids<c_sphere, c_transform, c_collider>();
@@ -30,7 +31,7 @@ void s_collision::update(registry & registry)
     {
         for( int j = i + 1; j < obb_ids.size(); ++j )
         {
-            intersects_obb_in_obb(obb_ids[i], obb_ids[j], quads,transforms,colliders);
+            intersects_obb_in_obb(obb_ids[i], obb_ids[j], quads,transforms,colliders,dynamic_bodies);
         }
     }
 
@@ -40,7 +41,7 @@ void s_collision::update(registry & registry)
         for( auto id2 : sphere_ids )
         {
             if( id == id2 ) continue;
-            intersects_obb_in_sphere(id, id2, quads, spheres, transforms, colliders);
+            intersects_obb_in_sphere(id, id2, quads, spheres, transforms, colliders,dynamic_bodies);
         }
     }
     //sphere-sphere
@@ -48,7 +49,7 @@ void s_collision::update(registry & registry)
     {
         for (int j  = i + 1; j< sphere_ids.size(); ++j )
         {
-            intersects_sphere_in_sphere(sphere_ids[i], sphere_ids[j], spheres, transforms, colliders);
+            intersects_sphere_in_sphere(sphere_ids[i], sphere_ids[j], spheres, transforms, colliders,dynamic_bodies);
         }
     }
     // for( auto id : sphere_ids )
@@ -87,7 +88,7 @@ bool s_collision::intersects_aabb_in_aabb(const glm::vec3 & min1, const glm::vec
     return overlap_x && overlap_y && overlap_z;
 }
 
-bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, sparse_set<c_sphere>& spheres, sparse_set<c_transform>& transforms, sparse_set<c_collider>& colliders)
+bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, sparse_set<c_sphere>& spheres, sparse_set<c_transform>& transforms, sparse_set<c_collider>& colliders,sparse_set<c_dynamic_body>& dynamic_bodies)
 {
     auto& sphere1 = spheres.get_item(id1);
     auto& sphere2 = spheres.get_item(id2);
@@ -95,8 +96,10 @@ bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, sparse
     auto& transform2 = transforms.get_item(id2);
     auto& collider1 = colliders.get_item(id1);
     auto& collider2 = colliders.get_item(id2);
+    bool sphere1_is_dynamic = dynamic_bodies.has_item(id1);
+    bool sphere2_is_dynamic = dynamic_bodies.has_item(id2);
 
-    if ((collider1.collision_type == object_collision_type::STATIC && collider2.collision_type == object_collision_type::STATIC) ||
+    if ((!sphere1_is_dynamic && !sphere2_is_dynamic) ||
         (collider1.collision_bitmask & collider2.collision_bitmask) != 0)
     {
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
@@ -104,20 +107,21 @@ bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, sparse
     }
 
     const float distance_squared = glm::length2(transform1.position - transform2.position);
-    const float radius_sum = sphere1.radius + sphere2.radius;
+    const float radius_sum = (sphere1.radius * (transform1.scale.x + transform1.scale.y + transform1.scale.z) / 3) +
+                         (sphere2.radius * (transform2.scale.x + transform2.scale.y + transform2.scale.z) / 3);
 
-    if (distance_squared > (radius_sum * radius_sum))
+    if (distance_squared > (radius_sum*radius_sum))
     {
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
     }
 
-    float penetration_depth = radius_sum - std::sqrt(distance_squared);
+    float penetration_depth = radius_sum - glm::length(transform1.position - transform2.position);
     glm::vec3 penetration_axis = glm::normalize(transform2.position - transform1.position);
 
     if (penetration_depth >= 0)
     {
-        collision_manifold manifold{penetration_axis, penetration_depth, transform1, transform2, collider1.collision_type, collider2.collision_type};
+        collision_manifold manifold{penetration_axis, penetration_depth, transform1, transform2, (sphere1_is_dynamic) ? &dynamic_bodies.get_item(id1) : nullptr,(sphere2_is_dynamic) ? &dynamic_bodies.get_item(id2) : nullptr};
         std::cout << id1 << " " << id2 << std::endl;
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
     }
@@ -125,7 +129,7 @@ bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, sparse
     return true;
 }
 
-bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, sparse_set<c_quad>& quads, sparse_set<c_transform>& transforms, sparse_set<c_collider>& colliders)
+bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, sparse_set<c_quad>& quads, sparse_set<c_transform>& transforms, sparse_set<c_collider>& colliders,sparse_set<c_dynamic_body>& dynamic_bodies)
 {
 
     auto& obb1 = quads.get_item(id1);
@@ -134,11 +138,11 @@ bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, 
     auto& transform2 = transforms.get_item(id2);
     auto& collider1 = colliders.get_item(id1);
     auto& collider2 = colliders.get_item(id2);
+    bool obb1_is_dynamic = dynamic_bodies.has_item(id1);
+    bool obb2_is_dynamic = dynamic_bodies.has_item(id2);
 
 
-    const object_collision_type type1 = collider1.collision_type;
-    const object_collision_type type2 = collider2.collision_type;
-    if( type1 == object_collision_type::STATIC && type2 == object_collision_type::STATIC )
+    if( !obb1_is_dynamic && !obb2_is_dynamic )
     {
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
@@ -210,7 +214,7 @@ bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, 
 
     if( min_penetration_depth > 0 )
     {
-        collision_manifold manifold{penetration_axis, min_penetration_depth, transform1, transform2, type1, type2};
+        collision_manifold manifold{penetration_axis, min_penetration_depth, transform1, transform2, (obb1_is_dynamic) ? &dynamic_bodies.get_item(id1) : nullptr, (obb2_is_dynamic) ? &dynamic_bodies.get_item(id2) : nullptr};
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
     }
 
@@ -293,7 +297,7 @@ bool s_collision::test_axis(const glm::vec3 & axis, const std::vector<glm::vec3>
     return true;
 }
 
-bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id, sparse_set<c_quad>& quads, sparse_set<c_sphere>& spheres, sparse_set<c_transform>& transforms, sparse_set<c_collider>& colliders)
+bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id, sparse_set<c_quad>& quads, sparse_set<c_sphere>& spheres, sparse_set<c_transform>& transforms, sparse_set<c_collider>& colliders,sparse_set<c_dynamic_body>& dynamic_bodies)
 {
     auto& obb = quads.get_item(quad_id);
     auto& sphere = spheres.get_item(sphere_id);
@@ -301,23 +305,24 @@ bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id,
     auto& sphere_transform = transforms.get_item(sphere_id);
     auto& obb_collider = colliders.get_item(quad_id);
     auto& sphere_collider = colliders.get_item(sphere_id);
+    bool obb_is_dynamic = dynamic_bodies.has_item(quad_id);
+    bool sphere_is_dynamic = dynamic_bodies.has_item(sphere_id);
 
-    if ((obb_collider.collision_type == object_collision_type::STATIC && sphere_collider.collision_type == object_collision_type::STATIC) ||
+    if ((!obb_is_dynamic && !sphere_is_dynamic) ||
         (obb_collider.collision_bitmask & sphere_collider.collision_bitmask) != 0)
     {
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(quad_id, sphere_id));
         return false;
     }
 
-    const glm::vec3 extents_obb = obb.extents * 0.5f;
     const glm::mat4 rotation_matrix_obb = glm::eulerAngleXYZ(obb_transform.rotation.x, obb_transform.rotation.y, obb_transform.rotation.z);
 
     glm::vec3 local_center_sphere = glm::transpose(rotation_matrix_obb) * glm::vec4(sphere_transform.position - obb_transform.position, 1.0f);
 
-    glm::vec3 closest_point = glm::clamp(local_center_sphere, -extents_obb, extents_obb);
+    glm::vec3 closest_point = glm::clamp(local_center_sphere, -obb.extents, obb.extents);
 
     glm::vec3 difference = local_center_sphere - closest_point;
-    float penetration_depth = sphere.radius - glm::length(difference);
+    float penetration_depth = sphere.radius*(sphere_transform.scale.x + sphere_transform.scale.y + sphere_transform.scale.z /3) - glm::length(difference);
     if (penetration_depth < 0)
     {
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(quad_id, sphere_id));
@@ -325,7 +330,8 @@ bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id,
     }
 
     glm::vec3 penetration_axis = glm::normalize(rotation_matrix_obb * glm::vec4(difference, 1.0f));
-    collision_manifold manifold{penetration_axis, penetration_depth, obb_transform, sphere_transform, obb_collider.collision_type, sphere_collider.collision_type};
+
+    collision_manifold manifold{penetration_axis, penetration_depth, obb_transform, sphere_transform, (obb_is_dynamic) ? &dynamic_bodies.get_item(quad_id) : nullptr, (sphere_is_dynamic) ? &dynamic_bodies.get_item(sphere_id) : nullptr};
     EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, quad_id, sphere_id));
     return true;
 }

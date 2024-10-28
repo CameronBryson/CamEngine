@@ -103,6 +103,7 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
         if(right_click){
             printf("right click\n");
         }
+
     }
 }
 

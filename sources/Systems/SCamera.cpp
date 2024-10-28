@@ -60,6 +60,7 @@ void s_camera::update(Camera & camera, const float dt)
 //    camera.Yaw += delta_x * camera_rotationspeed * dt * 0.1;
 //    camera.Pitch += delta_y * camera_rotationspeed * dt * 0.1;
     camera.Position = glm::mix(camera.Position, camera_position,1-std::pow(0.01,dt));
+
     //camera.Position = camera_position;
     camera.updateCameraVectors();
 }

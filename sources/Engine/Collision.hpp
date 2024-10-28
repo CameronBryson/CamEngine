@@ -5,8 +5,8 @@ class collision_manifold
 {
 public:
     collision_manifold(const glm::vec3 normal, const float penetration_depth, c_transform& transform1,
-                       c_transform& transform2, const object_collision_type type1, const object_collision_type type2)
-        : penetration_depth_(penetration_depth), normal(normal), type1(type1), type2(type2), transform1_(transform1),
+                       c_transform& transform2, c_dynamic_body* dynamic_body1, c_dynamic_body* dynamic_body2)
+        : penetration_depth_(penetration_depth), normal(normal), dynamic_body1(dynamic_body1), dynamic_body2(dynamic_body2), transform1_(transform1),
           transform2_(transform2)
     {
 
@@ -17,15 +17,15 @@ public:
 
     void resolve_collision() const
     {
-        if (type1 == object_collision_type::DYNAMIC && type2 == object_collision_type::DYNAMIC)
+        if (dynamic_body1!=nullptr&&dynamic_body2!=nullptr)
         {
             resolve_dynamic_vs_dynamic();
         }
-        else if (type1 == object_collision_type::DYNAMIC)
+        else if (dynamic_body1!=nullptr)
         {
             resolve_dynamic_vs_not_dynamic(true);
         }
-        else if (type2 == object_collision_type::DYNAMIC)
+        else if (dynamic_body2!=nullptr)
         {
             resolve_dynamic_vs_not_dynamic(false);
         }
@@ -54,8 +54,8 @@ private:
         }
     }
 
-    object_collision_type type1;
-    object_collision_type type2;
+    c_dynamic_body* dynamic_body1;
+    c_dynamic_body* dynamic_body2;
     c_transform& transform1_;
     c_transform& transform2_;
 };

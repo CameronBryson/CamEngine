@@ -140,7 +140,7 @@ void s_render::draw_colliders(const registry & registry, sparse_set<c_transform>
             auto & transform = transforms.get_item(id);
             glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z) *
-                glm::scale(glm::mat4(1.0f), transform.scale * sphere.radius);
+                glm::scale(glm::mat4(1.0f), transform.scale * (sphere.radius*2));
             shader.setMat4("model", model_matrix);
             auto & mesh = graphics_manager::get_mesh("Sphere");
             mesh.draw(shader);

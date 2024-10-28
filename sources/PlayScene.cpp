@@ -42,8 +42,15 @@ void play_scene::init()
     m_system_render_->init();
     timer benchmark_timer(stats::stat_type::BENCHMARK);
     auto player  = m_factory_->create_player(*m_registry_);
-     m_factory_->create_enemy_ship(*m_registry_,  glm::vec3{0.0f, 3.0f, -10.0f},1, glm::vec3 {0.0f, 0.0f, 1.0f},0.00,player);
-     m_factory_->create_directional_light(*m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{1.0,1.0,1.0}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{1.0,1.0,1.0});
+    m_factory_->create_quad(*m_registry_, glm::vec3{-20,0,5}, glm::vec3{1,20,20});
+    m_factory_->create_quad(*m_registry_, glm::vec3{20,0,5}, glm::vec3{1,20,20});
+    m_factory_->create_quad(*m_registry_, glm::vec3{0,-20,5}, glm::vec3{20,1,20});
+    m_factory_->create_quad(*m_registry_, glm::vec3{0,20,5}, glm::vec3{20,1,20});
+
+    //m_factory_->create_quad(*m_registry_, glm::vec3{-10,0,5}, glm::vec3{1,10,10});
+
+    m_factory_->create_enemy_ship(*m_registry_,  glm::vec3{0.0f, 3.0f, -10.0f},5, glm::vec3 {0.0f, 0.0f, 1.0f},0.00,player);
+    m_factory_->create_directional_light(*m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{1.0,1.0,1.0}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{1.0,1.0,1.0});
     // auto crosshair = m_registry_->create_entity();
     // m_registry_->add_component<c_transform>(crosshair,c_transform{.scale = glm::vec3(0.1f,0.1f,0.1f)});
     // m_registry_->add_component<c_ui>(crosshair,c_ui{.follow_cursor=true});
