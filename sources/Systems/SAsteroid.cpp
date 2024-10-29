@@ -19,8 +19,9 @@ void s_asteroid::update(registry & m_registry, float dt)
         auto & dynamic_body = dynamic_bodies.get_item(id);
         auto target_position = transforms.get_item(asteroid.target).position;
 
-        auto direction = glm::normalize(target_position - transform.position);
+        auto direction = glm::normalize(target_position - transform.position) + glm::vec3{0,0,1};
         dynamic_body.acceleration+=direction*asteroid.speed;
+        //dynamic_body.acceleration+=glm::vec3{0,0,-1} * asteroid.speed;
 
 
     }

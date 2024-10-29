@@ -11,6 +11,7 @@
 #include "Engine/Timer.hpp"
 #include "Graphics/Camera.hpp"
 #include "Systems/SAsteroid.hpp"
+#include "Systems/SBoundry.hpp"
 #include "Systems/SEnemy.hpp"
 #include "Systems/SWaveSpawn.hpp"
 #include "Systems/Systems.hpp"
@@ -30,6 +31,7 @@ play_scene::play_scene()
     m_system_enemy_ = std::make_unique<s_enemy>();
     m_system_wave_spawn_ = std::make_unique<s_wave_spawn>();
     m_system_asteroid_ = std::make_unique<s_asteroid>();
+    m_system_boundry_ = std::make_unique<s_boundry>();
 }
 
 play_scene::~play_scene()
@@ -54,7 +56,7 @@ void play_scene::init()
     auto skybox = m_factory_->create_skybox(*m_registry_, glm::vec3{0,0,0}, 10);
     m_factory_->create_asteroid(*m_registry_, glm::vec3{0,3, -35},2, 8.0f, player);
     m_factory_->create_enemy_ship(*m_registry_,  glm::vec3{0.0f, 3.0f, -50.0f},5, glm::vec3 {0.0f, 0.0f, 1.0f},10.00,player);
-    m_factory_->create_directional_light(*m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.2,0.2,0.2}, glm::vec3{0.2f,0.2f,0.2f}, glm::vec3{0.1,0.1,0.1});
+    m_factory_->create_directional_light(*m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.2,0.2,0.2}, glm::vec3{0.1f,0.1f,0.1f}, glm::vec3{0.1,0.1,0.1});
     //m_factory_->create_point_light(*m_registry_,glm::vec3{0,0,0}, glm::vec3{0.7,0.7,0.7}, glm::vec3{1,1,1},glm::vec3{1,1,1},1,0.22,0.2);
     // auto crosshair = m_registry_->create_entity();
     // m_registry_->add_component<c_transform>(crosshair,c_transform{.scale = glm::vec3(0.1f,0.1f,0.1f)});
@@ -75,6 +77,7 @@ void play_scene::update(const float dt)
     m_system_asteroid_->update(*m_registry_,dt);
     m_system_physics_->update(*m_registry_, dt);
     m_system_health_->update(*m_registry_, dt);
+    m_system_boundry_->update(*m_registry_,dt);
 }
 
 void play_scene::late_update(const float dt)

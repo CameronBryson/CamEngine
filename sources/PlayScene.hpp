@@ -15,6 +15,7 @@ class s_player;
 class s_enemy;
 class s_wave_spawn;
 class s_asteroid;
+class s_boundry;
 class factory;
 
 class play_scene final : public i_scene
@@ -46,4 +47,5 @@ private:
     std::unique_ptr<s_enemy> m_system_enemy_;
     std::unique_ptr<s_wave_spawn> m_system_wave_spawn_;
     std::unique_ptr<s_asteroid> m_system_asteroid_;
+    std::unique_ptr<s_boundry> m_system_boundry_;
 };

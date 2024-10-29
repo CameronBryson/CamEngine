@@ -45,7 +45,11 @@ set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h
         sources/Systems/SWaveSpawn.cpp
         sources/Systems/SWaveSpawn.hpp
         sources/Systems/SAsteroid.cpp
-        sources/Systems/SAsteroid.hpp)
+        sources/Systems/SAsteroid.hpp
+        sources/Systems/SBoundry.cpp
+        sources/Systems/SBoundry.hpp
+        sources/StartScene.cpp
+        sources/StartScene.hpp)
 
 # Add project source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/*.cpp")

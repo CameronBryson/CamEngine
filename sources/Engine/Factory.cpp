@@ -67,6 +67,8 @@ unsigned short factory::create_projectile(registry &registry, glm::vec3 position
     registry.add_component<c_model>(id, c_model{.name = "sphere"});
     registry.add_component<c_collider>(id, c_collider{.collision_bitmask = collision_bitmask});
     registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.0f, .velocity = direction * speed,.angluar_drag = 0.0f});
+    registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.4,0.4,0.4},.diffuse = {0.9,0.9,0.9},.specular = {0.8,0.8,0.8},.constant = 1,.linear = 0.14,.quadratic = 0.07});
+
     //registry.add_component<c_projectile>(id, c_projectile{.direction = direction, .speed = speed});
     return id;
 }
@@ -81,7 +83,7 @@ unsigned short factory::create_enemy_ship(registry &registry, glm::vec3 position
     registry.add_component<c_collider>(id, c_collider{ .collision_bitmask = settings::enemy_bitmask});
     registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f});
     registry.add_component<c_damage>(id, c_damage{.damage = 1});
-    registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.6,0.6,0.6},.diffuse = {1,1,1},.specular = {1,1,1},.constant = 1,.linear = 0.2,.quadratic = 0.22});
+    registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.5,0.5,0.5},.diffuse = {1,1,1},.specular = {1,1,1},.constant = 1,.linear = 0.14,.quadratic = 0.07});
 
     return id;
 }
@@ -95,6 +97,8 @@ unsigned short factory::create_asteroid(registry & registry, glm::vec3 position,
     registry.add_component<c_collider>(id, c_collider{.collision_bitmask = settings::enemy_bitmask});
     registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
     registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f});
+    registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.5,0.5,0.5},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
+
 }
 
 

@@ -20,7 +20,6 @@
 #include "Systems/SHealth.hpp"
 #include "Factory.hpp"
 
-
 enum class KeyAction
 {
     None,
@@ -62,6 +61,7 @@ public:
     ~registry()
     {
         process_commands();
+        //remove all event bindings
         printf("Registry destroyed\n");
     }
 
