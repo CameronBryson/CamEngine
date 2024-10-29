@@ -30,6 +30,7 @@ public:
     glm::mat4 projection_matrix;
     glm::mat4 view_matrix;
     c_transform * camera_follow_target_;
+    c_transform * skybox_tranform;
     glm::vec3 follow_offset;
     double previous_mouse_x = 0;
     double previous_mouse_y = 0;
@@ -43,7 +44,9 @@ public:
         Yaw = yaw;
         Pitch = pitch;
         camera_follow_target_ = nullptr;
-        follow_offset = {0,2,10};
+        skybox_tranform = nullptr;
+
+        follow_offset = {0,1,5};
         //follow_offset = {0, 2, 10};
         updateCameraVectors();
         projection_matrix = glm::perspective(glm::radians(Zoom),

@@ -40,6 +40,8 @@ struct c_health
 struct c_enemy
 {
     unsigned short target;
+    float speed = 1.0f;
+    glm::vec3 direction = {0,0,0};
     float cooldown = 2.0f;
     float time_since_shoot = 0.0f;
 };
@@ -80,9 +82,20 @@ struct c_directional_light
     glm::vec3 diffuse;
     glm::vec3 specular;
 };
+struct c_point_light
+{
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
+};
 struct c_dynamic_body
 {
     float drag = 0.0f;
+    float elasticity = 0.1f;
     glm::vec3 velocity = {0, 0, 0};
     glm::vec3 acceleration = {0, 0, 0};
     float angluar_drag = 0.0f;
@@ -95,6 +108,15 @@ struct c_dynamic_body
 struct c_damage
 {
     float damage = 10;
+};
+struct c_background
+{
+
+};
+struct c_asteroid
+{
+    unsigned short target;
+    float speed;
 };
 
 

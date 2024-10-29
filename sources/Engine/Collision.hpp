@@ -45,8 +45,9 @@ private:
         glm::vec3 relativeVelocity = dynamic_body2->velocity- dynamic_body1->velocity;
         float velocityAlongNormal = glm::dot(relativeVelocity,normal);
         glm::vec3 impulse = velocityAlongNormal * normal;
-        dynamic_body1->velocity+=impulse;
-        dynamic_body2->velocity-=impulse;
+        float e = (dynamic_body1->elasticity+dynamic_body2->elasticity)/2.0f;
+        dynamic_body1->velocity+=impulse*e;
+        dynamic_body2->velocity-=impulse*e;
 
     }
 
@@ -57,14 +58,14 @@ private:
             transform1_.position -= normal * penetration_depth_;
 
             float velocityAlongNormal = glm::dot(dynamic_body1->velocity,normal);
-            dynamic_body1->velocity -= 2.0f * velocityAlongNormal * normal;
+            dynamic_body1->velocity -= 2.0f * velocityAlongNormal * normal * dynamic_body1->elasticity;
         }
         else
         {
             transform2_.position += normal * penetration_depth_;
 
             float velocityAlongNormal = glm::dot(dynamic_body2->velocity,normal);
-            dynamic_body2->velocity -= 2.0f * velocityAlongNormal * normal;
+            dynamic_body2->velocity -= 2.0f * velocityAlongNormal * normal * dynamic_body2->elasticity;
         }
     }
 

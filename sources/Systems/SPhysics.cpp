@@ -19,7 +19,7 @@ void s_physics::update_dynamic_bodies(const registry & registry, float dt)
 
     for( const auto id : ids )
     {
-        auto & [drag, velocity ,acceleration, angular_drag, angular_velocity, angular_acceleration] = dynamic_bodies.get_item(id);
+        auto & [drag, elasticity,  velocity ,acceleration, angular_drag, angular_velocity, angular_acceleration] = dynamic_bodies.get_item(id);
         auto & [position, rotation, scale] = transforms.get_item(id);
 
         velocity += acceleration * dt;

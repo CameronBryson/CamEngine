@@ -13,6 +13,8 @@ class s_render;
 class s_ui;
 class s_player;
 class s_enemy;
+class s_wave_spawn;
+class s_asteroid;
 class factory;
 
 class play_scene final : public i_scene
@@ -33,6 +35,7 @@ private:
 private:
     std::unique_ptr<registry> m_registry_;
     std::unique_ptr<factory> m_factory_;
+    std::unique_ptr<Camera> m_camera_;
     std::unique_ptr<s_player> m_system_player_;
     std::unique_ptr<s_camera> m_system_camera_;
     std::unique_ptr<s_collision> m_system_collision_;
@@ -41,5 +44,6 @@ private:
     std::unique_ptr<s_render> m_system_render_;
     std::unique_ptr<s_ui> m_system_ui_;
     std::unique_ptr<s_enemy> m_system_enemy_;
-    std::unique_ptr<Camera> m_camera_;
+    std::unique_ptr<s_wave_spawn> m_system_wave_spawn_;
+    std::unique_ptr<s_asteroid> m_system_asteroid_;
 };

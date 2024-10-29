@@ -28,6 +28,7 @@ void s_render::init()
     graphics_manager::create_model_from_obj("assets/sphere.obj", "sphere");
     graphics_manager::create_model_from_obj("assets/cube.obj", "cube");
     graphics_manager::create_model_from_obj("assets/quad.obj", "quad");
+    graphics_manager::create_model_from_obj("assets/skybox.obj", "skybox");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Enable backface culling
@@ -52,8 +53,11 @@ void s_render::update(const registry & registry, Camera & camera)
     auto & color_shader_3D = graphics_manager::get_shader("3D_color");
     auto & color_shader_2D = graphics_manager::get_shader("2D_color");
     auto & texture_shader_2D = graphics_manager::get_shader("2D_texture");
-    auto & lights = registry.get_sparse_set<c_directional_light>();
-    const auto light_ids = registry.get_entity_ids<c_directional_light>();
+    auto & direction_lights = registry.get_sparse_set<c_directional_light>();
+    auto & point_lights = registry.get_sparse_set<c_point_light>();
+    const auto direction_light_ids = registry.get_entity_ids<c_directional_light>();
+    const auto point_light_ids = registry.get_entity_ids<c_point_light,c_transform>();
+
 
     glm::mat4 ortho_projection = glm::ortho(-settings::aspect_ratio, settings::aspect_ratio, -1.0f, 1.0f, -1.0f, 1.0f);
 
@@ -64,17 +68,32 @@ void s_render::update(const registry & registry, Camera & camera)
     texture_shader_3D.use();
     texture_shader_3D.setMat4("projection", proj_matrix);
     texture_shader_3D.setMat4("view", view_matrix);
-    texture_shader_3D.setInt("numDirLights", light_ids.size());
+    texture_shader_3D.setInt("numDirLights", direction_light_ids.size());
+    texture_shader_3D.setInt("numPointLights", point_light_ids.size());
     texture_shader_3D.setVec3("viewPos", camera.Position);
 
-    for( int i = 0; i < light_ids.size(); ++i )
+    for( int i = 0; i < direction_light_ids.size(); ++i )
     {
-        auto & light = lights.get_item(light_ids[i]);
+        auto & light = direction_lights.get_item(direction_light_ids[i]);
         std::string index = std::to_string(i);
         texture_shader_3D.setVec3("dirLights[" + index + "].direction", light.direction);
         texture_shader_3D.setVec3("dirLights[" + index + "].ambient", light.ambient);
         texture_shader_3D.setVec3("dirLights[" + index + "].diffuse", light.diffuse);
         texture_shader_3D.setVec3("dirLights[" + index + "].specular", light.specular);
+    }
+    for( int i = 0; i < point_light_ids.size(); ++i )
+    {
+        auto & light = point_lights.get_item(point_light_ids[i]);
+        auto & transform = transforms.get_item(point_light_ids[i]);
+        std::string index = std::to_string(i);
+        texture_shader_3D.setVec3("pointLights[" + index + "].position", transform.position);
+        texture_shader_3D.setVec3("pointLights[" + index + "].ambient", light.ambient);
+        texture_shader_3D.setVec3("pointLights[" + index + "].diffuse", light.diffuse);
+        texture_shader_3D.setVec3("pointLights[" + index + "].specular", light.specular);
+        texture_shader_3D.setFloat("pointLights[" + index + "].constant", light.constant);
+        texture_shader_3D.setFloat("pointLights[" + index + "].linear", light.linear);
+        texture_shader_3D.setFloat("pointLights[" + index + "].quadratic", light.quadratic);
+
     }
     draw_models(registry, transforms, texture_shader_3D);
 //#ifdef _DEBUG
@@ -102,6 +121,16 @@ void s_render::draw_models(const registry & registry, sparse_set<c_transform> & 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     auto& models = registry.get_sparse_set<c_model>();
+    for( auto id : registry.get_entity_ids<c_model, c_transform,c_background>() )
+    {
+        auto & model = models.get_item(id);
+        auto & transform = transforms.get_item(id);
+        glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
+            glm::scale(glm::mat4(1.0f), transform.scale) *
+            glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+        shader.setMat4("model", model_matrix);
+        graphics_manager::get_model(model.name).draw(shader);
+    }
     for( auto id : registry.get_entity_ids<c_model, c_transform>() )
     {
         auto & model = models.get_item(id);
@@ -112,6 +141,7 @@ void s_render::draw_models(const registry & registry, sparse_set<c_transform> & 
         shader.setMat4("model", model_matrix);
         graphics_manager::get_model(model.name).draw(shader);
     }
+
 }
 
 void s_render::draw_colliders(const registry & registry, sparse_set<c_transform> & transforms, shader_program & shader)

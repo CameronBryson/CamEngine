@@ -16,7 +16,7 @@ unsigned short factory::create_player(registry &registry) {
     registry.add_component<c_player>(id, c_player());
     registry.add_component<c_health>(id, c_health{.health = 100});
     registry.add_component<c_transform>(id, c_transform{
-            .position = {0, 5, 10}, .rotation = {0, 3.14, 0}, .scale = {0.2, 0.2, 0.2}
+            .position = {0, 0, 0}, .rotation = {0, 3.14, 0}, .scale = {0.1, 0.1, 0.1}
     });
     registry.add_component<c_sphere>(id, c_sphere{.radius = 5.0f});
     //registry.add_component<c_quad>(id, c_quad{.extents = {3.0f, 3.0f, 3.0f}});
@@ -24,24 +24,23 @@ unsigned short factory::create_player(registry &registry) {
     registry.add_component<c_model>(id, c_model{.name = "player"});
     registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f, .angluar_drag = 0.9f});
     registry.add_component<c_damage>(id, c_damage{.damage = 1});
+    registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.5,0.5,0.5},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
+
     return id;
 
 }
-unsigned short factory::create_sphere(registry &registry, glm::vec3 position, float radius) {
+unsigned short factory::create_skybox(registry &registry, glm::vec3 position, float radius) {
     const auto id = registry.create_entity();
-    registry.add_component<c_transform>(id, c_transform{.position = position, .scale = {1.0, 1.0, 1.0}});
-    registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
-    registry.add_component<c_collider>(id, c_collider{});
-    registry.add_component<c_model>(id, c_model{.name = "sphere"});
+    registry.add_component<c_transform>(id, c_transform{.position = position, .scale = {2.5, 2.5, 2.5}});
+    registry.add_component<c_model>(id, c_model{.name = "skybox"});
+    registry.add_component<c_background>(id,c_background());
     return id;
 }
-unsigned short factory::create_quad(registry &registry, glm::vec3 position, glm::vec3 extents) {
+unsigned short factory::create_boundry(registry &registry, glm::vec3 position, glm::vec3 extents) {
     const auto id = registry.create_entity();
     registry.add_component<c_transform>(id, c_transform{.position = position,.rotation = {0, 0, 0}, .scale = {1.0f,1.0f,1.0f}});
     registry.add_component<c_quad>(id, c_quad{.extents = extents});
     registry.add_component<c_collider>(id, c_collider{ .collision_bitmask = settings::enemy_bitmask});
-    registry.add_component<c_model>(id, c_model{.name = "cube"});
-    //registry.add_component<c_dynamic_body>(id,c_dynamic_body());
     return id;
 }
 unsigned short factory::create_directional_light(registry &registry, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse,
@@ -50,9 +49,18 @@ unsigned short factory::create_directional_light(registry &registry, glm::vec3 d
     registry.add_component<c_directional_light>(id, c_directional_light{.direction = direction, .ambient = ambient, .diffuse = diffuse, .specular = specular} );
     return id;
 }
-unsigned short factory::create_projectile(registry &registry, glm::vec3 position, glm::vec3 direction, float speed,unsigned int collision_bitmask) {
+unsigned short factory::create_point_light(registry & registry, glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic)
+{
     const auto id = registry.create_entity();
     registry.add_component<c_transform>(id, c_transform{.position = position});
+    registry.add_component<c_point_light>(id, c_point_light{.ambient = ambient,.diffuse = diffuse,.specular = specular,.constant = constant,.linear = linear,.quadratic = quadratic});
+
+    return id;
+}
+
+unsigned short factory::create_projectile(registry &registry, glm::vec3 position, glm::vec3 direction, float speed,unsigned int collision_bitmask) {
+    const auto id = registry.create_entity();
+    registry.add_component<c_transform>(id, c_transform{.position = position, .scale = {0.5,0.5,0.5}});
     registry.add_component<c_damage>(id, c_damage{.damage = 1});
     registry.add_component<c_sphere>(id, c_sphere{.radius = 1});
     registry.add_component<c_health>(id, c_health{.health =  1});
@@ -65,16 +73,30 @@ unsigned short factory::create_projectile(registry &registry, glm::vec3 position
 unsigned short factory::create_enemy_ship(registry &registry, glm::vec3 position, float radius, glm::vec3 direction,
                                 float speed, unsigned short target) {
     const auto id = registry.create_entity();
-    registry.add_component<c_transform>(id, c_transform{.position = position,.scale = {0.5f,0.5f,0.5f}});
-    registry.add_component<c_health>(id, c_health{.health = 3});
-    registry.add_component<c_enemy>(id, c_enemy{.target =  target});
+    registry.add_component<c_transform>(id, c_transform{.position = position,.scale = {0.3f,0.3f,0.3f}});
+    registry.add_component<c_health>(id, c_health{.health = 1});
+    registry.add_component<c_enemy>(id, c_enemy{.target =  target,.speed = speed,.direction = direction});
     registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
     registry.add_component<c_model>(id, c_model{.name = "player"});
     registry.add_component<c_collider>(id, c_collider{ .collision_bitmask = settings::enemy_bitmask});
-    registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f, .velocity = direction * speed,.angluar_drag = 0.0f});
+    registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f});
     registry.add_component<c_damage>(id, c_damage{.damage = 1});
+    registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.6,0.6,0.6},.diffuse = {1,1,1},.specular = {1,1,1},.constant = 1,.linear = 0.2,.quadratic = 0.22});
+
     return id;
 }
+unsigned short factory::create_asteroid(registry & registry, glm::vec3 position, float radius, float speed, unsigned short target)
+{
+    const auto id = registry.create_entity();
+    registry.add_component<c_transform>(id, c_transform{.position =  position,.scale = {1,1,1}});
+    registry.add_component<c_asteroid>(id, c_asteroid{.target = target,.speed = speed});
+    registry.add_component<c_model>(id, c_model{.name = "sphere"});
+    registry.add_component<c_health>(id, c_health{.health = 3});
+    registry.add_component<c_collider>(id, c_collider{.collision_bitmask = settings::enemy_bitmask});
+    registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
+    registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f});
+}
+
 
 
 

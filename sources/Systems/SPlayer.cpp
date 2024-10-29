@@ -18,8 +18,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-static constexpr float forward_movespeed = 1.0f;
-static constexpr float movespeed = 20.0f;
+static constexpr float movespeed = 12.0f;
 static constexpr float rotation_speed = 0.25f;
 
 void s_player::update(registry & registry, Camera& camera, const float dt)
@@ -34,10 +33,7 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
     bool a = registry.get_key_action('A') == KeyAction::Start || registry.get_key_action('A') == KeyAction::Hold;
     bool s = registry.get_key_action('S') == KeyAction::Start || registry.get_key_action('S') == KeyAction::Hold;
     bool d = registry.get_key_action('D') == KeyAction::Start || registry.get_key_action('D') == KeyAction::Hold;
-    bool q = registry.get_key_action('Q') == KeyAction::Start || registry.get_key_action('Q') == KeyAction::Hold;
-    bool e = registry.get_key_action('E') == KeyAction::Start || registry.get_key_action('E') == KeyAction::Hold;
 
-    bool space =  engine_util::is_key_pressed(GLFW_KEY_SPACE);
     bool left_click = registry.get_key_action(GLFW_MOUSE_BUTTON_LEFT) == KeyAction::Start;
     bool right_click = engine_util::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_RIGHT);
 
@@ -63,13 +59,6 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
         if( d ) {
             dynamic_body.acceleration.x += movespeed;
             dynamic_body.angular_acceleration.z += rotation_speed;
-        }
-        if( q ){
-            dynamic_body.acceleration.z += forward_movespeed;
-
-        }
-        if( e || space){
-            dynamic_body.acceleration.z -= forward_movespeed;
         }
         if(left_click)
         {
