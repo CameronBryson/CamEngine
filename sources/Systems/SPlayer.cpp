@@ -85,7 +85,7 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
 
             
 
-            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position, direction, 50.0f,settings::player_bitmask));
+            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position, direction, 100.0f,settings::player_bitmask));
 
 //            EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position+glm::vec3(0,5,-5), {0,0,-1}, 0.1));
         }

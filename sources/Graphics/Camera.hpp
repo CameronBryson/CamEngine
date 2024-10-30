@@ -46,7 +46,7 @@ public:
         camera_follow_target_ = nullptr;
         skybox_tranform = nullptr;
 
-        follow_offset = {0,1,5};
+        follow_offset = {0,0.5,5};
         //follow_offset = {0, 2, 10};
         updateCameraVectors();
         projection_matrix = glm::perspective(glm::radians(Zoom),

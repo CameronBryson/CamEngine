@@ -29,6 +29,7 @@ void s_render::init()
     graphics_manager::create_model_from_obj("assets/cube.obj", "cube");
     graphics_manager::create_model_from_obj("assets/quad.obj", "quad");
     graphics_manager::create_model_from_obj("assets/skybox.obj", "skybox");
+    graphics_manager::create_model_from_obj("assets/asteroid.obj", "asteroid");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Enable backface culling

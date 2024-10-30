@@ -128,13 +128,13 @@ unsigned short factory::create_asteroid(registry & registry, glm::vec3 position,
     const auto id = registry.create_entity();
     registry.add_component<c_transform>(id, c_transform{.position =  position,.scale = {1,1,1}});
     registry.add_component<c_asteroid>(id, c_asteroid{.target = target,.speed = speed});
-    registry.add_component<c_model>(id, c_model{.name = "sphere"});
+    registry.add_component<c_model>(id, c_model{.name = "asteroid"});
     registry.add_component<c_health>(id, c_health{.health = 3});
     registry.add_component<c_collider>(id, c_collider{.collision_bitmask = settings::enemy_bitmask});
     registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
-    registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f});
+    registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f,.angluar_drag = 0.3});
     registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.5,0.5,0.5},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
-    registry.add_component<c_repeat_acceleration>(id, c_repeat_acceleration{.acceleration = glm::vec3{0,0,1} * speed});
+    registry.add_component<c_repeat_acceleration>(id, c_repeat_acceleration{.acceleration = glm::vec3{0,0,1} * speed,.angularAcceleration = {-0.2,-0.2,-0.2}});
     registry.add_component<c_damage>(id,c_damage{.damage = 10});
 
 }

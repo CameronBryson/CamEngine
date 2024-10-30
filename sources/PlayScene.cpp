@@ -54,7 +54,7 @@ void play_scene::init()
     m_factory_->create_boundry(*m_registry_, glm::vec3{0,-45,0}, glm::vec3{45,1,1});
     m_factory_->create_boundry(*m_registry_, glm::vec3{0,45,0}, glm::vec3{45,1,1});
 
-    m_factory_->create_space_debris(*m_registry_,glm::vec3{0,-5,-10}, glm::vec3{0,1,1},glm::vec3{0.4,0.4,0.4},3 );
+    //m_factory_->create_space_debris(*m_registry_,glm::vec3{0,-5,-10}, glm::vec3{0,1,1},glm::vec3{0.4,0.4,0.4},3 );
 
     //m_factory_->create_quad(*m_registry_, glm::vec3{-10,0,5}, glm::vec3{1,10,10});
     auto skybox = m_factory_->create_skybox(*m_registry_, glm::vec3{0,0,0}, 10);
