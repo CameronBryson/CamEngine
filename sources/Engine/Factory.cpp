@@ -56,7 +56,7 @@ unsigned short factory::create_player(registry &registry) {
     });
     registry.add_component<c_sphere>(id, c_sphere{.radius = 5.0f});
     //registry.add_component<c_quad>(id, c_quad{.extents = {3.0f, 3.0f, 3.0f}});
-    registry.add_component<c_collider>(id, c_collider{.collision_bitmask = settings::player_bitmask});
+    registry.add_component<c_collider>(id, c_collider{.is_trigger = true,.collision_bitmask = settings::player_bitmask});
     registry.add_component<c_model>(id, c_model{.name = "player"});
     registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f,.elasticity = 0.1f, .angluar_drag = 0.9f});
     registry.add_component<c_damage>(id, c_damage{.damage = 1});

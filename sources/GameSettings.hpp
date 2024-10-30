@@ -11,7 +11,7 @@ namespace settings
     inline int window_width = 1920;
     inline int window_height = 1080;
     inline float aspect_ratio = (float) window_width / (float) window_height;
-    inline glm::vec3 world_boundry_min = {-50,-50,-100};
+    inline glm::vec3 world_boundry_min = {-50,-50,-200};
     inline glm::vec3 world_boundry_max = {50,50,10};
     inline unsigned short player_id = 0;
     constexpr unsigned max_fps = 600;

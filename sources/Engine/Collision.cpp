@@ -13,6 +13,10 @@ collision_manifold::collision_manifold(const glm::vec3 normal, const float penet
 }
 void collision_manifold::resolve_collision() const
 {
+    if(penetration_depth_ == 0){
+	return;
+    }
+
     if( dynamic_body1 != nullptr && dynamic_body2 != nullptr )
     {
 	resolve_dynamic_vs_dynamic();

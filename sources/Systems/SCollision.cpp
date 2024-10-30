@@ -121,6 +121,10 @@ bool s_collision::intersects_sphere_in_sphere(unsigned id1, unsigned id2, sparse
 
     if (penetration_depth >= 0)
     {
+        if(collider1.is_trigger || collider2.is_trigger)
+        {
+            penetration_depth = 0.0f;
+        }
         collision_manifold manifold{penetration_axis, penetration_depth, transform1, transform2, (sphere1_is_dynamic) ? &dynamic_bodies.get_item(id1) : nullptr,(sphere2_is_dynamic) ? &dynamic_bodies.get_item(id2) : nullptr};
         std::cout << id1 << " " << id2 << std::endl;
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
@@ -214,6 +218,10 @@ bool s_collision::intersects_obb_in_obb(const unsigned id1, const unsigned id2, 
 
     if( min_penetration_depth > 0 )
     {
+        if(collider1.is_trigger || collider2.is_trigger)
+        {
+            min_penetration_depth = 0.0f;
+        }
         collision_manifold manifold{penetration_axis, min_penetration_depth, transform1, transform2, (obb1_is_dynamic) ? &dynamic_bodies.get_item(id1) : nullptr, (obb2_is_dynamic) ? &dynamic_bodies.get_item(id2) : nullptr};
         EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
     }
@@ -331,6 +339,10 @@ bool s_collision::intersects_obb_in_sphere(unsigned quad_id, unsigned sphere_id,
 
     glm::vec3 penetration_axis = glm::normalize(rotation_matrix_obb * glm::vec4(difference, 1.0f));
 
+    if(obb_collider.is_trigger || sphere_collider.is_trigger)
+    {
+        penetration_depth = 0.0f;
+    }
     collision_manifold manifold{penetration_axis, penetration_depth, obb_transform, sphere_transform, (obb_is_dynamic) ? &dynamic_bodies.get_item(quad_id) : nullptr, (sphere_is_dynamic) ? &dynamic_bodies.get_item(sphere_id) : nullptr};
     EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, quad_id, sphere_id));
     return true;

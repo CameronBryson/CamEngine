@@ -33,6 +33,7 @@ void s_render::init(graphics_manager& graphics_manager)
     graphics_manager.create_model_from_obj("assets/asteroid.obj", "asteroid");
     graphics_manager.create_model_from_obj("assets/sat.obj", "sat");
     graphics_manager.create_model_from_obj("assets/enemy_ship.obj", "enemy");
+    //graphics_manager.create_model_from_obj("assets/enemy_projectile.obj", "enemy_projectile");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Enable backface culling
