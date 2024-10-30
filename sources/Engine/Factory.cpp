@@ -5,12 +5,48 @@
 factory::factory(registry& m_registry) : m_registry_(m_registry) {
     EventHandler::GetInstance()->factory_dispatcher.AddListener(FactoryEvents::CreateProjectile, [this](const Event<FactoryEvents>& event) {
         this->on_factory_create_projectile_event(event);
-    });}
+    });
+    EventHandler::GetInstance()->factory_dispatcher.AddListener(FactoryEvents::CreateEnemy, [this](const Event<FactoryEvents>& event) {
+        this->on_factory_create_enemy_event(event);
+    });
+    EventHandler::GetInstance()->factory_dispatcher.AddListener(FactoryEvents::CreateAsteroid, [this](const Event<FactoryEvents>& event) {
+        this->on_factory_create_asteroid_event(event);
+    });
+    EventHandler::GetInstance()->factory_dispatcher.AddListener(FactoryEvents::CreateSpaceDebris, [this](const Event<FactoryEvents>& event) {
+        this->on_factory_create_space_debris_event(event);
+    });
+
+}
+
+factory::~factory()
+{
+    //unbind here
+}
+
 void factory::on_factory_create_projectile_event(const Event<FactoryEvents> &event) {
     auto event_data = event.ToType<CreateProjectileEvent>();
     //printf("Create Projectile Test\n");
     create_projectile(m_registry_, event_data.position, event_data.direction, event_data.speed,event_data.collision_bitmask);
 }
+
+void factory::on_factory_create_enemy_event(const Event<FactoryEvents> & event)
+{
+    auto event_data = event.ToType<CreateEnemyEvent>();
+    create_enemy_ship(m_registry_,event_data.position,event_data.radius,event_data.direction,event_data.speed,event_data.target);
+}
+
+void factory::on_factory_create_asteroid_event(const Event<FactoryEvents> & event)
+{
+    auto event_data = event.ToType<CreateAsteroidEvent>();
+    create_asteroid(m_registry_,event_data.position,event_data.radius,event_data.speed,event_data.target);
+}
+
+void factory::on_factory_create_space_debris_event(const Event<FactoryEvents> & event)
+{
+    auto event_data = event.ToType<CreateSpaceDebrisEvent>();
+    create_space_debris(m_registry_,event_data.position,event_data.direction,event_data.spin,event_data.speed);
+}
+
 unsigned short factory::create_player(registry &registry) {
     const auto id = registry.create_entity();
     registry.add_component<c_player>(id, c_player());
@@ -22,7 +58,7 @@ unsigned short factory::create_player(registry &registry) {
     //registry.add_component<c_quad>(id, c_quad{.extents = {3.0f, 3.0f, 3.0f}});
     registry.add_component<c_collider>(id, c_collider{.collision_bitmask = settings::player_bitmask});
     registry.add_component<c_model>(id, c_model{.name = "player"});
-    registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f, .angluar_drag = 0.9f});
+    registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.4f,.elasticity = 0.1f, .angluar_drag = 0.9f});
     registry.add_component<c_damage>(id, c_damage{.damage = 1});
     registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.5,0.5,0.5},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
 
@@ -98,7 +134,23 @@ unsigned short factory::create_asteroid(registry & registry, glm::vec3 position,
     registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
     registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f});
     registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.5,0.5,0.5},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
+    registry.add_component<c_repeat_acceleration>(id, c_repeat_acceleration{.acceleration = glm::vec3{0,0,1} * speed});
+    registry.add_component<c_damage>(id,c_damage{.damage = 10});
 
+}
+
+unsigned short factory::create_space_debris(registry & registry, glm::vec3 position, glm::vec3 direction, glm::vec3 spin, float speed)
+{
+    const auto id = registry.create_entity();
+    registry.add_component<c_transform>(id, c_transform{.position = position,.scale = {2,2,2}});
+    registry.add_component<c_collider>(id, c_collider{.collision_bitmask = settings::enemy_bitmask});
+    registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.3,.angluar_drag = 0.3});
+    registry.add_component<c_quad>(id, c_quad{.extents = {1,1,1}});
+    registry.add_component<c_model>(id, c_model{.name = "cube"});
+    //registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.5,0.5,0.5},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
+    registry.add_component<c_repeat_acceleration>(id, c_repeat_acceleration{.acceleration = direction * speed,.angularAcceleration = spin});
+    registry.add_component<c_damage>(id,c_damage{.damage = 10});
+    return id;
 }
 
 

@@ -118,5 +118,10 @@ struct c_asteroid
     unsigned short target;
     float speed;
 };
+struct c_repeat_acceleration
+{
+    glm::vec3 acceleration = {0,0,0};
+    glm::vec3 angularAcceleration = {0,0,0};
+};
 
 

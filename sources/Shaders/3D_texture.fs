@@ -31,9 +31,9 @@ struct PointLight{
 
 uniform Material material;
 uniform int numDirLights;
-uniform DirectionalLight dirLights[25]; // Maximum number of directional lights
+uniform DirectionalLight dirLights[50]; // Maximum number of directional lights
 uniform int numPointLights;
-uniform PointLight pointLights[25]; //Max PointLights
+uniform PointLight pointLights[50]; //Max PointLights
 uniform vec3 viewPos;
 
 void main()

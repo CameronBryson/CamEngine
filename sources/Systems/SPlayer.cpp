@@ -18,7 +18,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-static constexpr float movespeed = 12.0f;
+static constexpr float movespeed = 10.0f;
 static constexpr float rotation_speed = 0.25f;
 
 void s_player::update(registry & registry, Camera& camera, const float dt)

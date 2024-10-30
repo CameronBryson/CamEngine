@@ -4,13 +4,37 @@
 
 #include "SWaveSpawn.hpp"
 
+#include <GameSettings.hpp>
+#include <Engine/EventHandler.hpp>
+
 void s_wave_spawn::update(registry & registry, float dt)
 {
-    time_since_spawn+=dt;
-    if(time_since_spawn>=spawn_cooldown)
+    time_since_enemy_spawn+=dt;
+    time_since_asteroid_spawn+=dt;
+    time_since_debris_spawn+=dt;
+    if(time_since_enemy_spawn>=enemy_spawn_cooldown)
     {
-        //spawn
-        time_since_spawn = 0.0f;
+        time_since_enemy_spawn = 0.0f;
+        int x = rand() % spawn_range_x.y*2 + spawn_range_x.x;
+        int y = rand() % spawn_range_y.y*2 + spawn_range_y.x;
+        glm::vec3 position = {x,y,-85};
+        EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateEnemyEvent(position,1,glm::vec3{0,0,1},7,settings::player_id));
+    }
+    if(time_since_asteroid_spawn>=asteroid_spawn_cooldown)
+    {
+        time_since_asteroid_spawn = 0.0f;
+        int x = rand() % spawn_range_x.y*2 + spawn_range_x.x;
+        int y = rand() % spawn_range_y.y*2 + spawn_range_y.x;
+        glm::vec3 position = {x,y,-75};
+        EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateAsteroidEvent(position,3,10,settings::player_id ));
+    }
+    if(time_since_debris_spawn>=asteroid_spawn_cooldown)
+    {
+        time_since_debris_spawn = 0.0f;
+        int x = rand() % spawn_range_x.y*2 + spawn_range_x.x;
+        int y = rand() % spawn_range_y.y*2 + spawn_range_y.x;
+        glm::vec3 position = {x,y,-65};
+        EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateSpaceDebrisEvent(position,glm::vec3{0.1,0.1,1},glm::vec3{0.5,0.5,0.5},3));
     }
 }
 

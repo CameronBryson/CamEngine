@@ -47,15 +47,19 @@ void play_scene::init()
     m_system_render_->init();
     timer benchmark_timer(stats::stat_type::BENCHMARK);
     auto player  = m_factory_->create_player(*m_registry_);
-    //m_factory_->create_boundry(*m_registry_, glm::vec3{-20,0,0}, glm::vec3{1,10,1});
-    //m_factory_->create_boundry(*m_registry_, glm::vec3{20,0,0}, glm::vec3{1,10,1});
-    //m_factory_->create_boundry(*m_registry_, glm::vec3{0,-10,0}, glm::vec3{20,1,1});
-    //m_factory_->create_boundry(*m_registry_, glm::vec3{0,10,0}, glm::vec3{20,1,1});
+    settings::player_id = player;
+
+    m_factory_->create_boundry(*m_registry_, glm::vec3{-45,0,0}, glm::vec3{1,45,1});
+    m_factory_->create_boundry(*m_registry_, glm::vec3{45,0,0}, glm::vec3{1,45,1});
+    m_factory_->create_boundry(*m_registry_, glm::vec3{0,-45,0}, glm::vec3{45,1,1});
+    m_factory_->create_boundry(*m_registry_, glm::vec3{0,45,0}, glm::vec3{45,1,1});
+
+    m_factory_->create_space_debris(*m_registry_,glm::vec3{0,-5,-10}, glm::vec3{0,1,1},glm::vec3{0.4,0.4,0.4},3 );
 
     //m_factory_->create_quad(*m_registry_, glm::vec3{-10,0,5}, glm::vec3{1,10,10});
     auto skybox = m_factory_->create_skybox(*m_registry_, glm::vec3{0,0,0}, 10);
-    m_factory_->create_asteroid(*m_registry_, glm::vec3{0,3, -35},2, 8.0f, player);
-    m_factory_->create_enemy_ship(*m_registry_,  glm::vec3{0.0f, 3.0f, -50.0f},5, glm::vec3 {0.0f, 0.0f, 1.0f},10.00,player);
+    //m_factory_->create_asteroid(*m_registry_, glm::vec3{0,3, -35},2, 8.0f, player);
+    //m_factory_->create_enemy_ship(*m_registry_,  glm::vec3{0.0f, 3.0f, -50.0f},5, glm::vec3 {0.0f, 0.0f, 1.0f},10.00,player);
     m_factory_->create_directional_light(*m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.2,0.2,0.2}, glm::vec3{0.1f,0.1f,0.1f}, glm::vec3{0.1,0.1,0.1});
     //m_factory_->create_point_light(*m_registry_,glm::vec3{0,0,0}, glm::vec3{0.7,0.7,0.7}, glm::vec3{1,1,1},glm::vec3{1,1,1},1,0.22,0.2);
     // auto crosshair = m_registry_->create_entity();
@@ -78,6 +82,7 @@ void play_scene::update(const float dt)
     m_system_physics_->update(*m_registry_, dt);
     m_system_health_->update(*m_registry_, dt);
     m_system_boundry_->update(*m_registry_,dt);
+    m_system_wave_spawn_->update(*m_registry_,dt);
 }
 
 void play_scene::late_update(const float dt)
@@ -124,4 +129,5 @@ void play_scene::init_sparse_sets()
     m_registry_->create_sparse_set<c_background>();
     m_registry_->create_sparse_set<c_asteroid>();
     m_registry_->create_sparse_set<c_point_light>();
+    m_registry_->create_sparse_set<c_repeat_acceleration>();
 }
