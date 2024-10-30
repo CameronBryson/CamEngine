@@ -16,20 +16,20 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
-void s_render::init()
+void s_render::init(graphics_manager& graphics_manager)
 {
     printf("Render init\n");
-    load_shaders();
-    graphics_manager::load_mtl("assets/Default.mtl");
+    load_shaders(graphics_manager);
+    graphics_manager.load_mtl("assets/Default.mtl");
     //graphics_manager::create_model_from_obj("assets/cube.obj", "player");
-    graphics_manager::create_model_from_obj("assets/Ship.obj", "player");
+    graphics_manager.create_model_from_obj("assets/Ship.obj", "player");
 
     //graphics_manager::create_model_from_obj("assets/patek.obj", "player");
-    graphics_manager::create_model_from_obj("assets/sphere.obj", "sphere");
-    graphics_manager::create_model_from_obj("assets/cube.obj", "cube");
-    graphics_manager::create_model_from_obj("assets/quad.obj", "quad");
-    graphics_manager::create_model_from_obj("assets/skybox.obj", "skybox");
-    graphics_manager::create_model_from_obj("assets/asteroid.obj", "asteroid");
+    graphics_manager.create_model_from_obj("assets/sphere.obj", "sphere");
+    graphics_manager.create_model_from_obj("assets/cube.obj", "cube");
+    graphics_manager.create_model_from_obj("assets/quad.obj", "quad");
+    graphics_manager.create_model_from_obj("assets/skybox.obj", "skybox");
+    graphics_manager.create_model_from_obj("assets/asteroid.obj", "asteroid");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Enable backface culling
@@ -43,17 +43,17 @@ void s_render::init()
     glEnable(GL_DEPTH_TEST);
 }
 
-void s_render::update(const registry & registry, Camera & camera)
+void s_render::update(const registry & registry, graphics_manager& graphics_manager,  Camera & camera)
 {
     opengl_util::clear_background();
 
     auto & view_matrix = camera.GetViewMatrix();
     auto & proj_matrix = camera.GetProjectionMatrix();
     auto & transforms = registry.get_sparse_set<c_transform>();
-    auto & texture_shader_3D = graphics_manager::get_shader("3D_texture");
-    auto & color_shader_3D = graphics_manager::get_shader("3D_color");
-    auto & color_shader_2D = graphics_manager::get_shader("2D_color");
-    auto & texture_shader_2D = graphics_manager::get_shader("2D_texture");
+    auto & texture_shader_3D = graphics_manager.get_shader("3D_texture");
+    auto & color_shader_3D = graphics_manager.get_shader("3D_color");
+    auto & color_shader_2D = graphics_manager.get_shader("2D_color");
+    auto & texture_shader_2D = graphics_manager.get_shader("2D_texture");
     auto & direction_lights = registry.get_sparse_set<c_directional_light>();
     auto & point_lights = registry.get_sparse_set<c_point_light>();
     const auto direction_light_ids = registry.get_entity_ids<c_directional_light>();
@@ -96,12 +96,12 @@ void s_render::update(const registry & registry, Camera & camera)
         texture_shader_3D.setFloat("pointLights[" + index + "].quadratic", light.quadratic);
 
     }
-    draw_models(registry, transforms, texture_shader_3D);
+    draw_models(registry, graphics_manager, transforms, texture_shader_3D);
 //#ifdef _DEBUG
     color_shader_3D.use();
     color_shader_3D.setMat4("projection", proj_matrix);
     color_shader_3D.setMat4("view", view_matrix);
-    draw_colliders(registry, transforms, color_shader_3D);
+    draw_colliders(registry, graphics_manager, transforms, color_shader_3D);
 //#endif
 
 
@@ -110,14 +110,14 @@ void s_render::update(const registry & registry, Camera & camera)
 
     color_shader_2D.setMat4("projection", ortho_projection);
     color_shader_2D.setMat4("view", glm::mat4(1.0f));
-    draw_ui(registry, transforms, color_shader_2D);
+    draw_ui(registry, graphics_manager, transforms, color_shader_2D);
 }
 
 void s_render::shutdown()
 {
 }
 
-void s_render::draw_models(const registry & registry, sparse_set<c_transform> & transforms, shader_program & shader)
+void s_render::draw_models(const registry & registry,graphics_manager& graphics_manager, sparse_set<c_transform> & transforms, shader_program & shader)
 {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -130,7 +130,7 @@ void s_render::draw_models(const registry & registry, sparse_set<c_transform> & 
             glm::scale(glm::mat4(1.0f), transform.scale) *
             glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         shader.setMat4("model", model_matrix);
-        graphics_manager::get_model(model.name).draw(shader);
+        graphics_manager.get_model(model.name).draw(shader,graphics_manager);
     }
     for( auto id : registry.get_entity_ids<c_model, c_transform>() )
     {
@@ -140,12 +140,12 @@ void s_render::draw_models(const registry & registry, sparse_set<c_transform> & 
             glm::scale(glm::mat4(1.0f), transform.scale) *
             glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         shader.setMat4("model", model_matrix);
-        graphics_manager::get_model(model.name).draw(shader);
+        graphics_manager.get_model(model.name).draw(shader,graphics_manager);
     }
 
 }
 
-void s_render::draw_colliders(const registry & registry, sparse_set<c_transform> & transforms, shader_program & shader)
+void s_render::draw_colliders(const registry & registry, graphics_manager& graphics_manager, sparse_set<c_transform> & transforms, shader_program & shader)
 {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -162,8 +162,8 @@ void s_render::draw_colliders(const registry & registry, sparse_set<c_transform>
                 * glm::scale(glm::mat4(1.0f), quad.extents * transform.scale);
             shader.setMat4("model", model_matrix);
 
-            auto & mesh = graphics_manager::get_mesh("Cube");
-            mesh.draw(shader);
+            auto & mesh = graphics_manager.get_mesh("Cube");
+            mesh.draw(shader,graphics_manager);
         }
         else if( registry.has_component<c_sphere>(id) )
         {
@@ -173,13 +173,13 @@ void s_render::draw_colliders(const registry & registry, sparse_set<c_transform>
                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z) *
                 glm::scale(glm::mat4(1.0f), transform.scale * (sphere.radius*2));
             shader.setMat4("model", model_matrix);
-            auto & mesh = graphics_manager::get_mesh("Sphere");
-            mesh.draw(shader);
+            auto & mesh = graphics_manager.get_mesh("Sphere");
+            mesh.draw(shader,graphics_manager);
         }
     }
 }
 
-void s_render::draw_ui(const registry &registry, sparse_set<c_transform> &transforms, shader_program &shader) {
+void s_render::draw_ui(const registry &registry, graphics_manager& graphics_manager, sparse_set<c_transform> &transforms, shader_program &shader) {
     glDisable(GL_DEPTH_TEST);
 
     auto &ui = registry.get_sparse_set<c_ui>();
@@ -189,24 +189,24 @@ void s_render::draw_ui(const registry &registry, sparse_set<c_transform> &transf
                                  glm::scale(glm::mat4(1.0f), transform.scale) *
                                  glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         shader.setMat4("model", model_matrix);
-        auto &mesh = graphics_manager::get_mesh("Quad");
-        mesh.draw(shader);
+        auto &mesh = graphics_manager.get_mesh("Quad");
+        mesh.draw(shader,graphics_manager);
     }
 }
 
 
-void s_render::load_shaders()
+void s_render::load_shaders(graphics_manager& graphics_manager)
 {
-    graphics_manager::load_shader(
+    graphics_manager.load_shader(
         "sources/Shaders/vertex.vs",
         "sources/Shaders/3D_texture.fs", "3D_texture");
-    graphics_manager::load_shader(
+    graphics_manager.load_shader(
             "sources/Shaders/vertex.vs",
             "sources/Shaders/3D_color.fs", "3D_color");
-    graphics_manager::load_shader(
+    graphics_manager.load_shader(
         "sources/Shaders/vertex.vs",
         "sources/Shaders/2D_color.fs", "2D_color");
-    graphics_manager::load_shader(
+    graphics_manager.load_shader(
             "sources/Shaders/vertex.vs",
             "sources/Shaders/2D_color.fs", "2D_color");
 }

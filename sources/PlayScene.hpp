@@ -17,6 +17,7 @@ class s_wave_spawn;
 class s_asteroid;
 class s_boundry;
 class factory;
+class graphics_manager;
 
 class play_scene final : public i_scene
 {
@@ -37,6 +38,7 @@ private:
     std::unique_ptr<registry> m_registry_;
     std::unique_ptr<factory> m_factory_;
     std::unique_ptr<Camera> m_camera_;
+    std::unique_ptr<graphics_manager> m_graphics_manager_;
     std::unique_ptr<s_player> m_system_player_;
     std::unique_ptr<s_camera> m_system_camera_;
     std::unique_ptr<s_collision> m_system_collision_;

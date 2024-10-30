@@ -8,6 +8,7 @@ struct vertex;
 class material;
 class texture;
 class shader_program;
+class graphics_manager;
 
 class opengl_util
 {
@@ -27,7 +28,7 @@ public:
 
     static void setup_mesh(const std::vector<vertex>& vertices, unsigned int& VAO, unsigned int& VBO);
 
-    static void draw_mesh(const shader_program& shader, const std::string& material_name, unsigned int VAO, unsigned int index_count);
+    static void draw_mesh(const shader_program& shader,graphics_manager& graphics_manager, const std::string& material_name, unsigned int VAO, unsigned int index_count);
 
     static void bind_texture(GLuint texture);
 

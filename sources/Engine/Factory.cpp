@@ -136,6 +136,7 @@ unsigned short factory::create_asteroid(registry & registry, glm::vec3 position,
     registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.5,0.5,0.5},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
     registry.add_component<c_repeat_acceleration>(id, c_repeat_acceleration{.acceleration = glm::vec3{0,0,1} * speed,.angularAcceleration = {-0.2,-0.2,-0.2}});
     registry.add_component<c_damage>(id,c_damage{.damage = 10});
+    return id;
 
 }
 

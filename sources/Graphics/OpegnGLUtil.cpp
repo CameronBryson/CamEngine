@@ -99,14 +99,14 @@ void opengl_util::setup_mesh(const std::vector<vertex>& vertices, unsigned int& 
     glBindVertexArray(0);
 }
 
-void opengl_util::draw_mesh(const shader_program& shader, const std::string& material_name, unsigned int VAO,
+void opengl_util::draw_mesh(const shader_program& shader, graphics_manager& graphics_manager, const std::string& material_name, unsigned int VAO,
     unsigned int index_count)
 {
-    graphics_manager::get_material(material_name).bind(shader);
+    graphics_manager.get_material(material_name).bind(shader);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, index_count);
     glBindVertexArray(0);
-    graphics_manager::get_material(material_name).unbind();
+    graphics_manager.get_material(material_name).unbind();
 }
 
 void opengl_util::bind_texture(GLuint texture)

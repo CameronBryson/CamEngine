@@ -4,17 +4,18 @@ class Camera;
 class registry;
 class shader_program;
 class c_transform;
+class graphics_manager;
 
 class s_render
 {
 public:
-    void init();
-    void update(const registry& registry, Camera& camera);
+    void init(graphics_manager& graphics_manager);
+    void update(const registry& registry, graphics_manager& graphics_manager, Camera& camera);
     void shutdown();
 
 private:
-    void draw_models(const registry& registry, sparse_set<c_transform>& transforms, shader_program& shader);
-    void draw_colliders(const registry& registry, sparse_set<c_transform>& transforms, shader_program& shader);
-    void draw_ui(const registry& registry, sparse_set<c_transform>& transforms, shader_program& shader);
-    void load_shaders();
+    void draw_models(const registry& registry, graphics_manager& graphics_manager,sparse_set<c_transform>& transforms, shader_program& shader);
+    void draw_colliders(const registry& registry, graphics_manager& graphics_manager, sparse_set<c_transform>& transforms, shader_program& shader);
+    void draw_ui(const registry& registry, graphics_manager& graphics_manager, sparse_set<c_transform>& transforms, shader_program& shader);
+    void load_shaders(graphics_manager& graphics_manager);
 };

@@ -6,11 +6,6 @@
 #include "Texture.hpp"
 #include "Material.hpp"
 #include "OpenGLUtil.hpp"
-std::unordered_map<std::string, std::unique_ptr<shader_program>> graphics_manager::shader_map;
-std::unordered_map<std::string, std::unique_ptr<texture>> graphics_manager::texture_map;
-std::unordered_map<std::string, std::unique_ptr<mesh>> graphics_manager::mesh_map;
-std::unordered_map<std::string, std::unique_ptr<model>> graphics_manager::model_map;
-std::unordered_map<std::string, std::unique_ptr<material>> graphics_manager::material_map;
 
 shader_program & graphics_manager::load_shader(const char * vShaderFile, const char * fShaderFile, const std::string & name)
 {
@@ -34,7 +29,7 @@ texture & graphics_manager::get_texture(const std::string & name)
     return *texture_map[name];
 }
 
-mesh & graphics_manager::create_mesh(std::string name,  std::vector<vertex> vertices, std::string material_name)
+mesh & graphics_manager::create_mesh(const std::string& name,  const std::vector<vertex>& vertices, const std::string& material_name)
 {
     mesh_map[name] = std::make_unique<mesh>(vertices,material_name);
     return *mesh_map[name];

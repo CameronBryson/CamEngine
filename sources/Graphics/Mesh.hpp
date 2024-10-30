@@ -4,7 +4,7 @@
 #include "Material.hpp"
 #include "OpenGLUtil.hpp"
 #include "Vertex.hpp"
-
+#include "GraphicsManager.hpp"
 class mesh
 {
 public:
@@ -19,9 +19,9 @@ public:
         opengl_util::setup_mesh(vertices, VAO, VBO);
     }
 
-    void draw(shader_program& shader) const
+    void draw(shader_program& shader, graphics_manager& graphics_manager) const
     {
-        opengl_util::draw_mesh(shader, material_name, VAO, index_count);
+        opengl_util::draw_mesh(shader, graphics_manager, material_name, VAO, index_count);
     }
 
     void set_material(const std::string& name)

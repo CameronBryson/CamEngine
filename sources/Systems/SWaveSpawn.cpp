@@ -18,7 +18,7 @@ void s_wave_spawn::update(registry & registry, float dt)
         int x = rand() % spawn_range_x.y*2 + spawn_range_x.x;
         int y = rand() % spawn_range_y.y*2 + spawn_range_y.x;
         glm::vec3 position = {x,y,-85};
-        EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateEnemyEvent(position,1,glm::vec3{0,0,1},15,settings::player_id));
+        EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateEnemyEvent(position,3,glm::vec3{0,0,1},15,settings::player_id));
     }
     if(time_since_asteroid_spawn>=asteroid_spawn_cooldown)
     {

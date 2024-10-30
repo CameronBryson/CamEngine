@@ -10,17 +10,23 @@
 #include "Systems/Systems.hpp"
 #include "Engine/Timer.hpp"
 #include "Graphics/Camera.hpp"
+#include "Graphics/GraphicsManager.hpp"
 #include "Systems/SAsteroid.hpp"
 #include "Systems/SBoundry.hpp"
 #include "Systems/SEnemy.hpp"
 #include "Systems/SWaveSpawn.hpp"
 #include "Systems/Systems.hpp"
+#include "Graphics/Texture.hpp"
+#include "Graphics/Model.hpp"
+#include "Graphics/Material.hpp"
+#include "Graphics/Mesh.hpp"
 play_scene::play_scene()
 {
     printf("PlayScene created\n");
     m_camera_ = std::make_unique<Camera>(glm::vec3 {0.0f, 0.0f, 0.0f});
     m_registry_ = std::make_unique<registry>();
     m_factory_ = std::make_unique<factory>(get_registry());
+    m_graphics_manager_ = std::make_unique<graphics_manager>();
     m_system_camera_ = std::make_unique<s_camera>();
     m_system_collision_ = std::make_unique<s_collision>();
     m_system_health_ = std::make_unique<s_health>();
@@ -44,7 +50,7 @@ void play_scene::init()
 
     init_sparse_sets();
 
-    m_system_render_->init();
+    m_system_render_->init(*m_graphics_manager_);
     timer benchmark_timer(stats::stat_type::BENCHMARK);
     auto player  = m_factory_->create_player(*m_registry_);
     settings::player_id = player;
@@ -95,7 +101,7 @@ void play_scene::late_update(const float dt)
 void play_scene::render()
 {
     timer render_timer(stats::stat_type::RENDER);
-    m_system_render_->update(*m_registry_, *m_camera_);
+    m_system_render_->update(*m_registry_, *m_graphics_manager_, *m_camera_);
 }
 
 void play_scene::shutdown()
