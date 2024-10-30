@@ -4,6 +4,7 @@
 #include "ShaderProgram.hpp"
 #include "stb_image.h"
 #include "Material.hpp"
+#include <iostream>
 
 void opengl_util::init()
 {

@@ -67,7 +67,7 @@ unsigned short factory::create_player(registry &registry) {
 }
 unsigned short factory::create_skybox(registry &registry, glm::vec3 position, float radius) {
     const auto id = registry.create_entity();
-    registry.add_component<c_transform>(id, c_transform{.position = position, .scale = {2.5, 2.5, 2.5}});
+    registry.add_component<c_transform>(id, c_transform{.position = position, .scale = {5, 5, 5}});
     registry.add_component<c_model>(id, c_model{.name = "skybox"});
     registry.add_component<c_background>(id,c_background());
     return id;
@@ -111,11 +111,11 @@ unsigned short factory::create_projectile(registry &registry, glm::vec3 position
 unsigned short factory::create_enemy_ship(registry &registry, glm::vec3 position, float radius, glm::vec3 direction,
                                 float speed, unsigned short target) {
     const auto id = registry.create_entity();
-    registry.add_component<c_transform>(id, c_transform{.position = position,.scale = {0.3f,0.3f,0.3f}});
+    registry.add_component<c_transform>(id, c_transform{.position = position,.rotation = {0,-3.14/2,0}, .scale = {0.5f,0.5f,0.5f}});
     registry.add_component<c_health>(id, c_health{.health = 1});
     registry.add_component<c_enemy>(id, c_enemy{.target =  target,.speed = speed,.direction = direction});
-    registry.add_component<c_sphere>(id, c_sphere{.radius = radius});
-    registry.add_component<c_model>(id, c_model{.name = "player"});
+    registry.add_component<c_quad>(id, c_quad{.extents ={8,2,8}});
+    registry.add_component<c_model>(id, c_model{.name = "enemy"});
     registry.add_component<c_collider>(id, c_collider{ .collision_bitmask = settings::enemy_bitmask});
     registry.add_component<c_dynamic_body>(id, c_dynamic_body{.drag = 0.8f});
     registry.add_component<c_damage>(id, c_damage{.damage = 1});
@@ -146,8 +146,8 @@ unsigned short factory::create_space_debris(registry & registry, glm::vec3 posit
     registry.add_component<c_transform>(id, c_transform{.position = position,.scale = {2,2,2}});
     registry.add_component<c_collider>(id, c_collider{.collision_bitmask = settings::enemy_bitmask});
     registry.add_component<c_dynamic_body>(id,c_dynamic_body{.drag = 0.3,.angluar_drag = 0.3});
-    registry.add_component<c_quad>(id, c_quad{.extents = {1,1,1}});
-    registry.add_component<c_model>(id, c_model{.name = "cube"});
+    registry.add_component<c_quad>(id, c_quad{.extents = {5,1,2.75}});
+    registry.add_component<c_model>(id, c_model{.name = "sat"});
     //registry.add_component<c_point_light>(id, c_point_light{.ambient = {0.5,0.5,0.5},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
     registry.add_component<c_repeat_acceleration>(id, c_repeat_acceleration{.acceleration = direction * speed,.angularAcceleration = spin});
     registry.add_component<c_damage>(id,c_damage{.damage = 10});

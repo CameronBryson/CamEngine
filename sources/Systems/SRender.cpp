@@ -10,6 +10,7 @@
 #include <Graphics/GraphicsManager.hpp>
 #include "Graphics/Model.hpp"
 #include "Graphics/Camera.hpp"
+#include "Graphics/Mesh.hpp"
 #include <string>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -30,6 +31,8 @@ void s_render::init(graphics_manager& graphics_manager)
     graphics_manager.create_model_from_obj("assets/quad.obj", "quad");
     graphics_manager.create_model_from_obj("assets/skybox.obj", "skybox");
     graphics_manager.create_model_from_obj("assets/asteroid.obj", "asteroid");
+    graphics_manager.create_model_from_obj("assets/sat.obj", "sat");
+    graphics_manager.create_model_from_obj("assets/enemy_ship.obj", "enemy");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Enable backface culling

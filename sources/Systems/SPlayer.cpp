@@ -14,6 +14,7 @@
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
 #include "glm/matrix.hpp"
+#include <iostream>
 
 #include <GLFW/glfw3.h>
 #include <vector>

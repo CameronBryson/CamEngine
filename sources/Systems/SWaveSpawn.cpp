@@ -26,7 +26,7 @@ void s_wave_spawn::update(registry & registry, float dt)
         int x = rand() % spawn_range_x.y*2 + spawn_range_x.x;
         int y = rand() % spawn_range_y.y*2 + spawn_range_y.x;
         glm::vec3 position = {x,y,-75};
-        EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateAsteroidEvent(position,3,20,settings::player_id ));
+        EventHandler::GetInstance()->factory_dispatcher.SendEvent(CreateAsteroidEvent(position,4,20,settings::player_id ));
     }
     if(time_since_debris_spawn>=asteroid_spawn_cooldown)
     {
