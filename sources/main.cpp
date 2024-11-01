@@ -15,5 +15,6 @@ int main()
     game_manager::init();
     game_manager::game_loop();
     game_manager::shutdown();
+
     return 0;
 }

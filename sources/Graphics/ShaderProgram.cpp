@@ -17,6 +17,8 @@ shader_program::shader_program(const char* vertexPath, const char* fragmentPath)
     {
 	// open files
 	//vShaderFile.open(vertexPath);
+	auto path = engine_util::build_path(vertexPath);
+
 	vShaderFile.open(engine_util::build_path(vertexPath));
 
 	//fShaderFile.open(fragmentPath);

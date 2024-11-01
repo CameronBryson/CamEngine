@@ -61,12 +61,12 @@ bool engine_util::is_mouse_button_pressed(int button)
 }
 std::string engine_util::build_path(const std::string& path)
 {
-#ifdef _WIN32
+//#ifdef _WIN32
     auto current_path = std::filesystem::current_path();
-    auto parent_path = current_path.parent_path().parent_path();
+    auto parent_path = current_path.parent_path().parent_path().parent_path();
     return (parent_path / path).make_preferred().string();
-#else
+//#else
     //return "../" + path;
-    return (std::filesystem::current_path() / path).string();
-#endif
+    //return (std::filesystem::current_path() / path).string();
+//#endif
 }
