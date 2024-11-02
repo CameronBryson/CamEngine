@@ -4,17 +4,17 @@
 #include "GLFW/glfw3.h"
 
 
-class game_manager
+class GameManager
 {
 public:
     static void init();
     static void update(float dt);
     static void render();
     static void shutdown();
-    static void game_loop();
+    static void gameLoop();
 
     template <typename T>
-    static void load_scene()
+    static void loadScene()
     {
         if (m_current_scene_)
             shutdown();
@@ -26,5 +26,5 @@ public:
 
 private:
     static GLFWwindow* game_window;
-    static std::unique_ptr<i_scene> m_current_scene_;
+    static std::unique_ptr<IScene> m_current_scene_;
 };

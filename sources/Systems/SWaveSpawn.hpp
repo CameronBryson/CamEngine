@@ -1,9 +1,9 @@
 #pragma once
 #include <glm/vec2.hpp>
-class registry;
-class s_wave_spawn{
+class Registry;
+class SWaveSpawn{
 public:
-    void update(registry& registry, float dt);
+    void update(Registry& registry, float dt);
 private:
     float time_since_enemy_spawn = 0.0f;
     float enemy_spawn_cooldown = 3.0f;

@@ -9,10 +9,10 @@
 #include <vector>
 
 template <class T>
-class sparse_set final : public i_sparse_set
+class SparseSet final : public ISparseSet
 {
 public:
-    sparse_set()
+    SparseSet()
     {
         printf("Sparse set created of type: %s\n", typeid(T).name());
         m_dense_.resize(settings::max_entities);
@@ -20,12 +20,12 @@ public:
         m_items_.resize(settings::max_entities);
     }
 
-    ~sparse_set() override
+    ~SparseSet() override
     {
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
     }
 
-    void add_item(const unsigned short id, T component_data)
+    void addItem(const unsigned short id, T component_data)
     {
         assert(id < settings::max_entities && "ID is out of range.");
         assert(m_size_< settings::max_entities && "Exceeding maximum entities.");
@@ -38,7 +38,7 @@ public:
         }
     }
 
-    void remove_item(const unsigned short id) override
+    void removeItem(const unsigned short id) override
     {
         assert(id < settings::max_entities && "ID is out of range.");
         assert(m_size_ > 0 && "Sparse set is empty, cannot remove item.");
@@ -53,7 +53,7 @@ public:
         }
     }
 
-    [[nodiscard]] bool has_item(const unsigned short id) const override
+    [[nodiscard]] bool hasItem(const unsigned short id) const override
     {
         return id < settings::max_entities && m_sparse_[id] < m_size_ && m_dense_[m_sparse_[id]] == id;
     }
@@ -65,21 +65,21 @@ public:
         return m_items_[m_sparse_[id]];
     }
 
-    [[nodiscard]] std::size_t get_size() const override
+    [[nodiscard]] std::size_t getSize() const override
     {
         return m_size_;
     }
 
-    [[nodiscard]] std::vector<unsigned short> get_ids() const override
+    [[nodiscard]] std::vector<unsigned short> getIDs() const override
     {
         auto ids = std::vector<unsigned short>(m_dense_.begin(), m_dense_.begin() + m_size_);
         std::sort(ids.begin(), ids.end());
         return ids;
     }
 
-    [[nodiscard]] std::vector<unsigned short> get_intersection(const std::vector<unsigned short>& other) const override
+    [[nodiscard]] std::vector<unsigned short> getIntersection(const std::vector<unsigned short>& other) const override
     {
-        auto ids = get_ids();
+        auto ids = getIDs();
         std::vector<unsigned short> intersection;
         intersection.reserve(std::min(ids.size(), other.size()));
         std::set_intersection(ids.begin(), ids.end(), other.begin(), other.end(), std::back_inserter(intersection));

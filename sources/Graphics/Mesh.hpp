@@ -4,19 +4,19 @@
 #include "OpenGLUtil.hpp"
 #include "Vertex.hpp"
 #include "GraphicsManager.hpp"
-class mesh
+class Mesh
 {
 public:
-  mesh(const std::vector<vertex>& vertices, std::string material_name);
+  Mesh(const std::vector<Vertex>& vertices, const std::string& material_name);
 
-  void setup_mesh();
+  void setupMesh();
 
-  void draw(shader_program& shader, graphics_manager& graphics_manager) const;
+  void draw(ShaderProgram& shader, GraphicsManager& graphics_manager) const;
 
-  void set_material(const std::string& name);
+  void setMaterial(const std::string& name);
 private:
     unsigned int VAO = 0, VBO = 0, index_count;
-    std::vector<vertex> vertices;
+    std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     std::string material_name;
 };

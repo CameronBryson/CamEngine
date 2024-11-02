@@ -1,26 +1,26 @@
 #include "Material.hpp"
-material::material(const std::string& diffuse_path, const std::string& specular_path, float shininess, glm::vec3 ambient_color, glm::vec3 diffuse_color,
+Material::Material(const std::string& diffuse_path, const std::string& specular_path, float shininess, glm::vec3 ambient_color, glm::vec3 diffuse_color,
     glm::vec3 specular_color)
     : shininess(shininess), ambient_color(ambient_color), diffuse_color(diffuse_color), specular_color(specular_color)
 {
     if( ! diffuse_path.empty() )
     {
-	diffuse_texture = std::make_unique<texture>(diffuse_path);
+	diffuse_texture = std::make_unique<Texture>(diffuse_path);
     }
     if( ! specular_path.empty() )
     {
-	specular_texture = std::make_unique<texture>(specular_path);
+	specular_texture = std::make_unique<Texture>(specular_path);
     }
 }
-void material::bind(const shader_program& shader) const
+void Material::bind(const ShaderProgram& shader) const
 {
-    opengl_util::bind_material(shader, diffuse_texture.get(), specular_texture.get(), ambient_color, diffuse_color, specular_color, shininess);
+    OpenGlUtil::bindMaterial(shader, diffuse_texture.get(), specular_texture.get(), ambient_color, diffuse_color, specular_color, shininess);
 }
-void material::unbind() const
+void Material::unbind() const
 {
-    opengl_util::unbind_material(diffuse_texture.get(), specular_texture.get());
+    OpenGlUtil::unbindMaterial(diffuse_texture.get(), specular_texture.get());
 }
-float material::get_shininess() const
+float Material::getShininess() const
 {
     return shininess;
 }

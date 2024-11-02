@@ -7,27 +7,27 @@
 
 #include <iostream>
 
-GLFWwindow * game_manager::game_window = nullptr;
-std::unique_ptr<i_scene> game_manager::m_current_scene_ = nullptr;
+GLFWwindow * GameManager::game_window = nullptr;
+std::unique_ptr<IScene> GameManager::m_current_scene_ = nullptr;
 
-void game_manager::init()
+void GameManager::init()
 {
-    opengl_util::init();
+    OpenGlUtil::init();
     m_current_scene_->init();
 }
 
-void game_manager::update(float dt)
+void GameManager::update(float dt)
 {
     m_current_scene_->update(dt);
-    m_current_scene_->late_update(dt);
+    m_current_scene_->lateUpdate(dt);
 }
 
-void game_manager::render()
+void GameManager::render()
 {
     m_current_scene_->render();
 }
 
-void game_manager::shutdown()
+void GameManager::shutdown()
 {
     m_current_scene_->shutdown();
     glfwDestroyWindow(game_window);
@@ -36,7 +36,7 @@ void game_manager::shutdown()
 
 
 // Update the game_loop function to limit FPS
-void game_manager::game_loop()
+void GameManager::gameLoop()
 {
     const double fps_limit = 1.0 / settings::max_fps;
     double delta_time = 0.0f;
@@ -74,12 +74,12 @@ void game_manager::game_loop()
     }
 }
 
-GLFWwindow * game_manager::get_glfw_window()
+GLFWwindow * GameManager::get_glfw_window()
 {
     return game_window;
 }
 
-void game_manager::set_glfw_window(GLFWwindow * window)
+void GameManager::set_glfw_window(GLFWwindow * window)
 {
     game_window = window;
 }

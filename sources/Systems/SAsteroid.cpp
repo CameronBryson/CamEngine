@@ -6,12 +6,12 @@
 
 #include <Engine/Registry.hpp>
 
-void s_asteroid::update(registry & m_registry, float dt)
+void SAsteroid::update(Registry & m_registry, float dt)
 {
-    auto & asteroids = m_registry.get_sparse_set<c_asteroid>();
-    auto & transforms = m_registry.get_sparse_set<c_transform>();
-    auto & dynamic_bodies = m_registry.get_sparse_set<c_dynamic_body>();
-    auto ids = m_registry.get_entity_ids<c_asteroid,c_transform,c_dynamic_body>();
+    auto & asteroids = m_registry.getSparseSet<CAsteroid>();
+    auto & transforms = m_registry.getSparseSet<CTransform>();
+    auto & dynamic_bodies = m_registry.getSparseSet<CDynamicBody>();
+    auto ids = m_registry.getEntityIDs<CAsteroid,CTransform,CDynamicBody>();
     for (auto id : ids)
     {
         auto & asteroid = asteroids.get_item(id);

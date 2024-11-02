@@ -1,62 +1,62 @@
 #include "Collision.hpp"
-collision_manifold::collision_manifold(const glm::vec3 normal, const float penetration_depth, c_transform& transform1, c_transform& transform2,
-    c_dynamic_body* dynamic_body1, c_dynamic_body* dynamic_body2)
-    : penetration_depth_(penetration_depth),
+CollisionManifold::CollisionManifold(const glm::vec3 normal, const float penetration_depth, CTransform& transform1, CTransform& transform2,
+    CDynamicBody* dynamic_body1, CDynamicBody* dynamic_body2)
+    : penetrationDepth(penetration_depth),
       normal(normal),
-      dynamic_body1(dynamic_body1),
-      dynamic_body2(dynamic_body2),
-      transform1_(transform1),
-      transform2_(transform2)
+      dynamicBody1(dynamic_body1),
+      dynamicBody2(dynamic_body2),
+      transform1(transform1),
+      transform2(transform2)
 {
-    printf("Depth: %f\n", penetration_depth_);
+    printf("Depth: %f\n", penetrationDepth);
     printf("Normal%f\n %f\n %f\n", normal.x, normal.y, normal.z);
 }
-void collision_manifold::resolve_collision() const
+void CollisionManifold::resolveCollision() const
 {
-    if(penetration_depth_ == 0){
+    if(penetrationDepth == 0){
 	return;
     }
 
-    if( dynamic_body1 != nullptr && dynamic_body2 != nullptr )
+    if( dynamicBody1 != nullptr && dynamicBody2 != nullptr )
     {
-	resolve_dynamic_vs_dynamic();
+	resolveDynamicVsDynamic();
     }
-    else if( dynamic_body1 != nullptr )
+    else if( dynamicBody1 != nullptr )
     {
-	resolve_dynamic_vs_not_dynamic(true);
+	resolveDynamicVsNotDynamic(true);
     }
-    else if( dynamic_body2 != nullptr )
+    else if( dynamicBody2 != nullptr )
     {
-	resolve_dynamic_vs_not_dynamic(false);
+	resolveDynamicVsNotDynamic(false);
     }
     // No action needed for STATIC vs STATIC
 }
-void collision_manifold::resolve_dynamic_vs_dynamic() const
+void CollisionManifold::resolveDynamicVsDynamic() const
 {
-    transform1_.position -= normal * penetration_depth_ * 0.5f;
-    transform2_.position += normal * penetration_depth_ * 0.5f;
-    glm::vec3 relativeVelocity = dynamic_body2->velocity - dynamic_body1->velocity;
+    transform1.position -= normal * penetrationDepth * 0.5f;
+    transform2.position += normal * penetrationDepth * 0.5f;
+    glm::vec3 relativeVelocity = dynamicBody2->velocity - dynamicBody1->velocity;
     float velocityAlongNormal = glm::dot(relativeVelocity, normal);
     glm::vec3 impulse = velocityAlongNormal * normal;
-    float e = (dynamic_body1->elasticity + dynamic_body2->elasticity) / 2.0f;
-    dynamic_body1->velocity += impulse * e;
-    dynamic_body2->velocity -= impulse * e;
+    float e = (dynamicBody1->elasticity + dynamicBody2->elasticity) / 2.0f;
+    dynamicBody1->velocity += impulse * e;
+    dynamicBody2->velocity -= impulse * e;
 }
-void collision_manifold::resolve_dynamic_vs_not_dynamic(bool is_first) const
+void CollisionManifold::resolveDynamicVsNotDynamic(bool is_first) const
 {
     if( is_first )
     {
-	transform1_.position -= normal * penetration_depth_;
+	transform1.position -= normal * penetrationDepth;
 
-	float velocityAlongNormal = glm::dot(dynamic_body1->velocity, normal);
-	dynamic_body1->velocity -= 2.0f * velocityAlongNormal * normal * dynamic_body1->elasticity;
+	float velocityAlongNormal = glm::dot(dynamicBody1->velocity, normal);
+	dynamicBody1->velocity -= 2.0f * velocityAlongNormal * normal * dynamicBody1->elasticity;
     }
     else
     {
-	transform2_.position += normal * penetration_depth_;
+	transform2.position += normal * penetrationDepth;
 
-	float velocityAlongNormal = glm::dot(dynamic_body2->velocity, normal);
-	dynamic_body2->velocity -= 2.0f * velocityAlongNormal * normal * dynamic_body2->elasticity;
+	float velocityAlongNormal = glm::dot(dynamicBody2->velocity, normal);
+	dynamicBody2->velocity -= 2.0f * velocityAlongNormal * normal * dynamicBody2->elasticity;
     }
 }
 

@@ -2,14 +2,14 @@
 #include <vector>
 #include <string>
 #include "GraphicsManager.hpp"
-class model
+class Model
 {
 public:
-  explicit model(const std::vector<std::string>& meshes);
+  explicit Model(const std::vector<std::string>& meshes);
 
-  void draw(shader_program& shader, graphics_manager& graphics_manager);
+  void draw(ShaderProgram& shader, GraphicsManager& graphics_manager);
 
-  void add_mesh(const std::string& mesh_name);
+  void addMesh(const std::string& mesh_name);
 private:
     std::vector<std::string> meshes;
 };

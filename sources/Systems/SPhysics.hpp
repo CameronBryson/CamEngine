@@ -1,11 +1,11 @@
 #pragma once
-class registry;
+class Registry;
 
-class s_physics
+class SPhysics
 {
 public:
-    void update(const registry& registry, float dt);
+    void update(const Registry& registry, float dt);
     void shutdown();
 private:
-    void update_dynamic_bodies(const registry& registry, float dt);
+    void updateDynamicBodies(const Registry& registry, float dt);
 };

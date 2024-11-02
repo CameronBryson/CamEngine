@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Graphics/Camera.hpp"
-class registry;
-class s_player
+class Registry;
+class SPlayer
 {
 public:
-    void update(registry& registry, Camera& camera, float dt);
+    void update(Registry& registry, Camera& camera, float dt);
     void shutdown();
 private:
     void shoot();

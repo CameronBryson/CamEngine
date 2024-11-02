@@ -4,15 +4,15 @@
 
 #include <Engine/Registry.hpp>
 
-void s_health::update(registry & registry, float dt)
+void SHealth::update(Registry & registry, float dt)
 {
-    auto ids = registry.get_entity_ids<c_health>();
+    auto ids = registry.getEntityIDs<CHealth>();
     for( auto id : ids )
     {
-        auto & health = registry.get_component<c_health>(id);
+        auto & health = registry.getComponent<CHealth>(id);
         if(health.health<=0)
         {
-            registry.delete_entity(id);
+            registry.deleteEntity(id);
         }
     }
 }

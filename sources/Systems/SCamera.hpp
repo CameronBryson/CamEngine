@@ -2,7 +2,7 @@
 
 class Camera;
 
-class s_camera
+class SCamera
 {
 public:
     void update(Camera& camera, float dt);

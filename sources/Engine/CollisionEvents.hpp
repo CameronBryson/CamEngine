@@ -12,8 +12,8 @@ enum class CollisionEvents
 class CollisionDetectedEvent final : public Event<CollisionEvents>
 {
 public:
-    explicit CollisionDetectedEvent(collision_manifold & manifold, unsigned short id1, unsigned short id2) : Event<CollisionEvents>(CollisionEvents::Detected, "CollisionDetected"), manifold(manifold), id1(id1), id2(id2) {};
-    collision_manifold& manifold;
+    explicit CollisionDetectedEvent(CollisionManifold & manifold, unsigned short id1, unsigned short id2) : Event<CollisionEvents>(CollisionEvents::Detected, "CollisionDetected"), manifold(manifold), id1(id1), id2(id2) {};
+    CollisionManifold& manifold;
     unsigned short id1;
     unsigned short id2;
 };

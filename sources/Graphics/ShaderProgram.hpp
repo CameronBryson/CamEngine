@@ -6,13 +6,13 @@
 
 #include "OpenGLUtil.hpp"
 
-class shader_program
+class ShaderProgram
 {
 public:
     unsigned int ID;
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    shader_program(const char* vertexPath, const char* fragmentPath);
+    ShaderProgram(const char* vertexPath, const char* fragmentPath);
 
     // activate the shader
     // ------------------------------------------------------------------------

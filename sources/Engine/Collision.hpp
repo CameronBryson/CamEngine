@@ -2,25 +2,25 @@
 
 #include "Components.hpp"
 
-class collision_manifold
+class CollisionManifold
 {
 public:
-  collision_manifold(const glm::vec3 normal, const float penetration_depth, c_transform& transform1, c_transform& transform2, c_dynamic_body* dynamic_body1,
-      c_dynamic_body* dynamic_body2);
-  ~collision_manifold() = default;
+  CollisionManifold(const glm::vec3 normal, const float penetration_depth, CTransform& transform1, CTransform& transform2, CDynamicBody* dynamic_body1,
+      CDynamicBody* dynamic_body2);
+  ~CollisionManifold() = default;
 
-  void resolve_collision() const;
+  void resolveCollision() const;
 
-  float penetration_depth_ = 0;
+  float penetrationDepth = 0;
   glm::vec3 normal;
 
 private:
-  void resolve_dynamic_vs_dynamic() const;
+  void resolveDynamicVsDynamic() const;
 
-  void resolve_dynamic_vs_not_dynamic(bool is_first) const;
+  void resolveDynamicVsNotDynamic(bool is_first) const;
 
-  c_dynamic_body* dynamic_body1;
-  c_dynamic_body* dynamic_body2;
-  c_transform& transform1_;
-  c_transform& transform2_;
+  CDynamicBody* dynamicBody1;
+  CDynamicBody* dynamicBody2;
+  CTransform& transform1;
+  CTransform& transform2;
 };

@@ -17,22 +17,22 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
-void s_render::init(graphics_manager& graphics_manager)
+void SRender::init(GraphicsManager& graphics_manager)
 {
     printf("Render init\n");
-    load_shaders(graphics_manager);
-    graphics_manager.load_mtl("assets/Default.mtl");
+    loadShaders(graphics_manager);
+    graphics_manager.loadMtl("assets/Default.mtl");
     //graphics_manager::create_model_from_obj("assets/cube.obj", "player");
-    graphics_manager.create_model_from_obj("assets/Ship.obj", "player");
+    graphics_manager.createModelFromObj("assets/Ship.obj", "player");
 
     //graphics_manager::create_model_from_obj("assets/patek.obj", "player");
-    graphics_manager.create_model_from_obj("assets/sphere.obj", "sphere");
-    graphics_manager.create_model_from_obj("assets/cube.obj", "cube");
-    graphics_manager.create_model_from_obj("assets/quad.obj", "quad");
-    graphics_manager.create_model_from_obj("assets/skybox.obj", "skybox");
-    graphics_manager.create_model_from_obj("assets/asteroid.obj", "asteroid");
-    graphics_manager.create_model_from_obj("assets/sat.obj", "sat");
-    graphics_manager.create_model_from_obj("assets/enemy_ship.obj", "enemy");
+    graphics_manager.createModelFromObj("assets/sphere.obj", "sphere");
+    graphics_manager.createModelFromObj("assets/cube.obj", "cube");
+    graphics_manager.createModelFromObj("assets/quad.obj", "quad");
+    graphics_manager.createModelFromObj("assets/skybox.obj", "skybox");
+    graphics_manager.createModelFromObj("assets/asteroid.obj", "asteroid");
+    graphics_manager.createModelFromObj("assets/sat.obj", "sat");
+    graphics_manager.createModelFromObj("assets/enemy_ship.obj", "enemy");
     //graphics_manager.create_model_from_obj("assets/enemy_projectile.obj", "enemy_projectile");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -47,21 +47,21 @@ void s_render::init(graphics_manager& graphics_manager)
     glEnable(GL_DEPTH_TEST);
 }
 
-void s_render::update(const registry & registry, graphics_manager& graphics_manager,  Camera & camera)
+void SRender::update(const Registry & registry, GraphicsManager& graphics_manager,  Camera & camera)
 {
-    opengl_util::clear_background();
+    OpenGlUtil::clearBackground();
 
     auto & view_matrix = camera.GetViewMatrix();
     auto & proj_matrix = camera.GetProjectionMatrix();
-    auto & transforms = registry.get_sparse_set<c_transform>();
-    auto & texture_shader_3D = graphics_manager.get_shader("3D_texture");
-    auto & color_shader_3D = graphics_manager.get_shader("3D_color");
-    auto & color_shader_2D = graphics_manager.get_shader("2D_color");
-    auto & texture_shader_2D = graphics_manager.get_shader("2D_texture");
-    auto & direction_lights = registry.get_sparse_set<c_directional_light>();
-    auto & point_lights = registry.get_sparse_set<c_point_light>();
-    const auto direction_light_ids = registry.get_entity_ids<c_directional_light>();
-    const auto point_light_ids = registry.get_entity_ids<c_point_light,c_transform>();
+    auto & transforms = registry.getSparseSet<CTransform>();
+    auto & texture_shader_3D = graphics_manager.getShader("3D_texture");
+    auto & color_shader_3D = graphics_manager.getShader("3D_color");
+    auto & color_shader_2D = graphics_manager.getShader("2D_color");
+    auto & texture_shader_2D = graphics_manager.getShader("2D_texture");
+    auto & direction_lights = registry.getSparseSet<CDirectionalLight>();
+    auto & point_lights = registry.getSparseSet<CPointLight>();
+    const auto direction_light_ids = registry.getEntityIDs<CDirectionalLight>();
+    const auto point_light_ids = registry.getEntityIDs<CPointLight,CTransform>();
 
 
     glm::mat4 ortho_projection = glm::ortho(-settings::aspect_ratio, settings::aspect_ratio, -1.0f, 1.0f, -1.0f, 1.0f);
@@ -100,12 +100,12 @@ void s_render::update(const registry & registry, graphics_manager& graphics_mana
         texture_shader_3D.setFloat("pointLights[" + index + "].quadratic", light.quadratic);
 
     }
-    draw_models(registry, graphics_manager, transforms, texture_shader_3D);
+    drawModels(registry, graphics_manager, transforms, texture_shader_3D);
 //#ifdef _DEBUG
     color_shader_3D.use();
     color_shader_3D.setMat4("projection", proj_matrix);
     color_shader_3D.setMat4("view", view_matrix);
-    draw_colliders(registry, graphics_manager, transforms, color_shader_3D);
+    drawColliders(registry, graphics_manager, transforms, color_shader_3D);
 //#endif
 
 
@@ -114,19 +114,19 @@ void s_render::update(const registry & registry, graphics_manager& graphics_mana
 
     color_shader_2D.setMat4("projection", ortho_projection);
     color_shader_2D.setMat4("view", glm::mat4(1.0f));
-    draw_ui(registry, graphics_manager, transforms, color_shader_2D);
+    drawUi(registry, graphics_manager, transforms, color_shader_2D);
 }
 
-void s_render::shutdown()
+void SRender::shutdown()
 {
 }
 
-void s_render::draw_models(const registry & registry,graphics_manager& graphics_manager, sparse_set<c_transform> & transforms, shader_program & shader)
+void SRender::drawModels(const Registry & registry,GraphicsManager& graphics_manager, SparseSet<CTransform> & transforms, ShaderProgram & shader)
 {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    auto& models = registry.get_sparse_set<c_model>();
-    for( auto id : registry.get_entity_ids<c_model, c_transform,c_background>() )
+    auto& models = registry.getSparseSet<CModel>();
+    for( auto id : registry.getEntityIDs<CModel, CTransform,CBackground>() )
     {
         auto & model = models.get_item(id);
         auto & transform = transforms.get_item(id);
@@ -134,9 +134,9 @@ void s_render::draw_models(const registry & registry,graphics_manager& graphics_
             glm::scale(glm::mat4(1.0f), transform.scale) *
             glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         shader.setMat4("model", model_matrix);
-        graphics_manager.get_model(model.name).draw(shader,graphics_manager);
+        graphics_manager.getModel(model.name).draw(shader,graphics_manager);
     }
-    for( auto id : registry.get_entity_ids<c_model, c_transform>() )
+    for( auto id : registry.getEntityIDs<CModel, CTransform>() )
     {
         auto & model = models.get_item(id);
         auto & transform = transforms.get_item(id);
@@ -144,20 +144,20 @@ void s_render::draw_models(const registry & registry,graphics_manager& graphics_
             glm::scale(glm::mat4(1.0f), transform.scale) *
             glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         shader.setMat4("model", model_matrix);
-        graphics_manager.get_model(model.name).draw(shader,graphics_manager);
+        graphics_manager.getModel(model.name).draw(shader,graphics_manager);
     }
 
 }
 
-void s_render::draw_colliders(const registry & registry, graphics_manager& graphics_manager, sparse_set<c_transform> & transforms, shader_program & shader)
+void SRender::drawColliders(const Registry & registry, GraphicsManager& graphics_manager, SparseSet<CTransform> & transforms, ShaderProgram & shader)
 {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    auto & quads = registry.get_sparse_set<c_quad>();
-    auto & spheres = registry.get_sparse_set<c_sphere>();
-    for( auto id : registry.get_entity_ids<c_collider, c_transform>())
+    auto & quads = registry.getSparseSet<CQuad>();
+    auto & spheres = registry.getSparseSet<CSphere>();
+    for( auto id : registry.getEntityIDs<CCollider, CTransform>())
     {
-        if( registry.has_component<c_quad>(id) )
+        if( registry.hasComponent<CQuad>(id) )
         {
             auto & quad = quads.get_item(id);
             auto & transform = transforms.get_item(id);
@@ -166,10 +166,10 @@ void s_render::draw_colliders(const registry & registry, graphics_manager& graph
                 * glm::scale(glm::mat4(1.0f), quad.extents * transform.scale);
             shader.setMat4("model", model_matrix);
 
-            auto & mesh = graphics_manager.get_mesh("Cube");
+            auto & mesh = graphics_manager.getMesh("Cube");
             mesh.draw(shader,graphics_manager);
         }
-        else if( registry.has_component<c_sphere>(id) )
+        else if( registry.hasComponent<CSphere>(id) )
         {
             auto & sphere = spheres.get_item(id);
             auto & transform = transforms.get_item(id);
@@ -177,40 +177,40 @@ void s_render::draw_colliders(const registry & registry, graphics_manager& graph
                 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z) *
                 glm::scale(glm::mat4(1.0f), transform.scale * (sphere.radius*2));
             shader.setMat4("model", model_matrix);
-            auto & mesh = graphics_manager.get_mesh("Sphere");
+            auto & mesh = graphics_manager.getMesh("Sphere");
             mesh.draw(shader,graphics_manager);
         }
     }
 }
 
-void s_render::draw_ui(const registry &registry, graphics_manager& graphics_manager, sparse_set<c_transform> &transforms, shader_program &shader) {
+void SRender::drawUi(const Registry &registry, GraphicsManager& graphics_manager, SparseSet<CTransform> &transforms, ShaderProgram &shader) {
     glDisable(GL_DEPTH_TEST);
 
-    auto &ui = registry.get_sparse_set<c_ui>();
-    for (auto id : registry.get_entity_ids<c_ui, c_transform>()) {
+    auto &ui = registry.getSparseSet<CUI>();
+    for (auto id : registry.getEntityIDs<CUI, CTransform>()) {
         auto &transform = transforms.get_item(id);
         glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), transform.position) *
                                  glm::scale(glm::mat4(1.0f), transform.scale) *
                                  glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         shader.setMat4("model", model_matrix);
-        auto &mesh = graphics_manager.get_mesh("Quad");
+        auto &mesh = graphics_manager.getMesh("Quad");
         mesh.draw(shader,graphics_manager);
     }
 }
 
 
-void s_render::load_shaders(graphics_manager& graphics_manager)
+void SRender::loadShaders(GraphicsManager& graphics_manager)
 {
-    graphics_manager.load_shader(
+    graphics_manager.loadShader(
         "sources/Shaders/vertex.vs",
         "sources/Shaders/3D_texture.fs", "3D_texture");
-    graphics_manager.load_shader(
+    graphics_manager.loadShader(
             "sources/Shaders/vertex.vs",
             "sources/Shaders/3D_color.fs", "3D_color");
-    graphics_manager.load_shader(
+    graphics_manager.loadShader(
         "sources/Shaders/vertex.vs",
         "sources/Shaders/2D_color.fs", "2D_color");
-    graphics_manager.load_shader(
+    graphics_manager.loadShader(
             "sources/Shaders/vertex.vs",
             "sources/Shaders/2D_color.fs", "2D_color");
 }

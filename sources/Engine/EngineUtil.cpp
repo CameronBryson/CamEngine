@@ -1,9 +1,9 @@
 #include "EngineUtil.hpp"
-void engine_util::error_callback(int error, const char* description)
+void engine_util::errorCallback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
 }
-void engine_util::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void engine_util::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )
 	glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -16,7 +16,7 @@ void engine_util::key_callback(GLFWwindow* window, int key, int scancode, int ac
 	EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyRelease(key));
     }
 }
-void engine_util::mouse_key_callback(GLFWwindow* window, int button, int action, int mods)
+void engine_util::mouseKeyCallback(GLFWwindow* window, int button, int action, int mods)
 {
     if( action == GLFW_PRESS )
     {
@@ -27,39 +27,39 @@ void engine_util::mouse_key_callback(GLFWwindow* window, int button, int action,
 	EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyRelease(button));
     }
 }
-bool engine_util::is_key_release(int key)
+bool engine_util::isKeyReleased(int key)
 {
-    if( glfwGetKey(game_manager::get_glfw_window(), key) == GLFW_RELEASE )
+    if( glfwGetKey(GameManager::get_glfw_window(), key) == GLFW_RELEASE )
     {
 	return true;
     }
     return false;
 }
-bool engine_util::is_key_pressed(int key)
+bool engine_util::isKeyPressed(int key)
 {
-    if( glfwGetKey(game_manager::get_glfw_window(), key) == GLFW_PRESS )
+    if( glfwGetKey(GameManager::get_glfw_window(), key) == GLFW_PRESS )
     {
 	return true;
     }
     return false;
 }
-bool engine_util::is_mouse_button_release(int button)
+bool engine_util::isMouseButtonReleased(int button)
 {
-    if( glfwGetMouseButton(game_manager::get_glfw_window(), button) == GLFW_RELEASE )
+    if( glfwGetMouseButton(GameManager::get_glfw_window(), button) == GLFW_RELEASE )
     {
 	return true;
     }
     return false;
 }
-bool engine_util::is_mouse_button_pressed(int button)
+bool engine_util::isMouseButtonPressed(int button)
 {
-    if( glfwGetMouseButton(game_manager::get_glfw_window(), button) == GLFW_PRESS )
+    if( glfwGetMouseButton(GameManager::get_glfw_window(), button) == GLFW_PRESS )
     {
 	return true;
     }
     return false;
 }
-std::string engine_util::build_path(const std::string& path)
+std::string engine_util::buildPath(const std::string& path)
 {
 //#ifdef _WIN32
     auto current_path = std::filesystem::current_path();

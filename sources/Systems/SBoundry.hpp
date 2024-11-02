@@ -1,8 +1,8 @@
 #pragma once
-class registry;
-class s_boundry {
+class Registry;
+class SBoundary {
 public:
-    void update(registry& m_registry, float dt);
+    void update(Registry& m_registry, float dt);
 private:
 
 };

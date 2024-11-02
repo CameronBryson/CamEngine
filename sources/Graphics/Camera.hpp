@@ -29,8 +29,8 @@ public:
     float Zoom;
     glm::mat4 projection_matrix;
     glm::mat4 view_matrix;
-    c_transform * camera_follow_target_;
-    c_transform * skybox_tranform;
+    CTransform * camera_follow_target_;
+    CTransform * skybox_tranform;
     glm::vec3 follow_offset;
     double previous_mouse_x = 0;
     double previous_mouse_y = 0;

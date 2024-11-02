@@ -1,9 +1,9 @@
 #pragma once
-class registry;
-class s_ui {
+class Registry;
+class SUI {
 public:
     void init();
-    void update(const registry& registry);
+    void update(const Registry& registry);
     void shutdown();
 };
 

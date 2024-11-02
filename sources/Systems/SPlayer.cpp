@@ -22,21 +22,21 @@
 static constexpr float movespeed = 10.0f;
 static constexpr float rotation_speed = 0.25f;
 
-void s_player::update(registry & registry, Camera& camera, const float dt)
+void SPlayer::update(Registry & registry, Camera& camera, const float dt)
 {
-    auto & dynamic_bodies = registry.get_sparse_set<c_dynamic_body>();
-    auto & players = registry.get_sparse_set<c_player>();
-    auto & transforms = registry.get_sparse_set<c_transform>();
-    auto ids = registry.get_entity_ids<c_player, c_dynamic_body, c_transform>();
+    auto & dynamic_bodies = registry.getSparseSet<CDynamicBody>();
+    auto & players = registry.getSparseSet<CPlayer>();
+    auto & transforms = registry.getSparseSet<CTransform>();
+    auto ids = registry.getEntityIDs<CPlayer, CDynamicBody, CTransform>();
 
 
-    bool w = registry.get_key_action('W') == KeyAction::Start || registry.get_key_action('W') == KeyAction::Hold;
-    bool a = registry.get_key_action('A') == KeyAction::Start || registry.get_key_action('A') == KeyAction::Hold;
-    bool s = registry.get_key_action('S') == KeyAction::Start || registry.get_key_action('S') == KeyAction::Hold;
-    bool d = registry.get_key_action('D') == KeyAction::Start || registry.get_key_action('D') == KeyAction::Hold;
+    bool w = registry.getKeyAction('W') == KeyAction::Start || registry.getKeyAction('W') == KeyAction::Hold;
+    bool a = registry.getKeyAction('A') == KeyAction::Start || registry.getKeyAction('A') == KeyAction::Hold;
+    bool s = registry.getKeyAction('S') == KeyAction::Start || registry.getKeyAction('S') == KeyAction::Hold;
+    bool d = registry.getKeyAction('D') == KeyAction::Start || registry.getKeyAction('D') == KeyAction::Hold;
 
-    bool left_click = registry.get_key_action(GLFW_MOUSE_BUTTON_LEFT) == KeyAction::Start;
-    bool right_click = engine_util::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_RIGHT);
+    bool left_click = registry.getKeyAction(GLFW_MOUSE_BUTTON_LEFT) == KeyAction::Start;
+    bool right_click = engine_util::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT);
 
     for( const auto id : ids )
     {
@@ -65,9 +65,9 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
         {
 
             //printf("left click\n");
-            glm::vec2 mouse_pos = opengl_util::get_mouse_pos();
+            glm::vec2 mouse_pos = OpenGlUtil::getMousePos();
 
-            glm::vec2 window_size = opengl_util::get_window_size();
+            glm::vec2 window_size = OpenGlUtil::getWindowSize();
             float x = (mouse_pos.x/window_size.x) * 2.0f -1.0f;
             float y = -(mouse_pos.y / window_size.y) * 2.0+1.0f;
             std::cout<< x << " " << y << std::endl;
@@ -97,7 +97,7 @@ void s_player::update(registry & registry, Camera& camera, const float dt)
     }
 }
 
-void s_player::shutdown()
+void SPlayer::shutdown()
 {
 }
 

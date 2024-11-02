@@ -4,19 +4,19 @@
 
 
 // Component for player-specific data
-struct c_player
+struct CPlayer
 {
 };
 
 // Component for rendering-related data
-struct c_render
+struct CRender
 {
     int layer = 0;
     glm::vec3 color;
 };
 
 // Component for position, rotation, and scale
-struct c_transform
+struct CTransform
 {
     glm::vec3 position = {0, 0, 0};
     glm::vec3 rotation = {0, 0, 0};
@@ -25,19 +25,19 @@ struct c_transform
 
 
 // Component for collider-related data
-struct c_collider
+struct CCollider
 {
     bool is_trigger = false;
     unsigned int collision_bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
 
 };
 
-struct c_health
+struct CHealth
 {
     float health = 100;
 };
 
-struct c_enemy
+struct CEnemy
 {
     unsigned short target;
     float speed = 1.0f;
@@ -46,43 +46,33 @@ struct c_enemy
     float time_since_shoot = 0.0f;
 };
 
-struct c_quad
+struct CQuad
 {
     glm::vec3 extents;
 };
 
-struct c_sphere
+struct CSphere
 {
     float radius;
 };
 
-struct c_capsule
-{
-    float radius;
-    float height;
-};
 
-struct c_plane
-{
-    glm::vec3 normal;
-    float distance;
-};
-struct c_ui{
+struct CUI{
     bool follow_cursor = false;
 };
 
-struct c_model
+struct CModel
 {
     std::string name;
 };
-struct c_directional_light
+struct CDirectionalLight
 {
     glm::vec3 direction;
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
 };
-struct c_point_light
+struct CPointLight
 {
     glm::vec3 ambient;
     glm::vec3 diffuse;
@@ -92,7 +82,7 @@ struct c_point_light
     float linear;
     float quadratic;
 };
-struct c_dynamic_body
+struct CDynamicBody
 {
     float drag = 0.0f;
     float elasticity = 0.1f;
@@ -105,20 +95,20 @@ struct c_dynamic_body
     //glm::vec3 gravity = {0, -9.81f, 0};
     //need listener to check if this entities collider collides with something with ground tag and update grounded bool
 };
-struct c_damage
+struct CDamage
 {
     float damage = 10;
 };
-struct c_background
+struct CBackground
 {
 
 };
-struct c_asteroid
+struct CAsteroid
 {
     unsigned short target;
     float speed;
 };
-struct c_repeat_acceleration
+struct CRepeatAcceleration
 {
     glm::vec3 acceleration = {0,0,0};
     glm::vec3 angularAcceleration = {0,0,0};

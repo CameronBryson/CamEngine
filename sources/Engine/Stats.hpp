@@ -2,7 +2,7 @@
 #include <chrono>
 #include <vector>
 
-class stats
+class Stats
 {
 public:
     enum stat_type

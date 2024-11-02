@@ -2,13 +2,13 @@
 #include "Stats.hpp"
 #include <chrono>
 
-class timer
+class Timer
 {
 public:
-  explicit timer(const stats::stat_type type);
+  explicit Timer(const Stats::stat_type type);
 
-  ~timer();
+  ~Timer();
 private:
     std::chrono::time_point<std::chrono::system_clock> start_, end_;
-    stats::stat_type stat_type_;
+    Stats::stat_type stat_type_;
 };

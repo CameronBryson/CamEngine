@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-shader_program::shader_program(const char* vertexPath, const char* fragmentPath)
+ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath)
 {
     // 1. retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
@@ -17,12 +17,12 @@ shader_program::shader_program(const char* vertexPath, const char* fragmentPath)
     {
 	// open files
 	//vShaderFile.open(vertexPath);
-	auto path = engine_util::build_path(vertexPath);
+	auto path = engine_util::buildPath(vertexPath);
 
-	vShaderFile.open(engine_util::build_path(vertexPath));
+	vShaderFile.open(engine_util::buildPath(vertexPath));
 
 	//fShaderFile.open(fragmentPath);
-	fShaderFile.open(engine_util::build_path(fragmentPath));
+	fShaderFile.open(engine_util::buildPath(fragmentPath));
 
 	std::stringstream vShaderStream, fShaderStream;
 	// read file's buffer contents into streams
@@ -40,37 +40,37 @@ shader_program::shader_program(const char* vertexPath, const char* fragmentPath)
 	std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
     }
 
-    ID = opengl_util::create_shader(vertexCode, fragmentCode);
+    ID = OpenGlUtil::createShader(vertexCode, fragmentCode);
 }
-void shader_program::use() const
+void ShaderProgram::use() const
 {
-    opengl_util::use_shader(ID);
+    OpenGlUtil::useShader(ID);
 }
-void shader_program::setBool(const std::string& name, bool value) const
+void ShaderProgram::setBool(const std::string& name, bool value) const
 {
-    opengl_util::set_shader_bool(ID, name, value);
+    OpenGlUtil::setShaderBool(ID, name, value);
 }
-void shader_program::setInt(const std::string& name, int value) const
+void ShaderProgram::setInt(const std::string& name, int value) const
 {
-    opengl_util::set_shader_int(ID, name, value);
+    OpenGlUtil::setShaderInt(ID, name, value);
 }
-void shader_program::setFloat(const std::string& name, float value) const
+void ShaderProgram::setFloat(const std::string& name, float value) const
 {
-    opengl_util::set_shader_float(ID, name, value);
+    OpenGlUtil::setShaderFloat(ID, name, value);
 }
-void shader_program::setVec2(const std::string& name, const glm::vec2& value) const
+void ShaderProgram::setVec2(const std::string& name, const glm::vec2& value) const
 {
-    opengl_util::set_shader_vec2(ID, name, value);
+    OpenGlUtil::setShaderVec2(ID, name, value);
 }
-void shader_program::setVec3(const std::string& name, const glm::vec3& value) const
+void ShaderProgram::setVec3(const std::string& name, const glm::vec3& value) const
 {
-    opengl_util::set_shader_vec3(ID, name, value);
+    OpenGlUtil::setShaderVec3(ID, name, value);
 }
-void shader_program::setVec4(const std::string& name, const glm::vec4& value) const
+void ShaderProgram::setVec4(const std::string& name, const glm::vec4& value) const
 {
-    opengl_util::set_shader_vec4(ID, name, value);
+    OpenGlUtil::setShaderVec4(ID, name, value);
 }
-void shader_program::setMat4(const std::string& name, const glm::mat4& mat) const
+void ShaderProgram::setMat4(const std::string& name, const glm::mat4& mat) const
 {
-    opengl_util::set_shader_mat4(ID, name, mat);
+    OpenGlUtil::setShaderMat4(ID, name, mat);
 }

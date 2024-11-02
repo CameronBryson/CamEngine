@@ -4,50 +4,50 @@
 #include "Engine/IScene.hpp"
 
 class Camera;
-class registry;
-class s_camera;
-class s_collision;
-class s_health;
-class s_physics;
-class s_render;
-class s_ui;
-class s_player;
-class s_enemy;
-class s_wave_spawn;
-class s_asteroid;
-class s_boundry;
-class factory;
-class graphics_manager;
+class Registry;
+class SCamera;
+class SCollision;
+class SHealth;
+class SPhysics;
+class SRender;
+class SUI;
+class SPlayer;
+class SEnemy;
+class SWaveSpawn;
+class SAsteroid;
+class SBoundary;
+class Factory;
+class GraphicsManager;
 
-class play_scene final : public i_scene
+class PlayScene final : public IScene
 {
 public:
-    play_scene();
-    ~play_scene() override;
+    PlayScene();
+    ~PlayScene() override;
     void init() override;
     void update(float dt) override;
-    void late_update(float dt) override;
+    void lateUpdate(float dt) override;
     void render() override;
     void shutdown() override;
-    registry& get_registry() override;
+    Registry& getRegistry() override;
 
 private:
-    void init_sparse_sets();
+    void initSparseSets();
 
 private:
-    std::unique_ptr<registry> m_registry_;
-    std::unique_ptr<factory> m_factory_;
+    std::unique_ptr<Registry> m_registry_;
+    std::unique_ptr<Factory> m_factory_;
     std::unique_ptr<Camera> m_camera_;
-    std::unique_ptr<graphics_manager> m_graphics_manager_;
-    std::unique_ptr<s_player> m_system_player_;
-    std::unique_ptr<s_camera> m_system_camera_;
-    std::unique_ptr<s_collision> m_system_collision_;
-    std::unique_ptr<s_health> m_system_health_;
-    std::unique_ptr<s_physics> m_system_physics_;
-    std::unique_ptr<s_render> m_system_render_;
-    std::unique_ptr<s_ui> m_system_ui_;
-    std::unique_ptr<s_enemy> m_system_enemy_;
-    std::unique_ptr<s_wave_spawn> m_system_wave_spawn_;
-    std::unique_ptr<s_asteroid> m_system_asteroid_;
-    std::unique_ptr<s_boundry> m_system_boundry_;
+    std::unique_ptr<GraphicsManager> m_graphics_manager_;
+    std::unique_ptr<SPlayer> m_system_player_;
+    std::unique_ptr<SCamera> m_system_camera_;
+    std::unique_ptr<SCollision> m_system_collision_;
+    std::unique_ptr<SHealth> m_system_health_;
+    std::unique_ptr<SPhysics> m_system_physics_;
+    std::unique_ptr<SRender> m_system_render_;
+    std::unique_ptr<SUI> m_system_ui_;
+    std::unique_ptr<SEnemy> m_system_enemy_;
+    std::unique_ptr<SWaveSpawn> m_system_wave_spawn_;
+    std::unique_ptr<SAsteroid> m_system_asteroid_;
+    std::unique_ptr<SBoundary> m_system_boundry_;
 };

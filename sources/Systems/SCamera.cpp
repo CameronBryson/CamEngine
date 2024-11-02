@@ -10,7 +10,7 @@
 static constexpr float camera_movespeed = 100.0f;
 static constexpr float camera_rotationspeed = 500.0f;
 
-void s_camera::update(Camera & camera, const float dt)
+void SCamera::update(Camera & camera, const float dt)
 {
     //eventually change to lerp
     glm::vec3 camera_position = camera.camera_follow_target_ ? camera.camera_follow_target_->position + camera.follow_offset : camera.Position;
@@ -18,16 +18,16 @@ void s_camera::update(Camera & camera, const float dt)
     const glm::vec3 right = camera.Right;
     const glm::vec3 up = camera.Up;
 
-    bool I = engine_util::is_key_pressed('I');
-    bool K = engine_util::is_key_pressed('K');
-    bool J = engine_util::is_key_pressed('J');
-    bool L = engine_util::is_key_pressed('L');
-    bool U = engine_util::is_key_pressed('U');
-    bool O = engine_util::is_key_pressed('O');
-    bool UP = engine_util::is_key_pressed(GLFW_KEY_UP);
-    bool DOWN = engine_util::is_key_pressed(GLFW_KEY_DOWN);
-    bool LEFT = engine_util::is_key_pressed(GLFW_KEY_LEFT);
-    bool RIGHT = engine_util::is_key_pressed(GLFW_KEY_RIGHT);
+    bool I = engine_util::isKeyPressed('I');
+    bool K = engine_util::isKeyPressed('K');
+    bool J = engine_util::isKeyPressed('J');
+    bool L = engine_util::isKeyPressed('L');
+    bool U = engine_util::isKeyPressed('U');
+    bool O = engine_util::isKeyPressed('O');
+    bool UP = engine_util::isKeyPressed(GLFW_KEY_UP);
+    bool DOWN = engine_util::isKeyPressed(GLFW_KEY_DOWN);
+    bool LEFT = engine_util::isKeyPressed(GLFW_KEY_LEFT);
+    bool RIGHT = engine_util::isKeyPressed(GLFW_KEY_RIGHT);
 
     if (camera.camera_follow_target_ == nullptr) {
         if (I) camera_position += forward * camera_movespeed * dt;

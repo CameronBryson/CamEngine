@@ -6,9 +6,9 @@
 #include "Material.hpp"
 #include <iostream>
 
-void opengl_util::init()
+void OpenGlUtil::init()
 {
-    glfwSetErrorCallback(engine_util::error_callback);
+    glfwSetErrorCallback(engine_util::errorCallback);
     if( ! glfwInit() )
     {
         exit(EXIT_FAILURE);
@@ -25,22 +25,22 @@ void opengl_util::init()
         exit(EXIT_FAILURE);
     }
     glfwMakeContextCurrent(game_window);
-    glfwSetKeyCallback(game_window, engine_util::key_callback);
-    glfwSetMouseButtonCallback(game_window, engine_util::mouse_key_callback);
-    glfwSetFramebufferSizeCallback(game_window, opengl_util::framebuffer_size_callback);
+    glfwSetKeyCallback(game_window, engine_util::keyCallback);
+    glfwSetMouseButtonCallback(game_window, engine_util::mouseKeyCallback);
+    glfwSetFramebufferSizeCallback(game_window, OpenGlUtil::framebufferSizeCallback);
     glfwSwapInterval(0);
     gladLoadGL(glfwGetProcAddress);
 
 
     glClearColor(1, 1, 1, 1);
 
-    game_manager::set_glfw_window(game_window);
+    GameManager::set_glfw_window(game_window);
 }
 
-void opengl_util::draw_line(glm::vec2 start, glm::vec2 end, glm::vec3 color)
+void OpenGlUtil::drawLine(glm::vec2 start, glm::vec2 end, glm::vec3 color)
 {
-    convert_point_to_screen(start);
-    convert_point_to_screen(end);
+    convertPointToScreen(start);
+    convertPointToScreen(end);
     glBegin(GL_LINES);
     glColor3f(color.r, color.g, color.b);
     glVertex2f(start.x, start.y);
@@ -48,84 +48,84 @@ void opengl_util::draw_line(glm::vec2 start, glm::vec2 end, glm::vec3 color)
     glEnd();
 }
 
-void opengl_util::draw_text(const char* text, int posX, int posY, int fontSize, glm::vec3 color)
+void OpenGlUtil::drawText(const char* text, int posX, int posY, int fontSize, glm::vec3 color)
 {
 }
 
-void opengl_util::clear_background()
+void OpenGlUtil::clearBackground()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-glm::vec2 opengl_util::convert_point_to_screen(glm::vec2& point)
+glm::vec2 OpenGlUtil::convertPointToScreen(glm::vec2& point)
 {
     point.x = ((point.x / settings::window_width) * 2.0f) - 1.0f;
     point.y = ((point.y / settings::window_height) * 2.0f) - 1.0f;
     return point;
 }
 
-void opengl_util::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void OpenGlUtil::framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-void opengl_util::delete_shader_program(unsigned ID)
+void OpenGlUtil::deleteShaderProgram(unsigned ID)
 {
     glDeleteProgram(ID);
 }
 
-void opengl_util::setup_mesh(const std::vector<vertex>& vertices, unsigned int& VAO, unsigned int& VBO)
+void OpenGlUtil::setupMesh(const std::vector<Vertex>& vertices, unsigned int& VAO, unsigned int& VBO)
 {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
 
     // position attribute
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
     // vertex normals
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
     // vertex texture coords
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texture_coordinates));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_coordinates));
 
 
     glBindVertexArray(0);
 }
 
-void opengl_util::draw_mesh(const shader_program& shader, graphics_manager& graphics_manager, const std::string& material_name, unsigned int VAO,
+void OpenGlUtil::drawMesh(const ShaderProgram& shader, GraphicsManager& graphics_manager, const std::string& material_name, unsigned int VAO,
     unsigned int index_count)
 {
-    graphics_manager.get_material(material_name).bind(shader);
+    graphics_manager.getMaterial(material_name).bind(shader);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, index_count);
     glBindVertexArray(0);
-    graphics_manager.get_material(material_name).unbind();
+    graphics_manager.getMaterial(material_name).unbind();
 }
 
-void opengl_util::bind_texture(GLuint texture)
+void OpenGlUtil::bindTexture(GLuint texture)
 {
     glBindTexture(GL_TEXTURE_2D, texture);
 }
 
-void opengl_util::unbind_texture()
+void OpenGlUtil::unbindTexture()
 {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void opengl_util::delete_texture(GLuint texture)
+void OpenGlUtil::deleteTexture(GLuint texture)
 {
     glDeleteTextures(1, &texture);
 }
 
-void opengl_util::create_texture(const std::string& file, unsigned char* data, GLuint& texture_id)
+void OpenGlUtil::createTexture(const std::string& file, unsigned char* data, GLuint& texture_id)
 {
     glGenTextures(1, &texture_id);
     glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -137,7 +137,7 @@ void opengl_util::create_texture(const std::string& file, unsigned char* data, G
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    data = stbi_load(engine_util::build_path(file).c_str(), &width, &height, &nrChannels, 0);
+    data = stbi_load(engine_util::buildPath(file).c_str(), &width, &height, &nrChannels, 0);
     if (!data)
     {
         throw std::runtime_error("Failed to load texture: " + std::string(file));
@@ -147,12 +147,12 @@ void opengl_util::create_texture(const std::string& file, unsigned char* data, G
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    unbind_texture();
+    unbindTexture();
 
     stbi_image_free(data);
 }
 
-void opengl_util::bind_material(const shader_program & shader, const texture * diffuse_texture, const texture * specular_texture, const glm::vec3 ambient_color,
+void OpenGlUtil::bindMaterial(const ShaderProgram & shader, const Texture * diffuse_texture, const Texture * specular_texture, const glm::vec3 ambient_color,
     const glm::vec3 diffuse_color, const glm::vec3 specular_color, const float shininess)
 {
     if (diffuse_texture)
@@ -181,19 +181,19 @@ void opengl_util::bind_material(const shader_program & shader, const texture * d
     shader.setVec3("material.ambient", ambient_color);
 }
 
-void opengl_util::unbind_material(const texture * diffuse_texture, const texture * specular_texture)
+void OpenGlUtil::unbindMaterial(const Texture * diffuse_texture, const Texture * specular_texture)
 {
     if(diffuse_texture)
     {
-        texture::unbind();
+        Texture::unbind();
     }
     if(specular_texture)
     {
-        texture::unbind();
+        Texture::unbind();
     }
 }
 
-unsigned int opengl_util::create_shader(const std::string & vertex_shader, const std::string & fragment_shader)
+unsigned int OpenGlUtil::createShader(const std::string & vertex_shader, const std::string & fragment_shader)
 {
     const char* vShaderCode = vertex_shader.c_str();
     const char* fShaderCode = fragment_shader.c_str();
@@ -201,18 +201,18 @@ unsigned int opengl_util::create_shader(const std::string & vertex_shader, const
     unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vShaderCode, NULL);
     glCompileShader(vertex);
-    check_shader_compile_error(vertex, "VERTEX");
+    checkShaderCompileError(vertex, "VERTEX");
     // fragment Shader
     unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fShaderCode, NULL);
     glCompileShader(fragment);
-    check_shader_compile_error(fragment, "FRAGMENT");
+    checkShaderCompileError(fragment, "FRAGMENT");
     // shader Program
     unsigned int ID = glCreateProgram();
     glAttachShader(ID, vertex);
     glAttachShader(ID, fragment);
     glLinkProgram(ID);
-    check_shader_compile_error(ID, "PROGRAM");
+    checkShaderCompileError(ID, "PROGRAM");
     // delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(vertex);
     glDeleteShader(fragment);
@@ -220,7 +220,7 @@ unsigned int opengl_util::create_shader(const std::string & vertex_shader, const
     return ID;
 }
 
-void opengl_util::check_shader_compile_error(unsigned shader, std::string type)
+void OpenGlUtil::checkShaderCompileError(unsigned shader, std::string type)
 {
     GLint success;
     GLchar infoLog[1024];
@@ -246,53 +246,53 @@ void opengl_util::check_shader_compile_error(unsigned shader, std::string type)
     }
 }
 
-void opengl_util::use_shader(unsigned shader)
+void OpenGlUtil::useShader(unsigned shader)
 {
     glUseProgram(shader);
 }
 
-void opengl_util::set_shader_bool(unsigned int shader_id, const std::string & name, bool value)
+void OpenGlUtil::setShaderBool(unsigned int shader_id, const std::string & name, bool value)
 {
     glUniform1i(glGetUniformLocation(shader_id, name.c_str()), (int)value);
 }
 
-void opengl_util::set_shader_int(unsigned int shader_id, const std::string & name, int value)
+void OpenGlUtil::setShaderInt(unsigned int shader_id, const std::string & name, int value)
 {
     glUniform1i(glGetUniformLocation(shader_id, name.c_str()), value);
 }
 
-void opengl_util::set_shader_float(unsigned int shader_id, const std::string & name, float value)
+void OpenGlUtil::setShaderFloat(unsigned int shader_id, const std::string & name, float value)
 {
     glUniform1f(glGetUniformLocation(shader_id, name.c_str()), value);
 }
 
-void opengl_util::set_shader_vec2(unsigned int shader_id, const std::string & name, const glm::vec2 & value)
+void OpenGlUtil::setShaderVec2(unsigned int shader_id, const std::string & name, const glm::vec2 & value)
 {
     glUniform2fv(glGetUniformLocation(shader_id, name.c_str()), 1, &value[0]);
 }
 
-void opengl_util::set_shader_vec3(unsigned int shader_id, const std::string & name, const glm::vec3 & value)
+void OpenGlUtil::setShaderVec3(unsigned int shader_id, const std::string & name, const glm::vec3 & value)
 {
     glUniform3fv(glGetUniformLocation(shader_id, name.c_str()), 1, &value[0]);
 }
 
-void opengl_util::set_shader_vec4(unsigned int shader_id, const std::string & name, const glm::vec4 & value)
+void OpenGlUtil::setShaderVec4(unsigned int shader_id, const std::string & name, const glm::vec4 & value)
 {
     glUniform4fv(glGetUniformLocation(shader_id, name.c_str()), 1, &value[0]);
 }
 
-void opengl_util::set_shader_mat4(unsigned int shader_id, const std::string & name, const glm::mat4 & value)
+void OpenGlUtil::setShaderMat4(unsigned int shader_id, const std::string & name, const glm::mat4 & value)
 {
     glUniformMatrix4fv(glGetUniformLocation(shader_id, name.c_str()), 1, GL_FALSE, &value[0][0]);
 }
-glm::vec2 opengl_util::get_window_size(){
+glm::vec2 OpenGlUtil::getWindowSize(){
     int width,height;
-    glfwGetWindowSize(game_manager::get_glfw_window(), &width, &height);
+    glfwGetWindowSize(GameManager::get_glfw_window(), &width, &height);
     return {width,height};
 }
-glm::vec2 opengl_util::get_mouse_pos(){
+glm::vec2 OpenGlUtil::getMousePos(){
     double x, y;
-    glfwGetCursorPos(game_manager::get_glfw_window(),&x,&y);
+    glfwGetCursorPos(GameManager::get_glfw_window(),&x,&y);
     return {x,y};
 }
 

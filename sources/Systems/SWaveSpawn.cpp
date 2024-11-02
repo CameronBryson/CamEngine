@@ -7,7 +7,7 @@
 #include <GameSettings.hpp>
 #include <Engine/EventHandler.hpp>
 
-void s_wave_spawn::update(registry & registry, float dt)
+void SWaveSpawn::update(Registry & registry, float dt)
 {
     time_since_enemy_spawn+=dt;
     time_since_asteroid_spawn+=dt;

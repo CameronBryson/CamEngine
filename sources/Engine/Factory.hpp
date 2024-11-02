@@ -1,27 +1,26 @@
 #pragma once
 #include "FactoryEvents.hpp"
 #include "Event.hpp"
-class registry;
-class c_transform;
-class factory
+class Registry;
+class Factory
 {
 public:
-    explicit factory(registry& registry);
-    ~factory();
-    void on_factory_create_projectile_event(const Event<FactoryEvents>& event);
-    void on_factory_create_enemy_event(const Event<FactoryEvents>& event);
-    void on_factory_create_asteroid_event(const Event<FactoryEvents>& event);
-    void on_factory_create_space_debris_event(const Event<FactoryEvents>& event);
-    unsigned short create_player(registry& registry);
+    explicit Factory(Registry& registry);
+    ~Factory();
+    void onFactoryCreateProjectileEvent(const Event<FactoryEvents>& event);
+    void onFactoryCreateEnemyEvent(const Event<FactoryEvents>& event);
+    void onFactoryCreateAsteroidEvent(const Event<FactoryEvents>& event);
+    void onFactoryCreateSpaceDebrisEvent(const Event<FactoryEvents>& event);
+    unsigned short createPlayer(Registry& registry);
 
-    unsigned short create_skybox(registry& registry, glm::vec3 position, float radius);
-    unsigned short create_boundry(registry& registry, glm::vec3 position, glm::vec3 extents);
-    unsigned short create_directional_light(registry& registry, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
-    unsigned short create_point_light(registry& registry, glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic);
-    unsigned short create_projectile(registry& registry, glm::vec3 position, glm::vec3 direction, float speed, unsigned int collision_bitmask);
-    unsigned short create_enemy_ship(registry& registry, glm::vec3 position, float radius, glm::vec3 direction, float speed, unsigned short target);
-    unsigned short create_asteroid(registry& registry, glm::vec3 position, float radius, float speed, unsigned short target);
-    unsigned short create_space_debris(registry& registry, glm::vec3 position, glm::vec3 direction, glm::vec3 spin, float speed);
+    unsigned short createSkybox(Registry& registry, glm::vec3 position, float radius);
+    unsigned short createBoundary(Registry& registry, glm::vec3 position, glm::vec3 extents);
+    unsigned short createDirectionalLight(Registry& registry, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+    unsigned short createPointLight(Registry& registry, glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic);
+    unsigned short createProjectile(Registry& registry, glm::vec3 position, glm::vec3 direction, float speed, unsigned int collision_bitmask);
+    unsigned short createEnemyShip(Registry& registry, glm::vec3 position, float radius, glm::vec3 direction, float speed, unsigned short target);
+    unsigned short createAsteroid(Registry& registry, glm::vec3 position, float radius, float speed, unsigned short target);
+    unsigned short createSpaceDebris(Registry& registry, glm::vec3 position, glm::vec3 direction, glm::vec3 spin, float speed);
 private:
-    registry& m_registry_;
+    Registry& m_registry_;
 };

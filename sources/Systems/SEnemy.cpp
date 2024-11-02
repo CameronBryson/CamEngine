@@ -5,12 +5,12 @@
 
 #include <Engine/Registry.hpp>
 
-void s_enemy::update(registry & registry, float dt)
+void SEnemy::update(Registry & registry, float dt)
 {
-    auto & enemies = registry.get_sparse_set<c_enemy>();
-    auto & transforms = registry.get_sparse_set<c_transform>();
-    auto & dynamic_bodies = registry.get_sparse_set<c_dynamic_body>();
-    auto ids = registry.get_entity_ids<c_enemy,c_transform,c_dynamic_body>();
+    auto & enemies = registry.getSparseSet<CEnemy>();
+    auto & transforms = registry.getSparseSet<CTransform>();
+    auto & dynamic_bodies = registry.getSparseSet<CDynamicBody>();
+    auto ids = registry.getEntityIDs<CEnemy,CTransform,CDynamicBody>();
     for (unsigned short id : ids)
     {
         auto & enemy = enemies.get_item(id);

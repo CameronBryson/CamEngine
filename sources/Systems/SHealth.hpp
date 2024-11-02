@@ -1,10 +1,10 @@
 #pragma once
 #include "Engine/HealthEvents.hpp"
 #include "Engine/Event.hpp"
-class registry;
+class Registry;
 
-class s_health {
+class SHealth {
 public:
-    void update(registry& registry, float dt);
+    void update(Registry& registry, float dt);
 };
 

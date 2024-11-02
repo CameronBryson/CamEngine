@@ -1,12 +1,12 @@
 #pragma once
 
 
-class registry;
-class c_transform;
+class Registry;
+class CTransform;
 
-class s_enemy {
+class SEnemy {
 public:
-    void update(registry& registry, float dt);
+    void update(Registry& registry, float dt);
 private:
 
 };

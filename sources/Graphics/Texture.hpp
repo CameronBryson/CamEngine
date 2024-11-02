@@ -3,14 +3,14 @@
 
 #include "OpenGLUtil.hpp"
 
-class texture
+class Texture
 {
 public:
-  explicit texture(const std::string& file);
+  explicit Texture(const std::string& file);
 
   void bind() const;
   static void unbind();
-  void delete_texture() const;
+  void deleteTexture() const;
 private:
     GLuint texture_id = 0;
     unsigned char* data = nullptr;

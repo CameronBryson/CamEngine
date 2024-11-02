@@ -1,17 +1,17 @@
 #include "Texture.hpp" 
-texture::texture(const std::string& file)
+Texture::Texture(const std::string& file)
 {
-    opengl_util::create_texture(file, data, texture_id);
+    OpenGlUtil::createTexture(file, data, texture_id);
 }
-void texture::bind() const
+void Texture::bind() const
 {
-    opengl_util::bind_texture(texture_id);
+    OpenGlUtil::bindTexture(texture_id);
 }
-void texture::unbind()
+void Texture::unbind()
 {
-    opengl_util::unbind_texture();
+    OpenGlUtil::unbindTexture();
 }
-void texture::delete_texture() const
+void Texture::deleteTexture() const
 {
-    opengl_util::delete_texture(texture_id);
+    OpenGlUtil::deleteTexture(texture_id);
 }

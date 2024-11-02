@@ -12,60 +12,60 @@
 #include <Graphics/Material.hpp>
 #include <Graphics/Mesh.hpp>
 
-start_scene::start_scene()
+StartScene::StartScene()
 {
     printf("Start Scene created\n");
     m_camera_ = std::make_unique<Camera>(glm::vec3 {0.0f, 0.0f, 0.0f});
-    m_registry_ = std::make_unique<registry>();
-    m_factory_ = std::make_unique<factory>(get_registry());
-    m_system_render_ = std::make_unique<s_render>();
-    m_graphics_manager_ = std::make_unique<graphics_manager>();
+    m_registry_ = std::make_unique<Registry>();
+    m_factory_ = std::make_unique<Factory>(getRegistry());
+    m_system_render_ = std::make_unique<SRender>();
+    m_graphics_manager_ = std::make_unique<GraphicsManager>();
 }
 
-start_scene::~start_scene()
+StartScene::~StartScene()
 {
     printf("Start Scene destroyed\n");
 }
 
-void start_scene::init()
+void StartScene::init()
 {
-    init_sparse_sets();
+    initSparseSets();
     m_system_render_->init(*m_graphics_manager_);
-    m_factory_->create_boundry(*m_registry_, glm::vec3{-20,0,0}, glm::vec3{1,10,1});
+    m_factory_->createBoundary(*m_registry_, glm::vec3{-20,0,0}, glm::vec3{1,10,1});
 }
 
-void start_scene::update(float dt)
+void StartScene::update(float dt)
 {
 }
 
-void start_scene::late_update(float dt)
+void StartScene::lateUpdate(float dt)
 {
 }
 
-void start_scene::render()
+void StartScene::render()
 {
-    m_system_render_->update(get_registry(),*m_graphics_manager_, *m_camera_);
+    m_system_render_->update(getRegistry(),*m_graphics_manager_, *m_camera_);
 }
 
-void start_scene::shutdown()
+void StartScene::shutdown()
 {
 }
 
-registry & start_scene::get_registry()
+Registry & StartScene::getRegistry()
 {
     return *m_registry_;
 }
 
-void start_scene::init_sparse_sets()
+void StartScene::initSparseSets()
 {
-    m_registry_->create_sparse_set<c_transform>();
-    m_registry_->create_sparse_set<c_model>();
-    m_registry_->create_sparse_set<c_ui>();
-    m_registry_->create_sparse_set<c_directional_light>();
-    m_registry_->create_sparse_set<c_point_light>();
-    m_registry_->create_sparse_set<c_background>();
-    m_registry_->create_sparse_set<c_quad>();
-    m_registry_->create_sparse_set<c_sphere>();
-    m_registry_->create_sparse_set<c_collider>();
+    m_registry_->createSparseSet<CTransform>();
+    m_registry_->createSparseSet<CModel>();
+    m_registry_->createSparseSet<CUI>();
+    m_registry_->createSparseSet<CDirectionalLight>();
+    m_registry_->createSparseSet<CPointLight>();
+    m_registry_->createSparseSet<CBackground>();
+    m_registry_->createSparseSet<CQuad>();
+    m_registry_->createSparseSet<CSphere>();
+    m_registry_->createSparseSet<CCollider>();
 
 }

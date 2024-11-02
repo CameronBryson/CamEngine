@@ -11,60 +11,60 @@
 #include "Vertex.hpp"
 #include "Mesh.hpp"
 
-shader_program & graphics_manager::load_shader(const char * vShaderFile, const char * fShaderFile, const std::string & name)
+ShaderProgram & GraphicsManager::loadShader(const char * vShaderFile, const char * fShaderFile, const std::string & name)
 {
-    shader_map[name] = std::make_unique<shader_program>(vShaderFile, fShaderFile);
+    shader_map[name] = std::make_unique<ShaderProgram>(vShaderFile, fShaderFile);
     return *shader_map[name];
 }
 
-shader_program & graphics_manager::get_shader(const std::string & name)
+ShaderProgram & GraphicsManager::getShader(const std::string & name)
 {
     return *shader_map[name];
 }
 
-texture & graphics_manager::load_texture(const char * file, const std::string & name)
+Texture & GraphicsManager::loadTexture(const char * file, const std::string & name)
 {
-    texture_map[name] = std::make_unique<texture>(file);
+    texture_map[name] = std::make_unique<Texture>(file);
     return *texture_map[name];
 }
 
-texture & graphics_manager::get_texture(const std::string & name)
+Texture & GraphicsManager::getTexture(const std::string & name)
 {
     return *texture_map[name];
 }
 
-mesh & graphics_manager::create_mesh(const std::string& name,  const std::vector<vertex>& vertices, const std::string& material_name)
+Mesh & GraphicsManager::createMesh(const std::string& name,  const std::vector<Vertex>& vertices, const std::string& material_name)
 {
-    mesh_map[name] = std::make_unique<mesh>(vertices,material_name);
+    mesh_map[name] = std::make_unique<Mesh>(vertices,material_name);
     return *mesh_map[name];
 }
 
-mesh & graphics_manager::get_mesh(const std::string & name)
+Mesh & GraphicsManager::getMesh(const std::string & name)
 {
     return *mesh_map[name];
 }
 
-model & graphics_manager::create_model(const std::vector<std::string> & mesh_names, const std::string & name)
+Model & GraphicsManager::createModel(const std::vector<std::string> & mesh_names, const std::string & name)
 {
-    model_map[name] = std::make_unique<model>(mesh_names);
+    model_map[name] = std::make_unique<Model>(mesh_names);
     return *model_map[name];
 }
 
-model & graphics_manager::create_model_from_obj(const char * file, const std::string & name)
+Model & GraphicsManager::createModelFromObj(const char * file, const std::string & name)
 {
-    return create_model(load_obj(file), name);
+    return createModel(loadObj(file), name);
 }
 
-model & graphics_manager::get_model(const std::string & name)
+Model & GraphicsManager::getModel(const std::string & name)
 {
     return *model_map[name];
 }
 
-void graphics_manager::Clear()
+void GraphicsManager::Clear()
 {
     // (properly) delete all shaders
     for( auto & iter : shader_map )
-        opengl_util::delete_shader_program(iter.second->ID);
+        OpenGlUtil::deleteShaderProgram(iter.second->ID);
     // (properly) delete all textures
     for( auto & iter : texture_map )
     {
@@ -72,10 +72,10 @@ void graphics_manager::Clear()
     //glDeleteTextures(1, &iter.second->ID);
 }
 
-std::vector<std::string> graphics_manager::load_obj(const char * file)
+std::vector<std::string> GraphicsManager::loadObj(const char * file)
 {
-    auto test = engine_util::build_path(file);
-    std::ifstream obj_file(engine_util::build_path(file));
+    auto test = engine_util::buildPath(file);
+    std::ifstream obj_file(engine_util::buildPath(file));
     if( ! obj_file.is_open() )
     {
         std::cerr << "Failed to open file: " << file << std::endl;
@@ -87,7 +87,7 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
     std::vector<glm::vec2> temp_uvs;
     std::vector<glm::vec3> temp_normals;
     std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
-    std::vector<vertex> vertices;
+    std::vector<Vertex> vertices;
     std::string currentMaterial = "Default";
 
     std::string line, currentMeshName;
@@ -97,7 +97,7 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
     {
         for( size_t i = 0; i < vertexIndices.size(); i++ )
         {
-            vertex v{};
+            Vertex v{};
             v.position = temp_vertices[vertexIndices[i]];
             v.texture_coordinates = temp_uvs[uvIndices[i]];
             v.normal = temp_normals[normalIndices[i]];
@@ -105,7 +105,7 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
         }
         //create_mesh(currentMeshName, vertices, "Default");
 
-        create_mesh(currentMeshName, vertices, currentMaterial);
+        createMesh(currentMeshName, vertices, currentMaterial);
         mesh_names.push_back(currentMeshName);
     };
 
@@ -159,7 +159,7 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
         {
             std::string mtl_file;
             line_stream >> mtl_file;
-            load_mtl(mtl_file.c_str());
+            loadMtl(mtl_file.c_str());
         }
     }
 
@@ -168,22 +168,22 @@ std::vector<std::string> graphics_manager::load_obj(const char * file)
     return mesh_names;
 }
 
-material & graphics_manager::create_material(std::string & name, std::string & diffuse_path, std::string & specular_path, float & shininess,
+Material & GraphicsManager::createMaterial(std::string & name, std::string & diffuse_path, std::string & specular_path, float & shininess,
     glm::vec3 & ambient_color, glm::vec3 & diffuse_color, glm::vec3 & specular_color)
 {
-    material_map[name] = std::make_unique<material>(diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
+    material_map[name] = std::make_unique<Material>(diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
     return *material_map[name];
 }
 
-material & graphics_manager::get_material(const std::string & name)
+Material & GraphicsManager::getMaterial(const std::string & name)
 {
     return *material_map[name];
 }
 
-std::vector<std::string> graphics_manager::load_mtl(const char * file)
+std::vector<std::string> GraphicsManager::loadMtl(const char * file)
 {
 
-    std::ifstream mtl_file(engine_util::build_path(file));
+    std::ifstream mtl_file(engine_util::buildPath(file));
     if( ! mtl_file.is_open() )
     {
         std::cerr << "Failed to open file: " << file << std::endl;
@@ -207,7 +207,7 @@ std::vector<std::string> graphics_manager::load_mtl(const char * file)
         {
             if( ! currentMaterialName.empty() )
             {
-                create_material(currentMaterialName, diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
+                createMaterial(currentMaterialName, diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
                 material_names.push_back(currentMaterialName);
             }
             line_stream >> currentMaterialName;
@@ -246,7 +246,7 @@ std::vector<std::string> graphics_manager::load_mtl(const char * file)
 
     if( ! currentMaterialName.empty() )
     {
-        create_material(currentMaterialName, diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
+        createMaterial(currentMaterialName, diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
         material_names.push_back(currentMaterialName);
     }
 
