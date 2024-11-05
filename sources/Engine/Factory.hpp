@@ -22,5 +22,5 @@ public:
     unsigned short createAsteroid(Registry& registry, glm::vec3 position, float radius, float speed, unsigned short target);
     unsigned short createSpaceDebris(Registry& registry, glm::vec3 position, glm::vec3 direction, glm::vec3 spin, float speed);
 private:
-    Registry& m_registry_;
+    Registry& mRegistry;
 };

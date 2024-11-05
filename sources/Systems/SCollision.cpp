@@ -102,7 +102,7 @@ bool SCollision::intersectsSphereInSphere(unsigned id1, unsigned id2, SparseSet<
     if ((!sphere1_is_dynamic && !sphere2_is_dynamic) ||
         (collider1.collision_bitmask & collider2.collision_bitmask) != 0)
     {
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
     }
 
@@ -112,7 +112,7 @@ bool SCollision::intersectsSphereInSphere(unsigned id1, unsigned id2, SparseSet<
 
     if (distance_squared > (radius_sum*radius_sum))
     {
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
     }
 
@@ -127,7 +127,7 @@ bool SCollision::intersectsSphereInSphere(unsigned id1, unsigned id2, SparseSet<
         }
         CollisionManifold manifold{penetration_axis, penetration_depth, transform1, transform2, (sphere1_is_dynamic) ? &dynamic_bodies.get_item(id1) : nullptr,(sphere2_is_dynamic) ? &dynamic_bodies.get_item(id2) : nullptr};
         std::cout << id1 << " " << id2 << std::endl;
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
     }
 
     return true;
@@ -148,14 +148,14 @@ bool SCollision::intersectsObbInObb(const unsigned id1, const unsigned id2, Spar
 
     if( !obb1_is_dynamic && !obb2_is_dynamic )
     {
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
     }
     const auto object_bitmask = collider1.collision_bitmask;
     const auto other_object_bitmask = collider2.collision_bitmask;
     if( (object_bitmask & other_object_bitmask) != 0 )
     {
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
         return false;
     }
     // Extract rotation matrices
@@ -187,7 +187,7 @@ bool SCollision::intersectsObbInObb(const unsigned id1, const unsigned id2, Spar
         if( ! testAxis(axis, vertices1, vertices2, min_penetration_depth, penetration_axis) ||
             ! testAxis(axis * -1.0f, vertices1, vertices2, min_penetration_depth, penetration_axis) )
         {
-            EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
+            EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
             return false;
         }
     }
@@ -197,7 +197,7 @@ bool SCollision::intersectsObbInObb(const unsigned id1, const unsigned id2, Spar
         if( ! testAxis(axis, vertices1, vertices2, min_penetration_depth, penetration_axis) ||
             ! testAxis(axis * -1.0f, vertices1, vertices2, min_penetration_depth, penetration_axis) )
         {
-            EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
+            EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionNotDetectedEvent(id1, id2));
             return false;
         }
     }
@@ -210,7 +210,7 @@ bool SCollision::intersectsObbInObb(const unsigned id1, const unsigned id2, Spar
             if( ! testAxis(axis, vertices1, vertices2, min_penetration_depth, penetration_axis) ||
                 ! testAxis(axis * -1.0f, vertices1, vertices2, min_penetration_depth, penetration_axis) )
             {
-                EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(id1,id2));
+                EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionNotDetectedEvent(id1,id2));
                 return false;
             }
         }
@@ -223,7 +223,7 @@ bool SCollision::intersectsObbInObb(const unsigned id1, const unsigned id2, Spar
             min_penetration_depth = 0.0f;
         }
         CollisionManifold manifold{penetration_axis, min_penetration_depth, transform1, transform2, (obb1_is_dynamic) ? &dynamic_bodies.get_item(id1) : nullptr, (obb2_is_dynamic) ? &dynamic_bodies.get_item(id2) : nullptr};
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
     }
 
     return true;
@@ -319,7 +319,7 @@ bool SCollision::intersectsObbInSphere(unsigned quad_id, unsigned sphere_id, Spa
     if ((!obb_is_dynamic && !sphere_is_dynamic) ||
         (obb_collider.collision_bitmask & sphere_collider.collision_bitmask) != 0)
     {
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(quad_id, sphere_id));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionNotDetectedEvent(quad_id, sphere_id));
         return false;
     }
 
@@ -333,7 +333,7 @@ bool SCollision::intersectsObbInSphere(unsigned quad_id, unsigned sphere_id, Spa
     float penetration_depth = sphere.radius*(sphere_transform.scale.x + sphere_transform.scale.y + sphere_transform.scale.z /3) - glm::length(difference);
     if (penetration_depth < 0)
     {
-        EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionNotDetectedEvent(quad_id, sphere_id));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionNotDetectedEvent(quad_id, sphere_id));
         return false;
     }
 
@@ -344,6 +344,6 @@ bool SCollision::intersectsObbInSphere(unsigned quad_id, unsigned sphere_id, Spa
         penetration_depth = 0.0f;
     }
     CollisionManifold manifold{penetration_axis, penetration_depth, obb_transform, sphere_transform, (obb_is_dynamic) ? &dynamic_bodies.get_item(quad_id) : nullptr, (sphere_is_dynamic) ? &dynamic_bodies.get_item(sphere_id) : nullptr};
-    EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionDetectedEvent(manifold, quad_id, sphere_id));
+    EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionDetectedEvent(manifold, quad_id, sphere_id));
     return true;
 }

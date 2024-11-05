@@ -9,22 +9,22 @@ void engine_util::keyCallback(GLFWwindow* window, int key, int scancode, int act
 	glfwSetWindowShouldClose(window, GLFW_TRUE);
     if( action == GLFW_PRESS )
     {
-	EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyPressEvent(key));
+	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyPressEvent(key));
     }
     if( action == GLFW_RELEASE )
     {
-	EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyRelease(key));
+	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyRelease(key));
     }
 }
 void engine_util::mouseKeyCallback(GLFWwindow* window, int button, int action, int mods)
 {
     if( action == GLFW_PRESS )
     {
-	EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyPressEvent(button));
+	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyPressEvent(button));
     }
     if( action == GLFW_RELEASE )
     {
-	EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyRelease(button));
+	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyRelease(button));
     }
 }
 bool engine_util::isKeyReleased(int key)

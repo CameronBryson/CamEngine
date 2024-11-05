@@ -7,30 +7,30 @@
 
 #include <iostream>
 
-GLFWwindow * GameManager::game_window = nullptr;
-std::unique_ptr<IScene> GameManager::m_current_scene_ = nullptr;
+GLFWwindow * GameManager::mGameWindow = nullptr;
+std::unique_ptr<IScene> GameManager::mCurrentScene = nullptr;
 
 void GameManager::init()
 {
     OpenGlUtil::init();
-    m_current_scene_->init();
+    mCurrentScene->init();
 }
 
 void GameManager::update(float dt)
 {
-    m_current_scene_->update(dt);
-    m_current_scene_->lateUpdate(dt);
+    mCurrentScene->update(dt);
+    mCurrentScene->lateUpdate(dt);
 }
 
 void GameManager::render()
 {
-    m_current_scene_->render();
+    mCurrentScene->render();
 }
 
 void GameManager::shutdown()
 {
-    m_current_scene_->shutdown();
-    glfwDestroyWindow(game_window);
+    mCurrentScene->shutdown();
+    glfwDestroyWindow(mGameWindow);
     glfwTerminate();
 }
 
@@ -44,7 +44,7 @@ void GameManager::gameLoop()
     double elapsed_time = 0.0f;
     int frame_count = 0;
 
-    while( ! glfwWindowShouldClose(game_window) )
+    while( ! glfwWindowShouldClose(mGameWindow) )
     {
         double current_frame = glfwGetTime();
         delta_time = current_frame - last_frame;
@@ -63,7 +63,7 @@ void GameManager::gameLoop()
         glfwPollEvents();
         update(static_cast<float>(delta_time));
         render();
-        glfwSwapBuffers(game_window);
+        glfwSwapBuffers(mGameWindow);
 
         // Limit FPS
         double frame_time = glfwGetTime() - current_frame;
@@ -76,10 +76,10 @@ void GameManager::gameLoop()
 
 GLFWwindow * GameManager::get_glfw_window()
 {
-    return game_window;
+    return mGameWindow;
 }
 
 void GameManager::set_glfw_window(GLFWwindow * window)
 {
-    game_window = window;
+    mGameWindow = window;
 }

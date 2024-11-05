@@ -10,13 +10,13 @@
 
 class EventHandler {
 public:
-    EventHandler() : collision_dispatcher(){}
+    EventHandler() : collisionDispatcher(){}
     static EventHandler* GetInstance();
-        EventDispatcher<CollisionEvents> collision_dispatcher;
-        EventDispatcher<RegistryEvents> registry_dispatcher;
-        EventDispatcher<FactoryEvents> factory_dispatcher;
-        EventDispatcher<InputEvents> input_dispatcher;
-        EventDispatcher<HealthEvents> health_dispatcher;
+        EventDispatcher<CollisionEvents> collisionDispatcher;
+        EventDispatcher<RegistryEvents> registryDispatcher;
+        EventDispatcher<FactoryEvents> factoryDispatcher;
+        EventDispatcher<InputEvents> inputDispatcher;
+        EventDispatcher<HealthEvents> healthDispatcher;
 
 private:
     static std::unique_ptr<EventHandler> s_Instance;

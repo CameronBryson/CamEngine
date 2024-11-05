@@ -18,37 +18,37 @@ class AddComponentCommand final : public ICommand
 {
 public:
     AddComponentCommand(SparseSet<T>& sparse_set, const unsigned short id, T component_data)
-        : m_sparse_set_(sparse_set), m_id_(id), m_component_data_(std::move(component_data))
+        : mSparseSet(sparse_set), mID(id), mComponentData(std::move(component_data))
     {
     }
 
     void execute() override
     {
-        m_sparse_set_.addItem(m_id_, m_component_data_);
+        mSparseSet.addItem(mID, mComponentData);
     }
 
 private:
-    SparseSet<T>& m_sparse_set_;
-    unsigned short m_id_;
-    T m_component_data_;
+    SparseSet<T>& mSparseSet;
+    unsigned short mID;
+    T mComponentData;
 };
 
 template <typename T>
 class RemoveComponentCommand final : public ICommand
 {
 public:
-    RemoveComponentCommand(SparseSet<T>& sparse_set, const unsigned short id) : m_sparse_set_(sparse_set), m_id_(id)
+    RemoveComponentCommand(SparseSet<T>& sparse_set, const unsigned short id) : mSparseSet(sparse_set), mID(id)
     {
     }
 
     void execute() override
     {
-        m_sparse_set_.remove_item(m_id_);
+        mSparseSet.remove_item(mID);
     }
 
 private:
-    SparseSet<T>& m_sparse_set_;
-    unsigned short m_id_;
+    SparseSet<T>& mSparseSet;
+    unsigned short mID;
 };
 
 
@@ -58,30 +58,30 @@ public:
     DeleteEntityCommand(std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>>& sparse_sets,
                           std::vector<unsigned short>& free_i_ds, std::vector<unsigned short>& entities,
                           const unsigned short id)
-        : m_sparse_sets_(sparse_sets), m_free_i_ds_(free_i_ds), m_entities_(entities), m_id_(id)
+        : mSparseSets(sparse_sets), mFreeIDs(free_i_ds), mEntities(entities), mID(id)
     {
     }
 
     void execute() override
     {
-        for (const auto& sparse_set : m_sparse_sets_)
+        for (const auto& sparse_set : mSparseSets)
         {
-            if (sparse_set.second->hasItem(m_id_))
+            if (sparse_set.second->hasItem(mID))
             {
-                sparse_set.second->removeItem(m_id_);
+                sparse_set.second->removeItem(mID);
             }
         }
-        const auto it = std::find(m_entities_.begin(), m_entities_.end(), m_id_);
-        if (it != m_entities_.end())
+        const auto it = std::find(mEntities.begin(), mEntities.end(), mID);
+        if (it != mEntities.end())
         {
-            m_entities_.erase(it);
+            mEntities.erase(it);
         }
-        m_free_i_ds_.push_back(m_id_);
+        mFreeIDs.push_back(mID);
     }
 
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>>& m_sparse_sets_;
-    std::vector<unsigned short>& m_free_i_ds_;
-    std::vector<unsigned short>& m_entities_;
-    unsigned short m_id_;
+    std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>>& mSparseSets;
+    std::vector<unsigned short>& mFreeIDs;
+    std::vector<unsigned short>& mEntities;
+    unsigned short mID;
 };

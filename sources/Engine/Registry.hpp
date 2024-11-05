@@ -29,8 +29,8 @@ enum class KeyAction
 };
 struct HashPair {
     std::size_t operator()(const std::pair<unsigned short, unsigned short>& p) const {
-        auto hash1 = std::hash<unsigned short>{}(p.first);
-        auto hash2 = std::hash<unsigned short>{}(p.second);
+        const auto hash1 = std::hash<unsigned short>{}(p.first);
+        const auto hash2 = std::hash<unsigned short>{}(p.second);
         // Ensure the order does not change the hash
         return hash1 ^ hash2 ^ std::hash<unsigned short>{}(std::min(p.first, p.second)) ^ std::hash<unsigned short>{}(std::max(p.first, p.second));
     }
@@ -42,19 +42,19 @@ public:
     Registry()
     {
         printf("Registry created\n");
-        m_entities_.reserve(settings::max_entities);
-        m_free_i_ds_.resize(settings::max_entities - 1);
-        std::iota(m_free_i_ds_.begin(), m_free_i_ds_.end(), 1);
+        mEntities.reserve(settings::max_entities);
+        mFreeIDs.resize(settings::max_entities - 1);
+        std::iota(mFreeIDs.begin(), mFreeIDs.end(), 1);
         for (int i = 0; i < 512; ++i)
         {
-            m_key_map[i] = KeyAction::None;
+            mKeyMap[i] = KeyAction::None;
         }
-        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Detected, std::bind(&Registry::onCollisionDetectedEvent, this, std::placeholders::_1));
-        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::NotDetected, std::bind(&Registry::onCollisionNotDetectedEvent, this, std::placeholders::_1));
-        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Enter, std::bind(&Registry::onCollisionEnterEvent, this, std::placeholders::_1));
-        EventHandler::GetInstance()->collision_dispatcher.AddListener(CollisionEvents::Exit, std::bind(&Registry::onCollisionExitEvent, this, std::placeholders::_1));
-        EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyPress, std::bind(&Registry::onInputPressEvent, this, std::placeholders::_1));
-        EventHandler::GetInstance()->input_dispatcher.AddListener(InputEvents::KeyRelease, std::bind(&Registry::onInputReleaseEvent, this, std::placeholders::_1));
+        EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::Detected, std::bind(&Registry::onCollisionDetectedEvent, this, std::placeholders::_1));
+        EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::NotDetected, std::bind(&Registry::onCollisionNotDetectedEvent, this, std::placeholders::_1));
+        EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::Enter, std::bind(&Registry::onCollisionEnterEvent, this, std::placeholders::_1));
+        EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::Exit, std::bind(&Registry::onCollisionExitEvent, this, std::placeholders::_1));
+        EventHandler::GetInstance()->inputDispatcher.AddListener(InputEvents::KeyPress, std::bind(&Registry::onInputPressEvent, this, std::placeholders::_1));
+        EventHandler::GetInstance()->inputDispatcher.AddListener(InputEvents::KeyRelease, std::bind(&Registry::onInputReleaseEvent, this, std::placeholders::_1));
 
     };
 
@@ -68,51 +68,51 @@ public:
 public:
     unsigned short createEntity()
     {
-        assert(!m_free_i_ds_.empty() && "No more entities available.");
-        const unsigned short id = m_free_i_ds_.back();
-        m_free_i_ds_.pop_back();
-        m_entities_.push_back(id);
+        assert(!mFreeIDs.empty() && "No more entities available.");
+        const unsigned short id = mFreeIDs.back();
+        mFreeIDs.pop_back();
+        mEntities.push_back(id);
         return id;
     };
 
     void deleteEntity(unsigned short id)
     {
-        command_queue_.push(std::make_unique<DeleteEntityCommand>(m_sparse_sets_, m_free_i_ds_, m_entities_, id));
+        mCommandQueue.push(std::make_unique<DeleteEntityCommand>(mSparseSets, mFreeIDs, mEntities, id));
     };
 
     void processCommands()
     {
-        while (!command_queue_.empty())
+        while (!mCommandQueue.empty())
         {
-            const auto& command = command_queue_.front();
+            const auto& command = mCommandQueue.front();
             command->execute();
-            command_queue_.pop();
+            mCommandQueue.pop();
         }
     }
     void onCollisionDetectedEvent(const Event<CollisionEvents>& event)
     {
         auto new_event = event.ToType<CollisionDetectedEvent>();
         auto pair = std::make_pair(new_event.id1, new_event.id2);
-        if (!m_collision_map.contains(pair))
+        if (!mCollisionMap.contains(pair))
         {
             //printf("Collision Enter\n");
-            EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionEnterEvent(new_event.id1, new_event.id2));
+            EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionEnterEvent(new_event.id1, new_event.id2));
         }
         else
         {
             //printf("Collision Stay\n");
-            EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionStayEvent(new_event.id1, new_event.id2));
+            EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionStayEvent(new_event.id1, new_event.id2));
         }
-        m_collision_map[pair] = std::make_unique<CollisionManifold>(new_event.manifold);
+        mCollisionMap[pair] = std::make_unique<CollisionManifold>(new_event.manifold);
     }
     void onCollisionNotDetectedEvent(const Event<CollisionEvents> &event){
         auto new_event = event.ToType<CollisionNotDetectedEvent>();
         auto pair = std::make_pair(new_event.id1, new_event.id2);
-        if(m_collision_map.contains(pair))
+        if(mCollisionMap.contains(pair))
         {
             //printf("Collision Exit\n");
-            EventHandler::GetInstance()->collision_dispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
-            m_collision_map.erase(pair);
+            EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
+            mCollisionMap.erase(pair);
         }
     }
     void onCollisionEnterEvent(const Event<CollisionEvents> &event){
@@ -142,34 +142,34 @@ public:
     void onInputPressEvent(const Event<InputEvents>& event)
     {
         auto event_data = event.ToType<KeyPressEvent>();
-        if(m_key_map[event_data.key] == KeyAction::None)
+        if(mKeyMap[event_data.key] == KeyAction::None)
         {
             //EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyStartEvent(event_data.key));
-            m_key_map[event_data.key] = KeyAction::Start;
+            mKeyMap[event_data.key] = KeyAction::Start;
         }
         else
         {
-            m_key_map[event_data.key] = KeyAction::Hold;
+            mKeyMap[event_data.key] = KeyAction::Hold;
         }
     }
     void onInputReleaseEvent(const Event<InputEvents>& event)
     {
         auto event_data = event.ToType<KeyRelease>();
-        if(m_key_map[event_data.key] == KeyAction::Start || m_key_map[event_data.key] == KeyAction::Hold)
+        if(mKeyMap[event_data.key] == KeyAction::Start || mKeyMap[event_data.key] == KeyAction::Hold)
         {
             //EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyEndEvent(event_data.key));
-            m_key_map[event_data.key] = KeyAction::End;
+            mKeyMap[event_data.key] = KeyAction::End;
         }
         else
         {
-            m_key_map[event_data.key] = KeyAction::None;
+            mKeyMap[event_data.key] = KeyAction::None;
             //this isnt working cause there isnt a new event being sent
         }
     }
 
     void processCollisionEesolutions()
     {
-        for(auto& [key, value] : m_collision_map)
+        for(auto& [key, value] : mCollisionMap)
         {
             value->resolveCollision();
             value->penetrationDepth = 0.0f;
@@ -177,11 +177,11 @@ public:
     }
     KeyAction getKeyAction(int key)
     {
-        return m_key_map[key];
+        return mKeyMap[key];
     }
     void resetKeyStates()
     {
-        for (auto& [key, action] : m_key_map)
+        for (auto& [key, action] : mKeyMap)
         {
             if (action == KeyAction::Start)
             {
@@ -221,43 +221,43 @@ public:
     [[nodiscard]] bool hasSparseSet() const;
 
 private:
-    std::vector<unsigned short> m_free_i_ds_;
-    std::vector<unsigned short> m_entities_;
-    std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> m_sparse_sets_;
-    std::queue<std::unique_ptr<ICommand>> command_queue_;
-    std::unordered_map<std::pair<unsigned short, unsigned short>, std::unique_ptr<CollisionManifold>,HashPair> m_collision_map;
-    std::unordered_map<int, KeyAction> m_key_map;
+    std::vector<unsigned short> mFreeIDs;
+    std::vector<unsigned short> mEntities;
+    std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> mSparseSets;
+    std::queue<std::unique_ptr<ICommand>> mCommandQueue;
+    std::unordered_map<std::pair<unsigned short, unsigned short>, std::unique_ptr<CollisionManifold>,HashPair> mCollisionMap;
+    std::unordered_map<int, KeyAction> mKeyMap;
     //some kind of key storage
 };
 
 template <typename T>
 bool Registry::hasSparseSet() const
 {
-    return m_sparse_sets_.find(std::type_index(typeid(T))) != m_sparse_sets_.end();
+    return mSparseSets.find(std::type_index(typeid(T))) != mSparseSets.end();
 }
 
 template <class T>
 void Registry::createSparseSet()
 {
-    assert(m_sparse_sets_.find(std::type_index(typeid(T))) == m_sparse_sets_.end() &&
+    assert(mSparseSets.find(std::type_index(typeid(T))) == mSparseSets.end() &&
         "Error: Sparse set already exists for this type.");
-    m_sparse_sets_[std::type_index(typeid(T))] = std::make_unique<SparseSet<T>>();
+    mSparseSets[std::type_index(typeid(T))] = std::make_unique<SparseSet<T>>();
 }
 
 template <typename T>
 SparseSet<T>& Registry::getSparseSet() const
 {
-    assert(m_sparse_sets_.find(std::type_index(typeid(T))) != m_sparse_sets_.end() &&
+    assert(mSparseSets.find(std::type_index(typeid(T))) != mSparseSets.end() &&
         "Error: Sparse set does not exist for this type.");
-    return *static_cast<SparseSet<T>*>(m_sparse_sets_.at(std::type_index(typeid(T))).get());
+    return *static_cast<SparseSet<T>*>(mSparseSets.at(std::type_index(typeid(T))).get());
 }
 
 template <typename T>
 void Registry::addComponent(unsigned short id, const T& component_data)
 {
-    assert(m_entities_.end() != std::find(m_entities_.begin(), m_entities_.end(), id) && "Entity does not exist.");
+    assert(mEntities.end() != std::find(mEntities.begin(), mEntities.end(), id) && "Entity does not exist.");
     auto& set = getSparseSet<T>();
-    command_queue_.push(std::make_unique<AddComponentCommand<T>>(set, id, component_data));
+    mCommandQueue.push(std::make_unique<AddComponentCommand<T>>(set, id, component_data));
 }
 
 template <typename T>
@@ -275,7 +275,7 @@ std::vector<unsigned short> Registry::getEntityIDs() const
     {
         for (unsigned short i = 0; i < settings::max_entities; ++i)
         {
-            if (std::find(m_entities_.begin(), m_entities_.end(), i) != m_entities_.end())
+            if (std::find(mEntities.begin(), mEntities.end(), i) != mEntities.end())
             {
                 result.push_back(i);
             }
@@ -305,8 +305,8 @@ bool Registry::hasComponent(unsigned short id) const
 template <typename T>
 void Registry::removeComponent(unsigned short id)
 {
-    assert(m_entities_.end() != std::find(m_entities_.begin(), m_entities_.end(), id) && "Entity does not exist.");
+    assert(mEntities.end() != std::find(mEntities.begin(), mEntities.end(), id) && "Entity does not exist.");
     assert(hasComponent<T>(id) && "Entity does not have component.");
     auto& set = getSparseSet<T>();
-    command_queue_.push(std::make_unique<RemoveComponentCommand<T>>(set, id));
+    mCommandQueue.push(std::make_unique<RemoveComponentCommand<T>>(set, id));
 }

@@ -16,15 +16,15 @@ public:
     template <typename T>
     static void loadScene()
     {
-        if (m_current_scene_)
+        if (mCurrentScene)
             shutdown();
-        m_current_scene_ = std::make_unique<T>();
+        mCurrentScene = std::make_unique<T>();
     }
 
     static GLFWwindow* get_glfw_window();
     static void set_glfw_window(GLFWwindow* window);
 
 private:
-    static GLFWwindow* game_window;
-    static std::unique_ptr<IScene> m_current_scene_;
+    static GLFWwindow* mGameWindow;
+    static std::unique_ptr<IScene> mCurrentScene;
 };

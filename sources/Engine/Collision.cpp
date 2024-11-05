@@ -3,10 +3,10 @@ CollisionManifold::CollisionManifold(const glm::vec3 normal, const float penetra
     CDynamicBody* dynamic_body1, CDynamicBody* dynamic_body2)
     : penetrationDepth(penetration_depth),
       normal(normal),
-      dynamicBody1(dynamic_body1),
-      dynamicBody2(dynamic_body2),
-      transform1(transform1),
-      transform2(transform2)
+      mDynamicBody1(dynamic_body1),
+      mDynamicBody2(dynamic_body2),
+      mTransform1(transform1),
+      mTransform2(transform2)
 {
     printf("Depth: %f\n", penetrationDepth);
     printf("Normal%f\n %f\n %f\n", normal.x, normal.y, normal.z);
@@ -17,15 +17,15 @@ void CollisionManifold::resolveCollision() const
 	return;
     }
 
-    if( dynamicBody1 != nullptr && dynamicBody2 != nullptr )
+    if( mDynamicBody1 != nullptr && mDynamicBody2 != nullptr )
     {
 	resolveDynamicVsDynamic();
     }
-    else if( dynamicBody1 != nullptr )
+    else if( mDynamicBody1 != nullptr )
     {
 	resolveDynamicVsNotDynamic(true);
     }
-    else if( dynamicBody2 != nullptr )
+    else if( mDynamicBody2 != nullptr )
     {
 	resolveDynamicVsNotDynamic(false);
     }
@@ -33,30 +33,30 @@ void CollisionManifold::resolveCollision() const
 }
 void CollisionManifold::resolveDynamicVsDynamic() const
 {
-    transform1.position -= normal * penetrationDepth * 0.5f;
-    transform2.position += normal * penetrationDepth * 0.5f;
-    glm::vec3 relativeVelocity = dynamicBody2->velocity - dynamicBody1->velocity;
-    float velocityAlongNormal = glm::dot(relativeVelocity, normal);
-    glm::vec3 impulse = velocityAlongNormal * normal;
-    float e = (dynamicBody1->elasticity + dynamicBody2->elasticity) / 2.0f;
-    dynamicBody1->velocity += impulse * e;
-    dynamicBody2->velocity -= impulse * e;
+    mTransform1.position -= normal * penetrationDepth * 0.5f;
+    mTransform2.position += normal * penetrationDepth * 0.5f;
+    const glm::vec3 relativeVelocity = mDynamicBody2->velocity - mDynamicBody1->velocity;
+    const float velocityAlongNormal = glm::dot(relativeVelocity, normal);
+    const glm::vec3 impulse = velocityAlongNormal * normal;
+    const float e = (mDynamicBody1->elasticity + mDynamicBody2->elasticity) / 2.0f;
+    mDynamicBody1->velocity += impulse * e;
+    mDynamicBody2->velocity -= impulse * e;
 }
 void CollisionManifold::resolveDynamicVsNotDynamic(bool is_first) const
 {
     if( is_first )
     {
-	transform1.position -= normal * penetrationDepth;
+	mTransform1.position -= normal * penetrationDepth;
 
-	float velocityAlongNormal = glm::dot(dynamicBody1->velocity, normal);
-	dynamicBody1->velocity -= 2.0f * velocityAlongNormal * normal * dynamicBody1->elasticity;
+        const float velocityAlongNormal = glm::dot(mDynamicBody1->velocity, normal);
+	mDynamicBody1->velocity -= 2.0f * velocityAlongNormal * normal * mDynamicBody1->elasticity;
     }
     else
     {
-	transform2.position += normal * penetrationDepth;
+	mTransform2.position += normal * penetrationDepth;
 
-	float velocityAlongNormal = glm::dot(dynamicBody2->velocity, normal);
-	dynamicBody2->velocity -= 2.0f * velocityAlongNormal * normal * dynamicBody2->elasticity;
+        const float velocityAlongNormal = glm::dot(mDynamicBody2->velocity, normal);
+	mDynamicBody2->velocity -= 2.0f * velocityAlongNormal * normal * mDynamicBody2->elasticity;
     }
 }
 

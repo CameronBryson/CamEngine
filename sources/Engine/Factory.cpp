@@ -2,17 +2,17 @@
 #include "Engine/Event.hpp"
 #include "Engine/FactoryEvents.hpp"
 #include "Registry.hpp"
-Factory::Factory(Registry& m_registry) : m_registry_(m_registry) {
-    EventHandler::GetInstance()->factory_dispatcher.AddListener(FactoryEvents::CreateProjectile, [this](const Event<FactoryEvents>& event) {
+Factory::Factory(Registry& m_registry) : mRegistry(m_registry) {
+    EventHandler::GetInstance()->factoryDispatcher.AddListener(FactoryEvents::CreateProjectile, [this](const Event<FactoryEvents>& event) {
         this->onFactoryCreateProjectileEvent(event);
     });
-    EventHandler::GetInstance()->factory_dispatcher.AddListener(FactoryEvents::CreateEnemy, [this](const Event<FactoryEvents>& event) {
+    EventHandler::GetInstance()->factoryDispatcher.AddListener(FactoryEvents::CreateEnemy, [this](const Event<FactoryEvents>& event) {
         this->onFactoryCreateEnemyEvent(event);
     });
-    EventHandler::GetInstance()->factory_dispatcher.AddListener(FactoryEvents::CreateAsteroid, [this](const Event<FactoryEvents>& event) {
+    EventHandler::GetInstance()->factoryDispatcher.AddListener(FactoryEvents::CreateAsteroid, [this](const Event<FactoryEvents>& event) {
         this->onFactoryCreateAsteroidEvent(event);
     });
-    EventHandler::GetInstance()->factory_dispatcher.AddListener(FactoryEvents::CreateSpaceDebris, [this](const Event<FactoryEvents>& event) {
+    EventHandler::GetInstance()->factoryDispatcher.AddListener(FactoryEvents::CreateSpaceDebris, [this](const Event<FactoryEvents>& event) {
         this->onFactoryCreateSpaceDebrisEvent(event);
     });
 
@@ -26,25 +26,25 @@ Factory::~Factory()
 void Factory::onFactoryCreateProjectileEvent(const Event<FactoryEvents> &event) {
     auto event_data = event.ToType<CreateProjectileEvent>();
     //printf("Create Projectile Test\n");
-    createProjectile(m_registry_, event_data.position, event_data.direction, event_data.speed,event_data.collision_bitmask);
+    createProjectile(mRegistry, event_data.position, event_data.direction, event_data.speed,event_data.collision_bitmask);
 }
 
 void Factory::onFactoryCreateEnemyEvent(const Event<FactoryEvents> & event)
 {
     auto event_data = event.ToType<CreateEnemyEvent>();
-    createEnemyShip(m_registry_,event_data.position,event_data.radius,event_data.direction,event_data.speed,event_data.target);
+    createEnemyShip(mRegistry,event_data.position,event_data.radius,event_data.direction,event_data.speed,event_data.target);
 }
 
 void Factory::onFactoryCreateAsteroidEvent(const Event<FactoryEvents> & event)
 {
     auto event_data = event.ToType<CreateAsteroidEvent>();
-    createAsteroid(m_registry_,event_data.position,event_data.radius,event_data.speed,event_data.target);
+    createAsteroid(mRegistry,event_data.position,event_data.radius,event_data.speed,event_data.target);
 }
 
 void Factory::onFactoryCreateSpaceDebrisEvent(const Event<FactoryEvents> & event)
 {
     auto event_data = event.ToType<CreateSpaceDebrisEvent>();
-    createSpaceDebris(m_registry_,event_data.position,event_data.direction,event_data.spin,event_data.speed);
+    createSpaceDebris(mRegistry,event_data.position,event_data.direction,event_data.spin,event_data.speed);
 }
 
 unsigned short Factory::createPlayer(Registry &registry) {
