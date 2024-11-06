@@ -2,11 +2,11 @@
 #include "Engine/SparseSet.hpp"
 #include "glm/glm.hpp"
 class Registry;
-class CSphere;
-class CQuad;
-class CTransform;
-class CCollider;
-class CDynamicBody;
+struct CSphere;
+struct CQuad;
+struct CTransform;
+struct CCollider;
+struct CDynamicBody;
 
 class SCollision
 {

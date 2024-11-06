@@ -3,7 +3,7 @@
 class Camera;
 class Registry;
 class ShaderProgram;
-class CTransform;
+struct CTransform;
 class GraphicsManager;
 
 class SRender

@@ -16,5 +16,5 @@ void Model::draw(ShaderProgram& shader, GraphicsManager& graphics_manager)
 }
 void Model::addMesh(const std::string& mesh_name)
 {
-    meshes.push_back(mesh_name);
+    meshes.emplace_back(mesh_name);
 }

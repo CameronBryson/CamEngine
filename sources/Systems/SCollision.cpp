@@ -254,7 +254,7 @@ std::vector<glm::vec3> SCollision::getObbPointsInWorldSpace(const CQuad & obb, c
         glm::vec3 scaled_point = point * transform.scale;
         glm::vec3 rotated_point = rotation_matrix * glm::vec4(scaled_point, 1);
         glm::vec3 world_point = rotated_point + transform.position;
-        world_points.push_back(world_point);
+        world_points.emplace_back(world_point);
     }
 
     return world_points;

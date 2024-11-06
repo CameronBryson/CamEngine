@@ -1,26 +1,38 @@
 #include "Material.hpp"
-Material::Material(const std::string& diffuse_path, const std::string& specular_path, float shininess, glm::vec3 ambient_color, glm::vec3 diffuse_color,
-    glm::vec3 specular_color)
-    : shininess(shininess), ambient_color(ambient_color), diffuse_color(diffuse_color), specular_color(specular_color)
+Material::Material(glm::vec3 Ka, glm::vec3 Kd, glm::vec3 Ks, float Ns, float Ni, float d, int illum, const std::string& map_Ka_path, const std::string& map_Kd_path,
+    const std::string& map_Ks_path, const std::string& map_Ns_path, const std::string& map_d_path, const std::string& map_bump_path)
+    : Ka(Ka), Kd(Kd), Ks(Ks), Ns(Ns),Ni(Ni), d(d), illum(illum)
 {
-    if( ! diffuse_path.empty() )
+    if( ! map_Ka_path.empty() )
     {
-	diffuse_texture = std::make_unique<Texture>(diffuse_path);
+	    map_Ka = std::make_unique<Texture>(map_Ka_path);
     }
-    if( ! specular_path.empty() )
+    if( ! map_Kd_path.empty() )
     {
-	specular_texture = std::make_unique<Texture>(specular_path);
+	    map_Kd = std::make_unique<Texture>(map_Kd_path);
+    }
+    if( ! map_Ks_path.empty() )
+    {
+	    map_Ks = std::make_unique<Texture>(map_Ks_path);
+    }
+    if( ! map_Ns_path.empty() )
+    {
+	    map_Ns = std::make_unique<Texture>(map_Ns_path);
+    }
+    if( ! map_d_path.empty() )
+    {
+	    map_d = std::make_unique<Texture>(map_d_path);
+    }
+    if( ! map_bump_path.empty() )
+    {
+	    map_bump = std::make_unique<Texture>(map_bump_path);
     }
 }
-void Material::bind(const ShaderProgram& shader) const
+void Material::bind(const ShaderProgram& shader)
 {
-    OpenGlUtil::bindMaterial(shader, diffuse_texture.get(), specular_texture.get(), ambient_color, diffuse_color, specular_color, shininess);
+    OpenGlUtil::bindMaterial(shader, *this);
 }
-void Material::unbind() const
+void Material::unbind()
 {
-    OpenGlUtil::unbindMaterial(diffuse_texture.get(), specular_texture.get());
-}
-float Material::getShininess() const
-{
-    return shininess;
+    OpenGlUtil::unbindMaterial(*this);
 }

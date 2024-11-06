@@ -71,7 +71,7 @@ public:
         assert(!mFreeIDs.empty() && "No more entities available.");
         const unsigned short id = mFreeIDs.back();
         mFreeIDs.pop_back();
-        mEntities.push_back(id);
+        mEntities.emplace_back(id);
         return id;
     };
 
@@ -277,7 +277,7 @@ std::vector<unsigned short> Registry::getEntityIDs() const
         {
             if (std::find(mEntities.begin(), mEntities.end(), i) != mEntities.end())
             {
-                result.push_back(i);
+                result.emplace_back(i);
             }
         }
         return result;

@@ -152,45 +152,88 @@ void OpenGlUtil::createTexture(const std::string& file, unsigned char* data, GLu
     stbi_image_free(data);
 }
 
-void OpenGlUtil::bindMaterial(const ShaderProgram & shader, const Texture * diffuse_texture, const Texture * specular_texture, const glm::vec3 ambient_color,
-    const glm::vec3 diffuse_color, const glm::vec3 specular_color, const float shininess)
+void OpenGlUtil::bindMaterial(const ShaderProgram& shader, Material& material)
 {
-    if (diffuse_texture)
+    // Bind Ambient Texture (map_Ka)
+    if( material.map_Ka )
     {
-        shader.setInt("material.diffuse", 0);
-        glActiveTexture(GL_TEXTURE0);
-        diffuse_texture->bind();
+	shader.setInt("material.ambient", 0); // Bind texture unit 0 to ambient map
+	glActiveTexture(GL_TEXTURE0);
+	material.map_Ka->bind();
     }
     else
     {
-        shader.setVec3("material.diffuse", diffuse_color);
+	shader.setVec3("material.ambient", material.Ka); // Fallback to ambient color
     }
 
-    if (specular_texture)
+    // Bind Diffuse Texture (map_Kd)
+    if( material.map_Kd )
     {
-        shader.setInt("material.specular", 1);
-        glActiveTexture(GL_TEXTURE1);
-        specular_texture->bind();
+	shader.setInt("material.diffuse", 1); // Bind texture unit 1 to diffuse map
+	glActiveTexture(GL_TEXTURE1);
+	material.map_Kd->bind();
     }
     else
     {
-        shader.setVec3("material.specular", specular_color);
+	shader.setVec3("material.diffuse", material.Kd); // Fallback to diffuse color
     }
 
-    shader.setFloat("material.shininess", shininess);
-    shader.setVec3("material.ambient", ambient_color);
+    // Bind Specular Texture (map_Ks)
+    if( material.map_Ks )
+    {
+	shader.setInt("material.specular", 2); // Bind texture unit 2 to specular map
+	glActiveTexture(GL_TEXTURE2);
+	material.map_Ks->bind();
+    }
+    else
+    {
+	shader.setVec3("material.specular", material.Ks); // Fallback to specular color
+    }
+
+    // Bind Shininess Texture (map_Ns)
+    if( material.map_Ns )
+    {
+	shader.setInt("material.shininessMap", 3); // Bind texture unit 3 to shininess map
+	glActiveTexture(GL_TEXTURE3);
+	material.map_Ns->bind();
+    }
+    else
+    {
+	shader.setFloat("material.shininess", material.Ns); // Fallback to shininess value
+    }
+
+    // Bind Transparency Texture (map_d)
+    if( material.map_d )
+    {
+	shader.setInt("material.transparencyMap", 4); // Bind texture unit 4 to transparency map
+	glActiveTexture(GL_TEXTURE4);
+	material.map_d->bind();
+	shader.setFloat("material.transparency", material.d); // Set transparency factor (d)
+    }
+    else
+    {
+	shader.setFloat("material.transparency", material.d); // Fallback to transparency value
+    }
+
+    // Bind Bump Map (map_bump)
+    if( material.map_bump )
+    {
+	shader.setInt("material.bumpMap", 5); // Bind texture unit 5 to bump map
+	glActiveTexture(GL_TEXTURE5);
+	material.map_bump->bind();
+    }
+
+    // Set other material properties
+    shader.setVec3("material.ambientColor", material.Ka); // Set the ambient color (Ka)
+    shader.setVec3("material.diffuseColor", material.Kd); // Set the diffuse color (Kd)
+    shader.setVec3("material.specularColor", material.Ks); // Set the specular color (Ks)
+    shader.setFloat("material.shininess", material.Ns); // Set shininess (Ns)
 }
 
-void OpenGlUtil::unbindMaterial(const Texture * diffuse_texture, const Texture * specular_texture)
+
+void OpenGlUtil::unbindMaterial(Material& material)
 {
-    if(diffuse_texture)
-    {
-        Texture::unbind();
-    }
-    if(specular_texture)
-    {
-        Texture::unbind();
-    }
+    Texture::unbind();
 }
 
 unsigned int OpenGlUtil::createShader(const std::string & vertex_shader, const std::string & fragment_shader)

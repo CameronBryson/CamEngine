@@ -38,9 +38,9 @@ public:
 
     static void createTexture(const std::string& file, unsigned char* data, GLuint& texture_id);
 
-    static void bindMaterial(const ShaderProgram& shader, const Texture* diffuse_texture, const Texture* specular_texture, glm::vec3 ambient_color, glm::vec3 diffuse_color, glm::vec3 specular_color, float shininess);
+    static void bindMaterial(const ShaderProgram& shader, Material& material);
 
-    static void unbindMaterial(const Texture* diffuse_texture, const Texture* specular_texture);
+    static void unbindMaterial(Material& material);
 
     static unsigned int createShader(const std::string& vertex_shader, const std::string& fragment_shader);
 

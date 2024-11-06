@@ -39,17 +39,7 @@ endif()
 
 # Add glad source files
 set(GLAD_SOURCES ${CMAKE_SOURCE_DIR}/include/glad/src/gl.c)
-set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h
-        sources/Systems/SEnemy.cpp
-        sources/Systems/SEnemy.hpp
-        sources/Systems/SWaveSpawn.cpp
-        sources/Systems/SWaveSpawn.hpp
-        sources/Systems/SAsteroid.cpp
-        sources/Systems/SAsteroid.hpp
-        sources/Systems/SBoundry.cpp
-        sources/Systems/SBoundry.hpp
-        sources/StartScene.cpp
-        sources/StartScene.hpp)
+set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h)
 
 # Add project source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/*.cpp")

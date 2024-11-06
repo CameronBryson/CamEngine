@@ -25,7 +25,7 @@ public:
         printf("Sparse set destroyed of type: %s\n", typeid(T).name());
     }
 
-    void addItem(const unsigned short id, T component_data)
+    void addItem(const unsigned short id, T&& component_data)
     {
         assert(id < settings::max_entities && "ID is out of range.");
         assert(m_size_< settings::max_entities && "Exceeding maximum entities.");
@@ -65,7 +65,7 @@ public:
         return m_items_[m_sparse_[id]];
     }
 
-    [[nodiscard]] std::size_t getSize() const override
+    [[nodiscard]] int getSize() const override
     {
         return m_size_;
     }
@@ -90,5 +90,5 @@ private:
     std::vector<unsigned short> m_dense_;
     std::vector<unsigned short> m_sparse_;
     std::vector<T> m_items_;
-    unsigned short m_size_ = 0;
+    int m_size_ = 0;
 };

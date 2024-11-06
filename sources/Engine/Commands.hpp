@@ -24,7 +24,7 @@ public:
 
     void execute() override
     {
-        mSparseSet.addItem(mID, mComponentData);
+        mSparseSet.addItem(mID, std::move(mComponentData));
     }
 
 private:
@@ -64,19 +64,15 @@ public:
 
     void execute() override
     {
-        for (const auto& sparse_set : mSparseSets)
-        {
-            if (sparse_set.second->hasItem(mID))
-            {
-                sparse_set.second->removeItem(mID);
-            }
-        }
-        const auto it = std::find(mEntities.begin(), mEntities.end(), mID);
-        if (it != mEntities.end())
-        {
-            mEntities.erase(it);
-        }
-        mFreeIDs.push_back(mID);
+	    for( const auto& sparse_set : mSparseSets )
+	    {
+	        if( sparse_set.second->hasItem(mID) )
+	        {
+		    sparse_set.second->removeItem(mID);
+	        }
+	    }
+	    mEntities.erase(std::remove(mEntities.begin(), mEntities.end(), mID), mEntities.end());
+	    mFreeIDs.emplace_back(mID);
     }
 
 private:

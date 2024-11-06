@@ -2,7 +2,7 @@
 
 
 class Registry;
-class CTransform;
+struct CTransform;
 
 class SEnemy {
 public:

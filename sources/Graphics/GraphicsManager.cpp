@@ -11,7 +11,7 @@
 #include "Vertex.hpp"
 #include "Mesh.hpp"
 
-ShaderProgram & GraphicsManager::loadShader(const char * vShaderFile, const char * fShaderFile, const std::string & name)
+ShaderProgram& GraphicsManager::loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name)
 {
     shader_map[name] = std::make_unique<ShaderProgram>(vShaderFile, fShaderFile);
     return *shader_map[name];
@@ -22,7 +22,7 @@ ShaderProgram & GraphicsManager::getShader(const std::string & name)
     return *shader_map[name];
 }
 
-Texture & GraphicsManager::loadTexture(const char * file, const std::string & name)
+Texture& GraphicsManager::loadTexture(const std::string& file, const std::string& name)
 {
     texture_map[name] = std::make_unique<Texture>(file);
     return *texture_map[name];
@@ -50,7 +50,7 @@ Model & GraphicsManager::createModel(const std::vector<std::string> & mesh_names
     return *model_map[name];
 }
 
-Model & GraphicsManager::createModelFromObj(const char * file, const std::string & name)
+Model & GraphicsManager::createModelFromObj(const std::string& file, const std::string & name)
 {
     return createModel(loadObj(file), name);
 }
@@ -72,7 +72,7 @@ void GraphicsManager::Clear()
     //glDeleteTextures(1, &iter.second->ID);
 }
 
-std::vector<std::string> GraphicsManager::loadObj(const char * file)
+std::vector<std::string> GraphicsManager::loadObj(const std::string& file)
 {
     auto test = engine_util::buildPath(file);
     std::ifstream obj_file(engine_util::buildPath(file));
@@ -101,12 +101,12 @@ std::vector<std::string> GraphicsManager::loadObj(const char * file)
             v.position = temp_vertices[vertexIndices[i]];
             v.texture_coordinates = temp_uvs[uvIndices[i]];
             v.normal = temp_normals[normalIndices[i]];
-            vertices.push_back(v);
+            vertices.emplace_back(v);
         }
         //create_mesh(currentMeshName, vertices, "Default");
 
         createMesh(currentMeshName, vertices, currentMaterial);
-        mesh_names.push_back(currentMeshName);
+        mesh_names.emplace_back(currentMeshName);
     };
 
     while( std::getline(obj_file, line) )
@@ -125,19 +125,19 @@ std::vector<std::string> GraphicsManager::loadObj(const char * file)
         {
             glm::vec3 vertex;
             line_stream >> vertex.x >> vertex.y >> vertex.z;
-            temp_vertices.push_back(vertex);
+            temp_vertices.emplace_back(vertex);
         }
         else if( prefix == "vt" )
         {
             glm::vec2 uv;
             line_stream >> uv.x >> uv.y;
-            temp_uvs.push_back(uv);
+	        temp_uvs.emplace_back(uv);
         }
         else if( prefix == "vn" )
         {
             glm::vec3 normal;
             line_stream >> normal.x >> normal.y >> normal.z;
-            temp_normals.push_back(normal);
+            temp_normals.emplace_back(normal);
         }
         else if( prefix == "f" )
         {
@@ -146,9 +146,9 @@ std::vector<std::string> GraphicsManager::loadObj(const char * file)
                 unsigned int vertexIndex, uvIndex, normalIndex;
                 char slash;
                 line_stream >> vertexIndex >> slash >> uvIndex >> slash >> normalIndex;
-                vertexIndices.push_back(vertexIndex - 1);
-                uvIndices.push_back(uvIndex - 1);
-                normalIndices.push_back(normalIndex - 1);
+                vertexIndices.emplace_back(vertexIndex - 1);
+                uvIndices.emplace_back(uvIndex - 1);
+                normalIndices.emplace_back(normalIndex - 1);
             }
         }
         else if( prefix == "usemtl" )
@@ -168,10 +168,11 @@ std::vector<std::string> GraphicsManager::loadObj(const char * file)
     return mesh_names;
 }
 
-Material & GraphicsManager::createMaterial(std::string & name, std::string & diffuse_path, std::string & specular_path, float & shininess,
-    glm::vec3 & ambient_color, glm::vec3 & diffuse_color, glm::vec3 & specular_color)
+Material& GraphicsManager::createMaterial(const std::string& name, glm::vec3 Ka, glm::vec3 Kd, glm::vec3 Ks, float Ns, float Ni, float d, int illum,
+    const std::string& map_Ka_path, const std::string& map_Kd_path, const std::string& map_Ks_path, const std::string& map_Ns_path,
+    const std::string& map_d_path, const std::string& map_bump_path)
 {
-    material_map[name] = std::make_unique<Material>(diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
+    material_map[name] = std::make_unique<Material>(Ka,Kd,Ks, Ns, Ni, d, illum, map_Ka_path,map_Kd_path, map_Ks_path, map_Ns_path, map_d_path, map_bump_path);
     return *material_map[name];
 }
 
@@ -180,7 +181,7 @@ Material & GraphicsManager::getMaterial(const std::string & name)
     return *material_map[name];
 }
 
-std::vector<std::string> GraphicsManager::loadMtl(const char * file)
+std::vector<std::string> GraphicsManager::loadMtl(const std::string& file)
 {
 
     std::ifstream mtl_file(engine_util::buildPath(file));
@@ -193,9 +194,12 @@ std::vector<std::string> GraphicsManager::loadMtl(const char * file)
     std::vector<std::string> material_names;
     std::string line;
     std::string currentMaterialName;
-    std::string diffuse_path, specular_path;
-    float shininess = 0.0f;
-    glm::vec3 ambient_color(0.0f), diffuse_color(0.0f), specular_color(0.0f);
+    std::string map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path, map_d_path, map_bump_path;
+    float Ns = 0.0f;
+    glm::vec3 Ka(0.0f), Kd(0.0f), Ks(0.0f);
+    float Ni = 0.0f;
+    float d = 0.0f;
+    int illum = 0;
 
     while( std::getline(mtl_file, line) )
     {
@@ -207,47 +211,82 @@ std::vector<std::string> GraphicsManager::loadMtl(const char * file)
         {
             if( ! currentMaterialName.empty() )
             {
-                createMaterial(currentMaterialName, diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
-                material_names.push_back(currentMaterialName);
+                createMaterial(currentMaterialName, Ka, Kd, Ks, Ns, Ni, d, illum, map_Ks_path, map_Kd_path, map_Ks_path, map_Ns_path, map_d_path, map_bump_path);
+                material_names.emplace_back(currentMaterialName);
             }
             line_stream >> currentMaterialName;
-            diffuse_path.clear();
-            specular_path.clear();
-            shininess = 0.0f;
-            ambient_color = glm::vec3(0.0f);
-            diffuse_color = glm::vec3(0.0f);
-            specular_color = glm::vec3(0.0f);
+	        map_Ka_path.clear();
+            map_Kd_path.clear();
+            map_Ks_path.clear();
+	        map_Ns_path.clear();
+	        map_d_path.clear();
+		    map_bump_path.clear();
+            Ns = 0.0f;
+            Ka = glm::vec3(0.0f);
+            Kd = glm::vec3(0.0f);
+            Ks = glm::vec3(0.0f);
+	        Ni = 0.0f;
+	        d = 0.0f;
+		    illum = 0;
         }
+	    else if( prefix == "map_Ka" )
+	    {
+		    line_stream >> map_Ka_path;
+	    }
         else if( prefix == "map_Kd" )
         {
-            line_stream >> diffuse_path;
+            line_stream >> map_Kd_path;
         }
         else if( prefix == "map_Ks" )
         {
-            line_stream >> specular_path;
+            line_stream >> map_Ks_path;
         }
+	    else if( prefix == "map_Ns" )
+	    {
+	        line_stream >> map_Ns_path;
+	    }
+	    else if( prefix == "map_d" )
+	    {
+		    line_stream >> map_d_path;
+        }
+	    else if( prefix == "map_bump" )
+	    {
+		    line_stream >> map_bump_path;
+	    }
         else if( prefix == "Ns" )
         {
-            line_stream >> shininess;
+            line_stream >> Ns;
         }
         else if( prefix == "Ka" )
         {
-            line_stream >> ambient_color.r >> ambient_color.g >> ambient_color.b;
+            line_stream >> Ka.r >> Ka.g >> Ka.b;
         }
         else if( prefix == "Kd" )
         {
-            line_stream >> diffuse_color.r >> diffuse_color.g >> diffuse_color.b;
+            line_stream >> Kd.r >> Kd.g >> Kd.b;
         }
         else if( prefix == "Ks" )
         {
-            line_stream >> specular_color.r >> specular_color.g >> specular_color.b;
+            line_stream >> Ks.r >> Ks.g >> Ks.b;
         }
+	    else if( prefix == "Ni" )
+	    {
+		    line_stream >> Ni;
+        }
+	    else if( prefix == "d" )
+	    {
+		    line_stream >> d;
+	    }
+	    else if( prefix == "illum" )
+	    {
+		    line_stream >> illum;
+	    }
     }
 
     if( ! currentMaterialName.empty() )
     {
-        createMaterial(currentMaterialName, diffuse_path, specular_path, shininess, ambient_color, diffuse_color, specular_color);
-        material_names.push_back(currentMaterialName);
+	    createMaterial(currentMaterialName, Ka, Kd, Ks, Ns, Ni, d, illum, map_Ks_path, map_Kd_path, map_Ks_path, map_Ns_path, map_d_path, map_bump_path);
+        material_names.emplace_back(currentMaterialName);
     }
 
     return material_names;

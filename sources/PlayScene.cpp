@@ -66,7 +66,7 @@ void PlayScene::init()
     auto skybox = m_factory_->createSkybox(*m_registry_, glm::vec3{0,0,0}, 10);
     //m_factory_->create_asteroid(*m_registry_, glm::vec3{0,3, -35},2, 8.0f, player);
     //m_factory_->create_enemy_ship(*m_registry_,  glm::vec3{0.0f, 3.0f, -50.0f},5, glm::vec3 {0.0f, 0.0f, 1.0f},10.00,player);
-    m_factory_->createDirectionalLight(*m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.2,0.2,0.2}, glm::vec3{0.1f,0.1f,0.1f}, glm::vec3{0.1,0.1,0.1});
+    m_factory_->createDirectionalLight(*m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.2,0.2,0.2}, glm::vec3{0.3f,0.3f,0.3f}, glm::vec3{0.1,0.1,0.1});
     //m_factory_->create_point_light(*m_registry_,glm::vec3{0,0,0}, glm::vec3{0.7,0.7,0.7}, glm::vec3{1,1,1},glm::vec3{1,1,1},1,0.22,0.2);
     // auto crosshair = m_registry_->create_entity();
     // m_registry_->add_component<c_transform>(crosshair,c_transform{.scale = glm::vec3(0.1f,0.1f,0.1f)});
