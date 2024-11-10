@@ -9,12 +9,12 @@ Model::Model(const std::vector <std::string>& meshes)
 }
 void Model::draw(ShaderProgram& shader, GraphicsManager& graphics_manager)
 {
-    for( auto& mesh : meshes )
+    for( const auto& mesh : meshes )
     {
-	graphics_manager.getMesh(mesh).draw(shader, graphics_manager);
+	    graphics_manager.getMesh(mesh).draw(shader, graphics_manager);
     }
 }
 void Model::addMesh(const std::string& mesh_name)
 {
-    meshes.emplace_back(mesh_name);
+    meshes.push_back(mesh_name);
 }

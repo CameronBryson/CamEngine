@@ -15,9 +15,11 @@ public:
     SparseSet()
     {
         printf("Sparse set created of type: %s\n", typeid(T).name());
-        m_dense_.resize(settings::max_entities);
-        m_sparse_.resize(settings::max_entities);
-        m_items_.resize(settings::max_entities);
+        mSparse.resize(settings::max_entities);
+	    //mDense.resize(settings::max_entities);
+	    //mItems.resize(settings::max_entities);
+        mDense.reserve(settings::max_entities);
+        mItems.reserve(settings::max_entities);
     }
 
     ~SparseSet() override
@@ -28,51 +30,65 @@ public:
     void addItem(const unsigned short id, T&& component_data)
     {
         assert(id < settings::max_entities && "ID is out of range.");
-        assert(m_size_< settings::max_entities && "Exceeding maximum entities.");
+        assert(mSize< settings::max_entities && "Exceeding maximum entities.");
         if (id < settings::max_entities)
         {
-            m_dense_[m_size_] = id;
-            m_items_[m_size_] = std::move(component_data);
-            m_sparse_[id] = m_size_;
-            ++m_size_;
+	        if( mSize >= mDense.size() )
+	        {
+		    mDense.emplace_back(id);
+		    mItems.emplace_back(std::move(component_data));
+	        }
+	        else
+	        {
+		    mDense[mSize] = id;
+		    mItems[mSize] = std::move(component_data);
+	        }
+            //mDense[mSize] = id;
+	    //mDense.emplace(mDense.begin() + mSize);
+	    //mItems.emplace(mItems.begin() + mSize);
+	        //mDense.push_back(id);
+            //mItems[mSize] = std::move(component_data);
+		    //mItems.push_back(std::move(component_data));
+            mSparse[id] = mSize;
+            ++mSize;
         }
     }
 
     void removeItem(const unsigned short id) override
     {
         assert(id < settings::max_entities && "ID is out of range.");
-        assert(m_size_ > 0 && "Sparse set is empty, cannot remove item.");
-        if (m_size_ > 0 && id < settings::max_entities)
+        assert(mSize > 0 && "Sparse set is empty, cannot remove item.");
+        if (mSize > 0 && id < settings::max_entities)
         {
-            const auto last_id = m_dense_[m_size_ - 1];
-            auto index_to_remove = m_sparse_[id];
-            m_dense_[index_to_remove] = last_id;
-            m_items_[index_to_remove] = std::move(m_items_[m_size_ - 1]);
-            m_sparse_[last_id] = index_to_remove;
-            --m_size_;
+            const auto last_id = mDense[mSize - 1];
+            auto index_to_remove = mSparse[id];
+            mDense[index_to_remove] = last_id;
+            mItems[index_to_remove] = std::move(mItems[mSize - 1]);
+            mSparse[last_id] = index_to_remove;
+            --mSize;
         }
     }
 
     [[nodiscard]] bool hasItem(const unsigned short id) const override
     {
-        return id < settings::max_entities && m_sparse_[id] < m_size_ && m_dense_[m_sparse_[id]] == id;
+        return id < settings::max_entities && mSparse[id] < mSize && mDense[mSparse[id]] == id;
     }
 
     T& get_item(const unsigned short id)
     {
         assert(id < settings::max_entities && "ID is out of range.");
-        assert(m_sparse_[id] < m_size_ && "ID does not exist in the sparse set.");
-        return m_items_[m_sparse_[id]];
+        assert(mSparse[id] < mSize && "ID does not exist in the sparse set.");
+        return mItems[mSparse[id]];
     }
 
     [[nodiscard]] int getSize() const override
     {
-        return m_size_;
+        return mSize;
     }
 
     [[nodiscard]] std::vector<unsigned short> getIDs() const override
     {
-        auto ids = std::vector<unsigned short>(m_dense_.begin(), m_dense_.begin() + m_size_);
+        auto ids = std::vector<unsigned short>(mDense.begin(), mDense.begin() + mSize);
         std::sort(ids.begin(), ids.end());
         return ids;
     }
@@ -87,8 +103,8 @@ public:
     }
 
 private:
-    std::vector<unsigned short> m_dense_;
-    std::vector<unsigned short> m_sparse_;
-    std::vector<T> m_items_;
-    int m_size_ = 0;
+    std::vector<unsigned short> mDense;
+    std::vector<unsigned short> mSparse;
+    std::vector<T> mItems;
+    int mSize = 0;
 };
