@@ -60,7 +60,7 @@ unsigned short Factory::createPlayer(Registry &registry) {
     registry.addComponent<CModel>(id, CModel{.name = "player"});
     registry.addComponent<CDynamicBody>(id,CDynamicBody{.drag = 0.4f,.elasticity = 0.1f, .angluar_drag = 0.9f});
     registry.addComponent<CDamage>(id, CDamage{.damage = 1});
-    registry.addComponent<CPointLight>(id, CPointLight{.ambient = {0.5,0.5,0.5},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
+    registry.addComponent<CPointLight>(id, CPointLight{.ambient = {0.8,0.8,0.8},.diffuse = {0.9,0.9,0.9},.specular = {0.5,0.5,0.5},.constant = 1,.linear = 0.09,.quadratic = 0.032});
 
     return id;
 

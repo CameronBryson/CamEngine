@@ -8,8 +8,8 @@ CollisionManifold::CollisionManifold(const glm::vec3 normal, const float penetra
       mTransform1(transform1),
       mTransform2(transform2)
 {
-    printf("Depth: %f\n", penetrationDepth);
-    printf("Normal%f\n %f\n %f\n", normal.x, normal.y, normal.z);
+    //printf("Depth: %f\n", penetrationDepth);
+    //printf("Normal%f\n %f\n %f\n", normal.x, normal.y, normal.z);
 }
 void CollisionManifold::resolveCollision() const
 {

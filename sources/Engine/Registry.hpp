@@ -273,13 +273,6 @@ std::vector<unsigned short> Registry::getEntityIDs() const
     std::vector<unsigned short> result;
     if (sizeof...(T) == 0)
     {
-        for (unsigned short i = 0; i < settings::max_entities; ++i)
-        {
-            if (std::find(mEntities.begin(), mEntities.end(), i) != mEntities.end())
-            {
-                result.emplace_back(i);
-            }
-        }
         return result;
     }
     std::vector<ISparseSet*> sparse_sets = {&getSparseSet<T>()...};

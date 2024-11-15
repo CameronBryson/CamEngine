@@ -126,7 +126,7 @@ bool SCollision::intersectsSphereInSphere(unsigned id1, unsigned id2, SparseSet<
             penetration_depth = 0.0f;
         }
         CollisionManifold manifold{penetration_axis, penetration_depth, transform1, transform2, (sphere1_is_dynamic) ? &dynamic_bodies.get_item(id1) : nullptr,(sphere2_is_dynamic) ? &dynamic_bodies.get_item(id2) : nullptr};
-        std::cout << id1 << " " << id2 << std::endl;
+        //std::cout << id1 << " " << id2 << std::endl;
         EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionDetectedEvent(manifold, id1, id2));
     }
 

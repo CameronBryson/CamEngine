@@ -63,7 +63,7 @@ void PlayScene::init()
     m_factory_.createBoundary(m_registry_, glm::vec3{0,45,0}, glm::vec3{45,1,1});
 
     auto skybox = m_factory_.createSkybox(m_registry_, glm::vec3{0,0,0}, 10);
-    m_factory_.createDirectionalLight(m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.2,0.2,0.2}, glm::vec3{0.3f,0.3f,0.3f}, glm::vec3{0.1,0.1,0.1});
+    m_factory_.createDirectionalLight(m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.6,0.6,0.6}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{0.2,0.2,0.2});
 
     m_registry_.processCommands();
     m_camera_.camera_follow_target_ = &m_registry_.getComponent<CTransform>(player);

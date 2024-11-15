@@ -70,7 +70,7 @@ void SPlayer::update(Registry & registry, Camera& camera, const float dt)
             glm::vec2 window_size = OpenGlUtil::getWindowSize();
             float x = (mouse_pos.x/window_size.x) * 2.0f -1.0f;
             float y = -(mouse_pos.y / window_size.y) * 2.0+1.0f;
-            std::cout<< x << " " << y << std::endl;
+            //std::cout<< x << " " << y << std::endl;
             //ray cast mouse to 3d space
             glm::mat4 invVP = glm::inverse(camera.GetProjectionMatrix() * camera.GetViewMatrix() *glm::translate(glm::mat4(1),transforms.get_item(id).position ));
             glm::vec4 screenPos = {x,y,1,1};
@@ -82,7 +82,7 @@ void SPlayer::update(Registry & registry, Camera& camera, const float dt)
 
             glm::vec3 direction = glm::normalize(glm::vec3(worldPos));
 
-            std::cout << direction.x << " " << direction.y << " " << direction.z  <<  " " << std::endl;
+            //std::cout << direction.x << " " << direction.y << " " << direction.z  <<  " " << std::endl;
 
             
 
