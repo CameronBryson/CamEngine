@@ -5,6 +5,8 @@
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
+#include <tuple>
+#include "glm/glm.hpp"
 
 class ICommand
 {
@@ -13,24 +15,25 @@ public:
     virtual void execute() = 0;
 };
 
-template <typename T>
+template <typename T, typename... Args>
 class AddComponentCommand final : public ICommand
 {
 public:
-    AddComponentCommand(SparseSet<T>& sparse_set, const unsigned short id, T component_data)
-        : mSparseSet(sparse_set), mID(id), mComponentData(std::move(component_data))
+    AddComponentCommand(SparseSet<T>& sparse_set, const unsigned short id, Args&&... componentArgs)
+      : mSparseSet(sparse_set), mID(id), mComponentArgs(std::forward_as_tuple(componentArgs...))
     {
+
     }
 
     void execute() override
     {
-        mSparseSet.addItem(mID, std::move(mComponentData));
+	    std::apply([this](auto&&... args) { mSparseSet.addItem(mID, std::forward<decltype(args)>(args)...); }, mComponentArgs);
     }
 
 private:
     SparseSet<T>& mSparseSet;
     unsigned short mID;
-    T mComponentData;
+    std::tuple<std::decay_t<Args>...> mComponentArgs;
 };
 
 template <typename T>

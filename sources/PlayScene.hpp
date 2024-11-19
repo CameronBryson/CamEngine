@@ -38,11 +38,11 @@ private:
     void initSparseSets();
 
 private:
-    Registry m_registry_;
-    Factory m_factory_;
-    Camera m_camera_;
-    GraphicsManager m_graphics_manager_;
-    SPlayer m_system_player_;
+    Registry mRegistry;
+    Factory mFactory;
+    Camera mCamera;
+    GraphicsManager mGraphicsManager;
+    SPlayer mSystemPlayer;
     SCamera m_system_camera_;
     SCollision m_system_collision_;
     SHealth m_system_health_;

@@ -1,4 +1,5 @@
 #include "PlayScene.hpp"
+#include "Systems/PlayerController.hpp"
 
 #include <Engine/Event.hpp>
 
@@ -34,7 +35,7 @@ struct test
     int data = 0;
 };
 
-PlayScene::PlayScene() : m_factory_(m_registry_)
+PlayScene::PlayScene() : mFactory(mRegistry)
 {
     printf("PlayScene created\n");
 
@@ -50,84 +51,92 @@ void PlayScene::init()
 
     initSparseSets();
 
-    m_system_render_.init(m_graphics_manager_);
+    m_system_render_.init(mGraphicsManager);
     Timer benchmark_timer(Stats::stat_type::BENCHMARK);
-    auto player  = m_factory_.createPlayer(m_registry_);
+    auto player  = mFactory.createPlayer(mRegistry);
     //m_registry_.addComponent<test>(player, test());
-    m_registry_.getSparseSet<test>().addItem(player, test());
+    mRegistry.addComponent<PlayerController>(player, &mCamera, &mRegistry, player);
     settings::player_id = player;
 
-    m_factory_.createBoundary(m_registry_, glm::vec3{-45,0,0}, glm::vec3{1,45,1});
-    m_factory_.createBoundary(m_registry_, glm::vec3{45,0,0}, glm::vec3{1,45,1});
-    m_factory_.createBoundary(m_registry_, glm::vec3{0,-45,0}, glm::vec3{45,1,1});
-    m_factory_.createBoundary(m_registry_, glm::vec3{0,45,0}, glm::vec3{45,1,1});
+    mFactory.createBoundary(mRegistry, glm::vec3{-45,0,0}, glm::vec3{1,45,1});
+    mFactory.createBoundary(mRegistry, glm::vec3{45,0,0}, glm::vec3{1,45,1});
+    mFactory.createBoundary(mRegistry, glm::vec3{0,-45,0}, glm::vec3{45,1,1});
+    mFactory.createBoundary(mRegistry, glm::vec3{0,45,0}, glm::vec3{45,1,1});
 
-    auto skybox = m_factory_.createSkybox(m_registry_, glm::vec3{0,0,0}, 10);
-    m_factory_.createDirectionalLight(m_registry_,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.6,0.6,0.6}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{0.2,0.2,0.2});
+    auto skybox = mFactory.createSkybox(mRegistry, glm::vec3{0,0,0}, 10);
+    mFactory.createDirectionalLight(mRegistry,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.6,0.6,0.6}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{0.2,0.2,0.2});
 
-    m_registry_.processCommands();
-    m_camera_.camera_follow_target_ = &m_registry_.getComponent<CTransform>(player);
-    m_camera_.skybox_tranform = &m_registry_.getComponent<CTransform>(skybox);
+    mRegistry.processCommands();
+    mCamera.camera_follow_target_ = &mRegistry.getComponent<CTransform>(player);
+    mCamera.skybox_tranform = &mRegistry.getComponent<CTransform>(skybox);
+
+    //EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::Init);
+    //EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::LateInit);
 }
 
 void PlayScene::update(const float dt)
 {
     Timer update_timer(Stats::stat_type::UPDATE);
-    m_registry_.processCollisionEesolutions();
-    m_system_camera_.update(m_camera_, dt);
-    m_system_player_.update(m_registry_, m_camera_, dt);
-    m_system_enemy_.update(m_registry_, dt);
-    m_system_ui_.update(m_registry_);
-    m_system_asteroid_.update(m_registry_,dt);
-    m_system_physics_.update(m_registry_, dt);
-    m_system_health_.update(m_registry_, dt);
-    m_system_boundry_.update(m_registry_,dt);
-    m_system_wave_spawn_.update(m_registry_,dt);
+    mRegistry.processCollisionEesolutions();
+    m_system_camera_.update(mCamera, dt);
+    //mSystemPlayer.update(mRegistry, mCamera, dt);
+    m_system_enemy_.update(mRegistry, dt);
+    m_system_ui_.update(mRegistry);
+    m_system_asteroid_.update(mRegistry,dt);
+    m_system_physics_.update(mRegistry, dt);
+    m_system_health_.update(mRegistry, dt);
+    m_system_boundry_.update(mRegistry,dt);
+    m_system_wave_spawn_.update(mRegistry,dt);
+    EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::Update);
+
 }
 
 void PlayScene::lateUpdate(const float dt)
 {
-    m_system_collision_.update(m_registry_);
-    m_registry_.processCommands();
-    m_registry_.resetKeyStates();
+    m_system_collision_.update(mRegistry);
+    mRegistry.processCommands();
+    mRegistry.resetKeyStates();
+    EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::LateUpdate);
 }
 
 void PlayScene::render()
 {
     Timer render_timer(Stats::stat_type::RENDER);
-    m_system_render_.update(m_registry_, m_graphics_manager_, m_camera_);
+    m_system_render_.update(mRegistry, mGraphicsManager, mCamera);
 }
 
 void PlayScene::shutdown()
 {
     m_system_render_.shutdown();
-    m_system_player_.shutdown();
+    mSystemPlayer.shutdown();
     m_system_physics_.shutdown();
+    EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::Shutdown);
 }
 
 Registry & PlayScene::getRegistry()
 {
-    return m_registry_;
+    return mRegistry;
 }
 
 void PlayScene::initSparseSets()
 {
-    m_registry_.createSparseSet<CTransform>();
-    m_registry_.createSparseSet<CRender>();
-    m_registry_.createSparseSet<CPlayer>();
-    m_registry_.createSparseSet<CCollider>();
-    m_registry_.createSparseSet<CHealth>();
-    m_registry_.createSparseSet<CEnemy>();
-    m_registry_.createSparseSet<CQuad>();
-    m_registry_.createSparseSet<CSphere>();
-    m_registry_.createSparseSet<CModel>();
-    m_registry_.createSparseSet<CDirectionalLight>();
-    m_registry_.createSparseSet<CDynamicBody>();
-    m_registry_.createSparseSet<CUI>();
-    m_registry_.createSparseSet<CDamage>();
-    m_registry_.createSparseSet<CBackground>();
-    m_registry_.createSparseSet<CAsteroid>();
-    m_registry_.createSparseSet<CPointLight>();
-    m_registry_.createSparseSet<CRepeatAcceleration>();
-    m_registry_.createSparseSet<test>();
+    mRegistry.createSparseSet<CTransform>();
+    mRegistry.createSparseSet<CRender>();
+    mRegistry.createSparseSet<CPlayer>();
+    mRegistry.createSparseSet<CCollider>();
+    mRegistry.createSparseSet<CHealth>();
+    mRegistry.createSparseSet<CEnemy>();
+    mRegistry.createSparseSet<CQuad>();
+    mRegistry.createSparseSet<CSphere>();
+    mRegistry.createSparseSet<CModel>();
+    mRegistry.createSparseSet<CDirectionalLight>();
+    mRegistry.createSparseSet<CDynamicBody>();
+    mRegistry.createSparseSet<CUI>();
+    mRegistry.createSparseSet<CDamage>();
+    mRegistry.createSparseSet<CBackground>();
+    mRegistry.createSparseSet<CAsteroid>();
+    mRegistry.createSparseSet<CPointLight>();
+    mRegistry.createSparseSet<CRepeatAcceleration>();
+    mRegistry.createSparseSet<test>();
+    mRegistry.createSparseSet<PlayerController>();
 }

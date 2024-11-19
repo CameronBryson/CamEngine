@@ -46,7 +46,7 @@ file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources
 
 # Declaring our executable
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${GLAD_SOURCES} ${STB_IMAGE_SOURCES}
-)
+ "sources/Engine/ScriptBase.cpp" "sources/Systems/PlayerController.cpp")
 
 # Link libraries
 set(OpenGL_GL_PREFERENCE GLVND)

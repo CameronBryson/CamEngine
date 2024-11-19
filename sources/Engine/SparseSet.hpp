@@ -15,7 +15,8 @@ class SparseSet final : public ISparseSet
   public:
     SparseSet();
 
-    void addItem(unsigned short entityID, T component);
+    template <typename... Args>
+    void addItem(unsigned short entityID, Args&&... componentArgs);
     void removeItem(unsigned short entityID) override;
     bool hasItem(unsigned short entityID) override;
     T& get_item(unsigned short entityID);
@@ -39,14 +40,16 @@ SparseSet<T>::SparseSet()
 }
 
 template <class T>
-void SparseSet<T>::addItem(unsigned short entityID, T component)
+template <typename... Args>
+void SparseSet<T>::addItem(unsigned short entityID, Args&&... componentArgs)
 {
+
     if( entityID >= settings::max_entities )
     {
 	throw std::out_of_range("Exceeded maximum capacity of SparseSet.");
     }
     m_Dense.emplace_back(entityID);
-    m_Items.emplace_back(component);
+    m_Items.emplace_back(std::forward<Args>(componentArgs)...);
     //m_Items.emplace_back(std::forward<Args>(componentArgs)...);
     m_Sparse[entityID] = m_Dense.size() - 1;
 }

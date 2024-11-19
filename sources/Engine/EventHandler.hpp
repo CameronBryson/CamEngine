@@ -7,6 +7,7 @@
 #include "FactoryEvents.hpp"
 #include "HealthEvents.hpp"
 #include "InputEvents.hpp"
+#include "ScriptEvents.hpp"
 
 class EventHandler {
 public:
@@ -17,6 +18,7 @@ public:
         EventDispatcher<FactoryEvents> factoryDispatcher;
         EventDispatcher<InputEvents> inputDispatcher;
         EventDispatcher<HealthEvents> healthDispatcher;
+	    EventDispatcher<ScriptEvents> scriptDispatcher;
 
 private:
     static std::unique_ptr<EventHandler> s_Instance;

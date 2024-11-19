@@ -24,6 +24,7 @@ void SEnemy::update(Registry & registry, float dt)
             //printf("Shoot\n");
             glm::vec3 direction = glm::normalize(target_transform.position-enemy_tranform.position);
 
+
             EventHandler::GetInstance()->factoryDispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(id).position, direction, 50.0f,settings::enemy_bitmask));
 
             enemy.time_since_shoot = 0.0f;

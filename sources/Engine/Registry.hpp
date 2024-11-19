@@ -82,6 +82,7 @@ public:
 
     void processCommands()
     {
+
         while (!mCommandQueue.empty())
         {
             const auto& command = mCommandQueue.front();
@@ -198,8 +199,8 @@ public:
     template <typename T>
     void createSparseSet();
 
-    template <typename T>
-    void addComponent(unsigned short id, const T& component_data);
+    template <typename T,typename... Args>
+    void addComponent(unsigned short id, Args&&... componentArgs);
 
 
     template <typename T>
@@ -252,12 +253,13 @@ SparseSet<T>& Registry::getSparseSet() const
     return *static_cast<SparseSet<T>*>(mSparseSets.at(std::type_index(typeid(T))).get());
 }
 
-template <typename T>
-void Registry::addComponent(unsigned short id, const T& component_data)
+template <typename T, typename... Args>
+void Registry::addComponent(unsigned short id, Args&&... componentArgs)
 {
     assert(mEntities.end() != std::find(mEntities.begin(), mEntities.end(), id) && "Entity does not exist.");
     auto& set = getSparseSet<T>();
-    mCommandQueue.push(std::make_unique<AddComponentCommand<T>>(set, id, component_data));
+    mCommandQueue.push(std::make_unique<AddComponentCommand<T,Args...>>(set, id, std::forward<Args>(componentArgs)...));
+    //set.addItem(id, std::forward<Args>(componentArgs)...);
 }
 
 template <typename T>
