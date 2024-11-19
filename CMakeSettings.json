@@ -1,38 +1,37 @@
 ﻿{
   "configurations": [
     {
-      "buildCommandArgs": "",
-      "buildRoot": "${projectDir}\\out\\build\\${name}",
-      "cmakeCommandArgs": "",
-      "configurationType": "Debug",
-      "ctestCommandArgs": "",
-      "generator": "Ninja",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "installRoot": "${projectDir}\\out\\install\\${name}",
       "name": "x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
       "variables": [
         {
           "name": "CMAKE_CXX_FLAGS",
-          "value": "/fsanitize=address",
-          "type": "STRING"
+          "value": "/fsanitize=address"
         },
         {
           "name": "CMAKE_EXE_LINKER_FLAGS",
-          "value": "/fsanitize=address",
-          "type": "STRING"
+          "value": "/fsanitize=address"
         }
       ]
     },
     {
-      "buildCommandArgs": "",
-      "buildRoot": "${projectDir}\\out\\build\\${name}",
-      "cmakeCommandArgs": "",
-      "configurationType": "RelWithDebInfo",
-      "ctestCommandArgs": "",
+      "name": "x64-Release",
       "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
       "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "name": "x64-Release"
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": ""
     }
   ]
 }
+
