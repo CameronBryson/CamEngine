@@ -153,11 +153,11 @@ void SRender::drawColliders(const Registry & registry, GraphicsManager& graphics
 {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    auto & quads = registry.getSparseSet<CQuad>();
-    auto & spheres = registry.getSparseSet<CSphere>();
+    auto & quads = registry.getSparseSet<CBoxBounds>();
+    auto & spheres = registry.getSparseSet<CSphereBounds>();
     for( auto id : registry.getEntityIDs<CCollider, CTransform>())
     {
-        if( registry.hasComponent<CQuad>(id) )
+        if( registry.hasComponent<CBoxBounds>(id) )
         {
             auto & quad = quads.get_item(id);
             auto & transform = transforms.get_item(id);
@@ -169,7 +169,7 @@ void SRender::drawColliders(const Registry & registry, GraphicsManager& graphics
             auto & mesh = graphics_manager.getMesh("Cube");
             mesh.draw(shader,graphics_manager);
         }
-        else if( registry.hasComponent<CSphere>(id) )
+        else if( registry.hasComponent<CSphereBounds>(id) )
         {
             auto & sphere = spheres.get_item(id);
             auto & transform = transforms.get_item(id);

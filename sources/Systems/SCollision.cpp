@@ -9,14 +9,14 @@
 
 void SCollision::update(Registry & registry)
 {
-    auto & quads = registry.getSparseSet<CQuad>();
-    auto & spheres = registry.getSparseSet<CSphere>();
+    auto & quads = registry.getSparseSet<CBoxBounds>();
+    auto & spheres = registry.getSparseSet<CSphereBounds>();
     auto & transforms = registry.getSparseSet<CTransform>();
     auto & colliders = registry.getSparseSet<CCollider>();
     auto & dynamic_bodies = registry.getSparseSet<CDynamicBody>();
 
-    std::vector<unsigned short> obb_ids = registry.getEntityIDs<CQuad, CTransform, CCollider>();
-    std::vector<unsigned short> sphere_ids = registry.getEntityIDs<CSphere, CTransform, CCollider>();
+    std::vector<unsigned short> obb_ids = registry.getEntityIDs<CBoxBounds, CTransform, CCollider>();
+    std::vector<unsigned short> sphere_ids = registry.getEntityIDs<CSphereBounds, CTransform, CCollider>();
 
     // Check OBB-OBB intersections
     // for( auto id : obb_ids )
@@ -88,7 +88,7 @@ bool SCollision::intersectsAabbInAabb(const glm::vec3 & min1, const glm::vec3 & 
     return overlap_x && overlap_y && overlap_z;
 }
 
-bool SCollision::intersectsSphereInSphere(unsigned id1, unsigned id2, SparseSet<CSphere>& spheres, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
+bool SCollision::intersectsSphereInSphere(unsigned id1, unsigned id2, SparseSet<CSphereBounds>& spheres, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
 {
     auto& sphere1 = spheres.get_item(id1);
     auto& sphere2 = spheres.get_item(id2);
@@ -133,7 +133,7 @@ bool SCollision::intersectsSphereInSphere(unsigned id1, unsigned id2, SparseSet<
     return true;
 }
 
-bool SCollision::intersectsObbInObb(const unsigned id1, const unsigned id2, SparseSet<CQuad>& quads, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
+bool SCollision::intersectsObbInObb(const unsigned id1, const unsigned id2, SparseSet<CBoxBounds>& quads, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
 {
 
     auto& obb1 = quads.get_item(id1);
@@ -229,7 +229,7 @@ bool SCollision::intersectsObbInObb(const unsigned id1, const unsigned id2, Spar
     return true;
 }
 
-std::vector<glm::vec3> SCollision::getObbPointsInWorldSpace(const CQuad & obb, const CTransform & transform)
+std::vector<glm::vec3> SCollision::getObbPointsInWorldSpace(const CBoxBounds & obb, const CTransform & transform)
 {
     // Extract rotation matrix from the transform
     const glm::mat4 rotation_matrix = glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
@@ -305,7 +305,7 @@ bool SCollision::testAxis(const glm::vec3 & axis, const std::vector<glm::vec3> &
     return true;
 }
 
-bool SCollision::intersectsObbInSphere(unsigned quad_id, unsigned sphere_id, SparseSet<CQuad>& quads, SparseSet<CSphere>& spheres, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
+bool SCollision::intersectsObbInSphere(unsigned quad_id, unsigned sphere_id, SparseSet<CBoxBounds>& quads, SparseSet<CSphereBounds>& spheres, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
 {
     auto& obb = quads.get_item(quad_id);
     auto& sphere = spheres.get_item(sphere_id);

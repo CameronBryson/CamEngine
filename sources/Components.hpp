@@ -2,12 +2,6 @@
 #include "glm/glm.hpp"
 #include <string>
 
-// Component for player-specific data
-struct CPlayer
-{
-    CPlayer() = default;
-};
-
 // Component for rendering-related data
 struct CRender
 {
@@ -33,31 +27,17 @@ struct CCollider
     unsigned int collision_bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
 };
 
-struct CHealth
-{
-    CHealth(float health) : health(health) {}
-    float health = 100;
-};
 
-struct CEnemy
-{
-    CEnemy(unsigned short target, float speed, glm::vec3 direction) : target(target), speed(speed), direction(direction) {}
-    unsigned short target;
-    float speed = 1.0f;
-    glm::vec3 direction = {0, 0, 0};
-    float cooldown = 2.0f;
-    float time_since_shoot = 0.0f;
-};
 
-struct CQuad
+struct CBoxBounds
 {
-    CQuad(glm::vec3 extents) : extents(extents) {}
+    CBoxBounds(glm::vec3 extents) : extents(extents) {}
     glm::vec3 extents;
 };
 
-struct CSphere
+struct CSphereBounds
 {
-    CSphere(float radius) : radius(radius) {}
+    CSphereBounds(float radius) : radius(radius) {}
     float radius;
 };
 
@@ -107,23 +87,12 @@ struct CDynamicBody
     glm::vec3 angular_acceleration = {0, 0, 0};
 };
 
-struct CDamage
-{
-    CDamage(float damage) : damage(damage) {}
-    float damage = 10;
-};
 
 struct CBackground
 {
     CBackground() = default;
 };
 
-struct CAsteroid
-{
-    CAsteroid(unsigned short target, float speed) : target(target), speed(speed) {}
-    unsigned short target;
-    float speed;
-};
 
 struct CRepeatAcceleration
 {

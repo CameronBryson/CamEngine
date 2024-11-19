@@ -64,8 +64,8 @@ void StartScene::initSparseSets()
     m_registry_->createSparseSet<CDirectionalLight>();
     m_registry_->createSparseSet<CPointLight>();
     m_registry_->createSparseSet<CBackground>();
-    m_registry_->createSparseSet<CQuad>();
-    m_registry_->createSparseSet<CSphere>();
+    m_registry_->createSparseSet<CBoxBounds>();
+    m_registry_->createSparseSet<CSphereBounds>();
     m_registry_->createSparseSet<CCollider>();
 
 }

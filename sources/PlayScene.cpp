@@ -1,39 +1,19 @@
 #include "PlayScene.hpp"
 #include "Scripts/PlayerController.hpp"
+#include "Scripts/EnemyShipController.hpp"
+#include "Scripts/WaveController.hpp"
+#include "Scripts/CameraController.hpp"
+#include "Scripts/AsteroidController.hpp"
+#include "Scripts/BoundaryController.hpp"
+#include "Scripts/HealthController.hpp"
+
+#include "Scripts/Asteroid.hpp"
+#include "Scripts/EnemyShip.hpp"
+#include "Scripts/Player.hpp"
+#include "Scripts/Health.hpp"
+#include "Scripts/Damage.hpp"
 
 #include <Engine/Event.hpp>
-
-int created_counter = 0;
-int destroyed_counter = 0;
-int moved_counter = 0;
-int copied_count = 0;
-int equal_counter = 0;
-struct test
-{
-    test()
-    {
-	created_counter++;
-    }
-    ~test()
-    {
-	destroyed_counter++;
-    }
-    test(test&& obj) : data(obj.data)
-    {
-	moved_counter++;
-    }
-    test(const test& obj)
-    {
-	copied_count++;
-	this->data = obj.data;
-    }
-    test& operator=(const test&)
-    {
-	equal_counter++;
-	return *this;
-    }
-    int data = 0;
-};
 
 PlayScene::PlayScene() : mFactory(mRegistry)
 {
@@ -51,12 +31,20 @@ void PlayScene::init()
 
     initSparseSets();
 
-    m_system_render_.init(mGraphicsManager);
+    mRenderSystem.init(mGraphicsManager);
     Timer benchmark_timer(Stats::stat_type::BENCHMARK);
     auto player  = mFactory.createPlayer(mRegistry);
-    //m_registry_.addComponent<test>(player, test());
     mRegistry.addComponent<PlayerController>(player, &mCamera, &mRegistry, player);
     settings::player_id = player;
+
+    auto controller = mRegistry.createEntity();
+    mRegistry.addComponent<WaveController>(controller, &mRegistry, controller);
+    mRegistry.addComponent<EnemyShipController>(controller, &mRegistry, controller);
+    mRegistry.addComponent<AsteroidController>(controller, &mRegistry, controller);
+    mRegistry.addComponent<CameraController>(controller, &mCamera, &mRegistry, controller);
+    mRegistry.addComponent<BoundaryController>(controller, &mRegistry, controller);
+    mRegistry.addComponent<HealthController>(controller, &mRegistry, controller);
+
 
     mFactory.createBoundary(mRegistry, glm::vec3{-45,0,0}, glm::vec3{1,45,1});
     mFactory.createBoundary(mRegistry, glm::vec3{45,0,0}, glm::vec3{1,45,1});
@@ -70,47 +58,38 @@ void PlayScene::init()
     mCamera.camera_follow_target_ = &mRegistry.getComponent<CTransform>(player);
     mCamera.skybox_tranform = &mRegistry.getComponent<CTransform>(skybox);
 
-    //EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::Init);
-    //EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::LateInit);
+    EventHandler::GetInstance()->scriptDispatcher.SendEvent(InitEvent());
+    EventHandler::GetInstance()->scriptDispatcher.SendEvent(LateInitEvent());
 }
 
 void PlayScene::update(const float dt)
 {
     Timer update_timer(Stats::stat_type::UPDATE);
     mRegistry.processCollisionResolutions();
-    m_system_camera_.update(mCamera, dt);
-    //mSystemPlayer.update(mRegistry, mCamera, dt);
-    m_system_enemy_.update(mRegistry, dt);
-    m_system_ui_.update(mRegistry);
-    m_system_asteroid_.update(mRegistry,dt);
-    m_system_physics_.update(mRegistry, dt);
-    m_system_health_.update(mRegistry, dt);
-    m_system_boundry_.update(mRegistry,dt);
-    m_system_wave_spawn_.update(mRegistry,dt);
-    EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::Update);
+    mPhysicsSystem.update(mRegistry, dt);
+    EventHandler::GetInstance()->scriptDispatcher.SendEvent(UpdateEvent(dt));
 
 }
 
 void PlayScene::lateUpdate(const float dt)
 {
-    m_system_collision_.update(mRegistry);
+    mCollisionSystem.update(mRegistry);
     mRegistry.processCommands();
     mRegistry.resetKeyStates();
-    EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::LateUpdate);
+    EventHandler::GetInstance()->scriptDispatcher.SendEvent(LateUpdateEvent(dt));
 }
 
 void PlayScene::render()
 {
     Timer render_timer(Stats::stat_type::RENDER);
-    m_system_render_.update(mRegistry, mGraphicsManager, mCamera);
+    mRenderSystem.update(mRegistry, mGraphicsManager, mCamera);
 }
 
 void PlayScene::shutdown()
 {
-    m_system_render_.shutdown();
-    mSystemPlayer.shutdown();
-    m_system_physics_.shutdown();
-    EventHandler::GetInstance()->scriptDispatcher.SendEvent(ScriptEvents::Shutdown);
+    mRenderSystem.shutdown();
+    mPhysicsSystem.shutdown();
+    EventHandler::GetInstance()->scriptDispatcher.SendEvent(ShutdownEvent());
 }
 
 Registry & PlayScene::getRegistry()
@@ -122,21 +101,26 @@ void PlayScene::initSparseSets()
 {
     mRegistry.createSparseSet<CTransform>();
     mRegistry.createSparseSet<CRender>();
-    mRegistry.createSparseSet<CPlayer>();
+    mRegistry.createSparseSet<Player>();
     mRegistry.createSparseSet<CCollider>();
-    mRegistry.createSparseSet<CHealth>();
-    mRegistry.createSparseSet<CEnemy>();
-    mRegistry.createSparseSet<CQuad>();
-    mRegistry.createSparseSet<CSphere>();
+    mRegistry.createSparseSet<Health>();
+    mRegistry.createSparseSet<EnemyShip>();
+    mRegistry.createSparseSet<CBoxBounds>();
+    mRegistry.createSparseSet<CSphereBounds>();
     mRegistry.createSparseSet<CModel>();
     mRegistry.createSparseSet<CDirectionalLight>();
     mRegistry.createSparseSet<CDynamicBody>();
     mRegistry.createSparseSet<CUI>();
-    mRegistry.createSparseSet<CDamage>();
+    mRegistry.createSparseSet<Damage>();
     mRegistry.createSparseSet<CBackground>();
-    mRegistry.createSparseSet<CAsteroid>();
+    mRegistry.createSparseSet<Asteroid>();
     mRegistry.createSparseSet<CPointLight>();
     mRegistry.createSparseSet<CRepeatAcceleration>();
-    mRegistry.createSparseSet<test>();
     mRegistry.createSparseSet<PlayerController>();
+    mRegistry.createSparseSet<WaveController>();
+    mRegistry.createSparseSet<EnemyShipController>();
+    mRegistry.createSparseSet<AsteroidController>();
+    mRegistry.createSparseSet<CameraController>();
+    mRegistry.createSparseSet<BoundaryController>();
+    mRegistry.createSparseSet<HealthController>();
 }

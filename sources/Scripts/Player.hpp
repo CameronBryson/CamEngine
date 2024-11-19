@@ -1,4 +1,5 @@
 #pragma once
-class Player
+struct Player
 {
+    Player() = default;
 };

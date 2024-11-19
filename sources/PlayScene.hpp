@@ -12,10 +12,6 @@
 #include "Engine/Timer.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/GraphicsManager.hpp"
-#include "Systems/SAsteroid.hpp"
-#include "Systems/SBoundry.hpp"
-#include "Systems/SEnemy.hpp"
-#include "Systems/SWaveSpawn.hpp"
 #include "Systems/Systems.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Model.hpp"
@@ -42,15 +38,7 @@ private:
     Factory mFactory;
     Camera mCamera;
     GraphicsManager mGraphicsManager;
-    SPlayer mSystemPlayer;
-    SCamera m_system_camera_;
-    SCollision m_system_collision_;
-    SHealth m_system_health_;
-    SPhysics m_system_physics_;
-    SRender m_system_render_;
-    SUI m_system_ui_;
-    SEnemy m_system_enemy_;
-    SWaveSpawn m_system_wave_spawn_;
-    SAsteroid m_system_asteroid_;
-    SBoundary m_system_boundry_;
+    SCollision mCollisionSystem;
+    SPhysics mPhysicsSystem;
+    SRender mRenderSystem;
 };

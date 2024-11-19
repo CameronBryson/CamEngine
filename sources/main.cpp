@@ -10,11 +10,9 @@ int main()
     //SetTargetFPS(settings::max_fps);
     //game_manager::load_scene<start_scene>();
     GameManager::loadScene<PlayScene>();
-    //game_manager::init();
-    //game_manager::load_scene<play_scene>();
     GameManager::init();
     GameManager::gameLoop();
     GameManager::shutdown();
-
+    int* leak = new int[10];
     return 0;
 }

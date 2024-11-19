@@ -1,4 +1,6 @@
 #include "Registry.hpp"
+#include "Scripts/Health.hpp"
+#include "Scripts/Damage.hpp"
 
 Registry::Registry()
 {
@@ -85,22 +87,22 @@ void Registry::onCollisionNotDetectedEvent(const Event<CollisionEvents>& event)
 void Registry::onCollisionEnterEvent(const Event<CollisionEvents>& event)
 {
     auto new_event = event.ToType<CollisionEnterEvent>();
-    bool has_health1 = hasComponent<CHealth>(new_event.id1);
-    bool has_health2 = hasComponent<CHealth>(new_event.id2);
-    bool has_damage1 = hasComponent<CDamage>(new_event.id1);
-    bool has_damage2 = hasComponent<CDamage>(new_event.id2);
+    bool has_health1 = hasComponent<Health>(new_event.id1);
+    bool has_health2 = hasComponent<Health>(new_event.id2);
+    bool has_damage1 = hasComponent<Damage>(new_event.id1);
+    bool has_damage2 = hasComponent<Damage>(new_event.id2);
 
     if( has_health1 && has_damage2 )
     {
-	auto& health = getComponent<CHealth>(new_event.id1);
-	auto& damage = getComponent<CDamage>(new_event.id2);
+	auto& health = getComponent<Health>(new_event.id1);
+	auto& damage = getComponent<Damage>(new_event.id2);
 	health.health -= damage.damage;
     }
 
     if( has_health2 && has_damage1 )
     {
-	auto& health = getComponent<CHealth>(new_event.id2);
-	auto& damage = getComponent<CDamage>(new_event.id1);
+	auto& health = getComponent<Health>(new_event.id2);
+	auto& damage = getComponent<Damage>(new_event.id1);
 	health.health -= damage.damage;
     }
 }

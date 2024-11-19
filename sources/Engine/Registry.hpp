@@ -17,7 +17,6 @@
 
 #include "CollisionEvents.hpp"
 #include "EventHandler.hpp"
-#include "Systems/SHealth.hpp"
 #include "Factory.hpp"
 
 enum class KeyAction

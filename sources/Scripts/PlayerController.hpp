@@ -14,6 +14,7 @@ public:
     // Inherited via ScriptBase
     void Update(float deltaTime) override;
 private:
+    //should probably be in player class
     float movespeed = 10.0f;
     float rotation_speed = 0.25f;
     Camera* m_Camera;

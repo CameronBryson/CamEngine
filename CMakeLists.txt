@@ -7,8 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Add include directories
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/include/glad/include)
-include_directories(${CMAKE_SOURCE_DIR}/include/glfw-3.4/include)
-include_directories(${CMAKE_SOURCE_DIR}/sources)  # Include the sources directory
+include_directories(${CMAKE_SOURCE_DIR}/sources)
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 if(POLICY CMP0058)
@@ -34,8 +33,21 @@ else()
         add_compile_options(-O0)
     else()
         add_compile_options(-O3)
-    endif ()
+    endif()
 endif()
+
+# Function to add sanitizer flags
+function(add_sanitizers target)
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+            target_compile_options(${target} PRIVATE -fsanitize=address -fsanitize=undefined)
+            target_link_options(${target} PRIVATE -fsanitize=address -fsanitize=undefined)
+        elseif(MSVC)
+            target_compile_options(${target} PRIVATE /fsanitize=address)
+            target_link_options(${target} PRIVATE /fsanitize=address)
+        endif()
+    endif()
+endfunction()
 
 # Add glad source files
 set(GLAD_SOURCES ${CMAKE_SOURCE_DIR}/include/glad/src/gl.c)
@@ -45,19 +57,17 @@ set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h)
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/*.cpp")
 
 # Declaring our executable
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${GLAD_SOURCES} ${STB_IMAGE_SOURCES}
- "sources/Engine/ScriptBase.cpp" "sources/Scripts/PlayerController.cpp" "sources/Scripts/EnemyShipController.cpp" "sources/Scripts/AsteroidController.cpp" "sources/Scripts/EnemyShip.cpp" "sources/Scripts/CameraController.cpp" "sources/Scripts/Player.cpp" "sources/Scripts/Asteroid.cpp" "sources/Scripts/WaveController.cpp" "sources/Scripts/Health.cpp" "sources/Engine/Registry.cpp")
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${GLAD_SOURCES} ${STB_IMAGE_SOURCES})
 
 # Link libraries
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw)
 
+# Add sanitizers
+add_sanitizers(${PROJECT_NAME})
+
 # Setting ASSETS_PATH
 target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/")
-
-#enable_testing()
-
-#add_subdirectory(gtest)

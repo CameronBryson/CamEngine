@@ -1,6 +1,9 @@
 #pragma once
-class Asteroid
+struct Asteroid
 {
-  public:
-  private:
+    Asteroid(unsigned short target, float speed) : target(target), speed(speed)
+    {
+    }
+    unsigned short target;
+    float speed;
 };

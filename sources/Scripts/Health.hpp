@@ -1,4 +1,8 @@
 #pragma once
-class Health
+struct Health
 {
+    Health(float health) : health(health)
+    {
+    }
+    float health = 100.0f;
 };
