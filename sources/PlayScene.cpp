@@ -1,5 +1,5 @@
 #include "PlayScene.hpp"
-#include "Systems/PlayerController.hpp"
+#include "Scripts/PlayerController.hpp"
 
 #include <Engine/Event.hpp>
 
@@ -77,7 +77,7 @@ void PlayScene::init()
 void PlayScene::update(const float dt)
 {
     Timer update_timer(Stats::stat_type::UPDATE);
-    mRegistry.processCollisionEesolutions();
+    mRegistry.processCollisionResolutions();
     m_system_camera_.update(mCamera, dt);
     //mSystemPlayer.update(mRegistry, mCamera, dt);
     m_system_enemy_.update(mRegistry, dt);

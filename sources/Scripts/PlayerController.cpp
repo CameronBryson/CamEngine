@@ -7,16 +7,6 @@
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
 #include "glm/matrix.hpp"
-void PlayerController::Init()
-{
-    //printf("PlayerController::Init\n");
-}
-
-void PlayerController::LateInit()
-{
-    //printf("PlayerController::LateInit\n");
-}
-
 void PlayerController::Update(float deltaTime)
 {
     //printf("PlayerController::Update\n");
@@ -73,14 +63,4 @@ void PlayerController::Update(float deltaTime)
 
 	    EventHandler::GetInstance()->factoryDispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(m_OwnerID).position, direction, 100.0f, settings::player_bitmask));
     }
-}
-
-void PlayerController::LateUpdate(float deltaTime)
-{
-    //printf("PlayerController::LateUpdate\n");
-}
-
-void PlayerController::Shutdown()
-{
-    //printf("PlayerController::Shutdown\n");
 }

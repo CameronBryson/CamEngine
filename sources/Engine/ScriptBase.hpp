@@ -15,9 +15,19 @@ class ScriptBase
     Registry* m_Registry;
     unsigned m_OwnerID;
   private:
-    virtual void Init() = 0;
-    virtual void LateInit() = 0;
-    virtual void Update(float deltaTime) = 0;
-    virtual void LateUpdate(float deltaTime) = 0;
-    virtual void Shutdown() = 0;
+    virtual void Init()
+    {
+    }
+    virtual void LateInit()
+    {
+    }
+    virtual void Update(float deltaTime)
+    {
+    }
+    virtual void LateUpdate(float deltaTime)
+    {
+    }
+    virtual void Shutdown()
+    {
+    }
 };
