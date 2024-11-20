@@ -27,22 +27,22 @@ public:
     Mesh& createMesh(const std::string& name, const std::vector<Vertex>& vertices, const std::string& material_name);
     Mesh& getMesh(const std::string& name);
     // properly de-allocates all loaded resources
-    Model& createModel(const std::vector<std::string>& mesh_names, const std::string& name);
-    Model& createModelFromObj(const std::string& file, const std::string& name);
-    Model& getModel(const std::string& name);
     Material& createMaterial(const std::string& name, glm::vec3 Ka, glm::vec3 Kd, glm::vec3 Ks, float Ns, float Ni, float d, int illum, const std::string& map_Ka_path,
 	const std::string& map_Kd_path, const std::string& map_Ks_path, const std::string& map_Ns_path, const std::string& map_d_path,
 	const std::string& map_bump_path);
     Material& getMaterial(const std::string& name);
+    Model& createModel(const std::vector<std::string>& mesh_names, const std::string& name);
+    Model& createModelFromObj(const std::string& file, const std::string& name);
+    Model& getModel(const std::string& name);
     void Clear();
 
     std::vector<std::string> loadObj(const std::string& file);
     std::vector<std::string> loadMtl(const std::string& file);
 
 private:
-    std::unordered_map<std::string, std::unique_ptr<ShaderProgram>> shader_map;
-    std::unordered_map<std::string, std::unique_ptr<Texture>> texture_map;
-    std::unordered_map<std::string, std::unique_ptr<Mesh>> mesh_map;
-    std::unordered_map<std::string, std::unique_ptr<Model>> model_map;
-    std::unordered_map<std::string, std::unique_ptr<Material>> material_map;
+    std::unordered_map<std::string, ShaderProgram> shader_map;
+    std::unordered_map<std::string, Texture> texture_map;
+    std::unordered_map<std::string, Mesh> mesh_map;
+    std::unordered_map<std::string, Model> model_map;
+    std::unordered_map<std::string, Material> material_map;
 };

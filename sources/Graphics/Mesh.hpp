@@ -7,7 +7,7 @@
 class Mesh
 {
 public:
-  Mesh(const std::vector<Vertex>& vertices, const std::string& material_name);
+  explicit Mesh(const std::vector<Vertex>& vertices, const std::string& material_name);
 
   void setupMesh();
 

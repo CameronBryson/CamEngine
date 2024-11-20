@@ -12,7 +12,7 @@ public:
     unsigned int ID;
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath);
+    explicit ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath);
 
     // activate the shader
     // ------------------------------------------------------------------------

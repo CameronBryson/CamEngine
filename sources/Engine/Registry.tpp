@@ -8,7 +8,8 @@ template <class T>
 void Registry::createSparseSet()
 {
     assert(mSparseSets.find(std::type_index(typeid(T))) == mSparseSets.end() && "Error: Sparse set already exists for this type.");
-    mSparseSets[std::type_index(typeid(T))] = std::make_unique<SparseSet<T>>();
+	mSparseSets.try_emplace(std::type_index(typeid(T)), std::make_unique<SparseSet<T>>());
+    //mSparseSets[std::type_index(typeid(T))] = std::make_unique<SparseSet<T>>();
 }
 
 template <typename T>

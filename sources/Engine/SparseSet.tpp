@@ -27,20 +27,18 @@ void SparseSet<T>::addItem(unsigned short entityID, Args&&... componentArgs)
 template <class T>
 void SparseSet<T>::removeItem(const unsigned short entityID)
 {
-    unsigned index = m_Sparse[entityID];
+    unsigned entityIndex = m_Sparse[entityID];
     unsigned lastIndex = m_Dense.size() - 1;
+	unsigned lastEntity = m_Dense[lastIndex];
 
-    if( index != lastIndex )
-    {
-	std::swap(m_Dense[index], m_Dense[lastIndex]);
-	std::swap(m_Items[index], m_Items[lastIndex]);
-	m_Sparse[m_Dense[index]] = index;
-    }
+    std::swap(m_Dense[entityIndex], m_Dense[lastIndex]);
+    std::swap(m_Items[entityIndex], m_Items[lastIndex]);
 
     // Remove the last item
     m_Dense.pop_back();
     m_Items.pop_back();
 
+	m_Sparse[lastEntity] = entityIndex;
     m_Sparse[entityID] = settings::max_entities; // Mark as removed or invalid
 }
 
