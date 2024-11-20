@@ -126,77 +126,107 @@ std::vector<std::string> GraphicsManager::loadObj(const std::string& file)
 	std::string line, currentMeshName;
 	bool firstObject = true;
 
+	temp_vertices.reserve(10000); // Adjust based on expected OBJ size
+	temp_uvs.reserve(5000);
+	temp_normals.reserve(5000);
+	vertexIndices.reserve(30000);
+	uvIndices.reserve(30000);
+	normalIndices.reserve(30000);
+	vertices.reserve(30000);
+	mesh_names.reserve(1000);
+
 	auto process_mesh = [&]()
-	{
-		for( size_t i = 0; i < vertexIndices.size(); i++ )
 		{
-			Vertex v{};
-			v.position = temp_vertices[vertexIndices[i]];
-			v.texture_coordinates = temp_uvs[uvIndices[i]];
-			v.normal = temp_normals[normalIndices[i]];
-			vertices.emplace_back(v);
-		}
-		//create_mesh(currentMeshName, vertices, "Default");
+			vertices.reserve(vertexIndices.size());
 
-		createMesh(currentMeshName, vertices, currentMaterial);
-		mesh_names.emplace_back(currentMeshName);
-	};
+			for (size_t i = 0; i < vertexIndices.size(); i++)
+			{
+				Vertex v;
+				v.position = temp_vertices[vertexIndices[i]];
+				v.texture_coordinates = temp_uvs[uvIndices[i]];
+				v.normal = temp_normals[normalIndices[i]];
+				vertices.emplace_back(v);
+			}
 
-	while( std::getline(obj_file, line) )
+			createMesh(currentMeshName, vertices, currentMaterial);
+			mesh_names.emplace_back(currentMeshName);
+			vertices.clear();
+			vertexIndices.clear();
+			uvIndices.clear();
+			normalIndices.clear();
+		};
+
+	while (std::getline(obj_file, line))
 	{
-		std::istringstream line_stream(line);
-		std::string prefix;
-		line_stream >> prefix;
+		if (line.empty() || line[0] == '#')
+			continue;
 
-		if( prefix == "o" )
+		char prefix[16];
+		if (sscanf(line.c_str(), "%15s", prefix) != 1)
+			continue;
+
+		if (strcmp(prefix, "o") == 0)
 		{
-			if( ! firstObject ) process_mesh();
+			if (!firstObject)
+				process_mesh();
 			firstObject = false;
-			line_stream >> currentMeshName;
+			sscanf(line.c_str(), "o %s", &currentMeshName[0]);
+			size_t space = line.find(' ');
+			if (space != std::string::npos)
+				currentMeshName = line.substr(space + 1);
 		}
-		else if( prefix == "v" )
+		else if (strcmp(prefix, "v") == 0)
 		{
 			glm::vec3 vertex;
-			line_stream >> vertex.x >> vertex.y >> vertex.z;
+			sscanf(line.c_str(), "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
 			temp_vertices.emplace_back(vertex);
 		}
-		else if( prefix == "vt" )
+		else if (strcmp(prefix, "vt") == 0)
 		{
 			glm::vec2 uv;
-			line_stream >> uv.x >> uv.y;
+			sscanf(line.c_str(), "vt %f %f", &uv.x, &uv.y);
 			temp_uvs.emplace_back(uv);
 		}
-		else if( prefix == "vn" )
+		else if (strcmp(prefix, "vn") == 0)
 		{
 			glm::vec3 normal;
-			line_stream >> normal.x >> normal.y >> normal.z;
+			sscanf(line.c_str(), "vn %f %f %f", &normal.x, &normal.y, &normal.z);
 			temp_normals.emplace_back(normal);
 		}
-		else if( prefix == "f" )
+		else if (strcmp(prefix, "f") == 0)
 		{
-			for( int i = 0; i < 3; i++ )
+			unsigned int vIdx[3], uvIdx[3], nIdx[3];
+			sscanf(line.c_str(), "f %u/%u/%u %u/%u/%u %u/%u/%u",
+				&vIdx[0], &uvIdx[0], &nIdx[0],
+				&vIdx[1], &uvIdx[1], &nIdx[1],
+				&vIdx[2], &uvIdx[2], &nIdx[2]);
+
+			for (int i = 0; i < 3; ++i)
 			{
-				unsigned int vertexIndex, uvIndex, normalIndex;
-				char slash;
-				line_stream >> vertexIndex >> slash >> uvIndex >> slash >> normalIndex;
-				vertexIndices.emplace_back(vertexIndex - 1);
-				uvIndices.emplace_back(uvIndex - 1);
-				normalIndices.emplace_back(normalIndex - 1);
+				vertexIndices.emplace_back(vIdx[i] - 1);
+				uvIndices.emplace_back(uvIdx[i] - 1);
+				normalIndices.emplace_back(nIdx[i] - 1);
 			}
 		}
-		else if( prefix == "usemtl" )
+		else if (strcmp(prefix, "usemtl") == 0)
 		{
-			line_stream >> currentMaterial;
+			size_t space = line.find(' ');
+			if (space != std::string::npos)
+				currentMaterial = line.substr(space + 1);
 		}
-		else if (prefix == "mtllib")
+		else if (strcmp(prefix, "mtllib") == 0)
 		{
-			std::string mtl_file;
-			line_stream >> mtl_file;
-			loadMtl(mtl_file.c_str());
+			size_t space = line.find(' ');
+			if (space != std::string::npos)
+			{
+				std::string mtl_file = line.substr(space + 1);
+				loadMtl(mtl_file.c_str());
+			}
 		}
 	}
 
-	if( ! currentMeshName.empty() ) process_mesh();
+	if (!currentMeshName.empty())
+		process_mesh();
 
 	return mesh_names;
 }
@@ -223,20 +253,30 @@ std::vector<std::string> GraphicsManager::loadMtl(const std::string& file)
 	float d = 0.0f;
 	int illum = 0;
 
-	while( std::getline(mtl_file, line) )
+	while (std::getline(mtl_file, line))
 	{
-		std::istringstream line_stream(line);
-		std::string prefix;
-		line_stream >> prefix;
+		if (line.empty() || line[0] == '#')
+			continue;
 
-		if( prefix == "newmtl" )
+		char prefix[16];
+		if (sscanf(line.c_str(), "%15s", prefix) != 1)
+			continue;
+
+		if (strcmp(prefix, "newmtl") == 0)
 		{
-			if( ! currentMaterialName.empty() )
+			if (!currentMaterialName.empty())
 			{
-				createMaterial(currentMaterialName, Ka, Kd, Ks, Ns, Ni, d, illum, map_Ks_path, map_Kd_path, map_Ks_path, map_Ns_path, map_d_path, map_bump_path);
+				createMaterial(currentMaterialName, Ka, Kd, Ks, Ns, Ni, d, illum,
+					map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path,
+					map_d_path, map_bump_path);
 				material_names.emplace_back(currentMaterialName);
 			}
-			line_stream >> currentMaterialName;
+
+			char name[256];
+			sscanf(line.c_str(), "newmtl %255s", name);
+			currentMaterialName = std::string(name);
+
+			// Reset properties
 			map_Ka_path.clear();
 			map_Kd_path.clear();
 			map_Ks_path.clear();
@@ -251,63 +291,77 @@ std::vector<std::string> GraphicsManager::loadMtl(const std::string& file)
 			d = 0.0f;
 			illum = 0;
 		}
-		else if( prefix == "map_Ka" )
+		else if (strcmp(prefix, "map_Ka") == 0)
 		{
-			line_stream >> map_Ka_path;
+			char path[256];
+			sscanf(line.c_str(), "map_Ka %255s", path);
+			map_Ka_path = std::string(path);
 		}
-		else if( prefix == "map_Kd" )
+		else if (strcmp(prefix, "map_Kd") == 0)
 		{
-			line_stream >> map_Kd_path;
+			char path[256];
+			sscanf(line.c_str(), "map_Kd %255s", path);
+			map_Kd_path = std::string(path);
 		}
-		else if( prefix == "map_Ks" )
+		else if (strcmp(prefix, "map_Ks") == 0)
 		{
-			line_stream >> map_Ks_path;
+			char path[256];
+			sscanf(line.c_str(), "map_Ks %255s", path);
+			map_Ks_path = std::string(path);
 		}
-		else if( prefix == "map_Ns" )
+		else if (strcmp(prefix, "map_Ns") == 0)
 		{
-			line_stream >> map_Ns_path;
+			char path[256];
+			sscanf(line.c_str(), "map_Ns %255s", path);
+			map_Ns_path = std::string(path);
 		}
-		else if( prefix == "map_d" )
+		else if (strcmp(prefix, "map_d") == 0)
 		{
-			line_stream >> map_d_path;
+			char path[256];
+			sscanf(line.c_str(), "map_d %255s", path);
+			map_d_path = std::string(path);
 		}
-		else if( prefix == "map_bump" )
+		else if (strcmp(prefix, "map_bump") == 0)
 		{
-			line_stream >> map_bump_path;
+			char path[256];
+			sscanf(line.c_str(), "map_bump %255s", path);
+			map_bump_path = std::string(path);
 		}
-		else if( prefix == "Ns" )
+		else if (strcmp(prefix, "Ns") == 0)
 		{
-			line_stream >> Ns;
+			sscanf(line.c_str(), "Ns %f", &Ns);
 		}
-		else if( prefix == "Ka" )
+		else if (strcmp(prefix, "Ka") == 0)
 		{
-			line_stream >> Ka.r >> Ka.g >> Ka.b;
+			sscanf(line.c_str(), "Ka %f %f %f", &Ka.x, &Ka.y, &Ka.z);
 		}
-		else if( prefix == "Kd" )
+		else if (strcmp(prefix, "Kd") == 0)
 		{
-			line_stream >> Kd.r >> Kd.g >> Kd.b;
+			sscanf(line.c_str(), "Kd %f %f %f", &Kd.x, &Kd.y, &Kd.z);
 		}
-		else if( prefix == "Ks" )
+		else if (strcmp(prefix, "Ks") == 0)
 		{
-			line_stream >> Ks.r >> Ks.g >> Ks.b;
+			sscanf(line.c_str(), "Ks %f %f %f", &Ks.x, &Ks.y, &Ks.z);
 		}
-		else if( prefix == "Ni" )
+		else if (strcmp(prefix, "Ni") == 0)
 		{
-			line_stream >> Ni;
+			sscanf(line.c_str(), "Ni %f", &Ni);
 		}
-		else if( prefix == "d" )
+		else if (strcmp(prefix, "d") == 0)
 		{
-			line_stream >> d;
+			sscanf(line.c_str(), "d %f", &d);
 		}
-		else if( prefix == "illum" )
+		else if (strcmp(prefix, "illum") == 0)
 		{
-			line_stream >> illum;
+			sscanf(line.c_str(), "illum %d", &illum);
 		}
 	}
 
-	if( ! currentMaterialName.empty() )
+	if (!currentMaterialName.empty())
 	{
-		createMaterial(currentMaterialName, Ka, Kd, Ks, Ns, Ni, d, illum, map_Ks_path, map_Kd_path, map_Ks_path, map_Ns_path, map_d_path, map_bump_path);
+		createMaterial(currentMaterialName, Ka, Kd, Ks, Ns, Ni, d, illum,
+			map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path,
+			map_d_path, map_bump_path);
 		material_names.emplace_back(currentMaterialName);
 	}
 
