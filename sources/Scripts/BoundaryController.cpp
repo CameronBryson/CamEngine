@@ -2,10 +2,10 @@
 
 void BoundaryController::Update(float deltaTime)
 {
-    auto & transforms = m_Registry->getSparseSet<CTransform>();
-    auto ids = m_Registry->getEntityIDs<CTransform>();
-    for( auto id : ids )
-    {
+	auto & transforms = m_Registry->getSparseSet<CTransform>();
+	auto ids = m_Registry->getEntityIDs<CTransform>();
+	for( auto id : ids )
+	{
 		auto & transform = m_Registry->getComponent<CTransform>(id);
 		if( transform.position.x < settings::world_boundry_min.x )
 		{
@@ -31,5 +31,5 @@ void BoundaryController::Update(float deltaTime)
 		{
 			m_Registry->deleteEntity(id);
 		}
-    }
+	}
 }

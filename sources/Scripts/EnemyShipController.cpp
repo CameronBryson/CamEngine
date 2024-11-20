@@ -20,8 +20,8 @@ void EnemyShipController::Update(float deltaTime)
 	    glm::vec3 direction = glm::normalize(target_transform.position - enemy_tranform.position);
 
 
-	    EventHandler::GetInstance()->factoryDispatcher.SendEvent(
-		CreateProjectileEvent(transforms.get_item(id).position, direction, 50.0f, settings::enemy_bitmask));
+	    //EventHandler::GetInstance()->factoryDispatcher.SendEvent(
+		//CreateProjectileEvent(transforms.get_item(id).position, direction, 50.0f, settings::enemy_bitmask));
 
 	    enemy.timeSinceShoot = 0.0f;
 	}

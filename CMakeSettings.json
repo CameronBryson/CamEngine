@@ -13,11 +13,11 @@
       "variables": [
         {
           "name": "CMAKE_CXX_FLAGS",
-          "value": "/fsanitize=address"
+          "value": ""
         },
         {
           "name": "CMAKE_EXE_LINKER_FLAGS",
-          "value": "/fsanitize=address"
+          "value": ""
         }
       ]
     },

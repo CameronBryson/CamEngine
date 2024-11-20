@@ -1,4 +1,12 @@
 # Asset files should be treated by git as binary
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Explicitly declare text files you want to always be normalized
+*.cpp text eol=crlf
+*.hpp text eol=crlf
+*.c   text eol=crlf
+*.h   text eol=crlf
 *.png binary
 *.jpg binary
 *.ttf binary
