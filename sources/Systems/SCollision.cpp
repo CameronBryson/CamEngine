@@ -8,6 +8,18 @@
 #include <glm/gtx/euler_angles.hpp>
 #include "Math/Octree.hpp"
 
+void SCollision::init()
+{
+	EventHandler::GetInstance()->GetComponentDispatcher<CCollider>().AddListener(ComponentEvents::Added, [this](const Event<ComponentEvents>& event)
+		{
+			this->OnComponentAdded(event);
+		});
+	EventHandler::GetInstance()->GetComponentDispatcher<CCollider>().AddListener(ComponentEvents::Removed, [this](const Event<ComponentEvents>& event)
+		{
+			this->OnComponentRemoved(event);
+		});
+}
+
 void SCollision::update(Registry & registry)
 {
 	auto & quads = registry.getSparseSet<CBoxBounds>();
@@ -354,6 +366,16 @@ bool SCollision::testAxis(const glm::vec3 & axis, const std::vector<glm::vec3> &
 		}
 	}
 	return true;
+}
+
+void SCollision::OnComponentAdded(const Event<ComponentEvents> event)
+{
+	printf("Collider Component added\n");
+}
+
+void SCollision::OnComponentRemoved(const Event<ComponentEvents> event)
+{
+	printf("Collider Component removed\n");
 }
 
 bool SCollision::intersectsObbInSphere(unsigned quad_id, unsigned sphere_id, SparseSet<CBoxBounds>& quads, SparseSet<CSphereBounds>& spheres, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)

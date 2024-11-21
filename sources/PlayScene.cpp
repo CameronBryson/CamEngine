@@ -32,6 +32,7 @@ void PlayScene::init()
     initSparseSets();
 
     mRenderSystem.init(mGraphicsManager);
+	mCollisionSystem.init();
     Timer benchmark_timer(Stats::stat_type::BENCHMARK);
     auto player  = mFactory.createPlayer(mRegistry);
     mRegistry.addComponent<PlayerController>(player, &mCamera, &mRegistry, player);

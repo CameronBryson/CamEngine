@@ -13,3 +13,4 @@ EventHandler* EventHandler::GetInstance()
     }
     return s_Instance.get();
 }
+
