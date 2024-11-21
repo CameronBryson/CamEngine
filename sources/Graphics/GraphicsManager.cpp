@@ -133,7 +133,7 @@ std::vector<std::string> GraphicsManager::loadObj(const std::string& file)
 	uvIndices.reserve(30000);
 	normalIndices.reserve(30000);
 	vertices.reserve(30000);
-	mesh_names.reserve(1000);
+	mesh_names.reserve(100);
 
 	auto process_mesh = [&]()
 		{
@@ -141,11 +141,7 @@ std::vector<std::string> GraphicsManager::loadObj(const std::string& file)
 
 			for (size_t i = 0; i < vertexIndices.size(); i++)
 			{
-				Vertex v;
-				v.position = temp_vertices[vertexIndices[i]];
-				v.texture_coordinates = temp_uvs[uvIndices[i]];
-				v.normal = temp_normals[normalIndices[i]];
-				vertices.emplace_back(v);
+				vertices.emplace_back(temp_vertices[vertexIndices[i]], temp_normals[normalIndices[i]], temp_uvs[uvIndices[i]] );
 			}
 
 			createMesh(currentMeshName, vertices, currentMaterial);

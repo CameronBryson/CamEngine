@@ -16,12 +16,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <future>
 
 void SRender::init(GraphicsManager& graphics_manager)
 {
 	printf("Render init\n");
 	loadShaders(graphics_manager);
 
+	
 	graphics_manager.loadMtl("assets/Default.mtl");
 	graphics_manager.createModelFromObj("assets/Ship.obj", "player");
 

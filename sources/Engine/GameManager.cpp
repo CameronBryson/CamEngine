@@ -55,7 +55,7 @@ void GameManager::gameLoop()
         if( elapsed_time >= 1.0 )
         {
             int fps = frame_count;
-            //std::cout << "FPS: " << fps << std::endl;
+            std::cout << "FPS: " << fps << std::endl;
             frame_count = 0;
             elapsed_time = 0.0;
         }

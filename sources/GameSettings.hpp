@@ -14,7 +14,7 @@ namespace settings
     inline glm::vec3 world_boundry_min = {-50,-50,-200};
     inline glm::vec3 world_boundry_max = {50,50,10};
     inline unsigned short player_id = 0;
-    constexpr unsigned max_fps = 600;
+    constexpr unsigned max_fps = 600000;
     constexpr unsigned max_entities = 10000;
 
 } // namespace Settings
