@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/SparseSet.hpp"
 #include "glm/glm.hpp"
+#include "Math/Octree.hpp"
 class Registry;
 struct CSphereBounds;
 struct CBoxBounds;
@@ -11,6 +12,7 @@ struct CDynamicBody;
 class SCollision
 {
 public:
+	SCollision(Registry* registry);
 	void init();
 	void update(Registry& registry);
 private:
@@ -24,6 +26,10 @@ private:
 	bool testAxis(const glm::vec3& axis, const std::vector<glm::vec3>& points1,
 						  const std::vector<glm::vec3>& points2, float& overlap, glm::vec3& penetration_axis);
 public:
-	void OnComponentAdded(const Event<ComponentEvents> event);
-	void OnComponentRemoved(const Event<ComponentEvents> event);
+	void OnComponentAdded(const Event<ComponentEvents>& event);
+	void OnComponentRemoved(const Event<ComponentEvents>& event);
+private:
+	BoundingBox mSceneBounds;
+	Octree mOctree;
+	Registry* mRegistry;
 };

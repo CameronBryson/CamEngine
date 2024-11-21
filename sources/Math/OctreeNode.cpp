@@ -7,7 +7,7 @@ OctreeNode::OctreeNode(const BoundingBox& bounds, int capacity) : bounds(bounds)
 bool OctreeNode::insert(const OctreePoint& point)
 {
 	// Check if the point is within this node's bounds
-	if (!bounds.containsPoint(point.position))
+	if (!bounds.containsPoint(*point.position))
 	{
 		return false;
 	}
@@ -35,6 +35,71 @@ bool OctreeNode::insert(const OctreePoint& point)
 	}
 
 	// Should not reach here
+	return false;
+}
+bool OctreeNode::remove(const OctreePoint& point)
+{
+	// If the point is not within this node's bounds, it cannot be here
+	if (!bounds.containsPoint(*point.position))
+	{
+		return false;
+	}
+
+	// Attempt to find and remove the point from this node
+	auto it = std::find_if(points.begin(), points.end(),
+		[&](const OctreePoint& p) { return p.entityID == point.entityID; });
+
+	if (it != points.end())
+	{
+		points.erase(it);
+		return true;
+	}
+
+	// Recursively attempt to remove the point from child nodes
+	if (divided)
+	{
+		for (auto& child : children)
+		{
+			if (child && child->remove(point))
+			{
+				// Optionally consolidate child nodes here
+				consolidate();
+				return true;
+			}
+		}
+	}
+
+	// Point not found in this node or its descendants
+	return false;
+}
+
+bool OctreeNode::remove(unsigned short entityID)
+{
+	// Attempt to find and remove the point from this node
+	auto it = std::find_if(points.begin(), points.end(),
+		[&](const OctreePoint& p) { return p.entityID == entityID; });
+
+	if (it != points.end())
+	{
+		points.erase(it);
+		return true;
+	}
+
+	// If the node is divided, attempt to remove the point from child nodes
+	if (divided)
+	{
+		for (auto& child : children)
+		{
+			if (child && child->remove(entityID))
+			{
+				// After removal, check if children can be consolidated
+				consolidate();
+				return true;
+			}
+		}
+	}
+
+	// Point not found in this node or its descendants
 	return false;
 }
 
@@ -90,6 +155,35 @@ void OctreeNode::subdivide() {
 	points.clear();
 }
 
+void OctreeNode::consolidate()
+{
+	// Count total points in all children
+	int totalPoints = static_cast<int>(points.size());
+	for (const auto& child : children)
+	{
+		if (child)
+		{
+			totalPoints += static_cast<int>(child->points.size());
+		}
+	}
+
+	// If total points are less than capacity, merge them
+	if (totalPoints <= capacity)
+	{
+		// Collect points from children
+		for (auto& child : children)
+		{
+			if (child)
+			{
+				points.insert(points.end(), child->points.begin(), child->points.end());
+				child.reset(); // Delete the child node
+			}
+		}
+		divided = false;
+	}
+}
+
+
 void OctreeNode::queryRange(const BoundingBox& range, std::vector<OctreePoint>& foundPoints) const {
 	// If the range doesn't intersect this node's bounds, return
 	if (!bounds.intersects(range)) {
@@ -98,7 +192,7 @@ void OctreeNode::queryRange(const BoundingBox& range, std::vector<OctreePoint>& 
 
 	// Check points at this node
 	for (const auto& point : points) {
-		if (range.containsPoint(point.position)) {
+		if (range.containsPoint(*point.position)) {
 			foundPoints.push_back(point);
 		}
 	}

@@ -8,6 +8,10 @@
 #include <glm/gtx/euler_angles.hpp>
 #include "Math/Octree.hpp"
 
+SCollision::SCollision(Registry* registry) : mSceneBounds(settings::world_boundry_min, settings::world_boundry_max), mOctree(mSceneBounds, 8), mRegistry(registry)
+{
+}
+
 void SCollision::init()
 {
 	EventHandler::GetInstance()->GetComponentDispatcher<CCollider>().AddListener(ComponentEvents::Added, [this](const Event<ComponentEvents>& event)
@@ -18,6 +22,8 @@ void SCollision::init()
 		{
 			this->OnComponentRemoved(event);
 		});
+
+	
 }
 
 void SCollision::update(Registry & registry)
@@ -32,15 +38,15 @@ void SCollision::update(Registry & registry)
 	std::vector<unsigned short> obb_ids = registry.getEntityIDs<CBoxBounds, CTransform, CCollider>();
 	std::vector<unsigned short> sphere_ids = registry.getEntityIDs<CSphereBounds, CTransform, CCollider>();
 
-	BoundingBox sceneBounds(settings::world_boundry_min, settings::world_boundry_max);
+	//BoundingBox sceneBounds(settings::world_boundry_min, settings::world_boundry_max);
 
-	Octree octree(sceneBounds, 8);
-
-	for (auto id : collider_ids)
+	//Octree octree(sceneBounds, 8);
+	/*for (auto id : collider_ids)
 	{
 		auto& transform = transforms.get_item(id);
-		octree.insert({ transform.position, id });
-	}
+		mOctree.insert({ &transform.position, id });
+	}*/
+	
 
 	for (auto id : collider_ids)
 	{
@@ -64,7 +70,7 @@ void SCollision::update(Registry & registry)
 			queryBounds.min = transform.position - glm::vec3(10.0f);
 			queryBounds.max = transform.position + glm::vec3(10.0f);
 		}
-		std::vector<OctreePoint> potential_colliders = octree.queryRange(queryBounds);
+		std::vector<OctreePoint> potential_colliders = mOctree.queryRange(queryBounds);
 
 		for (const auto& point : potential_colliders)
 		{
@@ -368,13 +374,18 @@ bool SCollision::testAxis(const glm::vec3 & axis, const std::vector<glm::vec3> &
 	return true;
 }
 
-void SCollision::OnComponentAdded(const Event<ComponentEvents> event)
+void SCollision::OnComponentAdded(const Event<ComponentEvents>& event)
 {
+	auto event_data = event.ToType<ComponentAddedEvent>();
+
+	mOctree.insert({ &mRegistry->getComponent<CTransform>(event_data.id).position, event_data.id });
 	printf("Collider Component added\n");
 }
 
-void SCollision::OnComponentRemoved(const Event<ComponentEvents> event)
+void SCollision::OnComponentRemoved(const Event<ComponentEvents>& event)
 {
+	auto event_data = event.ToType<ComponentRemovedEvent>();
+	mOctree.remove(event_data.id);
 	printf("Collider Component removed\n");
 }
 

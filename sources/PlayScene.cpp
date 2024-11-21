@@ -15,7 +15,7 @@
 
 #include <Engine/Event.hpp>
 
-PlayScene::PlayScene() : mFactory(mRegistry)
+PlayScene::PlayScene() : mFactory(mRegistry),mCollisionSystem(&mRegistry)
 {
     printf("PlayScene created\n");
 

@@ -4,12 +4,13 @@
 #include <array>
 #include <glm/vec3.hpp>
 #include <memory>
+#include "Components.hpp"
 struct OctreePoint
 {
-	glm::vec3 position;
+	glm::vec3* position;
 	unsigned short entityID;
 
-	OctreePoint(const glm::vec3& position, unsigned short entityID)
+	OctreePoint(glm::vec3* position, unsigned short entityID)
 		: position(position), entityID(entityID)
 	{
 
@@ -23,7 +24,10 @@ public:
 	~OctreeNode() = default;
 
 	bool insert(const OctreePoint& point);
+	bool remove(const OctreePoint& point);
+	bool remove(unsigned short entityID);
 	void subdivide();
+	void consolidate();
 	void queryRange(const BoundingBox& range, std::vector<OctreePoint>& pointsInRange) const;
 
 private:
