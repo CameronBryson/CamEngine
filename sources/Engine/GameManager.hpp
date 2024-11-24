@@ -1,7 +1,9 @@
 #pragma once
-#include "IScene.hpp"
+#include <memory>
 #include "platform.hpp"
 #include "GLFW/glfw3.h"
+
+class BaseScene;
 
 
 class GameManager
@@ -26,5 +28,5 @@ public:
 
 private:
     static GLFWwindow* mGameWindow;
-    static std::unique_ptr<IScene> mCurrentScene;
+    static std::unique_ptr<BaseScene> mCurrentScene;
 };

@@ -1,12 +1,12 @@
 #pragma once
 #include "EventHandler.hpp"
 #include "ScriptEvents.hpp"
-#include "Registry.hpp"
+#include "BaseScene.hpp"
 
 class ScriptBase
 {
   protected:
-	ScriptBase(Registry* registry, unsigned owner_ID);
+	ScriptBase(BaseScene* scene, unsigned owner_ID);
 	~ScriptBase();
   private:
 	void BindEvents();
@@ -15,7 +15,7 @@ class ScriptBase
 	void OnCollisionStayEvent(const Event<CollisionEvents>& event);
 	void OnCollisionExitEvent(const Event<CollisionEvents>& event);
   protected:
-	Registry* m_Registry;
+	BaseScene* m_Scene;
 	unsigned m_OwnerID;
   private:
 	virtual void Init()

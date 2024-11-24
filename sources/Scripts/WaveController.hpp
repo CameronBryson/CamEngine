@@ -3,7 +3,7 @@
 class WaveController : public ScriptBase
 {
   public:
-	explicit WaveController(Registry* registry, unsigned owner_ID) : ScriptBase(registry, owner_ID)
+	explicit WaveController(BaseScene* scene, unsigned owner_ID) : ScriptBase(scene, owner_ID)
 	{
 	}
   private:

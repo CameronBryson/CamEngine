@@ -1,5 +1,7 @@
 #include "Model.hpp"
 #include "Mesh.hpp"
+#include "GraphicsManager.hpp"
+#include "ShaderProgram.hpp"
 Model::Model(const std::vector <std::string>& meshes)
 {
 	for( const auto& mesh_name : meshes )

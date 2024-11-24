@@ -1,9 +1,11 @@
 #include "OpenGLUtil.hpp"
 #include "GraphicsManager.hpp"
 #include "Vertex.hpp"
+#include "Material.hpp"
 #include "ShaderProgram.hpp"
 #include "stb_image.h"
 #include "Material.hpp"
+#include "GameSettings.hpp"
 #include <iostream>
 
 void OpenGlUtil::init()
@@ -37,7 +39,7 @@ void OpenGlUtil::init()
     GameManager::set_glfw_window(game_window);
 }
 
-void OpenGlUtil::drawLine(glm::vec2 start, glm::vec2 end, glm::vec3 color)
+void OpenGlUtil::drawLine(glm::vec2& start, glm::vec2& end, glm::vec3& color)
 {
     convertPointToScreen(start);
     convertPointToScreen(end);
@@ -48,7 +50,7 @@ void OpenGlUtil::drawLine(glm::vec2 start, glm::vec2 end, glm::vec3 color)
     glEnd();
 }
 
-void OpenGlUtil::drawText(const char* text, int posX, int posY, int fontSize, glm::vec3 color)
+void OpenGlUtil::drawText(const char* text, int posX, int posY, int fontSize, glm::vec3& color)
 {
 }
 

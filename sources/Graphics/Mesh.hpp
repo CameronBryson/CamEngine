@@ -3,7 +3,7 @@
 
 #include "OpenGLUtil.hpp"
 #include "Vertex.hpp"
-#include "GraphicsManager.hpp"
+class GraphiscManager;
 class Mesh
 {
 public:

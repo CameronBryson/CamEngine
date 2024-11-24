@@ -1,15 +1,9 @@
 #include "GraphicsManager.hpp"
-
+#include "Graphics/ShaderProgram.hpp"
 #include <Engine/EngineUtil.hpp>
 #include <fstream>
 #include <iostream>
-
-#include "Model.hpp"
-#include "Texture.hpp"
-#include "Material.hpp"
 #include "OpenGLUtil.hpp"
-#include "Vertex.hpp"
-#include "Mesh.hpp"
 
 ShaderProgram& GraphicsManager::loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name)
 {

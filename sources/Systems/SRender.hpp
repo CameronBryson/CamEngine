@@ -1,21 +1,21 @@
 #pragma once
+#include "Components.hpp"
 #include "Engine/SparseSet.hpp"
-class Camera;
-class Registry;
+class BaseScene;
 class ShaderProgram;
-struct CTransform;
-class GraphicsManager;
 
 class SRender
 {
 public:
-    void init(GraphicsManager& graphics_manager);
-    void update(const Registry& registry, GraphicsManager& graphics_manager, Camera& camera);
+    SRender(BaseScene* scene);
+    void init();
+    void render();
     void shutdown();
 
 private:
-    void drawModels(const Registry& registry, GraphicsManager& graphics_manager,SparseSet<CTransform>& transforms, ShaderProgram& shader);
-    void drawColliders(const Registry& registry, GraphicsManager& graphics_manager, SparseSet<CTransform>& transforms, ShaderProgram& shader);
-    void drawUi(const Registry& registry, GraphicsManager& graphics_manager, SparseSet<CTransform>& transforms, ShaderProgram& shader);
-    void loadShaders(GraphicsManager& graphics_manager);
+    void drawModels(SparseSet<CTransform>& transforms, ShaderProgram& shader);
+    void drawColliders(SparseSet<CTransform>& transforms, ShaderProgram& shader);
+    void drawUi(SparseSet<CTransform>& transforms, ShaderProgram& shader);
+    void loadShaders();
+    BaseScene* mScene;
 };

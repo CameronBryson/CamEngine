@@ -4,11 +4,12 @@
 #include <thread>
 #include <chrono>
 #include "platform.hpp"
+#include "BaseScene.hpp"
 
 #include <iostream>
 
 GLFWwindow * GameManager::mGameWindow = nullptr;
-std::unique_ptr<IScene> GameManager::mCurrentScene = nullptr;
+std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
 
 void GameManager::init()
 {

@@ -3,7 +3,7 @@
 class BoundaryController : public ScriptBase
 {
   public:
-	explicit BoundaryController(Registry* registry, unsigned owner_ID) : ScriptBase(registry, owner_ID)
+	explicit BoundaryController(BaseScene* scene, unsigned owner_ID) : ScriptBase(scene, owner_ID)
 	{
 	}
   private:

@@ -2,7 +2,8 @@
 #include "Engine/SparseSet.hpp"
 #include "glm/glm.hpp"
 #include "Math/Octree.hpp"
-class Registry;
+#include "Math/BoundngBox.hpp"
+class BaseScene;
 struct CSphereBounds;
 struct CBoxBounds;
 struct CTransform;
@@ -12,9 +13,10 @@ struct CDynamicBody;
 class SCollision
 {
 public:
-	SCollision(Registry* registry);
+	SCollision(BaseScene* scene);
 	void init();
-	void update(Registry& registry);
+	void update();
+	void shutdown();
 private:
 	bool pointInAabb(glm::vec3 min, glm::vec3 max, glm::vec3 position, glm::vec3 point);
 	bool intersectsAabbInAabb(const glm::vec3& min1, const glm::vec3& max1, const glm::vec3& min2,
@@ -31,5 +33,5 @@ public:
 private:
 	BoundingBox mSceneBounds;
 	Octree mOctree;
-	Registry* mRegistry;
+	BaseScene* mScene;
 };

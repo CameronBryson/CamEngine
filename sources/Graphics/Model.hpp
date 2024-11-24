@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "GraphicsManager.hpp"
+class ShaderProgram;
+class GraphicsManager;
 class Model
 {
 public:

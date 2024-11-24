@@ -1,8 +1,5 @@
 #include "Registry.hpp"
 
-#include "Scripts/Health.hpp"
-#include "Scripts/Damage.hpp"
-
 Registry::Registry()
 {
     printf("Registry created\n");

@@ -13,9 +13,13 @@ void Registry::createSparseSet()
 }
 
 template <typename T>
-SparseSet<T>& Registry::getSparseSet() const
+SparseSet<T>& Registry::getSparseSet()
 {
-	assert(mSparseSets.find(std::type_index(typeid(T))) != mSparseSets.end() && "Error: Sparse set does not exist for this type.");
+	//assert(mSparseSets.find(std::type_index(typeid(T))) != mSparseSets.end() && "Error: Sparse set does not exist for this type.");
+	if (!hasSparseSet<T>())
+	{
+		createSparseSet<T>();
+	}
 	return *static_cast<SparseSet<T>*>(mSparseSets.at(std::type_index(typeid(T))).get());
 }
 
@@ -23,6 +27,10 @@ template <typename T, typename... Args>
 void Registry::addComponent(unsigned short id, Args&&... componentArgs)
 {
 	assert(mEntities.end() != std::find(mEntities.begin(), mEntities.end(), id) && "Entity does not exist.");
+	if (!hasSparseSet<T>())
+	{
+		createSparseSet<T>();
+	}
 	auto& set = getSparseSet<T>();
 	EventHandler::GetInstance()->commandDispatcher.SendEvent(AddCommandEvent(std::make_shared<AddComponentCommand<T, Args...>>(set, id, std::forward<Args>(componentArgs)...)));
 	//mCommandQueue.push(std::make_unique<AddComponentCommand<T, Args...>>(set, id, std::forward<Args>(componentArgs)...));
@@ -30,14 +38,14 @@ void Registry::addComponent(unsigned short id, Args&&... componentArgs)
 }
 
 template <typename T>
-T& Registry::getComponent(unsigned short id) const
+T& Registry::getComponent(unsigned short id)
 {
 	assert(hasComponent<T>(id) && "Entity does not have component.");
 	return getSparseSet<T>().get_item(id);
 }
 
 template <typename... T>
-std::vector<unsigned short> Registry::getEntityIDs() const
+std::vector<unsigned short> Registry::getEntityIDs()
 {
 	std::vector<unsigned short> result;
 	if( sizeof...(T) == 0 )
@@ -59,7 +67,7 @@ std::vector<unsigned short> Registry::getEntityIDs() const
 }
 
 template <typename T>
-bool Registry::hasComponent(unsigned short id) const
+bool Registry::hasComponent(unsigned short id)
 {
 	return getSparseSet<T>().hasItem(id);
 }

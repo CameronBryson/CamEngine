@@ -1,11 +1,15 @@
 #pragma once
-class Registry;
+class BaseScene;
 
 class SPhysics
 {
 public:
-    void update(const Registry& registry, float dt);
+	SPhysics(BaseScene* scene);
+    void init();
+    void update(float dt);
     void shutdown();
 private:
-    void updateDynamicBodies(const Registry& registry, float dt);
+    void updateDynamicBodies(float dt);
+	BaseScene* mScene;
+
 };

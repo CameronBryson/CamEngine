@@ -1,4 +1,5 @@
 #include "Mesh.hpp" 
+#include "GraphicsManager.hpp"
 Mesh::Mesh(const std::vector <Vertex>& vertices, const std::string& material_name) : vertices(vertices), material_name(std::move(material_name))
 {
     index_count = vertices.size();

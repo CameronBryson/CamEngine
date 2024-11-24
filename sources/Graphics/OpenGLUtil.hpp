@@ -14,9 +14,9 @@ class OpenGlUtil
 {
 public:
     static void init();
-    static void drawLine(glm::vec2 start, glm::vec2 end, glm::vec3 color);
+    static void drawLine(glm::vec2& start, glm::vec2& end, glm::vec3& color);
 
-    static void drawText(const char* text, int posX, int posY, int fontSize, glm::vec3 color);
+    static void drawText(const char* text, int posX, int posY, int fontSize, glm::vec3& color);
 
     static void clearBackground();
 

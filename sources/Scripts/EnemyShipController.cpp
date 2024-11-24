@@ -2,10 +2,10 @@
 #include "Scripts/EnemyShip.hpp"
 void EnemyShipController::Update(float deltaTime)
 {
-    auto & enemies = m_Registry->getSparseSet<EnemyShip>();
-    auto & transforms = m_Registry->getSparseSet<CTransform>();
-    auto & dynamic_bodies = m_Registry->getSparseSet<CDynamicBody>();
-    auto ids = m_Registry->getEntityIDs<EnemyShip, CTransform, CDynamicBody>();
+    auto & enemies = m_Scene->getSparseSet<EnemyShip>();
+    auto & transforms = m_Scene->getSparseSet<CTransform>();
+    auto & dynamic_bodies = m_Scene->getSparseSet<CDynamicBody>();
+    auto ids = m_Scene->getEntityIDs<EnemyShip, CTransform, CDynamicBody>();
     for( unsigned short id : ids )
     {
 	auto & enemy = enemies.get_item(id);

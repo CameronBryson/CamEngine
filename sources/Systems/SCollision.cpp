@@ -1,14 +1,14 @@
 #include "SCollision.hpp"
 
 #include "../Engine/CollisionManifold.hpp"
-#include "Engine/Registry.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <iostream>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include "Math/Octree.hpp"
+#include "Engine/BaseScene.hpp"
 
-SCollision::SCollision(Registry* registry) : mSceneBounds(settings::world_boundry_min, settings::world_boundry_max), mOctree(mSceneBounds, 8), mRegistry(registry)
+SCollision::SCollision(BaseScene* scene) : mSceneBounds(settings::world_boundry_min, settings::world_boundry_max), mOctree(mSceneBounds, 8), mScene(scene)
 {
 }
 
@@ -26,17 +26,17 @@ void SCollision::init()
 	
 }
 
-void SCollision::update(Registry & registry)
+void SCollision::update()
 {
-	auto & quads = registry.getSparseSet<CBoxBounds>();
-	auto & spheres = registry.getSparseSet<CSphereBounds>();
-	auto & transforms = registry.getSparseSet<CTransform>();
-	auto & colliders = registry.getSparseSet<CCollider>();
-	auto & dynamic_bodies = registry.getSparseSet<CDynamicBody>();
+	auto & quads = mScene->getSparseSet<CBoxBounds>();
+	auto & spheres = mScene->getSparseSet<CSphereBounds>();
+	auto & transforms = mScene->getSparseSet<CTransform>();
+	auto & colliders = mScene->getSparseSet<CCollider>();
+	auto & dynamic_bodies = mScene->getSparseSet<CDynamicBody>();
 
-	std::vector<unsigned short> collider_ids = registry.getEntityIDs<CCollider, CTransform>();
-	std::vector<unsigned short> obb_ids = registry.getEntityIDs<CBoxBounds, CTransform, CCollider>();
-	std::vector<unsigned short> sphere_ids = registry.getEntityIDs<CSphereBounds, CTransform, CCollider>();
+	std::vector<unsigned short> collider_ids = mScene->getEntityIDs<CCollider, CTransform>();
+	std::vector<unsigned short> obb_ids = mScene->getEntityIDs<CBoxBounds, CTransform, CCollider>();
+	std::vector<unsigned short> sphere_ids = mScene->getEntityIDs<CSphereBounds, CTransform, CCollider>();
 
 	//BoundingBox sceneBounds(settings::world_boundry_min, settings::world_boundry_max);
 
@@ -129,6 +129,10 @@ void SCollision::update(Registry & registry)
 	//	}
 	//}
 	
+}
+
+void SCollision::shutdown()
+{
 }
 
 bool SCollision::pointInAabb(glm::vec3 min, glm::vec3 max, glm::vec3 position, glm::vec3 point)
@@ -378,7 +382,7 @@ void SCollision::OnComponentAdded(const Event<ComponentEvents>& event)
 {
 	auto event_data = event.ToType<ComponentAddedEvent>();
 
-	mOctree.insert({ &mRegistry->getComponent<CTransform>(event_data.id).position, event_data.id });
+	mOctree.insert({ &mScene->getComponent<CTransform>(event_data.id).position, event_data.id });
 	printf("Collider Component added\n");
 }
 

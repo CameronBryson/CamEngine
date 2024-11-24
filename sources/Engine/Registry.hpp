@@ -36,19 +36,18 @@ public:
 
 
     template <typename T>
-    T& getComponent(unsigned short id) const;
+    T& getComponent(unsigned short id);
 
     template <typename T>
-    [[nodiscard]] bool hasComponent(unsigned short id) const;
+    [[nodiscard]] bool hasComponent(unsigned short id);
 
     template <typename T>
     void removeComponent(unsigned short id);
 
     template <typename... T>
-    [[nodiscard]] std::vector<unsigned short> getEntityIDs() const;
-
+    [[nodiscard]] std::vector<unsigned short> getEntityIDs();
     template <typename T>
-    SparseSet<T>& getSparseSet() const;
+    SparseSet<T>& getSparseSet();
 
     template <typename T>
     [[nodiscard]] bool hasSparseSet() const;

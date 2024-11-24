@@ -1,21 +1,22 @@
 #pragma once
-#include "Graphics/ShaderProgram.hpp"
+
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "glm/vec3.hpp"
+#include "Graphics/ShaderProgram.hpp"
+#include "Graphics/Vertex.hpp"
+#include "Graphics/Model.hpp"
+#include "Graphics/Material.hpp"
+#include "Graphics/Texture.hpp"
+#include "Graphics/Mesh.hpp"
 
-
-struct Vertex;
-class Mesh;
-class Model;
-class Material;
-class Texture;
 
 class GraphicsManager
 {
 public:
-
+    GraphicsManager() = default;
     // loads (and generates) a shader program from file loading vertex and fragment shader's source code.
     ShaderProgram& loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name);
     // retrieves a stored shader

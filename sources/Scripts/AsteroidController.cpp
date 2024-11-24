@@ -2,10 +2,10 @@
 #include "Scripts/Asteroid.hpp"
 void AsteroidController::Update(float deltaTime)
 {
-	auto& asteroids = m_Registry->getSparseSet<Asteroid>();
-	auto& transforms = m_Registry->getSparseSet<CTransform>();
-	auto& dynamic_bodies = m_Registry->getSparseSet<CDynamicBody>();
-	auto ids = m_Registry->getEntityIDs<Asteroid, CTransform, CDynamicBody>();
+	auto& asteroids = m_Scene->getSparseSet<Asteroid>();
+	auto& transforms = m_Scene->getSparseSet<CTransform>();
+	auto& dynamic_bodies = m_Scene->getSparseSet<CDynamicBody>();
+	auto ids = m_Scene->getEntityIDs<Asteroid, CTransform, CDynamicBody>();
 	for( auto id : ids )
 	{
 		auto& asteroid = asteroids.get_item(id);

@@ -1,8 +1,8 @@
 #include "ScriptBase.hpp"
 
 
-ScriptBase::ScriptBase(Registry* registry, unsigned owner_ID)
-	: m_Registry(registry), m_OwnerID(owner_ID)
+ScriptBase::ScriptBase(BaseScene* scene, unsigned owner_ID)
+	: m_Scene(scene), m_OwnerID(owner_ID)
 {
 	BindEvents();
 }

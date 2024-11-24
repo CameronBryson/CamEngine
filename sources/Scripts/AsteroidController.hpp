@@ -3,7 +3,7 @@
 class AsteroidController : public ScriptBase
 {
   public:
-    explicit AsteroidController(Registry* registry, unsigned owner_ID) : ScriptBase(registry, owner_ID)
+    explicit AsteroidController(BaseScene* scene, unsigned owner_ID) : ScriptBase(scene, owner_ID)
     {
 	printf("AsteroidController created\n");
     }

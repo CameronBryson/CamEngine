@@ -1,22 +1,30 @@
 #include "SPhysics.hpp"
 #include "Components.hpp"
-#include "Engine/Registry.hpp"
+#include "Engine/BaseScene.hpp"
 #include <cmath>
 #include <mutex>
 #include <vector>
 
-void SPhysics::update(const Registry & registry, const float dt)
+SPhysics::SPhysics(BaseScene* scene) : mScene(scene)
 {
-    updateDynamicBodies(registry, dt);
+}
+
+void SPhysics::init()
+{
+}
+
+void SPhysics::update(const float dt)
+{
+    updateDynamicBodies(dt);
 }
 
 
-void SPhysics::updateDynamicBodies(const Registry & registry, float dt)
+void SPhysics::updateDynamicBodies(float dt)
 {
-    auto & dynamic_bodies = registry.getSparseSet<CDynamicBody>();
-    auto & transforms = registry.getSparseSet<CTransform>();
-    auto & repeat_acceleration = registry.getSparseSet<CRepeatAcceleration>();
-    const auto ids = registry.getEntityIDs<CTransform,CDynamicBody>();
+    auto & dynamic_bodies = mScene->getSparseSet<CDynamicBody>();
+    auto & transforms = mScene->getSparseSet<CTransform>();
+    auto & repeat_acceleration = mScene->getSparseSet<CRepeatAcceleration>();
+    const auto ids = mScene->getEntityIDs<CTransform,CDynamicBody>();
     for( const auto id : ids )
     {
         auto & [drag, elasticity,  velocity ,acceleration, angular_drag, angular_velocity, angular_acceleration] = dynamic_bodies.get_item(id);
