@@ -3,7 +3,7 @@
 class BoundaryController : public ScriptBase
 {
   public:
-	explicit BoundaryController(BaseScene* scene, unsigned owner_ID) : ScriptBase(scene, owner_ID)
+	explicit BoundaryController(BaseScene* scene, unsigned short owner_ID) : ScriptBase(scene, owner_ID)
 	{
 	}
   private:

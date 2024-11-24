@@ -1,5 +1,8 @@
 #include "Registry.hpp"
 
+#include <numeric>
+#include "Commands.hpp"
+
 Registry::Registry()
 {
     printf("Registry created\n");
@@ -26,7 +29,7 @@ unsigned short Registry::createEntity()
 
 void Registry::deleteEntity(unsigned short id)
 {
-	EventHandler::GetInstance()->commandDispatcher.SendEvent(AddCommandEvent(std::make_unique<DeleteEntityCommand>(mSparseSets, mFreeIDs, mEntities, id)));
+	EventHandler::GetInstance()->commandDispatcher.SendEvent(AddCommandEvent(std::make_shared<DeleteEntityCommand>(mSparseSets, mFreeIDs, mEntities, id)));
     //mCommandQueue.push(std::make_unique<DeleteEntityCommand>(mSparseSets, mFreeIDs, mEntities, id));
 }
 

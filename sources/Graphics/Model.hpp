@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "OpenGLUtil.hpp"
 class ShaderProgram;
 class GraphicsManager;
 class Model

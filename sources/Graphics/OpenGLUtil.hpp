@@ -1,9 +1,9 @@
 #pragma once
 #include "platform.hpp"
-#include "glm/glm.hpp"
 #include <vector>
 #include <string>
-#include <cstring>
+
+#include "glm/fwd.hpp"
 struct Vertex;
 class Material;
 class Texture;

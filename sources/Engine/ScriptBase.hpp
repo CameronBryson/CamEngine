@@ -1,12 +1,11 @@
 #pragma once
 #include "EventHandler.hpp"
-#include "ScriptEvents.hpp"
 class BaseScene;
 
 class ScriptBase
 {
   protected:
-	ScriptBase(BaseScene* scene, unsigned owner_ID);
+	ScriptBase(BaseScene* scene, unsigned short owner_ID);
 	~ScriptBase();
   private:
 	void bindEvents();
@@ -36,13 +35,13 @@ private:
 	virtual void shutdown()
 	{
 	}
-	virtual void onCollisionEnter(unsigned otherID)
+	virtual void onCollisionEnter(unsigned short otherID)
 	{
 	}
-	virtual void onCollisionStay(unsigned otherID)
+	virtual void onCollisionStay(unsigned short otherID)
 	{
 	}
-	virtual void onCollisionExit(unsigned otherID)
+	virtual void onCollisionExit(unsigned short otherID)
 	{
 	}
 };

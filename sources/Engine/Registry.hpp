@@ -1,18 +1,13 @@
 #pragma once
 #include "SparseSet.hpp"
-#include "EventHandler.hpp"
-#include "Commands.hpp"
 
-#include <algorithm>
-#include <bitset>
-#include <cassert>
-#include <functional>
+
 #include <memory>
-#include <numeric>
-#include <queue>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
+#include <cassert>
+#include "Commands.hpp"
 
 
 

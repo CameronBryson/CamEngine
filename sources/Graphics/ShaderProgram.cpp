@@ -2,6 +2,9 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+
+#include "OpenGLUtil.hpp"
+
 ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
 {
 	// 1. retrieve the vertex/fragment source code from filePath
@@ -37,7 +40,7 @@ ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& f
 	}
 	catch( std::ifstream::failure& e )
 	{
-	std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+	std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << '\n';
 	}
 
 	ID = OpenGlUtil::createShader(vertexCode, fragmentCode);

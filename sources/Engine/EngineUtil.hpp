@@ -1,10 +1,7 @@
 #pragma once
+#include "platform.hpp"
 #include <filesystem>
 
-#include "GameManager.hpp"
-#include "EventHandler.hpp"
-
-#include <GLFW/glfw3.h>
 
 class engine_util
 {

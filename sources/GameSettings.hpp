@@ -16,5 +16,6 @@ namespace settings
     inline unsigned short player_id = 0;
     constexpr unsigned max_fps = 600000;
     constexpr unsigned max_entities = 10000;
+    constexpr float EPSILON = 1e-6f;
 
 } // namespace Settings

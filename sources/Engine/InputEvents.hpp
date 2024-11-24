@@ -12,19 +12,19 @@ enum class InputEvents
 class KeyPressEvent final : public Event<InputEvents>
 {
 public:
-    explicit KeyPressEvent(int key) : Event<InputEvents>(InputEvents::KeyPress, "KeyPress"), key(key) {};
+    explicit KeyPressEvent(int key) : Event<InputEvents>(InputEvents::KeyPress, "KeyPress"), key(key) {}
     int key;
 };
 class KeyReleaseEvent final : public Event<InputEvents>
 {
 public:
-    explicit KeyReleaseEvent(int key) : Event<InputEvents>(InputEvents::KeyRelease, "KeyRelease"), key(key) {};
+    explicit KeyReleaseEvent(int key) : Event<InputEvents>(InputEvents::KeyRelease, "KeyRelease"), key(key) {}
     int key;
 };
 class ResetKeyStatesEvent final : public Event<InputEvents>
 {
 public:
-    explicit ResetKeyStatesEvent() : Event<InputEvents>(InputEvents::ResetKeyStates, "ResetKeyStates") {};
+    explicit ResetKeyStatesEvent() : Event<InputEvents>(InputEvents::ResetKeyStates, "ResetKeyStates") {}
 };
 // class KeyStartEvent final : public Event<InputEvents>
 // {

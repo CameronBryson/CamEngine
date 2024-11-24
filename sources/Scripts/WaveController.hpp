@@ -1,21 +1,23 @@
 #pragma once
 #include "Engine/ScriptBase.hpp"
+#include "glm/vec2.hpp"
+
 class WaveController : public ScriptBase
 {
   public:
-	explicit WaveController(BaseScene* scene, unsigned owner_ID) : ScriptBase(scene, owner_ID)
+	explicit WaveController(BaseScene* scene, unsigned short owner_ID) : ScriptBase(scene, owner_ID)
 	{
 	}
   private:
 	void update(float deltaTime) override;
-	float time_since_enemy_spawn = 0.0f;
-	float enemy_spawn_cooldown = 3.0f;
+	float timeSinceEnemySpawn = 0.0f;
+	float enemySpawnCooldown = 3.0f;
 
-	float time_since_asteroid_spawn = 0.0f;
-	float asteroid_spawn_cooldown = 5.0f;
+	float timeSinceAsteroidSpawn = 0.0f;
+	float asteroidSpawnCooldown = 5.0f;
 
-	float time_since_debris_spawn = 0.0f;
-	float debris_spawn_cooldown = 8.0f;
+	float timeSinceDebrisSpawn = 0.0f;
+	float debrisSpawnCooldown = 8.0f;
 
 	glm::ivec2 spawn_range_x = { -30, 30 };
 	glm::ivec2 spawn_range_y = { -15, 5 };

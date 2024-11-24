@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <memory>
-
+#include <glm/vec3.hpp>
 #include "OpenGLUtil.hpp"
 
 class Texture;

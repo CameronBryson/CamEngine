@@ -1,7 +1,7 @@
 #include "BaseScene.hpp"
 #include "Components.hpp"
 #include "EventHandler.hpp"
-BaseScene::BaseScene() : mGraphicsManager(), mCommandManager(), mCollisionSystem(this), mPhysicsSystem(this), mInputManager(), mMainCamera(), mRenderSystem(this)
+BaseScene::BaseScene() : mCollisionSystem(this), mPhysicsSystem(this), mRenderSystem(this)
 {
 }
 void BaseScene::init()

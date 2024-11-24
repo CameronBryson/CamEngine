@@ -1,6 +1,11 @@
 #include "Camera.hpp"
- Camera::Camera(glm::vec3 position, glm::vec3 up,
-	   float yaw , float pitch ) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), Zoom(ZOOM)
+
+#include "GameSettings.hpp"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
+
+Camera::Camera(glm::vec3 position, glm::vec3 up,
+               float yaw , float pitch ) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), Zoom(ZOOM)
 	   {
 	       Position = position;
 	       WorldUp = up;

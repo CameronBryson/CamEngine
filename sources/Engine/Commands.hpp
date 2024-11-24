@@ -6,7 +6,6 @@
 #include <typeindex>
 #include <unordered_map>
 #include <tuple>
-#include "glm/glm.hpp"
 
 template <typename T, typename... Args>
 class AddComponentCommand final : public ICommand

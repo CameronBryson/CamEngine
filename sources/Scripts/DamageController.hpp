@@ -3,7 +3,7 @@
 class DamageController : public ScriptBase
 {
   public:
-	explicit DamageController(BaseScene* scene, unsigned owner_ID) : ScriptBase(scene, owner_ID)
+	explicit DamageController(BaseScene* scene, unsigned short owner_ID) : ScriptBase(scene, owner_ID)
 	{
 	}
   private:

@@ -4,7 +4,6 @@
 #include <array>
 #include <glm/vec3.hpp>
 #include <memory>
-#include "Components.hpp"
 struct OctreePoint
 {
 	glm::vec3* position;

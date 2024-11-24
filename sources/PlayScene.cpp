@@ -1,4 +1,6 @@
 #include "PlayScene.hpp"
+
+#include "GameSettings.hpp"
 #include "Scripts/PlayerController.hpp"
 #include "Scripts/EnemyShipController.hpp"
 #include "Scripts/WaveController.hpp"
@@ -7,13 +9,7 @@
 #include "Scripts/BoundaryController.hpp"
 #include "Scripts/HealthController.hpp"
 
-#include "Scripts/Asteroid.hpp"
-#include "Scripts/EnemyShip.hpp"
-#include "Scripts/Player.hpp"
-#include "Scripts/Health.hpp"
-#include "Scripts/Damage.hpp"
 
-#include <Engine/Event.hpp>
 
 PlayScene::PlayScene() : BaseScene(), mFactory(this)
 {

@@ -1,14 +1,9 @@
 #include "PlayerController.hpp"
 #include "Engine/EngineUtil.hpp"
-#include "Graphics/OpenGLUtil.hpp"
-#include "glm/ext/matrix_projection.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include <glm/gtc/matrix_transform.hpp>
-#include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
-#include "glm/matrix.hpp"
 #include "Scripts/Player.hpp"
 #include "Engine/BaseScene.hpp"
+#include "glm/ext/matrix_transform.hpp"
+
 void PlayerController::update(float deltaTime)
 {
 	
@@ -30,23 +25,23 @@ void PlayerController::update(float deltaTime)
 
 	if( w )
 	{
-		dynamic_body.acceleration.y += movespeed;
-		dynamic_body.angular_acceleration.x += rotation_speed;
+		dynamic_body.acceleration.y += moveSpeed;
+		dynamic_body.angularAcceleration.x += rotation_speed;
 	}
 	if( a )
 	{
-		dynamic_body.acceleration.x -= movespeed;
-		dynamic_body.angular_acceleration.z -= rotation_speed;
+		dynamic_body.acceleration.x -= moveSpeed;
+		dynamic_body.angularAcceleration.z -= rotation_speed;
 	}
 	if( s )
 	{
-		dynamic_body.acceleration.y -= movespeed;
-		dynamic_body.angular_acceleration.x -= rotation_speed;
+		dynamic_body.acceleration.y -= moveSpeed;
+		dynamic_body.angularAcceleration.x -= rotation_speed;
 	}
 	if( d )
 	{
-		dynamic_body.acceleration.x += movespeed;
-		dynamic_body.angular_acceleration.z += rotation_speed;
+		dynamic_body.acceleration.x += moveSpeed;
+		dynamic_body.angularAcceleration.z += rotation_speed;
 	}
 	if( left_click )
 	{

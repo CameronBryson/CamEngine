@@ -1,6 +1,11 @@
 #include "CollisionManifold.hpp"
-CollisionManifold::CollisionManifold(const glm::vec3 normal, const float penetration_depth, CTransform& transform1, CTransform& transform2,
-    CDynamicBody* dynamic_body1, CDynamicBody* dynamic_body2)
+#include <cmath>
+
+#include "GameSettings.hpp"
+#include "glm/ext/quaternion_geometric.hpp"
+
+CollisionManifold::CollisionManifold(const glm::vec3& normal, const float penetration_depth, CTransform& transform1, CTransform& transform2,
+                                     CDynamicBody* dynamic_body1, CDynamicBody* dynamic_body2)
     : penetrationDepth(penetration_depth),
       normal(normal),
       mDynamicBody1(dynamic_body1),
@@ -13,8 +18,9 @@ CollisionManifold::CollisionManifold(const glm::vec3 normal, const float penetra
 }
 void CollisionManifold::resolveCollision() const
 {
-    if(penetrationDepth == 0){
-	return;
+    if (std::abs(penetrationDepth) < settings::EPSILON)
+    {
+        return;
     }
 
     if( mDynamicBody1 != nullptr && mDynamicBody2 != nullptr )

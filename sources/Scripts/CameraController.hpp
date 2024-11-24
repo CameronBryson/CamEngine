@@ -3,7 +3,7 @@
 class CameraController : public ScriptBase
 {
   public:
-	explicit CameraController(BaseScene* scene, unsigned owner_ID) : ScriptBase(scene, owner_ID)
+	explicit CameraController(BaseScene* scene, unsigned short owner_ID) : ScriptBase(scene, owner_ID)
 	{
 	}
   private:

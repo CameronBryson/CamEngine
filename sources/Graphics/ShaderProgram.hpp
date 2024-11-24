@@ -1,10 +1,9 @@
 #pragma once
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 #include <string>
 
 #include <Engine/EngineUtil.hpp>
 
-#include "OpenGLUtil.hpp"
 
 class ShaderProgram
 {

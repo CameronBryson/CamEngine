@@ -1,5 +1,4 @@
 #pragma once
-#include <utility>
 
 #include "OpenGLUtil.hpp"
 #include "Vertex.hpp"

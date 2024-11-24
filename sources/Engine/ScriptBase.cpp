@@ -1,7 +1,7 @@
 #include "ScriptBase.hpp"
 #include "BaseScene.hpp"
 
-ScriptBase::ScriptBase(BaseScene* scene, unsigned owner_ID)
+ScriptBase::ScriptBase(BaseScene* scene, unsigned short owner_ID)
 	: mScene(scene), mOwnerId(owner_ID)
 {
 	bindEvents();

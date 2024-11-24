@@ -3,7 +3,6 @@
 #include "Components.hpp"
 #include "Engine/EngineUtil.hpp"
 #include "Engine/Stats.hpp"
-#include "Math/MathUtil.hpp"
 
 #include "Graphics/OpenGLUtil.hpp"
 
@@ -13,12 +12,12 @@
 #include "Graphics/Mesh.hpp"
 #include "Graphics/ShaderProgram.hpp"
 #include <string>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/euler_angles.hpp>
-#include <future>
 #include "Engine/BaseScene.hpp";
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/gtx/euler_angles.hpp"
+
 SRender::SRender(BaseScene* scene) : mScene(scene)
 {
 }

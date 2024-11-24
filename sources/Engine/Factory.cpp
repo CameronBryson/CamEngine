@@ -33,7 +33,7 @@ void Factory::onFactoryCreateProjectileEvent(const Event<FactoryEvents> &event) 
 	auto event_data = event.ToType<CreateProjectileEvent>();
 	//printf("Create Projectile Test\n");
 
-	createProjectile(event_data.position, event_data.direction, event_data.speed,event_data.collision_bitmask);
+	createProjectile(event_data.position, event_data.direction, event_data.speed,event_data.collisionBitmask);
 }
 
 void Factory::onFactoryCreateEnemyEvent(const Event<FactoryEvents> & event)

@@ -1,4 +1,8 @@
 #include "EngineUtil.hpp"
+
+#include "EventHandler.hpp"
+#include "GameManager.hpp"
+
 void engine_util::errorCallback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);

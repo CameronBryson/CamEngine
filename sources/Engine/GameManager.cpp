@@ -1,9 +1,7 @@
 #include "GameManager.hpp"
-#include "EngineUtil.hpp"
 #include "Graphics/OpenGLUtil.hpp"
 #include <thread>
 #include <chrono>
-#include "platform.hpp"
 #include "BaseScene.hpp"
 
 #include <iostream>

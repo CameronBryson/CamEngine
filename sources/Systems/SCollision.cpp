@@ -5,6 +5,8 @@
 #include <iostream>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/euler_angles.hpp>
+
+#include "GameSettings.hpp"
 #include "Math/Octree.hpp"
 #include "Engine/BaseScene.hpp"
 
@@ -135,7 +137,7 @@ void SCollision::shutdown()
 {
 }
 
-bool SCollision::pointInAabb(glm::vec3 min, glm::vec3 max, glm::vec3 position, glm::vec3 point)
+bool SCollision::pointInAabb(const glm::vec3& min, const glm::vec3& max, const glm::vec3& position, const glm::vec3& point)
 {
 	// Calculate the local coordinates of the point relative to the AABB
 	glm::vec3 local_point = point - position;
@@ -161,7 +163,7 @@ bool SCollision::intersectsAabbInAabb(const glm::vec3 & min1, const glm::vec3 & 
 	return overlap_x && overlap_y && overlap_z;
 }
 
-bool SCollision::intersectsSphereInSphere(unsigned id1, unsigned id2, SparseSet<CSphereBounds>& spheres, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
+bool SCollision::intersectsSphereInSphere(unsigned short id1, unsigned short id2, SparseSet<CSphereBounds>& spheres, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
 {
 	auto& sphere1 = spheres.get_item(id1);
 	auto& sphere2 = spheres.get_item(id2);
@@ -206,7 +208,7 @@ bool SCollision::intersectsSphereInSphere(unsigned id1, unsigned id2, SparseSet<
 	return true;
 }
 
-bool SCollision::intersectsObbInObb(const unsigned id1, const unsigned id2, SparseSet<CBoxBounds>& quads, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
+bool SCollision::intersectsObbInObb(const unsigned short id1, const unsigned short id2, SparseSet<CBoxBounds>& quads, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
 {
 
 	auto& obb1 = quads.get_item(id1);
@@ -333,7 +335,7 @@ std::vector<glm::vec3> SCollision::getObbPointsInWorldSpace(const CBoxBounds & o
 	return world_points;
 }
 
-bool SCollision::testAxis(const glm::vec3 & axis, const std::vector<glm::vec3> & points1, const std::vector<glm::vec3> & points2, float & overlap,
+bool SCollision::testAxis(const glm::vec3 & axis, const std::vector<glm::vec3> & points1, const std::vector<glm::vec3> & points2, float overlap,
 	glm::vec3 & penetration_axis)
 {
 	if( length2(axis) < 0.00001f )
@@ -393,7 +395,7 @@ void SCollision::OnComponentRemoved(const Event<ComponentEvents>& event)
 	printf("Collider Component removed\n");
 }
 
-bool SCollision::intersectsObbInSphere(unsigned quad_id, unsigned sphere_id, SparseSet<CBoxBounds>& quads, SparseSet<CSphereBounds>& spheres, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
+bool SCollision::intersectsObbInSphere(unsigned short quad_id, unsigned  short sphere_id, SparseSet<CBoxBounds>& quads, SparseSet<CSphereBounds>& spheres, SparseSet<CTransform>& transforms, SparseSet<CCollider>& colliders,SparseSet<CDynamicBody>& dynamic_bodies)
 {
 	auto& obb = quads.get_item(quad_id);
 	auto& sphere = spheres.get_item(sphere_id);

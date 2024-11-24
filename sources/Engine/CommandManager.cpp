@@ -35,7 +35,7 @@ void CommandManager::clearCommands()
 
 void CommandManager::onAddCommandEvent(const Event<CommandEvents>& event)
 {
-	auto event_data = event.ToType<AddCommandEvent>();
-	addCommand(event_data.mCommand);
+	const auto eventData = event.ToType<AddCommandEvent>();
+	addCommand(eventData.mCommand);
 }
 

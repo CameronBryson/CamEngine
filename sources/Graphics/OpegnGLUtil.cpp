@@ -4,9 +4,14 @@
 #include "Material.hpp"
 #include "ShaderProgram.hpp"
 #include "stb_image.h"
-#include "Material.hpp"
 #include "GameSettings.hpp"
 #include <iostream>
+#include "glm/vec4.hpp"
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/mat4x4.hpp"
+
+#include "Engine/GameManager.hpp"
 
 void OpenGlUtil::init()
 {

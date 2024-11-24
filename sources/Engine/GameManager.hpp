@@ -1,7 +1,7 @@
 #pragma once
-#include <memory>
 #include "platform.hpp"
-#include "GLFW/glfw3.h"
+#include <memory>
+
 
 class BaseScene;
 

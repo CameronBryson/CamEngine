@@ -11,12 +11,12 @@ enum class CommandEvents
 class AddCommandEvent final : public Event<CommandEvents>
 {
 public:
-	explicit AddCommandEvent(std::shared_ptr<ICommand> command) : Event<CommandEvents>(CommandEvents::AddCommand, "AddCommand"), mCommand(std::move(command)) {};
+	explicit AddCommandEvent(std::shared_ptr<ICommand> command) : Event<CommandEvents>(CommandEvents::AddCommand, "AddCommand"), mCommand(std::move(command)) {}
 	std::shared_ptr<ICommand> mCommand;
 };
 class ProcessCommandEvent final : public Event<CommandEvents>
 {
 public:
-	explicit ProcessCommandEvent() : Event<CommandEvents>(CommandEvents::ProcessCommands, "ProcessCommand") {};
+	explicit ProcessCommandEvent() : Event<CommandEvents>(CommandEvents::ProcessCommands, "ProcessCommand") {}
 };
 
