@@ -19,7 +19,7 @@ void SPhysics::update(const float dt)
 }
 
 
-void SPhysics::updateDynamicBodies(float dt)
+void SPhysics::updateDynamicBodies(float dt) const
 {
     auto & dynamic_bodies = mScene->getSparseSet<CDynamicBody>();
     auto & transforms = mScene->getSparseSet<CTransform>();

@@ -37,38 +37,38 @@ void GameManager::shutdown()
 // Update the game_loop function to limit FPS
 void GameManager::gameLoop()
 {
-    const double fps_limit = 1.0 / settings::max_fps;
-    double delta_time = 0.0f;
-    double last_frame = 0.0f;
-    double elapsed_time = 0.0f;
-    int frame_count = 0;
+	constexpr double fpsLimit = 1.0 / settings::max_fps;
+    double deltaTime = 0.0f;
+    double lastFrame = 0.0f;
+    double elapsedTime = 0.0f;
+    int frameCount = 0;
 
     while( ! glfwWindowShouldClose(mGameWindow) )
     {
-        double current_frame = glfwGetTime();
-        delta_time = current_frame - last_frame;
-        last_frame = current_frame;
-        elapsed_time += delta_time;
-        frame_count++;
+        const double currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        elapsedTime += deltaTime;
+        frameCount++;
 
-        if( elapsed_time >= 1.0 )
+        if( elapsedTime >= 1.0 )
         {
-            int fps = frame_count;
-            std::cout << "FPS: " << fps << std::endl;
-            frame_count = 0;
-            elapsed_time = 0.0;
+            int fps = frameCount;
+            std::cout << "FPS: " << fps << '\n';
+            frameCount = 0;
+            elapsedTime = 0.0;
         }
 
         glfwPollEvents();
-        update(static_cast<float>(delta_time));
+        update(static_cast<float>(deltaTime));
         render();
         glfwSwapBuffers(mGameWindow);
 
         // Limit FPS
-        double frame_time = glfwGetTime() - current_frame;
-        if( frame_time < fps_limit )
+        const double frameTime = glfwGetTime() - currentFrame;
+        if( frameTime < fpsLimit )
         {
-            std::this_thread::sleep_for(std::chrono::duration<double>(fps_limit - frame_time));
+            std::this_thread::sleep_for(std::chrono::duration<double>(fpsLimit - frameTime));
         }
     }
 }

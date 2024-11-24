@@ -9,7 +9,7 @@ public:
     void update(float dt);
     void shutdown();
 private:
-    void updateDynamicBodies(float dt);
+    void updateDynamicBodies(float dt) const;
 	BaseScene* mScene;
 
 };

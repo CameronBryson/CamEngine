@@ -7,8 +7,14 @@ InputManager::InputManager()
 	{
 		mKeyMap[i] = KeyAction::None;
 	}
-	EventHandler::GetInstance()->inputDispatcher.AddListener(InputEvents::KeyPress, std::bind(&InputManager::onInputPressEvent, this, std::placeholders::_1));
-	EventHandler::GetInstance()->inputDispatcher.AddListener(InputEvents::KeyRelease, std::bind(&InputManager::onInputReleaseEvent, this, std::placeholders::_1));
+	EventHandler::GetInstance()->inputDispatcher.AddListener(InputEvents::KeyPress, [this](const Event<InputEvents>& event)
+		{
+			onInputPressEvent(event);
+		});
+	EventHandler::GetInstance()->inputDispatcher.AddListener(InputEvents::KeyRelease, [this](const Event<InputEvents>& event)
+		{
+			onInputReleaseEvent(event);
+		});
 }
 
 InputManager::~InputManager()
@@ -38,29 +44,29 @@ void InputManager::resetKeyStates()
 
 void InputManager::onInputPressEvent(const Event<InputEvents>& event)
 {
-	auto event_data = event.ToType<KeyPressEvent>();
-	if (mKeyMap[event_data.key] == KeyAction::None)
+	const auto& eventData = event.ToType<KeyPressEvent>();
+	if (mKeyMap[eventData.key] == KeyAction::None)
 	{
 		//EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyStartEvent(event_data.key));
-		mKeyMap[event_data.key] = KeyAction::Start;
+		mKeyMap[eventData.key] = KeyAction::Start;
 	}
 	else
 	{
-		mKeyMap[event_data.key] = KeyAction::Hold;
+		mKeyMap[eventData.key] = KeyAction::Hold;
 	}
 }
 
 void InputManager::onInputReleaseEvent(const Event<InputEvents>& event)
 {
-	auto event_data = event.ToType<KeyReleaseEvent>();
-	if (mKeyMap[event_data.key] == KeyAction::Start || mKeyMap[event_data.key] == KeyAction::Hold)
+	const auto& eventData = event.ToType<KeyReleaseEvent>();
+	if (mKeyMap[eventData.key] == KeyAction::Start || mKeyMap[eventData.key] == KeyAction::Hold)
 	{
 		//EventHandler::GetInstance()->input_dispatcher.SendEvent(KeyEndEvent(event_data.key));
-		mKeyMap[event_data.key] = KeyAction::End;
+		mKeyMap[eventData.key] = KeyAction::End;
 	}
 	else
 	{
-		mKeyMap[event_data.key] = KeyAction::None;
+		mKeyMap[eventData.key] = KeyAction::None;
 		//this isnt working cause there isnt a new event being sent
 	}
 }

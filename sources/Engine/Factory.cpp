@@ -29,35 +29,37 @@ Factory::~Factory()
 	//unbind here
 }
 
-void Factory::onFactoryCreateProjectileEvent(const Event<FactoryEvents> &event) {
-	auto event_data = event.ToType<CreateProjectileEvent>();
+void Factory::onFactoryCreateProjectileEvent(const Event<FactoryEvents> &event) const
+{
+	const auto& eventData = event.ToType<CreateProjectileEvent>();
 	//printf("Create Projectile Test\n");
 
-	createProjectile(event_data.position, event_data.direction, event_data.speed,event_data.collisionBitmask);
+	createProjectile(eventData.position, eventData.direction, eventData.speed,eventData.collisionBitmask);
 }
 
-void Factory::onFactoryCreateEnemyEvent(const Event<FactoryEvents> & event)
+void Factory::onFactoryCreateEnemyEvent(const Event<FactoryEvents> & event) const
 {
-	auto event_data = event.ToType<CreateEnemyEvent>();
+	const auto& eventData = event.ToType<CreateEnemyEvent>();
 
-	createEnemyShip(event_data.position,event_data.radius,event_data.direction,event_data.speed,event_data.target);
+	createEnemyShip(eventData.position,eventData.radius,eventData.direction,eventData.speed,eventData.target);
 }
 
-void Factory::onFactoryCreateAsteroidEvent(const Event<FactoryEvents> & event)
+void Factory::onFactoryCreateAsteroidEvent(const Event<FactoryEvents> & event) const
 {
-	auto event_data = event.ToType<CreateAsteroidEvent>();
+	const auto& eventData = event.ToType<CreateAsteroidEvent>();
 
-	createAsteroid(event_data.position,event_data.radius,event_data.speed,event_data.target);
+	createAsteroid(eventData.position,eventData.radius,eventData.speed,eventData.target);
 }
 
-void Factory::onFactoryCreateSpaceDebrisEvent(const Event<FactoryEvents> & event)
+void Factory::onFactoryCreateSpaceDebrisEvent(const Event<FactoryEvents> & event) const
 {
-	auto event_data = event.ToType<CreateSpaceDebrisEvent>();
+	const auto& eventData = event.ToType<CreateSpaceDebrisEvent>();
 
-	createSpaceDebris(event_data.position,event_data.direction,event_data.spin,event_data.speed);
+	createSpaceDebris(eventData.position,eventData.direction,eventData.spin,eventData.speed);
 }
 
-unsigned short Factory::createPlayer() {
+unsigned short Factory::createPlayer() const
+{
 	const auto id = m_Scene->createEntity();
 	m_Scene->addComponent<Player>(id);
 	m_Scene->addComponent<Health>(id, 100);
@@ -73,27 +75,30 @@ unsigned short Factory::createPlayer() {
 	return id;
 
 }
-unsigned short Factory::createSkybox(glm::vec3 position, float radius) {
+unsigned short Factory::createSkybox(const glm::vec3& position, float radius) const
+{
 	const auto id = m_Scene->createEntity();
 	m_Scene->addComponent<CTransform>(id, position, glm::vec3{ 0, 0, 0 }, glm::vec3{ 5, 5, 5 });
 	m_Scene->addComponent<CModel>(id, "skybox");
 	m_Scene->addComponent<CBackground>(id);
 	return id;
 }
-unsigned short Factory::createBoundary(glm::vec3 position, glm::vec3 extents) {
+unsigned short Factory::createBoundary(const glm::vec3& position, const glm::vec3& extents) const
+{
 	const auto id = m_Scene->createEntity();
 	m_Scene->addComponent<CTransform>(id, position,glm::vec3{0, 0, 0}, glm::vec3{1.0f,1.0f,1.0f});
 	m_Scene->addComponent<CBoxBounds>(id, extents);
 	m_Scene->addComponent<CCollider>(id, false,settings::enemy_bitmask);
 	return id;
 }
-unsigned short Factory::createDirectionalLight(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse,
-									   glm::vec3 specular) {
+unsigned short Factory::createDirectionalLight(const glm::vec3& direction, const glm::vec3& ambient, const glm::vec3& diffuse,
+									   const glm::vec3& specular) const
+{
 	const auto id = m_Scene->createEntity();
 	m_Scene->addComponent<CDirectionalLight>(id, direction, ambient, diffuse, specular);
 	return id;
 }
-unsigned short Factory::createPointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic)
+unsigned short Factory::createPointLight(const glm::vec3& position, const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, float constant, float linear, float quadratic) const
 {
 	const auto id = m_Scene->createEntity();
 	m_Scene->addComponent<CTransform>(id, position, glm::vec3{0,0,0}, glm::vec3{0,0,0});
@@ -102,22 +107,24 @@ unsigned short Factory::createPointLight(glm::vec3 position, glm::vec3 ambient, 
 	return id;
 }
 
-unsigned short Factory::createProjectile(glm::vec3 position, glm::vec3 direction, float speed,unsigned int collision_bitmask) {
+unsigned short Factory::createProjectile(const glm::vec3& position, const glm::vec3& direction, float speed,unsigned int collisionBitmask) const
+{
 	const auto id = m_Scene->createEntity();
 	m_Scene->addComponent<CTransform>(id, position, glm::vec3{ 0, 0, 0 }, glm::vec3{ 0.5, 0.5, 0.5 });
 	m_Scene->addComponent<Damage>(id, 1);
 	m_Scene->addComponent<CSphereBounds>(id, 1);
 	m_Scene->addComponent<Health>(id, 1);
 	m_Scene->addComponent<CModel>(id, "sphere");
-	m_Scene->addComponent<CCollider>(id,false,collision_bitmask);
+	m_Scene->addComponent<CCollider>(id,false,collisionBitmask);
 	m_Scene->addComponent<CDynamicBody>(id, 0,0,0);
 	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.4, 0.4, 0.4 }, glm::vec3{ 0.9, 0.9, 0.9 }, glm::vec3{ 0.8, 0.8, 0.8 }, 1.0f, 0.14f, 0.07f);
 
 	// m_Scene->add_component<c_projectile>(id, c_projectile{.direction = direction, .speed = speed});
 	return id;
 }
-unsigned short Factory::createEnemyShip(glm::vec3 position, float radius, glm::vec3 direction,
-								float speed, unsigned short target) {
+unsigned short Factory::createEnemyShip(const glm::vec3& position, float radius, const glm::vec3& direction,
+								float speed, unsigned short target) const
+{
 	const auto id = m_Scene->createEntity();
 	m_Scene->addComponent<CTransform>(id, position, glm::vec3{ 0, -3.14f / 2, 0 }, glm::vec3{ 0.5f, 0.5f, 0.5f });
 	m_Scene->addComponent<Health>(id, 1);
@@ -131,7 +138,7 @@ unsigned short Factory::createEnemyShip(glm::vec3 position, float radius, glm::v
 
 	return id;
 }
-unsigned short Factory::createAsteroid(glm::vec3 position, float radius, float speed, unsigned short target)
+unsigned short Factory::createAsteroid(const glm::vec3& position, float radius, float speed, unsigned short target) const
 {
 	const auto id = m_Scene->createEntity();
 	m_Scene->addComponent<CTransform>(id, position, glm::vec3{ 0, 0, 0 }, glm::vec3{ 1, 1, 1 });
@@ -148,7 +155,7 @@ unsigned short Factory::createAsteroid(glm::vec3 position, float radius, float s
 
 }
 
-unsigned short Factory::createSpaceDebris(glm::vec3 position, glm::vec3 direction, glm::vec3 spin, float speed)
+unsigned short Factory::createSpaceDebris(const glm::vec3& position, const glm::vec3& direction, const glm::vec3& spin, float speed) const
 {
 	const auto id = m_Scene->createEntity();
 	m_Scene->addComponent<CTransform>(id, position, glm::vec3{ 0, 0, 0 }, glm::vec3{ 2, 2, 2 });

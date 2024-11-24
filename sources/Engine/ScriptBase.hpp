@@ -1,5 +1,8 @@
 #pragma once
-#include "EventHandler.hpp"
+template<typename T>
+class Event;
+enum class CollisionEvents;
+
 class BaseScene;
 
 class ScriptBase

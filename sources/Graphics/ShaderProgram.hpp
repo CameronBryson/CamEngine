@@ -2,7 +2,7 @@
 #include <glm/fwd.hpp>
 #include <string>
 
-#include <Engine/EngineUtil.hpp>
+
 
 
 class ShaderProgram

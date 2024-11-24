@@ -1,4 +1,7 @@
 #include "Texture.hpp" 
+
+#include "OpenGLUtil.hpp"
+
 Texture::Texture(const std::string& file)
 {
     OpenGlUtil::createTexture(file, data, texture_id);

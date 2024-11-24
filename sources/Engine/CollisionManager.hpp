@@ -3,9 +3,7 @@
 #include <memory>
 #include <utility>
 #include "CollisionManifold.hpp"
-#include "Event.hpp"
-#include "EventHandler.hpp"
-
+#include "CollisionEvents.hpp"
 struct HashPair
 {
     std::size_t operator()(const std::pair<unsigned short, unsigned short>& p) const

@@ -1,5 +1,5 @@
 #pragma once
-enum class KeyAction
+enum class KeyAction : unsigned char
 {
     None,
     Start,

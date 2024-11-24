@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdio>
+
 #include "Engine/ScriptBase.hpp"
 class AsteroidController : public ScriptBase
 {

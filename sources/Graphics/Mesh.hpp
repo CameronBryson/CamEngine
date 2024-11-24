@@ -1,16 +1,18 @@
 #pragma once
+#include <vector>
+#include <string>
 
-#include "OpenGLUtil.hpp"
 #include "Vertex.hpp"
-class GraphiscManager;
+class GraphicsManager;
+class ShaderProgram;
 class Mesh
 {
 public:
-  explicit Mesh(const std::vector<Vertex>& vertices, const std::string& material_name);
+  explicit Mesh(const std::vector<Vertex>& vertices, const std::string& materialName);
 
   void setupMesh();
 
-  void draw(ShaderProgram& shader, GraphicsManager& graphics_manager) const;
+  void draw(const ShaderProgram& shader, GraphicsManager& graphicsManager) const;
 
   void setMaterial(const std::string& name);
 private:

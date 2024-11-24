@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "OpenGLUtil.hpp"
+#include "platform.hpp"
 
 class Texture
 {

@@ -6,6 +6,8 @@
 #include "stb_image.h"
 #include "GameSettings.hpp"
 #include <iostream>
+
+#include "Engine/EngineUtil.hpp"
 #include "glm/vec4.hpp"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
@@ -44,7 +46,7 @@ void OpenGlUtil::init()
     GameManager::set_glfw_window(game_window);
 }
 
-void OpenGlUtil::drawLine(glm::vec2& start, glm::vec2& end, glm::vec3& color)
+void OpenGlUtil::drawLine(glm::vec2& start, glm::vec2& end, const glm::vec3& color)
 {
     convertPointToScreen(start);
     convertPointToScreen(end);
@@ -159,7 +161,7 @@ void OpenGlUtil::createTexture(const std::string& file, unsigned char* data, GLu
     stbi_image_free(data);
 }
 
-void OpenGlUtil::bindMaterial(const ShaderProgram& shader, Material& material)
+void OpenGlUtil::bindMaterial(const ShaderProgram& shader, const Material& material)
 {
     // Bind Ambient Texture (map_Ka)
     if( material.map_Ka )
@@ -270,7 +272,7 @@ unsigned int OpenGlUtil::createShader(const std::string & vertex_shader, const s
     return ID;
 }
 
-void OpenGlUtil::checkShaderCompileError(unsigned shader, std::string type)
+void OpenGlUtil::checkShaderCompileError(unsigned shader, const std::string& type)
 {
     GLint success;
     GLchar infoLog[1024];
@@ -281,7 +283,7 @@ void OpenGlUtil::checkShaderCompileError(unsigned shader, std::string type)
         {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
             std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog <<
-                "\n -- --------------------------------------------------- -- " << std::endl;
+                "\n -- --------------------------------------------------- -- " << '\n';
         }
     }
     else
@@ -291,7 +293,7 @@ void OpenGlUtil::checkShaderCompileError(unsigned shader, std::string type)
         {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
             std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog <<
-                "\n -- --------------------------------------------------- -- " << std::endl;
+                "\n -- --------------------------------------------------- -- " << '\n';
         }
     }
 }

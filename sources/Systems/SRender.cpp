@@ -12,7 +12,7 @@
 #include "Graphics/Mesh.hpp"
 #include "Graphics/ShaderProgram.hpp"
 #include <string>
-#include "Engine/BaseScene.hpp";
+#include "Engine/BaseScene.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -128,7 +128,7 @@ void SRender::shutdown()
 {
 }
 
-void SRender::drawModels(SparseSet<CTransform> & transforms, ShaderProgram & shader)
+void SRender::drawModels(SparseSet<CTransform> & transforms, const ShaderProgram & shader) const
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -156,7 +156,7 @@ void SRender::drawModels(SparseSet<CTransform> & transforms, ShaderProgram & sha
 
 }
 
-void SRender::drawColliders(SparseSet<CTransform> & transforms, ShaderProgram & shader)
+void SRender::drawColliders(SparseSet<CTransform> & transforms, const ShaderProgram & shader) const
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -190,7 +190,8 @@ void SRender::drawColliders(SparseSet<CTransform> & transforms, ShaderProgram & 
 	}
 }
 
-void SRender::drawUi(SparseSet<CTransform> &transforms, ShaderProgram &shader) {
+void SRender::drawUi(SparseSet<CTransform> &transforms, const ShaderProgram &shader) const
+{
 	glDisable(GL_DEPTH_TEST);
 
 	auto &ui = mScene->getSparseSet<CUI>();
@@ -206,7 +207,7 @@ void SRender::drawUi(SparseSet<CTransform> &transforms, ShaderProgram &shader) {
 }
 
 
-void SRender::loadShaders()
+void SRender::loadShaders() const
 {
 	mScene->mGraphicsManager.loadShader(
 		"sources/Shaders/vertex.vs",

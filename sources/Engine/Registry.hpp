@@ -1,16 +1,12 @@
 #pragma once
-#include "SparseSet.hpp"
-
 
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
-#include <cassert>
-#include "Commands.hpp"
-
-
-
+#include "ISparseSet.hpp"
+template <typename T>
+class SparseSet;
 
 class Registry
 {

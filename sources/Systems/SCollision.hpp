@@ -1,15 +1,18 @@
 #pragma once
-#include "Engine/ComponentEvents.hpp"
-#include "Engine/SparseSet.hpp"
 #include "glm/fwd.hpp"
 #include "Math/Octree.hpp"
 #include "Math/BoundngBox.hpp"
+template<typename T>
+class SparseSet;
+template<typename T>
+class Event;
 class BaseScene;
 struct CSphereBounds;
 struct CBoxBounds;
 struct CTransform;
 struct CCollider;
 struct CDynamicBody;
+enum class ComponentEvents;
 
 class SCollision
 {
@@ -29,8 +32,8 @@ private:
 	bool testAxis(const glm::vec3& axis, const std::vector<glm::vec3>& points1,
 						  const std::vector<glm::vec3>& points2, float overlap,  glm::vec3& penetration_axis);
 public:
-	void OnComponentAdded(const Event<ComponentEvents>& event);
-	void OnComponentRemoved(const Event<ComponentEvents>& event);
+	void OnComponentAdded(const Event<ComponentEvents>& event) const;
+	void OnComponentRemoved(const Event<ComponentEvents>& event) const;
 private:
 	//maybe move octree to collision manager
 	BoundingBox mSceneBounds;

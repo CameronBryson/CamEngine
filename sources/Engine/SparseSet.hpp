@@ -1,12 +1,7 @@
 #pragma once
 #include "ISparseSet.hpp"
 #include <vector>
-#include <algorithm>
-#include <iterator>
 
-#include <stdexcept>
-#include "GameSettings.hpp"
-#include "EventHandler.hpp"
 
 template <class T>
 class SparseSet final : public ISparseSet

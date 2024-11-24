@@ -1,6 +1,7 @@
 #include "WaveController.hpp"
 
 #include "GameSettings.hpp"
+#include "Engine/EventHandler.hpp"
 
 void WaveController::update(float deltaTime)
 {

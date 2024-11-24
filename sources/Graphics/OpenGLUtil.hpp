@@ -14,7 +14,7 @@ class OpenGlUtil
 {
 public:
     static void init();
-    static void drawLine(glm::vec2& start, glm::vec2& end, glm::vec3& color);
+    static void drawLine(glm::vec2& start, glm::vec2& end, const glm::vec3& color);
 
     static void drawText(const char* text, int posX, int posY, int fontSize, glm::vec3& color);
 
@@ -38,13 +38,13 @@ public:
 
     static void createTexture(const std::string& file, unsigned char* data, GLuint& texture_id);
 
-    static void bindMaterial(const ShaderProgram& shader, Material& material);
+    static void bindMaterial(const ShaderProgram& shader, const Material& material);
 
     static void unbindMaterial(Material& material);
 
     static unsigned int createShader(const std::string& vertex_shader, const std::string& fragment_shader);
 
-    static void checkShaderCompileError(unsigned shader, std::string type);
+    static void checkShaderCompileError(unsigned shader, const std::string& type);
 
     static void useShader(unsigned shader);
 

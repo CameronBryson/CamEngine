@@ -1,7 +1,7 @@
 #pragma once
 #include "Event.hpp"
 #include "glm/vec3.hpp"
-enum class FactoryEvents
+enum class FactoryEvents : unsigned char
 {
     CreateProjectile,
     CreateEnemy,
@@ -12,7 +12,7 @@ enum class FactoryEvents
 class CreateProjectileEvent final : public Event<FactoryEvents>
 {
 public:
-    explicit CreateProjectileEvent(const glm::vec3& position, const glm::vec3& direction, const float speed,unsigned int collision_bitmask) : Event<FactoryEvents>(FactoryEvents::CreateProjectile, "CreateProjectile"),  position(position), direction(direction), speed(speed), collisionBitmask(collision_bitmask) {}
+    explicit CreateProjectileEvent(const glm::vec3& position, const glm::vec3& direction, const float speed,unsigned int collision_bitmask) : Event<FactoryEvents>(FactoryEvents::CreateProjectile, "CreateProjectile"),  position(position), direction(direction), collisionBitmask(collision_bitmask), speed(speed) {}
     glm::vec3 position;
     glm::vec3 direction;
     unsigned int collisionBitmask;

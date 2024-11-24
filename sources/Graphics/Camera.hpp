@@ -5,9 +5,9 @@
 
 
 // Default camera values
-const float YAW = -90.0f;
-const float PITCH = 0.0f;
-const float ZOOM = 45.0f;
+constexpr float YAW = -90.0f;
+constexpr float PITCH = 0.0f;
+constexpr float ZOOM = 45.0f;
 
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL

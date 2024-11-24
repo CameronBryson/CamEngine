@@ -1,6 +1,7 @@
 #pragma once
 #include "Components.hpp"
-#include "Engine/SparseSet.hpp"
+template<typename T>
+class SparseSet;
 class BaseScene;
 class ShaderProgram;
 
@@ -13,9 +14,9 @@ public:
     void shutdown();
 
 private:
-    void drawModels(SparseSet<CTransform>& transforms, ShaderProgram& shader);
-    void drawColliders(SparseSet<CTransform>& transforms, ShaderProgram& shader);
-    void drawUi(SparseSet<CTransform>& transforms, ShaderProgram& shader);
-    void loadShaders();
+    void drawModels(SparseSet<CTransform>& transforms, const ShaderProgram& shader) const;
+    void drawColliders(SparseSet<CTransform>& transforms, const ShaderProgram& shader) const;
+    void drawUi(SparseSet<CTransform>& transforms, const ShaderProgram& shader) const;
+    void loadShaders() const;
     BaseScene* mScene;
 };

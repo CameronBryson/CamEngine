@@ -1,3 +1,10 @@
+#pragma once
+#include <algorithm>
+#include <iterator>
+
+#include <stdexcept>
+#include "GameSettings.hpp"
+#include "EventHandler.hpp"
 template <class T>
 SparseSet<T>::SparseSet()
 {
@@ -28,9 +35,9 @@ void SparseSet<T>::addItem(unsigned short entityID, Args&&... componentArgs)
 template <class T>
 void SparseSet<T>::removeItem(const unsigned short entityID)
 {
-	unsigned entityIndex = m_Sparse[entityID];
-	unsigned lastIndex = m_Dense.size() - 1;
-	unsigned lastEntity = m_Dense[lastIndex];
+	unsigned short entityIndex = m_Sparse[entityID];
+	unsigned short lastIndex = m_Dense.size() - 1;
+	unsigned short lastEntity = m_Dense[lastIndex];
 
 	std::swap(m_Dense[entityIndex], m_Dense[lastIndex]);
 	std::swap(m_Items[entityIndex], m_Items[lastIndex]);

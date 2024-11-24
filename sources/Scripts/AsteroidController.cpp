@@ -11,7 +11,7 @@ void AsteroidController::update(float deltaTime)
 	{
 		auto& asteroid = asteroids.get_item(id);
 		auto& transform = transforms.get_item(id);
-		auto& dynamic_body = dynamic_bodies.get_item(id);
+		auto& dynamicBody = dynamic_bodies.get_item(id);
 		auto target_position = transforms.get_item(asteroid.target).position;
 
 		auto direction = glm::normalize(target_position - transform.position) + glm::vec3{ 0, 0, 1 };

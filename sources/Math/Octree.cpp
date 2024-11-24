@@ -6,17 +6,17 @@ Octree::Octree(const BoundingBox& boundary, int capacity)
 
 }
 
-bool Octree::insert(const OctreePoint& point)
+bool Octree::insert(const OctreePoint& point) const
 {
     return root->insert(point);
 }
 
-bool Octree::remove(const OctreePoint& point)
+bool Octree::remove(const OctreePoint& point) const
 {
     return root->remove(point);
 }
 
-bool Octree::remove(unsigned short entityID)
+bool Octree::remove(unsigned short entityID) const
 {
     return root->remove(entityID);
 }

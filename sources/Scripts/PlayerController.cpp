@@ -3,6 +3,7 @@
 #include "Scripts/Player.hpp"
 #include "Engine/BaseScene.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "Graphics/OpenGLUtil.hpp"
 
 void PlayerController::update(float deltaTime)
 {

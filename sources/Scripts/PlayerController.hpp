@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdio>
+
 #include "Engine/ScriptBase.hpp"
 
 class PlayerController final : public ScriptBase

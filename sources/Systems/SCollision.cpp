@@ -9,6 +9,7 @@
 #include "GameSettings.hpp"
 #include "Math/Octree.hpp"
 #include "Engine/BaseScene.hpp"
+#include "Engine/ComponentEvents.hpp"
 
 SCollision::SCollision(BaseScene* scene) : mSceneBounds(settings::world_boundry_min, settings::world_boundry_max), mOctree(mSceneBounds, 8), mScene(scene)
 {
@@ -34,11 +35,11 @@ void SCollision::update()
 	auto & spheres = mScene->getSparseSet<CSphereBounds>();
 	auto & transforms = mScene->getSparseSet<CTransform>();
 	auto & colliders = mScene->getSparseSet<CCollider>();
-	auto & dynamic_bodies = mScene->getSparseSet<CDynamicBody>();
+	auto & dynamicBodies = mScene->getSparseSet<CDynamicBody>();
 
-	std::vector<unsigned short> collider_ids = mScene->getEntityIDs<CCollider, CTransform>();
-	std::vector<unsigned short> obb_ids = mScene->getEntityIDs<CBoxBounds, CTransform, CCollider>();
-	std::vector<unsigned short> sphere_ids = mScene->getEntityIDs<CSphereBounds, CTransform, CCollider>();
+	std::vector<unsigned short> colliderIds = mScene->getEntityIDs<CCollider, CTransform>();
+	std::vector<unsigned short> obbIds = mScene->getEntityIDs<CBoxBounds, CTransform, CCollider>();
+	std::vector<unsigned short> sphereIds = mScene->getEntityIDs<CSphereBounds, CTransform, CCollider>();
 
 	//BoundingBox sceneBounds(settings::world_boundry_min, settings::world_boundry_max);
 
@@ -50,7 +51,7 @@ void SCollision::update()
 	}*/
 	
 
-	for (auto id : collider_ids)
+	for (auto id : colliderIds)
 	{
 		auto& transform = transforms.get_item(id);
 		BoundingBox queryBounds;
@@ -89,19 +90,19 @@ void SCollision::update()
 
 			if (is_obb_1 && is_obb_2)
 			{
-				intersectsObbInObb(id, otherID, quads, transforms, colliders, dynamic_bodies);
+				intersectsObbInObb(id, otherID, quads, transforms, colliders, dynamicBodies);
 			}
 			else if (is_obb_1 && is_sphere_2)
 			{
-				intersectsObbInSphere(id, otherID, quads, spheres, transforms, colliders, dynamic_bodies);
+				intersectsObbInSphere(id, otherID, quads, spheres, transforms, colliders, dynamicBodies);
 			}
 			else if (is_sphere_1 && is_obb_2)
 			{
-				intersectsObbInSphere(otherID, id, quads, spheres, transforms, colliders, dynamic_bodies);
+				intersectsObbInSphere(otherID, id, quads, spheres, transforms, colliders, dynamicBodies);
 			}
 			else if (is_sphere_1 && is_sphere_2)
 			{
-				intersectsSphereInSphere(id, otherID, spheres, transforms, colliders, dynamic_bodies);
+				intersectsSphereInSphere(id, otherID, spheres, transforms, colliders, dynamicBodies);
 			}
 		}
 	}
@@ -380,18 +381,18 @@ bool SCollision::testAxis(const glm::vec3 & axis, const std::vector<glm::vec3> &
 	return true;
 }
 
-void SCollision::OnComponentAdded(const Event<ComponentEvents>& event)
+void SCollision::OnComponentAdded(const Event<ComponentEvents>& event) const
 {
-	auto event_data = event.ToType<ComponentAddedEvent>();
+	const auto& eventData = event.ToType<ComponentAddedEvent>();
 
-	mOctree.insert({ &mScene->getComponent<CTransform>(event_data.id).position, event_data.id });
+	mOctree.insert({ &mScene->getComponent<CTransform>(eventData.id).position, eventData.id });
 	printf("Collider Component added\n");
 }
 
-void SCollision::OnComponentRemoved(const Event<ComponentEvents>& event)
+void SCollision::OnComponentRemoved(const Event<ComponentEvents>& event) const
 {
-	auto event_data = event.ToType<ComponentRemovedEvent>();
-	mOctree.remove(event_data.id);
+	const auto& eventData = event.ToType<ComponentRemovedEvent>();
+	mOctree.remove(eventData.id);
 	printf("Collider Component removed\n");
 }
 

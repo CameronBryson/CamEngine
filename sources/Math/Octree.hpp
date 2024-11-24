@@ -8,9 +8,9 @@ public:
     Octree(const BoundingBox& boundary, int capacity);
     ~Octree() = default; 
 
-    bool insert(const OctreePoint& point);
-	bool remove(const OctreePoint& point);
-	bool remove(unsigned short entityID);
+    bool insert(const OctreePoint& point) const;
+	bool remove(const OctreePoint& point) const;
+	bool remove(unsigned short entityID) const;
     std::vector<OctreePoint> queryRange(const BoundingBox& range) const;
 
 private:

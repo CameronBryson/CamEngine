@@ -1,7 +1,6 @@
 #include "Model.hpp"
 #include "Mesh.hpp"
 #include "GraphicsManager.hpp"
-#include "ShaderProgram.hpp"
 Model::Model(const std::vector <std::string>& meshes)
 {
 	for( const auto& mesh_name : meshes )
@@ -9,14 +8,14 @@ Model::Model(const std::vector <std::string>& meshes)
 		addMesh(mesh_name);
 	}
 }
-void Model::draw(ShaderProgram& shader, GraphicsManager& graphics_manager)
+void Model::draw(const ShaderProgram& shader, GraphicsManager& graphicsManager) const
 {
 	for( const auto& mesh : meshes )
 	{
-		graphics_manager.getMesh(mesh).draw(shader, graphics_manager);
+		graphicsManager.getMesh(mesh).draw(shader, graphicsManager);
 	}
 }
-void Model::addMesh(const std::string& mesh_name)
+void Model::addMesh(const std::string& meshName)
 {
-	meshes.push_back(mesh_name);
+	meshes.push_back(meshName);
 }

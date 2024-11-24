@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "OpenGLUtil.hpp"
+#include "Engine/EngineUtil.hpp"
 
 ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
 {

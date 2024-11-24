@@ -1,4 +1,6 @@
 #include "Material.hpp"
+
+#include "OpenGLUtil.hpp"
 #include "Texture.hpp"
 #include "ShaderProgram.hpp"
 Material::Material(glm::vec3 Ka, glm::vec3 Kd, glm::vec3 Ks, float Ns, float Ni, float d, int illum, const std::string& map_Ka_path, const std::string& map_Kd_path,

@@ -3,9 +3,18 @@
 
 CollisionManager::CollisionManager()
 {
-	EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::Detected, std::bind(&CollisionManager::handleCollisionDetectedEvent, this, std::placeholders::_1));
-	EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::NotDetected, std::bind(&CollisionManager::handleCollisionNotDetectedEvent, this, std::placeholders::_1));
-	EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::ProcessCollisions, std::bind(&CollisionManager::processCollisionResolutions, this));
+    EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::Detected, [this](const Event<CollisionEvents>& event)
+        {
+            handleCollisionDetectedEvent(event);
+        });
+    EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::NotDetected, [this](const Event<CollisionEvents>& event)
+        {
+            handleCollisionNotDetectedEvent(event);
+        });
+    EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::ProcessCollisions, [this](const Event<CollisionEvents>& event)
+        {
+            processCollisionResolutions();
+        });
 }
 
 CollisionManager::~CollisionManager()
@@ -16,29 +25,29 @@ CollisionManager::~CollisionManager()
 
 void CollisionManager::handleCollisionDetectedEvent(const Event<CollisionEvents>& event)
 {
-    auto new_event = event.ToType<CollisionDetectedEvent>();
-    auto pair = std::make_pair(new_event.id1, new_event.id2);
+    const auto& newEvent = event.ToType<CollisionDetectedEvent>();
+    auto pair = std::make_pair(newEvent.id1, newEvent.id2);
     if (!mCollisionMap.contains(pair))
     {
         //printf("Collision Enter\n");
-        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionEnterEvent(new_event.id1, new_event.id2));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionEnterEvent(newEvent.id1, newEvent.id2));
     }
     else
     {
         //printf("Collision Stay\n");
-        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionStayEvent(new_event.id1, new_event.id2));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionStayEvent(newEvent.id1, newEvent.id2));
     }
-    mCollisionMap[pair] = std::make_unique<CollisionManifold>(new_event.manifold);
+    mCollisionMap[pair] = std::make_unique<CollisionManifold>(newEvent.manifold);
 }
 
 void CollisionManager::handleCollisionNotDetectedEvent(const Event<CollisionEvents>& event)
 {
-    auto new_event = event.ToType<CollisionNotDetectedEvent>();
-    auto pair = std::make_pair(new_event.id1, new_event.id2);
+    const auto& newEvent = event.ToType<CollisionNotDetectedEvent>();
+    auto pair = std::make_pair(newEvent.id1, newEvent.id2);
     if (mCollisionMap.contains(pair))
     {
         //printf("Collision Exit\n");
-        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionExitEvent(new_event.id1, new_event.id2));
+        EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionExitEvent(newEvent.id1, newEvent.id2));
         mCollisionMap.erase(pair);
     }
 }

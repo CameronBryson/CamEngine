@@ -1,3 +1,8 @@
+#pragma once
+
+#include <cassert>
+#include "Commands.hpp"
+#include "SparseSet.hpp"
 template <typename T>
 bool Registry::hasSparseSet() const
 {

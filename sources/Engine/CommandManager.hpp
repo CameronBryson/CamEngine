@@ -2,7 +2,6 @@
 #include <memory>
 #include <queue>
 #include "CommandEvents.hpp"
-class Registry;
 
 class CommandManager {
 public:
