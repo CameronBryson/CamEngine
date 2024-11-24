@@ -1,7 +1,6 @@
 #pragma once
-#include "GameSettings.hpp"
 #include "ISparseSet.hpp"
-#include "ComponentEvents.hpp"
+#include "GameSettings.hpp"
 #include "EventHandler.hpp"
 #include <algorithm>
 #include <cassert>

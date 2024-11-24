@@ -18,7 +18,7 @@ public:
 	inline const T GetType() const { return m_Type; }
 
 	template<typename EventType>
-	inline EventType ToType() const
+	inline const EventType& ToType() const
 	{
 		return static_cast<const EventType&>(*this);
 	}

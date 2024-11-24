@@ -6,7 +6,7 @@ class CollisionManifold
 {
 public:
   CollisionManifold(glm::vec3 normal, float penetration_depth, CTransform& transform1, CTransform& transform2, CDynamicBody* dynamic_body1,
-      CDynamicBody* dynamic_body2);
+	  CDynamicBody* dynamic_body2);
   ~CollisionManifold() = default;
 
   void resolveCollision() const;

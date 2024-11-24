@@ -3,25 +3,27 @@
 
 #include "Event.hpp"
 #include "CollisionEvents.hpp"
-#include "RegistryEvents.hpp"
 #include "FactoryEvents.hpp"
 #include "HealthEvents.hpp"
 #include "InputEvents.hpp"
 #include "ScriptEvents.hpp"
 #include "ComponentEvents.hpp"
+#include "CommandEvents.hpp"
 
-class EventHandler {
+class EventHandler
+{
 public:
-    EventHandler() : collisionDispatcher(){}
+    EventHandler() : collisionDispatcher() {}
     static EventHandler* GetInstance();
-        EventDispatcher<CollisionEvents> collisionDispatcher;
-        EventDispatcher<RegistryEvents> registryDispatcher;
-        EventDispatcher<FactoryEvents> factoryDispatcher;
-        EventDispatcher<InputEvents> inputDispatcher;
-        EventDispatcher<HealthEvents> healthDispatcher;
-	    EventDispatcher<ScriptEvents> scriptDispatcher;
-		template<typename T>
-		static EventDispatcher<ComponentEvents>& GetComponentDispatcher();
+    EventDispatcher<CollisionEvents> collisionDispatcher;
+    EventDispatcher<FactoryEvents> factoryDispatcher;
+    EventDispatcher<InputEvents> inputDispatcher;
+    EventDispatcher<HealthEvents> healthDispatcher;
+    EventDispatcher<ScriptEvents> scriptDispatcher;
+    EventDispatcher<CommandEvents> commandDispatcher;
+    template<typename T>
+    static EventDispatcher<ComponentEvents>& GetComponentDispatcher();
+
 
 private:
     static std::unique_ptr<EventHandler> s_Instance;

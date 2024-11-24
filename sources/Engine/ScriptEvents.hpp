@@ -1,5 +1,6 @@
 #pragma once
 #include "Event.hpp"
+
 enum class ScriptEvents
 {
     Init,

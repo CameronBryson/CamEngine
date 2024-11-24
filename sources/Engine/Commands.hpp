@@ -1,19 +1,12 @@
 #pragma once
+#include "ICommand.hpp"
 #include "SparseSet.hpp"
-
 #include <deque>
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
 #include <tuple>
 #include "glm/glm.hpp"
-
-class ICommand
-{
-public:
-    virtual ~ICommand() = default;
-    virtual void execute() = 0;
-};
 
 template <typename T, typename... Args>
 class AddComponentCommand final : public ICommand
@@ -46,7 +39,7 @@ public:
 
     void execute() override
     {
-        mSparseSet.remove_item(mID);
+		mSparseSet.removeItem(mID);
     }
 
 private:

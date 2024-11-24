@@ -4,6 +4,7 @@ enum class InputEvents
 {
     KeyPress,
     KeyRelease,
+    ResetKeyStates
     //KeyStart,
     //KeyHold,
     //KeyEnd
@@ -14,11 +15,16 @@ public:
     explicit KeyPressEvent(int key) : Event<InputEvents>(InputEvents::KeyPress, "KeyPress"), key(key) {};
     int key;
 };
-class KeyRelease final : public Event<InputEvents>
+class KeyReleaseEvent final : public Event<InputEvents>
 {
 public:
-    explicit KeyRelease(int key) : Event<InputEvents>(InputEvents::KeyRelease, "KeyRelease"), key(key) {};
+    explicit KeyReleaseEvent(int key) : Event<InputEvents>(InputEvents::KeyRelease, "KeyRelease"), key(key) {};
     int key;
+};
+class ResetKeyStatesEvent final : public Event<InputEvents>
+{
+public:
+    explicit ResetKeyStatesEvent() : Event<InputEvents>(InputEvents::ResetKeyStates, "ResetKeyStates") {};
 };
 // class KeyStartEvent final : public Event<InputEvents>
 // {

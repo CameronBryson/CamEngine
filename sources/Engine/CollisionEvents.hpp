@@ -1,5 +1,5 @@
 #pragma once
-#include "Collision.hpp"
+#include "CollisionManifold.hpp"
 #include "Event.hpp"
 enum class CollisionEvents
 {
@@ -7,7 +7,8 @@ enum class CollisionEvents
     NotDetected,
     Enter,
     Stay,
-    Exit
+    Exit,
+	ProcessCollisions
 };
 class CollisionDetectedEvent final : public Event<CollisionEvents>
 {
@@ -45,4 +46,9 @@ public:
     explicit CollisionExitEvent(unsigned short id1, unsigned short id2) : Event<CollisionEvents>(CollisionEvents::Exit, "CollisionExit"), id1(id1),id2(id2) {};
     unsigned short id1;
     unsigned short id2;
+};
+class ProcessCollisionEvent final : public Event<CollisionEvents>
+{
+public:
+	explicit ProcessCollisionEvent() : Event<CollisionEvents>(CollisionEvents::ProcessCollisions, "ProcessCollisions") {};
 };

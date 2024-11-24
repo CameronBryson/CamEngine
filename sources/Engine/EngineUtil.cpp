@@ -13,7 +13,7 @@ void engine_util::keyCallback(GLFWwindow* window, int key, int scancode, int act
     }
     if( action == GLFW_RELEASE )
     {
-	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyRelease(key));
+	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyReleaseEvent(key));
     }
 }
 void engine_util::mouseKeyCallback(GLFWwindow* window, int button, int action, int mods)
@@ -24,7 +24,7 @@ void engine_util::mouseKeyCallback(GLFWwindow* window, int button, int action, i
     }
     if( action == GLFW_RELEASE )
     {
-	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyRelease(button));
+	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyReleaseEvent(button));
     }
 }
 bool engine_util::isKeyReleased(int key)

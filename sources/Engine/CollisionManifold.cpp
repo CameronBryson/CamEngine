@@ -1,4 +1,4 @@
-#include "Collision.hpp"
+#include "CollisionManifold.hpp"
 CollisionManifold::CollisionManifold(const glm::vec3 normal, const float penetration_depth, CTransform& transform1, CTransform& transform2,
     CDynamicBody* dynamic_body1, CDynamicBody* dynamic_body2)
     : penetrationDepth(penetration_depth),

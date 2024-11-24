@@ -55,7 +55,8 @@ void PlayScene::init()
     auto skybox = mFactory.createSkybox(mRegistry, glm::vec3{0,0,0}, 10);
     mFactory.createDirectionalLight(mRegistry,glm::vec3{0,-0.2,-1.0}, glm::vec3{0.6,0.6,0.6}, glm::vec3{0.5f,0.5f,0.5f}, glm::vec3{0.2,0.2,0.2});
 
-    mRegistry.processCommands();
+	EventHandler::GetInstance()->commandDispatcher.SendEvent(ProcessCommandEvent());
+    //mRegistry.processCommands();
     mCamera.camera_follow_target_ = &mRegistry.getComponent<CTransform>(player);
     mCamera.skybox_tranform = &mRegistry.getComponent<CTransform>(skybox);
 
@@ -66,7 +67,8 @@ void PlayScene::init()
 void PlayScene::update(const float dt)
 {
     Timer update_timer(Stats::stat_type::UPDATE);
-    mRegistry.processCollisionResolutions();
+	EventHandler::GetInstance()->collisionDispatcher.SendEvent(ProcessCollisionEvent());
+    //mRegistry.processCollisionResolutions();
     mPhysicsSystem.update(mRegistry, dt);
     EventHandler::GetInstance()->scriptDispatcher.SendEvent(UpdateEvent(dt));
 
@@ -75,8 +77,10 @@ void PlayScene::update(const float dt)
 void PlayScene::lateUpdate(const float dt)
 {
     mCollisionSystem.update(mRegistry);
-    mRegistry.processCommands();
-    mRegistry.resetKeyStates();
+	EventHandler::GetInstance()->commandDispatcher.SendEvent(ProcessCommandEvent());
+	EventHandler::GetInstance()->inputDispatcher.SendEvent(ResetKeyStatesEvent());
+    //mRegistry.processCommands();
+    //mRegistry.resetKeyStates();
     EventHandler::GetInstance()->scriptDispatcher.SendEvent(LateUpdateEvent(dt));
 }
 

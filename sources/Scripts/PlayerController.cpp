@@ -15,12 +15,17 @@ void PlayerController::Update(float deltaTime)
 	auto & players = m_Registry->getSparseSet<Player>();
 	auto & transforms = m_Registry->getSparseSet<CTransform>();
 
-	bool w = m_Registry->getKeyAction('W') == KeyAction::Start || m_Registry->getKeyAction('W') == KeyAction::Hold;
+	/*bool w = m_Registry->getKeyAction('W') == KeyAction::Start || m_Registry->getKeyAction('W') == KeyAction::Hold;
 	bool a = m_Registry->getKeyAction('A') == KeyAction::Start || m_Registry->getKeyAction('A') == KeyAction::Hold;
 	bool s = m_Registry->getKeyAction('S') == KeyAction::Start || m_Registry->getKeyAction('S') == KeyAction::Hold;
-	bool d = m_Registry->getKeyAction('D') == KeyAction::Start || m_Registry->getKeyAction('D') == KeyAction::Hold;
+	bool d = m_Registry->getKeyAction('D') == KeyAction::Start || m_Registry->getKeyAction('D') == KeyAction::Hold;*/
+	bool w = false;
+	bool a = false;
+	bool s = false;
+	bool d = false;
 
-	bool left_click = m_Registry->getKeyAction(GLFW_MOUSE_BUTTON_LEFT) == KeyAction::Start;
+	bool left_click= false;
+	//bool left_click = m_Registry->getKeyAction(GLFW_MOUSE_BUTTON_LEFT) == KeyAction::Start;
 	bool right_click = engine_util::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT);
 
 	auto& player = players.get_item(m_OwnerID);

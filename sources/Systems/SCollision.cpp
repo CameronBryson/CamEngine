@@ -1,6 +1,6 @@
 #include "SCollision.hpp"
 
-#include "../Engine/Collision.hpp"
+#include "../Engine/CollisionManifold.hpp"
 #include "Engine/Registry.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <iostream>

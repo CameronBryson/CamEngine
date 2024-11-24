@@ -6,6 +6,9 @@
 #include "Components.hpp"
 #include "Engine/CollisionEvents.hpp"
 #include "Engine/EventHandler.hpp"
+#include "Engine/CommandManager.hpp"
+#include "Engine/CollisionManager.hpp"
+#include "Engine/InputManager.hpp"
 #include "Engine/Factory.hpp"
 #include "Engine/Registry.hpp"
 #include "Systems/Systems.hpp"
@@ -41,4 +44,7 @@ private:
     SCollision mCollisionSystem;
     SPhysics mPhysicsSystem;
     SRender mRenderSystem;
+	CommandManager mCommandManager;
+	CollisionManager mCollisionManager;
+	InputManager mInputManager;
 };
