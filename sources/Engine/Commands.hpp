@@ -1,6 +1,6 @@
 #pragma once
-#include "ICommand.hpp"
-#include "SparseSet.hpp"
+#include "Engine/ICommand.hpp"
+#include "Engine/Storage/SparseSet.hpp"
 #include <deque>
 #include <memory>
 #include <typeindex>

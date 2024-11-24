@@ -57,7 +57,7 @@ set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h)
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/*.cpp")
 
 # Declaring our executable
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${GLAD_SOURCES} ${STB_IMAGE_SOURCES} "sources/Engine/BaseScene.cpp")
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${GLAD_SOURCES} ${STB_IMAGE_SOURCES})
 
 # Link libraries
 set(OpenGL_GL_PREFERENCE GLVND)
