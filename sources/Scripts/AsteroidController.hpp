@@ -8,5 +8,5 @@ class AsteroidController : public ScriptBase
 	printf("AsteroidController created\n");
     }
   private:
-    void Update(float deltaTime) override;
+    void update(float deltaTime) override;
 };

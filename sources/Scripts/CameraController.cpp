@@ -1,9 +1,10 @@
 #include "CameraController.hpp"
 #include "Engine/EngineUtil.hpp"
-void CameraController::Update(float deltaTime)
+#include "Engine/BaseScene.hpp"
+void CameraController::update(float deltaTime)
 {
 	//eventually change to lerp
-	Camera* m_Camera = &m_Scene->mMainCamera;
+	Camera* m_Camera = &GetScene().mMainCamera;
 	glm::vec3 camera_position = m_Camera->camera_follow_target_ ? m_Camera->camera_follow_target_->position + m_Camera->follow_offset : m_Camera->Position;
 	const glm::vec3 forward = m_Camera->Front;
 	const glm::vec3 right = m_Camera->Right;

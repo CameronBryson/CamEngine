@@ -1,11 +1,12 @@
 #include "EnemyShipController.hpp"
 #include "Scripts/EnemyShip.hpp"
-void EnemyShipController::Update(float deltaTime)
+#include "Engine/BaseScene.hpp"
+void EnemyShipController::update(float deltaTime)
 {
-    auto & enemies = m_Scene->getSparseSet<EnemyShip>();
-    auto & transforms = m_Scene->getSparseSet<CTransform>();
-    auto & dynamic_bodies = m_Scene->getSparseSet<CDynamicBody>();
-    auto ids = m_Scene->getEntityIDs<EnemyShip, CTransform, CDynamicBody>();
+    auto & enemies = GetScene().getSparseSet<EnemyShip>();
+    auto & transforms = GetScene().getSparseSet<CTransform>();
+    auto & dynamic_bodies = GetScene().getSparseSet<CDynamicBody>();
+    auto ids = GetScene().getEntityIDs<EnemyShip, CTransform, CDynamicBody>();
     for( unsigned short id : ids )
     {
 	auto & enemy = enemies.get_item(id);

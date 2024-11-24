@@ -7,7 +7,7 @@ class CameraController : public ScriptBase
 	{
 	}
   private:
-	void Update(float deltaTime) override;
+	void update(float deltaTime) override;
 	float camera_movespeed = 100.0f;
 	float camera_rotationspeed = 500.0f;
 };

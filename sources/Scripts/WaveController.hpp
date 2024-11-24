@@ -7,7 +7,7 @@ class WaveController : public ScriptBase
 	{
 	}
   private:
-	void Update(float deltaTime) override;
+	void update(float deltaTime) override;
 	float time_since_enemy_spawn = 0.0f;
 	float enemy_spawn_cooldown = 3.0f;
 

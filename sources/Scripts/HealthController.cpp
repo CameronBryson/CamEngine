@@ -1,14 +1,15 @@
 #include "HealthController.hpp"
 #include "Scripts/Health.hpp"
-void HealthController::Update(float deltaTime)
+#include "Engine/BaseScene.hpp"
+void HealthController::update(float deltaTime)
 {
-	auto ids = m_Scene->getEntityIDs<Health>();
+	auto ids = GetScene().getEntityIDs<Health>();
 	for( auto id : ids )
 	{
-		auto & health = m_Scene->getComponent<Health>(id);
+		auto & health = GetScene().getComponent<Health>(id);
 		if( health.health <= 0 )
 		{
-		 m_Scene->deleteEntity(id);
+		 GetScene().deleteEntity(id);
 		}
 	}
 }

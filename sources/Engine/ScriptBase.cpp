@@ -1,89 +1,89 @@
 #include "ScriptBase.hpp"
-
+#include "BaseScene.hpp"
 
 ScriptBase::ScriptBase(BaseScene* scene, unsigned owner_ID)
-	: m_Scene(scene), m_OwnerID(owner_ID)
+	: mScene(scene), mOwnerId(owner_ID)
 {
-	BindEvents();
+	bindEvents();
 }
 
 ScriptBase::~ScriptBase()
 {
-	UnBindEvents();
+	unBindEvents();
 }
 
-void ScriptBase::BindEvents()
+void ScriptBase::bindEvents()
 {
 
-	EventHandler::GetInstance()->scriptDispatcher.AddListener(ScriptEvents::Init, [this](const Event<ScriptEvents>& event) { this->Init(); });
-	EventHandler::GetInstance()->scriptDispatcher.AddListener(ScriptEvents::LateInit, [this](const Event<ScriptEvents>& event) { this->LateInit(); });
+	EventHandler::GetInstance()->scriptDispatcher.AddListener(ScriptEvents::Init, [this](const Event<ScriptEvents>& event) { this->init(); });
+	EventHandler::GetInstance()->scriptDispatcher.AddListener(ScriptEvents::LateInit, [this](const Event<ScriptEvents>& event) { this->lateInit(); });
 
 	EventHandler::GetInstance()->scriptDispatcher.AddListener(ScriptEvents::Update,
 	[this](const Event<ScriptEvents>& event)
 	{
 		auto event_data = static_cast<const UpdateEvent&>(event);
-		this->Update(event_data.deltaTime);
+		this->update(event_data.deltaTime);
 	});
 	EventHandler::GetInstance()->scriptDispatcher.AddListener(ScriptEvents::LateUpdate,
 	[this](const Event<ScriptEvents>& event)
 	{
 		auto event_data = static_cast<const LateUpdateEvent&>(event);
-		this->LateUpdate(event_data.deltaTime);
+		this->lateUpdate(event_data.deltaTime);
 	});
-	EventHandler::GetInstance()->scriptDispatcher.AddListener(ScriptEvents::Shutdown, [this](const Event<ScriptEvents>& event) { this->Shutdown(); });
+	EventHandler::GetInstance()->scriptDispatcher.AddListener(ScriptEvents::Shutdown, [this](const Event<ScriptEvents>& event) { this->shutdown(); });
 }
 
-void ScriptBase::UnBindEvents()
+void ScriptBase::unBindEvents()
 {
 }
 
-void ScriptBase::OnCollisionEnterEvent(const Event<CollisionEvents>& event)
+void ScriptBase::onCollisionEnterEvent(const Event<CollisionEvents>& event)
 {
 	auto event_data = event.ToType<CollisionEnterEvent>();
-	if( event_data.id1 != m_OwnerID && event_data.id2 != m_OwnerID )
+	if( event_data.id1 != mOwnerId && event_data.id2 != mOwnerId )
 	{
 		return;
 	}
-	if( event_data.id1 == m_OwnerID )
+	if( event_data.id1 == mOwnerId )
 	{
-		OnCollisionEnter(event_data.id2);
+		onCollisionEnter(event_data.id2);
 	}
 	else
 	{
-		OnCollisionEnter(event_data.id1);
+		onCollisionEnter(event_data.id1);
 	}
 }
-void ScriptBase::OnCollisionStayEvent(const Event<CollisionEvents>& event)
+void ScriptBase::onCollisionStayEvent(const Event<CollisionEvents>& event)
 {
 	auto event_data = event.ToType<CollisionStayEvent>();
-	if( event_data.id1 != m_OwnerID && event_data.id2 != m_OwnerID )
+	if( event_data.id1 != mOwnerId && event_data.id2 != mOwnerId )
 	{
 		return;
 	}
-	if( event_data.id1 == m_OwnerID )
+	if( event_data.id1 == mOwnerId )
 	{
-		OnCollisionStay(event_data.id2);
+		onCollisionStay(event_data.id2);
 	}
 	else
 	{
-		OnCollisionStay(event_data.id1);
+		onCollisionStay(event_data.id1);
 	}
 }
 
-void ScriptBase::OnCollisionExitEvent(const Event<CollisionEvents>& event)
+void ScriptBase::onCollisionExitEvent(const Event<CollisionEvents>& event)
 {
 	auto event_data = event.ToType<CollisionExitEvent>();
-	if( event_data.id1 != m_OwnerID && event_data.id2 != m_OwnerID )
+	if( event_data.id1 != mOwnerId && event_data.id2 != mOwnerId )
 	{
 		return;
 	}
-	if( event_data.id1 == m_OwnerID )
+	if( event_data.id1 == mOwnerId )
 	{
-		OnCollisionExit(event_data.id2);
+		onCollisionExit(event_data.id2);
 	}
 	else
 	{
-		OnCollisionExit(event_data.id1);
+		onCollisionExit(event_data.id1);
 	}
 }
 

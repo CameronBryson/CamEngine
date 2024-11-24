@@ -1,6 +1,8 @@
 #include "WaveController.hpp"
 
-void WaveController::Update(float deltaTime)
+#include "GameSettings.hpp"
+
+void WaveController::update(float deltaTime)
 {
 
     time_since_enemy_spawn += deltaTime;

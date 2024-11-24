@@ -7,5 +7,5 @@ class EnemyShipController : public ScriptBase
     {
     }
   private:
-    void Update(float deltaTime) override;
+    void update(float deltaTime) override;
 };

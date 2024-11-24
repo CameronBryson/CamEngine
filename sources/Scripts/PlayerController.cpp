@@ -8,23 +8,25 @@
 #include "glm/geometric.hpp"
 #include "glm/matrix.hpp"
 #include "Scripts/Player.hpp"
-void PlayerController::Update(float deltaTime)
+#include "Engine/BaseScene.hpp"
+void PlayerController::update(float deltaTime)
 {
-	Camera* m_Camera = &m_Scene->mMainCamera;
+	
+	Camera* m_Camera = &GetScene().mMainCamera;
 	//printf("PlayerController::Update\n");
-	auto & dynamic_bodies = m_Scene->getSparseSet<CDynamicBody>();
-	auto & players = m_Scene->getSparseSet<Player>();
-	auto & transforms = m_Scene->getSparseSet<CTransform>();
+	auto & dynamic_bodies = GetScene().getSparseSet<CDynamicBody>();
+	auto & players = GetScene().getSparseSet<Player>();
+	auto & transforms = GetScene().getSparseSet<CTransform>();
 
-	bool w = m_Scene->getKeyAction('W') == KeyAction::Start || m_Scene->getKeyAction('W') == KeyAction::Hold;
-	bool a = m_Scene->getKeyAction('A') == KeyAction::Start || m_Scene->getKeyAction('A') == KeyAction::Hold;
-	bool s = m_Scene->getKeyAction('S') == KeyAction::Start || m_Scene->getKeyAction('S') == KeyAction::Hold;
-	bool d = m_Scene->getKeyAction('D') == KeyAction::Start || m_Scene->getKeyAction('D') == KeyAction::Hold;
-	bool left_click = m_Scene->getKeyAction(GLFW_MOUSE_BUTTON_LEFT) == KeyAction::Start;
+	bool w = GetScene().getKeyAction('W') == KeyAction::Start || GetScene().getKeyAction('W') == KeyAction::Hold;
+	bool a = GetScene().getKeyAction('A') == KeyAction::Start || GetScene().getKeyAction('A') == KeyAction::Hold;
+	bool s = GetScene().getKeyAction('S') == KeyAction::Start || GetScene().getKeyAction('S') == KeyAction::Hold;
+	bool d = GetScene().getKeyAction('D') == KeyAction::Start || GetScene().getKeyAction('D') == KeyAction::Hold;
+	bool left_click = GetScene().getKeyAction(GLFW_MOUSE_BUTTON_LEFT) == KeyAction::Start;
 	bool right_click = engine_util::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT);
 
-	auto& player = players.get_item(m_OwnerID);
-	auto& dynamic_body = dynamic_bodies.get_item(m_OwnerID);
+	auto& player = players.get_item(GetOwnerID());
+	auto& dynamic_body = dynamic_bodies.get_item(GetOwnerID());
 
 	if( w )
 	{
@@ -53,7 +55,7 @@ void PlayerController::Update(float deltaTime)
 		glm::vec2 window_size = OpenGlUtil::getWindowSize();
 		float x = (mouse_pos.x / window_size.x) * 2.0f - 1.0f;
 		float y = -(mouse_pos.y / window_size.y) * 2.0 + 1.0f;
-		glm::mat4 invVP = glm::inverse(m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix() * glm::translate(glm::mat4(1), transforms.get_item(m_OwnerID).position));
+		glm::mat4 invVP = glm::inverse(m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix() * glm::translate(glm::mat4(1), transforms.get_item(GetOwnerID()).position));
 		glm::vec4 screenPos = { x, y, 1, 1 };
 		glm::vec4 worldPos = (invVP * screenPos);
 
@@ -62,6 +64,6 @@ void PlayerController::Update(float deltaTime)
 
 
 
-		EventHandler::GetInstance()->factoryDispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(m_OwnerID).position, direction, 100.0f, settings::player_bitmask));
+		EventHandler::GetInstance()->factoryDispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(GetOwnerID()).position, direction, 100.0f, settings::player_bitmask));
 	}
 }

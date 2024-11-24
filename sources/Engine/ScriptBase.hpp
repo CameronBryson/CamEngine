@@ -1,7 +1,7 @@
 #pragma once
 #include "EventHandler.hpp"
 #include "ScriptEvents.hpp"
-#include "BaseScene.hpp"
+class BaseScene;
 
 class ScriptBase
 {
@@ -9,37 +9,40 @@ class ScriptBase
 	ScriptBase(BaseScene* scene, unsigned owner_ID);
 	~ScriptBase();
   private:
-	void BindEvents();
-	void UnBindEvents();
-	void OnCollisionEnterEvent(const Event<CollisionEvents>& event);
-	void OnCollisionStayEvent(const Event<CollisionEvents>& event);
-	void OnCollisionExitEvent(const Event<CollisionEvents>& event);
+	void bindEvents();
+	void unBindEvents();
+	void onCollisionEnterEvent(const Event<CollisionEvents>& event);
+	void onCollisionStayEvent(const Event<CollisionEvents>& event);
+	void onCollisionExitEvent(const Event<CollisionEvents>& event);
   protected:
-	BaseScene* m_Scene;
-	unsigned m_OwnerID;
+	BaseScene& GetScene() const { return *mScene; }
+	unsigned short GetOwnerID() const { return mOwnerId; }
+private:
+	BaseScene* mScene;
+	unsigned short mOwnerId;
   private:
-	virtual void Init()
+	virtual void init()
 	{
 	}
-	virtual void LateInit()
+	virtual void lateInit()
 	{
 	}
-	virtual void Update(float deltaTime)
+	virtual void update(float deltaTime)
 	{
 	}
-	virtual void LateUpdate(float deltaTime)
+	virtual void lateUpdate(float deltaTime)
 	{
 	}
-	virtual void Shutdown()
+	virtual void shutdown()
 	{
 	}
-	virtual void OnCollisionEnter(unsigned otherID)
+	virtual void onCollisionEnter(unsigned otherID)
 	{
 	}
-	virtual void OnCollisionStay(unsigned otherID)
+	virtual void onCollisionStay(unsigned otherID)
 	{
 	}
-	virtual void OnCollisionExit(unsigned otherID)
+	virtual void onCollisionExit(unsigned otherID)
 	{
 	}
 };

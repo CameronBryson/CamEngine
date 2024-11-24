@@ -10,7 +10,7 @@ public:
     }
   private:
     // Inherited via ScriptBase
-    void Update(float deltaTime) override;
+    void update(float deltaTime) override;
 private:
     //should probably be in player class
     float movespeed = 10.0f;

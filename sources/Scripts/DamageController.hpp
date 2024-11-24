@@ -1,5 +1,5 @@
 #pragma once
-#include "ScriptBase.hpp"
+#include "Engine/ScriptBase.hpp"
 class DamageController : public ScriptBase
 {
   public:
@@ -7,5 +7,5 @@ class DamageController : public ScriptBase
 	{
 	}
   private:
-	void Update(float deltaTime) override;
+	void update(float deltaTime) override;
 };

@@ -1,11 +1,12 @@
 #include "AsteroidController.hpp"
 #include "Scripts/Asteroid.hpp"
-void AsteroidController::Update(float deltaTime)
+#include "Engine/BaseScene.hpp"
+void AsteroidController::update(float deltaTime)
 {
-	auto& asteroids = m_Scene->getSparseSet<Asteroid>();
-	auto& transforms = m_Scene->getSparseSet<CTransform>();
-	auto& dynamic_bodies = m_Scene->getSparseSet<CDynamicBody>();
-	auto ids = m_Scene->getEntityIDs<Asteroid, CTransform, CDynamicBody>();
+	auto& asteroids = GetScene().getSparseSet<Asteroid>();
+	auto& transforms = GetScene().getSparseSet<CTransform>();
+	auto& dynamic_bodies = GetScene().getSparseSet<CDynamicBody>();
+	auto ids = GetScene().getEntityIDs<Asteroid, CTransform, CDynamicBody>();
 	for( auto id : ids )
 	{
 		auto& asteroid = asteroids.get_item(id);

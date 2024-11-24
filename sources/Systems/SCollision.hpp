@@ -31,6 +31,7 @@ public:
 	void OnComponentAdded(const Event<ComponentEvents>& event);
 	void OnComponentRemoved(const Event<ComponentEvents>& event);
 private:
+	//maybe move octree to collision manager
 	BoundingBox mSceneBounds;
 	Octree mOctree;
 	BaseScene* mScene;

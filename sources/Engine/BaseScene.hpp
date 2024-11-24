@@ -55,11 +55,13 @@ private:
 public:
 	Registry mRegistry;
 
+	//hold data
 	GraphicsManager mGraphicsManager;
 	CommandManager mCommandManager;
 	CollisionManager mCollisionManager;
 	InputManager mInputManager;
 
+	//dont hold data or very little data
 	SCollision mCollisionSystem;
 	SPhysics mPhysicsSystem;
 	SRender mRenderSystem;
