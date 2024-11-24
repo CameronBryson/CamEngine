@@ -65,3 +65,12 @@ void PlayerController::update(float deltaTime)
 		EventHandler::GetInstance()->factoryDispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(GetOwnerID()).position, direction, 100.0f, settings::player_bitmask));
 	}
 }
+
+void PlayerController::onCollisionEnter(unsigned short firstID, unsigned short secondID)
+{
+
+	if (firstID == GetOwnerID() || secondID == GetOwnerID())
+	{
+		printf("Player collided\n");
+	}
+}

@@ -38,13 +38,13 @@ private:
 	virtual void shutdown()
 	{
 	}
-	virtual void onCollisionEnter(unsigned short otherID)
+	virtual void onCollisionEnter(unsigned short firstID, unsigned short secondID)
 	{
 	}
-	virtual void onCollisionStay(unsigned short otherID)
+	virtual void onCollisionStay(unsigned short firstID, unsigned short secondID)
 	{
 	}
-	virtual void onCollisionExit(unsigned short otherID)
+	virtual void onCollisionExit(unsigned short firstID, unsigned short secondID)
 	{
 	}
 };

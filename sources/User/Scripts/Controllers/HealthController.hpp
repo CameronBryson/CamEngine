@@ -8,5 +8,6 @@ class HealthController : public ScriptBase
 	{
 	}
   private:
+	void onCollisionEnter(unsigned short firstID, unsigned short secondID) override;
 	void update(float deltaTime) override;
 };

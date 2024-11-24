@@ -2,6 +2,7 @@
 
 #include "Engine/Components.hpp"
 #include "Engine/Util/EngineUtil.hpp"
+#include "Engine/Util/platform.hpp"
 
 #include "Engine/Util/OpenGLUtil.hpp"
 

@@ -59,54 +59,67 @@ void ScriptBase::bindEvents()
 void ScriptBase::unBindEvents()
 {
 }
-
 void ScriptBase::onCollisionEnterEvent(const Event<CollisionEvents>& event)
 {
 	const auto& eventData = event.ToType<CollisionEnterEvent>();
-	if( eventData.id1 != mOwnerId && eventData.id2 != mOwnerId )
-	{
-		return;
-	}
-	if( eventData.id1 == mOwnerId )
-	{
-		onCollisionEnter(eventData.id2);
-	}
-	else
-	{
-		onCollisionEnter(eventData.id1);
-	}
+	onCollisionEnter(eventData.id1, eventData.id2);
 }
+//void ScriptBase::onCollisionEnterEvent(const Event<CollisionEvents>& event)
+//{
+//	const auto& eventData = event.ToType<CollisionEnterEvent>();
+//	if( eventData.id1 != mOwnerId && eventData.id2 != mOwnerId )
+//	{
+//		return;
+//	}
+//	if( eventData.id1 == mOwnerId )
+//	{
+//		onCollisionEnter(eventData.id2);
+//	}
+//	else
+//	{
+//		onCollisionEnter(eventData.id1);
+//	}
+//}
 void ScriptBase::onCollisionStayEvent(const Event<CollisionEvents>& event)
 {
 	const auto& eventData = event.ToType<CollisionStayEvent>();
-	if( eventData.id1 != mOwnerId && eventData.id2 != mOwnerId )
-	{
-		return;
-	}
-	if( eventData.id1 == mOwnerId )
-	{
-		onCollisionStay(eventData.id2);
-	}
-	else
-	{
-		onCollisionStay(eventData.id1);
-	}
+	onCollisionStay(eventData.id1, eventData.id2);
 }
-
+//void ScriptBase::onCollisionStayEvent(const Event<CollisionEvents>& event)
+//{
+//	const auto& eventData = event.ToType<CollisionStayEvent>();
+//	if( eventData.id1 != mOwnerId && eventData.id2 != mOwnerId )
+//	{
+//		return;
+//	}
+//	if( eventData.id1 == mOwnerId )
+//	{
+//		onCollisionStay(eventData.id2);
+//	}
+//	else
+//	{
+//		onCollisionStay(eventData.id1);
+//	}
+//}
 void ScriptBase::onCollisionExitEvent(const Event<CollisionEvents>& event)
 {
 	const auto& eventData = event.ToType<CollisionExitEvent>();
-	if( eventData.id1 != mOwnerId && eventData.id2 != mOwnerId )
-	{
-		return;
-	}
-	if( eventData.id1 == mOwnerId )
-	{
-		onCollisionExit(eventData.id2);
-	}
-	else
-	{
-		onCollisionExit(eventData.id1);
-	}
+	onCollisionExit(eventData.id1, eventData.id2);
 }
+//void ScriptBase::onCollisionExitEvent(const Event<CollisionEvents>& event)
+//{
+//	const auto& eventData = event.ToType<CollisionExitEvent>();
+//	if( eventData.id1 != mOwnerId && eventData.id2 != mOwnerId )
+//	{
+//		return;
+//	}
+//	if( eventData.id1 == mOwnerId )
+//	{
+//		onCollisionExit(eventData.id2);
+//	}
+//	else
+//	{
+//		onCollisionExit(eventData.id1);
+//	}
+//}
 

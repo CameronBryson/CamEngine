@@ -13,6 +13,7 @@ public:
   private:
 	// Inherited via ScriptBase
 	void update(float deltaTime) override;
+	void onCollisionEnter(unsigned short firstID, unsigned short secondID) override;
 private:
 	//should probably be in player class
 	float moveSpeed = 10.0f;
