@@ -40,6 +40,7 @@ public:
     std::vector<std::string> loadMtl(const std::string& file);
 
 private:
+    //if pointers easier to pass to new scene
     std::unordered_map<std::string, ShaderProgram> shader_map;
     std::unordered_map<std::string, Texture> texture_map;
     std::unordered_map<std::string, Mesh> mesh_map;

@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+
+#include "Engine/Audio/AudioListener.hpp"
 #include "Engine/Audio/AudioSource.hpp"
 class AudioManager
 {
@@ -18,4 +20,5 @@ public:
 private:
 	std::unordered_map<std::string, ALuint> mAudioBufferMap;
 	std::unordered_map<std::string, AudioSource> mAudioSourceMap;
+	AudioListener mAudioListener;
 };

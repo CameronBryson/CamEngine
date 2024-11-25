@@ -1,4 +1,5 @@
 #include "AudioSource.hpp"
+#include "Engine/Util/OpenALUtil.hpp"
 
 AudioSource::AudioSource()
 {
@@ -6,50 +7,42 @@ AudioSource::AudioSource()
 
 void AudioSource::play()
 {
+	OpenALUtil::playSoundSource(mSource);
 }
 
 void AudioSource::pause()
 {
+	OpenALUtil::pauseSoundSource(mSource);
 }
 
 void AudioSource::stop()
 {
+	OpenALUtil::stopSoundSource(mSource);
 }
 
-void AudioSource::resume()
+
+void AudioSource::updateSource()
 {
+	OpenALUtil::setSourceBuffer(mSource, mBuffer);
+	OpenALUtil::setSourcePitch(mSource, mPitch);
+	OpenALUtil::setSourceGain(mSource, mGain);
+	OpenALUtil::setSourceMinGain(mSource, mMinGain);
+	OpenALUtil::setSourceMaxGain(mSource, mMaxGain);
+	OpenALUtil::setSourceMaxDistance(mSource, mMaxDistance);
+	OpenALUtil::setSourceRolloffFactor(mSource, mRolloffFactor);
+	OpenALUtil::setSourcePosition(mSource, mPosition);
+	OpenALUtil::setSourceVelocity(mSource, mVelocity);
+	OpenALUtil::setSourceDirection(mSource, mDirection);
+	OpenALUtil::setSourceLoop(mSource, mLoop);
 }
 
-void AudioSource::setBuffer(const ALuint buffer)
-{
-}
-
-void AudioSource::setPosition(const glm::vec3& position)
-{
-}
-
-void AudioSource::setVelocity(const glm::vec3& velocity)
-{
-}
-
-void AudioSource::setPitch(float pitch)
-{
-}
-
-void AudioSource::setGain(float gain)
-{
-}
-
-void AudioSource::setLooping(bool loop)
-{
-}
 
 ALuint AudioSource::getBuffer() const
 {
-	return 1;
+	return mBuffer;
 }
 
 bool AudioSource::isPlaying() const
 {
-	return false;
+	return OpenALUtil::isBufferPlaying(mBuffer);
 }

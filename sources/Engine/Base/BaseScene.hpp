@@ -23,7 +23,9 @@ public:
 	virtual void update(float dt);
 	virtual void lateUpdate(float dt);
 	virtual void render();
+	virtual void lateRender();
 	virtual void shutdown();
+	virtual void lateShutdown();
 
 	unsigned short createEntity();
 

@@ -9,20 +9,24 @@ public:
 	void play();
 	void pause();
 	void stop();
-	void resume();
 
-	void setBuffer(const ALuint buffer);
-	void setPosition(const glm::vec3& position);
-	void setVelocity(const glm::vec3& velocity);
-	void setPitch(float pitch);
-	void setGain(float gain);
-	void setLooping(bool loop);
-
+	void updateSource();
 	ALuint getBuffer() const;
 	bool isPlaying() const;
 
 
 private:
+	ALuint mSource;
 	ALuint mBuffer;
+	float mPitch = 1.0f;
+	float mGain = 1.0f;
+	float mMinGain = 1.0f;
+	float mMaxGain = 1.0f;
+	float mMaxDistance = 1.0f;
+	float mRolloffFactor = 1.0f;
+	glm::vec3 mPosition;
+	glm::vec3 mVelocity;
+	glm::vec3 mDirection;
+	bool mLoop = false;
 	
 };

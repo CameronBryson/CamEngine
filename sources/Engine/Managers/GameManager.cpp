@@ -16,6 +16,7 @@ void GameManager::init()
 {
     OpenGlUtil::init();
     mCurrentScene->init();
+	mCurrentScene->lateInit();
 }
 
 void GameManager::update(float dt)
@@ -27,11 +28,13 @@ void GameManager::update(float dt)
 void GameManager::render()
 {
     mCurrentScene->render();
+	mCurrentScene->lateRender();
 }
 
 void GameManager::shutdown()
 {
     mCurrentScene->shutdown();
+	mCurrentScene->lateShutdown();
     glfwDestroyWindow(mGameWindow);
     glfwTerminate();
 }

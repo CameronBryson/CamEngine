@@ -75,6 +75,16 @@ void PlayScene::render()
 	BaseScene::render();
 }
 
+void PlayScene::lateRender()
+{
+	BaseScene::lateRender();
+}
+
+void PlayScene::lateShutdown()
+{
+	BaseScene::lateShutdown();
+}
+
 void PlayScene::shutdown()
 {
 	BaseScene::shutdown();

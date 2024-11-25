@@ -12,7 +12,9 @@ public:
     void update(float dt) override;
     void lateUpdate(float dt) override;
     void render() override;
+    void lateRender() override;
     void shutdown() override;
+    void lateShutdown() override;
 
 private:
     Factory mFactory;

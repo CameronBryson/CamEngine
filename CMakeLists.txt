@@ -65,8 +65,9 @@ set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(OpenAL CONFIG REQUIRED)
+find_package(Freetype REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw OpenAL::OpenAL)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw OpenAL::OpenAL Freetype::Freetype)
 
 # Add sanitizers
 #add_sanitizers(${PROJECT_NAME})

@@ -345,4 +345,15 @@ glm::vec2 OpenGlUtil::getMousePos(){
     return {x,y};
 }
 
+void OpenGlUtil::enableBlend()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void OpenGlUtil::disableBlend()
+{
+	glDisable(GL_BLEND);
+}
+
 

@@ -35,7 +35,16 @@ private:
 	virtual void lateUpdate(float deltaTime)
 	{
 	}
+	virtual void render()
+	{
+	}
+	virtual void lateRender()
+	{
+	}
 	virtual void shutdown()
+	{
+	}
+	virtual void lateShutdown()
 	{
 	}
 	virtual void onCollisionEnter(unsigned short firstID, unsigned short secondID)

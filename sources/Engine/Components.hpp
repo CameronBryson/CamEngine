@@ -101,3 +101,10 @@ struct CRepeatAcceleration
     glm::vec3 acceleration = {0, 0, 0};
     glm::vec3 angularAcceleration = {0, 0, 0};
 };
+struct CText
+{
+	CText(const std::string& text, const int font_size, const glm::vec3& color) : text(text), font_size(font_size), color(color) {}
+	std::string text;
+	int font_size;
+	glm::vec3 color;
+};

@@ -16,8 +16,8 @@ public:
 
   void setMaterial(const std::string& name);
 private:
-    unsigned int VAO = 0, VBO = 0, index_count;
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-    std::string material_name;
+	unsigned int VAO = 0, VBO = 0, index_count;
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	std::string material_name;
 };

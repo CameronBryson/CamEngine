@@ -217,4 +217,7 @@ void SRender::loadShaders() const
 	mScene->mGraphicsManager.loadShader(
 			"sources/Shaders/vertex.vs",
 			"sources/Shaders/2D_color.fs", "2D_color");
+	mScene->mGraphicsManager.loadShader(
+		"sources/Shaders/text.vs",
+		"sources/Shaders/text.fs", "text");
 }
