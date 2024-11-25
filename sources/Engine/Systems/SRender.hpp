@@ -3,7 +3,7 @@
 template<typename T>
 class SparseSet;
 class BaseScene;
-class ShaderProgram;
+class Shader;
 
 class SRender
 {
@@ -14,9 +14,9 @@ public:
     void shutdown();
 
 private:
-    void drawModels(SparseSet<CTransform>& transforms, const ShaderProgram& shader) const;
-    void drawColliders(SparseSet<CTransform>& transforms, const ShaderProgram& shader) const;
-    void drawUi(SparseSet<CTransform>& transforms, const ShaderProgram& shader) const;
+    void drawModels(SparseSet<CTransform>& transforms, const Shader& shader) const;
+    void drawColliders(SparseSet<CTransform>& transforms, const Shader& shader) const;
+    void drawUi(SparseSet<CTransform>& transforms, const Shader& shader) const;
     void loadShaders() const;
     BaseScene* mScene;
 };

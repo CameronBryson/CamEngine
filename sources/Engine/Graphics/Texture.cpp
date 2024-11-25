@@ -1,20 +1,9 @@
 #include "Texture.hpp" 
 
-#include "Engine/Util/OpenGLUtil.hpp"
+#include "Engine/Platform/OpenGL/OpenGLTexture.hpp"
 
-Texture::Texture(const std::string& file)
+
+std::shared_ptr<Texture> Texture::createTexture(const std::string& file)
 {
-    OpenGlUtil::createTexture(file, data, texture_id);
-}
-void Texture::bind() const
-{
-    OpenGlUtil::bindTexture(texture_id);
-}
-void Texture::unbind()
-{
-    OpenGlUtil::unbindTexture();
-}
-void Texture::deleteTexture() const
-{
-    OpenGlUtil::deleteTexture(texture_id);
+	return std::make_shared<OpenGLTexture>(file);
 }

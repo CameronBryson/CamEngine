@@ -1,5 +1,5 @@
 #include "GraphicsManager.hpp"
-#include "Engine/Graphics/ShaderProgram.hpp"
+#include "Engine/Graphics/Shader.hpp"
 #include <Engine/Util/EngineUtil.hpp>
 #include <fstream>
 #include <iostream>
@@ -7,93 +7,87 @@
 #include "Engine/Util/OpenGLUtil.hpp"
 
 
-ShaderProgram& GraphicsManager::loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name)
+std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name)
 {
-	auto result = shader_map.emplace(std::piecewise_construct,
-		std::forward_as_tuple(name),
-		std::forward_as_tuple(vShaderFile, fShaderFile));
-	//shader_map.emplace(name, vShaderFile, fShaderFile);
-	return result.first->second;
+	auto shader = Shader::createShader(vShaderFile, fShaderFile);
+	shader_map.emplace(name, shader);
+	return shader;
 }
 
-ShaderProgram & GraphicsManager::getShader(const std::string & name)
+std::shared_ptr<Shader> GraphicsManager::getShader(const std::string& name)
 {
 	return shader_map.at(name);
 }
 
-Texture& GraphicsManager::loadTexture(const std::string& file, const std::string& name)
+std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& file, const std::string& name)
 {
-	auto result = texture_map.emplace(std::piecewise_construct,
-		std::forward_as_tuple(name),
-		std::forward_as_tuple(file));
-	//texture_map.emplace(name, file);
-	return result.first->second;
+	auto texture = Texture::createTexture(file);
+	texture_map.emplace(name, texture);
+	return texture;
 }
 
-Texture & GraphicsManager::getTexture(const std::string & name)
+std::shared_ptr<Texture> GraphicsManager::getTexture(const std::string& name)
 {
 	return texture_map.at(name);
 }
 
-Mesh & GraphicsManager::createMesh(const std::string& name,  const std::vector<Vertex>& vertices, const std::string& material_name)
+std::shared_ptr<Mesh> GraphicsManager::createMesh(const std::string& name, const std::vector<Vertex>& vertices, const std::string& material_name)
 {
-	auto result = mesh_map.emplace(std::piecewise_construct,
-		std::forward_as_tuple(name),
-		std::forward_as_tuple(vertices, material_name));
-	//mesh_map.emplace(name, vertices, material_name);
-	return result.first->second;
+	auto mesh = Mesh::createMesh(vertices, material_name);
+	mesh_map.emplace(name, mesh);
+	return mesh;
 }
 
-Mesh & GraphicsManager::getMesh(const std::string & name)
+std::shared_ptr<Mesh> GraphicsManager::getMesh(const std::string& name)
 {
 	return mesh_map.at(name);
 }
 
-Material& GraphicsManager::createMaterial(const std::string& name, glm::vec3 Ka, glm::vec3 Kd, glm::vec3 Ks, float Ns, float Ni, float d, int illum,
+std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& name, glm::vec3 Ka, glm::vec3 Kd, glm::vec3 Ks, float Ns, float Ni, float d, int illum,
 	const std::string& map_Ka_path, const std::string& map_Kd_path, const std::string& map_Ks_path, const std::string& map_Ns_path,
 	const std::string& map_d_path, const std::string& map_bump_path)
 {
-	auto result = material_map.emplace(std::piecewise_construct,
-		std::forward_as_tuple(name),
-		std::forward_as_tuple(Ka, Kd, Ks, Ns, Ni, d, illum, map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path, map_d_path, map_bump_path));
-	//material_map.emplace(name, Ka, Kd, Ks, Ns, Ni, d, illum, map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path, map_d_path, map_bump_path);
-	return result.first->second;
+	auto material = Material::createMaterial(Ka, Kd, Ks, Ns, Ni, d, illum,
+		map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path,
+		map_d_path, map_bump_path);
+	material_map.emplace(name, material);
+	return material;
 }
 
-Material& GraphicsManager::getMaterial(const std::string& name)
+std::shared_ptr<Material> GraphicsManager::getMaterial(const std::string& name)
 {
 	return material_map.at(name);
 }
 
-Model& GraphicsManager::createModel(const std::vector<std::string>& mesh_names, const std::string& name)
+std::shared_ptr<Model> GraphicsManager::createModel(const std::vector<std::string>& mesh_names, const std::string& name)
 {
-	auto result = model_map.emplace(std::piecewise_construct,
-		std::forward_as_tuple(name),
-		std::forward_as_tuple(mesh_names));
-	//model_map.emplace(name, mesh_names);
-	return result.first->second;
+	auto model = Model::createModel(mesh_names);
+	model_map.emplace(name, model);
+	return model;
 }
 
-Model & GraphicsManager::createModelFromObj(const std::string& file, const std::string & name)
+std::shared_ptr<Model> GraphicsManager::createModelFromObj(const std::string& file, const std::string& name)
 {
-	return createModel(loadObj(file), name);
+	auto mesh_names = loadObj(file);
+	return createModel(mesh_names, name);
 }
 
-Model & GraphicsManager::getModel(const std::string & name)
+std::shared_ptr<Model> GraphicsManager::getModel(const std::string& name)
 {
 	return model_map.at(name);
 }
 
 void GraphicsManager::Clear()
 {
-	// (properly) delete all shaders
-	for( auto & iter : shader_map )
-		OpenGlUtil::deleteShaderProgram(iter.second.ID);
-	// (properly) delete all textures
-	for( auto & iter : texture_map )
-	{
-		iter.second.deleteTexture();
-	}
+	// Properly delete all shaders
+	for (auto& iter : shader_map)
+
+		//OpenGlUtil::deleteShaderProgram(iter.second->ID);
+
+	// Properly delete all textures
+	for (auto& iter : texture_map)
+		iter.second->deleteTexture();
+
 	shader_map.clear();
 	texture_map.clear();
 	mesh_map.clear();

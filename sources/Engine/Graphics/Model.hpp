@@ -1,16 +1,16 @@
 #pragma once
+#include <memory>
 #include <vector>
 #include <string>
-class ShaderProgram;
+class Shader;
 class GraphicsManager;
 class Model
 {
 public:
-  explicit Model(const std::vector<std::string>& meshes);
 
-  void draw(const ShaderProgram& shader, GraphicsManager& graphicsManager) const;
+	virtual void draw(const Shader& shader, GraphicsManager& graphicsManager) const = 0;
 
-  void addMesh(const std::string& meshName);
-private:
-    std::vector<std::string> meshes;
+	virtual void addMesh(const std::string& meshName) = 0;
+
+	static std::shared_ptr<Model> createModel(const std::vector<std::string>& mesh_names);
 };

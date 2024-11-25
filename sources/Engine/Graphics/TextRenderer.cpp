@@ -12,7 +12,7 @@ void TextRenderer::loadFont(const std::string& fontPath, int fontSize)
 {
 }
 
-void TextRenderer::renderText(ShaderProgram& textShader, const std::string& text, const glm::vec2& position,
+void TextRenderer::renderText(Shader& textShader, const std::string& text, const glm::vec2& position,
 	float scale, const glm::vec3& color)
 {
 	textShader.use();

@@ -1,17 +1,14 @@
 #pragma once
+#include <memory>
 #include <string>
 
-#include "Engine/Util/platform.hpp"
 
 class Texture
 {
 public:
-  explicit Texture(const std::string& file);
-
-  void bind() const;
-  static void unbind();
-  void deleteTexture() const;
-private:
-    GLuint texture_id = 0;
-    unsigned char* data = nullptr;
+	virtual ~Texture() = default;
+	virtual void bind() const = 0;
+	virtual void unbind() = 0;
+	virtual void deleteTexture() const = 0;
+	static std::shared_ptr<Texture> createTexture(const std::string& file);
 };

@@ -1,23 +1,20 @@
 #pragma once
+#include <memory>
 #include <vector>
 #include <string>
 
 #include "Vertex.hpp"
 class GraphicsManager;
-class ShaderProgram;
+class Shader;
 class Mesh
 {
 public:
-  explicit Mesh(const std::vector<Vertex>& vertices, const std::string& materialName);
+	virtual ~Mesh() = default;
 
-  void setupMesh();
+	virtual void setupMesh() = 0;
 
-  void draw(const ShaderProgram& shader, GraphicsManager& graphicsManager) const;
+	virtual void draw(const Shader& shader, GraphicsManager& graphicsManager) const = 0;
 
-  void setMaterial(const std::string& name);
-private:
-	unsigned int VAO = 0, VBO = 0, index_count;
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
-	std::string material_name;
+	virtual void setMaterial(const std::string& name) = 0;
+	static std::shared_ptr<Mesh> createMesh(const std::vector<Vertex>& vertices, const std::string& material_name);
 };
