@@ -1,7 +1,7 @@
 #include "BaseScene.hpp"
 #include "Engine/Components.hpp"
 #include "Engine/Events/EventHandler.hpp"
-BaseScene::BaseScene() : mCollisionSystem(this), mPhysicsSystem(this), mRenderSystem(this)
+BaseScene::BaseScene() : mCollisionSystem(this), mPhysicsSystem(this), mRenderSystem(this), mAudioSystem(this)
 {
 }
 void BaseScene::init()

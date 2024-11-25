@@ -4,10 +4,12 @@
 #include "Engine/Managers/CollisionManager.hpp"
 #include "Engine/Managers/CommandManager.hpp"
 #include "Engine/Managers/InputManager.hpp"
+#include "Engine/Managers/AudioManager.hpp"
 
 #include "Engine/Systems/SCollision.hpp"
 #include "Engine/Systems/SPhysics.hpp"
 #include "Engine/Systems/SRender.hpp"
+#include "Engine/Systems/SAudio.hpp"
 
 #include "Engine/Graphics/Camera.hpp"
 
@@ -60,11 +62,13 @@ public:
 	CommandManager mCommandManager;
 	CollisionManager mCollisionManager;
 	InputManager mInputManager;
+	AudioManager mAudioManager;
 
 	//dont hold data or very little data
 	SCollision mCollisionSystem;
 	SPhysics mPhysicsSystem;
 	SRender mRenderSystem;
+	SAudio mAudioSystem;
 
 	Camera mMainCamera;
 	//current snapshot?
