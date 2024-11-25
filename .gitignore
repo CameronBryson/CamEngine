@@ -50,7 +50,6 @@
 
 # Generated files
 .idea/**/contentModel.xml
-
 # Sensitive or high-churn files
 .idea/**/dataSources/
 .idea/**/dataSources.ids
@@ -221,6 +220,8 @@ _deps
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
+.vscode
+.idea
 
 # Local History for Visual Studio Code
 .history/
