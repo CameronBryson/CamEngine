@@ -34,6 +34,11 @@ void BaseScene::render()
 {
 	mRenderSystem.render();
 }
+
+void BaseScene::lateRender()
+{
+}
+
 void BaseScene::shutdown()
 {
 	mRenderSystem.shutdown();
@@ -41,6 +46,11 @@ void BaseScene::shutdown()
 	mCollisionSystem.shutdown();
 	EventHandler::GetInstance()->scriptDispatcher.SendEvent(ShutdownEvent());
 }
+
+void BaseScene::lateShutdown()
+{
+}
+
 unsigned short BaseScene::createEntity()
 {
 	return mRegistry.createEntity();
