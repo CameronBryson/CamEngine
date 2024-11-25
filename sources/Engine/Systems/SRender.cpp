@@ -23,7 +23,7 @@ void SRender::init()
 	
 	printf("Render init\n");
 	loadShaders();
-
+	//need to move all of this out of here and into a scene
 	
 	mScene->mGraphicsManager.loadMtl("assets/Default.mtl");
 	mScene->mGraphicsManager.createModelFromObj("assets/Ship.obj", "player");

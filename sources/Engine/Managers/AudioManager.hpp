@@ -1,15 +1,21 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include "Engine/Audio/AudioSource.hpp"
 class AudioManager
 {
 public:
 	AudioManager() = default;
-	unsigned int LoadSound(const std::string& soundName, const std::string& soundPath);
-	void PlaySound(const std::string& soundName, float volume = 1.0f, bool looping = false);
-	void StopSound(const std::string& soundName);
+	void loadSoundBuffer(const std::string& soundName, const std::string& soundPath);
+	ALuint getSoundBuffer(const std::string& soundName);
+
+	void loadAudioSource(const std::string& sourceName, const std::string& soundName);
+	AudioSource& getAudioSource(const std::string& sourceName);
+
+	void clear();
 	
 
 private:
-	std::unordered_map<std::string, unsigned int> mSoundMap;
+	std::unordered_map<std::string, ALuint> mAudioBufferMap;
+	std::unordered_map<std::string, AudioSource> mAudioSourceMap;
 };

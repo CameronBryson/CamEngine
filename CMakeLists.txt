@@ -52,12 +52,13 @@ endfunction()
 # Add glad source files
 set(GLAD_SOURCES ${CMAKE_SOURCE_DIR}/include/glad/src/gl.c)
 set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h)
+set(STB_VORBIS_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_vorbis.c)
 
 # Add project source files
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/*.cpp")
 
 # Declaring our executable
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${GLAD_SOURCES} ${STB_IMAGE_SOURCES})
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${GLAD_SOURCES} ${STB_IMAGE_SOURCES} ${STB_VORBIS_SOURCES})
 
 # Link libraries
 set(OpenGL_GL_PREFERENCE GLVND)

@@ -9,6 +9,8 @@
 
 GLFWwindow * GameManager::mGameWindow = nullptr;
 std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
+ALCdevice* GameManager::mAudioDevice = nullptr;
+ALCcontext* GameManager::mAudioContext = nullptr;
 
 void GameManager::init()
 {
@@ -82,4 +84,24 @@ GLFWwindow * GameManager::get_glfw_window()
 void GameManager::set_glfw_window(GLFWwindow * window)
 {
     mGameWindow = window;
+}
+
+ALCdevice* GameManager::get_audio_device()
+{
+	return mAudioDevice;
+}
+
+ALCcontext* GameManager::get_audio_context()
+{
+	return mAudioContext;
+}
+
+void GameManager::set_audio_device(ALCdevice* device)
+{
+	mAudioDevice = device;
+}
+
+void GameManager::set_audio_context(ALCcontext* context)
+{
+	mAudioContext = context;
 }

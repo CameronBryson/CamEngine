@@ -3,7 +3,7 @@ class BaseScene;
 class SAudio
 {
 public:
-	SAudio(BaseScene*);
+	SAudio(BaseScene* scene);
 	void init();
 	void update(float deltaTime);
 	void shutdown();
