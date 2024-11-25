@@ -2,302 +2,181 @@
 
 #include <iostream>
 #include <ostream>
+#include <vector>
 #include <AL/alc.h>
+
+#include "EngineUtil.hpp"
+#include "stb_vorbis.c"
+
+#include "Engine/Managers/GameManager.hpp"
 
 void OpenALUtil::init()
 {
+	// Initialize OpenAL
+	GameManager::mAudioDevice = alcOpenDevice(nullptr); // Open the default device
+	if (!GameManager::mAudioDevice)
+	{
+		std::cerr << "OpenALUtil::init - Failed to open the default audio device." << std::endl;
+		return;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::init - Successfully opened the default audio device." << std::endl;
+	}
+
+	GameManager::mAudioContext = alcCreateContext(GameManager::mAudioDevice, nullptr);
+	if (!GameManager::mAudioContext)
+	{
+		std::cerr << "OpenALUtil::init - Failed to create audio context." << std::endl;
+		alcCloseDevice(GameManager::mAudioDevice);
+		GameManager::mAudioDevice = nullptr;
+		return;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::init - Successfully created audio context." << std::endl;
+	}
+
+	if (!alcMakeContextCurrent(GameManager::mAudioContext))
+	{
+		std::cerr << "OpenALUtil::init - Failed to make audio context current." << std::endl;
+		alcDestroyContext(GameManager::mAudioContext);
+		alcCloseDevice(GameManager::mAudioDevice);
+		GameManager::mAudioContext = nullptr;
+		GameManager::mAudioDevice = nullptr;
+		return;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::init - Successfully made audio context current." << std::endl;
+	}
 }
 
 void OpenALUtil::shutdown()
 {
+	alcMakeContextCurrent(nullptr);
+	if (GameManager::mAudioContext)
+	{
+		alcDestroyContext(GameManager::mAudioContext);
+		GameManager::mAudioContext = nullptr;
+	}
+	if (GameManager::mAudioDevice)
+	{
+		alcCloseDevice(GameManager::mAudioDevice);
+		GameManager::mAudioDevice = nullptr;
+	}
 }
 
 ALuint OpenALUtil::createSoundBuffer(const std::string& soundPath)
 {
-	return 1;
+	ALuint buffer = 0;
+
+	// Load audio data from file
+	std::vector<char> audioData;
+	ALenum format = 0;
+	ALsizei freq = 0;
+
+	if (!loadOggFile(soundPath, audioData, format, freq))
+	{
+		std::cerr << "OpenALUtil::createSoundBuffer - Failed to load audio file: " << soundPath << std::endl;
+		return 0;
+	}
+
+	// Generate OpenAL buffer and load audio data into it
+	alGenBuffers(1, &buffer);
+	alBufferData(buffer, format, audioData.data(), static_cast<ALsizei>(audioData.size()), freq);
+
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::createSoundBuffer - Error creating OpenAL buffer for: " << soundPath << std::endl;
+		if (buffer != 0)
+		{
+			alDeleteBuffers(1, &buffer);
+		}
+		return 0;
+	}
+
+	std::cout << "OpenALUtil::createSoundBuffer - Loaded buffer ID: " << buffer << " for file: " << soundPath << std::endl;
+	return buffer;
 }
 
 void OpenALUtil::deleteSoundBuffer(ALuint buffer)
 {
-    alDeleteBuffers(1, &buffer);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::deleteSoundBuffer - Error deleting OpenAL buffer." << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::deleteSoundBuffer - Deleted buffer ID: " << buffer << std::endl;
-    }
+	alDeleteBuffers(1, &buffer);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::deleteSoundBuffer - Error deleting OpenAL buffer." << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::deleteSoundBuffer - Deleted buffer ID: " << buffer << std::endl;
+	}
 }
 
 ALuint OpenALUtil::createSource()
 {
-    ALuint source;
-    alGenSources(1, &source);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::createSource - Error generating OpenAL source." << std::endl;
-        return 0;
-    }
+	ALuint source;
+	alGenSources(1, &source);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::createSource - Error generating OpenAL source." << std::endl;
+		return 0;
+	}
 
-    std::cout << "OpenALUtil::createSource - Generated source ID: " << source << std::endl;
-    return source;
+	std::cout << "OpenALUtil::createSource - Generated source ID: " << source << std::endl;
+	return source;
 }
 
 void OpenALUtil::deleteSource(ALuint source)
 {
-    alDeleteSources(1, &source);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::deleteSource - Error deleting OpenAL source." << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::deleteSource - Deleted source ID: " << source << std::endl;
-    }
+	alDeleteSources(1, &source);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::deleteSource - Error deleting OpenAL source." << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::deleteSource - Deleted source ID: " << source << std::endl;
+	}
 }
-
-void OpenALUtil::playSoundSource(ALuint source)
-{
-    alSourcePlay(source);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::playSoundSource - Failed to play source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::playSoundSource - Playing source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::pauseSoundSource(ALuint source)
-{
-    alSourcePause(source);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::pauseSoundSource - Failed to pause source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::pauseSoundSource - Paused source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::stopSoundSource(ALuint source)
-{
-    alSourceStop(source);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::stopSoundSource - Failed to stop source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::stopSoundSource - Stopped source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourcePitch(ALuint source, float pitch)
-{
-    alSourcef(source, AL_PITCH, pitch);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourcePitch - Failed to set pitch for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourcePitch - Set pitch to " << pitch << " for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourceGain(ALuint source, float gain)
-{
-    alSourcef(source, AL_GAIN, gain);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourceGain - Failed to set gain for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourceGain - Set gain to " << gain << " for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourceMinGain(ALuint source, float min_gain)
-{
-    alSourcef(source, AL_MIN_GAIN, min_gain);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourceMinGain - Failed to set minimum gain for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourceMinGain - Set minimum gain to " << min_gain << " for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourceMaxGain(ALuint source, float max_gain)
-{
-    alSourcef(source, AL_MAX_GAIN, max_gain);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourceMaxGain - Failed to set maximum gain for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourceMaxGain - Set maximum gain to " << max_gain << " for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourceMaxDistance(ALuint source, float max_distance)
-{
-    alSourcef(source, AL_MAX_DISTANCE, max_distance);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourceMaxDistance - Failed to set max distance for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourceMaxDistance - Set max distance to " << max_distance << " for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourceRolloffFactor(ALuint source, float rolloff_factor)
-{
-    alSourcef(source, AL_ROLLOFF_FACTOR, rolloff_factor);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourceRolloffFactor - Failed to set rolloff factor for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourceRolloffFactor - Set rolloff factor to " << rolloff_factor << " for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourcePosition(ALuint source, const glm::vec3& position)
-{
-    alSource3f(source, AL_POSITION, position.x, position.y, position.z);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourcePosition - Failed to set position for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourcePosition - Set position to (" << position.x << ", " << position.y << ", " << position.z << ") for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourceVelocity(ALuint source, const glm::vec3& velocity)
-{
-    alSource3f(source, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourceVelocity - Failed to set velocity for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourceVelocity - Set velocity to (" << velocity.x << ", " << velocity.y << ", " << velocity.z << ") for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourceDirection(ALuint source, const glm::vec3& direction)
-{
-    alSource3f(source, AL_DIRECTION, direction.x, direction.y, direction.z);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourceDirection - Failed to set direction for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourceDirection - Set direction to (" << direction.x << ", " << direction.y << ", " << direction.z << ") for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourceLoop(ALuint source, bool loop)
-{
-    alSourcei(source, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourceLoop - Failed to set looping for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourceLoop - Set looping to " << (loop ? "true" : "false") << " for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setSourceBuffer(ALuint source, ALuint buffer)
-{
-    alSourcei(source, AL_BUFFER, buffer);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setSourceBuffer - Failed to set buffer for source ID: " << source << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setSourceBuffer - Set buffer ID " << buffer << " for source ID: " << source << std::endl;
-    }
-}
-
-void OpenALUtil::setListenerGain(float gain)
-{
-    alListenerf(AL_GAIN, gain);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setListenerGain - Failed to set listener gain." << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setListenerGain - Set listener gain to " << gain << std::endl;
-    }
-}
-
-void OpenALUtil::setListenerPosition(const glm::vec3& position)
-{
-    alListener3f(AL_POSITION, position.x, position.y, position.z);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setListenerPosition - Failed to set listener position." << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setListenerPosition - Set listener position to (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
-    }
-}
-
-void OpenALUtil::setListenerVelocity(const glm::vec3& velocity)
-{
-    alListener3f(AL_VELOCITY, velocity.x, velocity.y, velocity.z);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setListenerVelocity - Failed to set listener velocity." << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setListenerVelocity - Set listener velocity to (" << velocity.x << ", " << velocity.y << ", " << velocity.z << ")" << std::endl;
-    }
-}
-
-void OpenALUtil::setListenerOrientation(const glm::vec3& at, const glm::vec3& up)
-{
-    float orientation[] = { at.x, at.y, at.z, up.x, up.y, up.z };
-    alListenerfv(AL_ORIENTATION, orientation);
-    if (alGetError() != AL_NO_ERROR)
-    {
-        std::cerr << "OpenALUtil::setListenerOrientation - Failed to set listener orientation." << std::endl;
-    }
-    else
-    {
-        std::cout << "OpenALUtil::setListenerOrientation - Set listener orientation." << std::endl;
-    }
-}
-
 
 
 
 bool OpenALUtil::isBufferPlaying(ALuint source)
 {
-    ALint state;
-    alGetSourcei(source, AL_SOURCE_STATE, &state);
-    return state == AL_PLAYING;
+	ALint state;
+	alGetSourcei(source, AL_SOURCE_STATE, &state);
+	return state == AL_PLAYING;
+}
+
+bool OpenALUtil::loadOggFile(const std::string& filePath, std::vector<char>& audioData, ALenum& format, ALsizei& freq)
+{
+	int channels = 0;
+	int sampleRate = 0;
+	short* output = nullptr;
+	int samples = stb_vorbis_decode_filename(engine_util::buildPath(filePath).c_str(), &channels, &sampleRate, &output);
+
+	if (samples == -1)
+	{
+		std::cerr << "OpenALUtil::loadOggFile - Failed to open Ogg Vorbis file: " << filePath << std::endl;
+		return false;
+	}
+
+	// Determine the format
+	if (channels == 1)
+		format = AL_FORMAT_MONO16;
+	else if (channels == 2)
+		format = AL_FORMAT_STEREO16;
+	else
+	{
+		std::cerr << "OpenALUtil::loadOggFile - Unsupported number of channels: " << channels << std::endl;
+		free(output);
+		return false;
+	}
+
+	freq = sampleRate;
+	audioData.assign(reinterpret_cast<char*>(output), reinterpret_cast<char*>(output) + (samples * channels * sizeof(short)));
+	free(output);
+
+	return true;
 }

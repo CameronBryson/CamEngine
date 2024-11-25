@@ -43,6 +43,12 @@ void OpenGlUtil::init()
     GameManager::set_glfw_window(game_window);
 }
 
+void OpenGlUtil::shutdown()
+{
+    glfwDestroyWindow(GameManager::mGameWindow);
+    glfwTerminate();
+}
+
 void OpenGlUtil::drawLine(glm::vec2& start, glm::vec2& end, const glm::vec3& color)
 {
     convertPointToScreen(start);

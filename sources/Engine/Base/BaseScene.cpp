@@ -10,6 +10,7 @@ void BaseScene::init()
 	mRenderSystem.init();
 	mCollisionSystem.init();
 	mPhysicsSystem.init();
+	mAudioSystem.init();
 	EventHandler::GetInstance()->scriptDispatcher.SendEvent(InitEvent());
 
 }
@@ -21,6 +22,7 @@ void BaseScene::lateInit()
 void BaseScene::update(float dt)
 {
 	mPhysicsSystem.update(dt);
+	mAudioSystem.update(dt);
 	EventHandler::GetInstance()->scriptDispatcher.SendEvent(UpdateEvent(dt));
 }
 void BaseScene::lateUpdate(float dt)

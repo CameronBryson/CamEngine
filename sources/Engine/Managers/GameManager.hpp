@@ -34,7 +34,7 @@ public:
 	static void set_audio_device(ALCdevice* device);
 	static void set_audio_context(ALCcontext* context);
 
-private:
+
     static GLFWwindow* mGameWindow;
 	static ALCdevice* mAudioDevice;
 	static ALCcontext* mAudioContext;

@@ -1,39 +1,213 @@
 #include "AudioSource.hpp"
+
+#include <iostream>
+#include <ostream>
+
 #include "Engine/Util/OpenALUtil.hpp"
 
-AudioSource::AudioSource()
+AudioSource::AudioSource(ALuint buffer) : mBuffer(buffer), mSource(0)
 {
+	mSource = OpenALUtil::createSource();
+	updateSource();
 }
 
 void AudioSource::play()
 {
-	OpenALUtil::playSoundSource(mSource);
+	alSourcePlay(mSource);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::playSoundSource - Failed to play source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::playSoundSource - Playing source ID: " << mSource << std::endl;
+	}
 }
 
 void AudioSource::pause()
 {
-	OpenALUtil::pauseSoundSource(mSource);
+	alSourcePause(mSource);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::pauseSoundSource - Failed to pause source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::pauseSoundSource - Paused source ID: " << mSource << std::endl;
+	}
 }
 
 void AudioSource::stop()
 {
-	OpenALUtil::stopSoundSource(mSource);
+	alSourceStop(mSource);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::stopSoundSource - Failed to stop source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::stopSoundSource - Stopped source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourcePitch(float pitch)
+{
+	alSourcef(mSource, AL_PITCH, pitch);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourcePitch - Failed to set pitch for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourcePitch - Set pitch to " << pitch << " for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourceGain(float gain)
+{
+	alSourcef(mSource, AL_GAIN, gain);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourceGain - Failed to set gain for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourceGain - Set gain to " << gain << " for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourceMinGain(float minGain)
+{
+	alSourcef(mSource, AL_MIN_GAIN, minGain);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourceMinGain - Failed to set minimum gain for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourceMinGain - Set minimum gain to " << minGain << " for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourceMaxGain(float maxGain)
+{
+	alSourcef(mSource, AL_MAX_GAIN, maxGain);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourceMaxGain - Failed to set maximum gain for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourceMaxGain - Set maximum gain to " << maxGain << " for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourceMaxDistance(float maxDistance)
+{
+	alSourcef(mSource, AL_MAX_DISTANCE, maxDistance);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourceMaxDistance - Failed to set max distance for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourceMaxDistance - Set max distance to " << maxDistance << " for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourceRolloffFactor(float rolloffFactor)
+{
+	alSourcef(mSource, AL_ROLLOFF_FACTOR, rolloffFactor);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourceRolloffFactor - Failed to set rolloff factor for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourceRolloffFactor - Set rolloff factor to " << rolloffFactor << " for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourcePosition(const glm::vec3& position)
+{
+	alSource3f(mSource, AL_POSITION, position.x, position.y, position.z);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourcePosition - Failed to set position for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourcePosition - Set position to (" << position.x << ", " << position.y << ", " << position.z << ") for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourceVelocity(const glm::vec3& velocity)
+{
+	alSource3f(mSource, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourceVelocity - Failed to set velocity for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourceVelocity - Set velocity to (" << velocity.x << ", " << velocity.y << ", " << velocity.z << ") for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourceDirection(const glm::vec3& direction)
+{
+	alSource3f(mSource, AL_DIRECTION, direction.x, direction.y, direction.z);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourceDirection - Failed to set direction for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourceDirection - Set direction to (" << direction.x << ", " << direction.y << ", " << direction.z << ") for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setSourceLoop(bool loop)
+{
+	alSourcei(mSource, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourceLoop - Failed to set looping for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setSourceLoop - Set looping to " << (loop ? "true" : "false") << " for source ID: " << mSource << std::endl;
+	}
+}
+
+void AudioSource::setBuffer(ALuint buffer)
+{
+	alSourcei(mSource, AL_BUFFER, buffer);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		std::cerr << "OpenALUtil::setSourceBuffer - Failed to set buffer for source ID: " << mSource << std::endl;
+	}
+	else
+	{
+		std::cout << "OpenALUtil::setmSourceBuffer - Set buffer ID " << buffer << " for mSource ID: " << mSource << std::endl;
+	}
 }
 
 
 void AudioSource::updateSource()
 {
-	OpenALUtil::setSourceBuffer(mSource, mBuffer);
-	OpenALUtil::setSourcePitch(mSource, mPitch);
-	OpenALUtil::setSourceGain(mSource, mGain);
-	OpenALUtil::setSourceMinGain(mSource, mMinGain);
-	OpenALUtil::setSourceMaxGain(mSource, mMaxGain);
-	OpenALUtil::setSourceMaxDistance(mSource, mMaxDistance);
-	OpenALUtil::setSourceRolloffFactor(mSource, mRolloffFactor);
-	OpenALUtil::setSourcePosition(mSource, mPosition);
-	OpenALUtil::setSourceVelocity(mSource, mVelocity);
-	OpenALUtil::setSourceDirection(mSource, mDirection);
-	OpenALUtil::setSourceLoop(mSource, mLoop);
+	setBuffer(mBuffer);
+	setSourcePitch(mPitch);
+	setSourceGain(mGain);
+	setSourceMinGain(mMinGain);
+	setSourceMaxGain(mMaxGain);
+	setSourceMaxDistance(mMaxDistance);
+	setSourceRolloffFactor(mRolloffFactor);
+	setSourcePosition(mPosition);
+	setSourceVelocity(mVelocity);
+	setSourceDirection(mDirection);
+	setSourceLoop(mLoop);
+
 }
 
 

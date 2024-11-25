@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -12,13 +13,13 @@ public:
 	ALuint getSoundBuffer(const std::string& soundName);
 
 	void loadAudioSource(const std::string& sourceName, const std::string& soundName);
-	AudioSource& getAudioSource(const std::string& sourceName);
+	std::shared_ptr<AudioSource> getAudioSource(const std::string& sourceName);
 
 	void clear();
 	
 
 private:
 	std::unordered_map<std::string, ALuint> mAudioBufferMap;
-	std::unordered_map<std::string, AudioSource> mAudioSourceMap;
+	std::unordered_map<std::string, std::shared_ptr<AudioSource>> mAudioSourceMap;
 	AudioListener mAudioListener;
 };

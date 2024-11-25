@@ -4,12 +4,22 @@
 class AudioSource
 {
 public:
-	AudioSource();
+	AudioSource(ALuint buffer);
 	~AudioSource() = default;
 	void play();
 	void pause();
 	void stop();
-
+	void setSourcePitch(float pitch);
+	void setSourceGain(float gain);
+	void setSourceMinGain(float minGain);
+	void setSourceMaxGain(float maxGain);
+	void setSourceMaxDistance(float maxDistance);
+	void setSourceRolloffFactor(float rolloffFactor);
+	void setSourcePosition(const glm::vec3& position);
+	void setSourceVelocity(const glm::vec3& velocity);
+	void setSourceDirection(const glm::vec3& direction);
+	void setSourceLoop(bool loop);
+	void setBuffer(ALuint buffer);
 	void updateSource();
 	ALuint getBuffer() const;
 	bool isPlaying() const;
