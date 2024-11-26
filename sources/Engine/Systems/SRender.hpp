@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Components.hpp"
+#include "glm/fwd.hpp"
 template<typename T>
 class SparseSet;
 class BaseScene;

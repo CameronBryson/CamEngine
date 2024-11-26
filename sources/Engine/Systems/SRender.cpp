@@ -24,7 +24,7 @@ void SRender::init()
 	printf("Render init\n");
 	loadShaders();
 	//need to move all of this out of here and into a scene
-	
+	mScene->mGraphicsManager.loadFont("assets/arial.ttf", 48, "arial");
 	mScene->mGraphicsManager.loadMtl("assets/Default.mtl");
 	mScene->mGraphicsManager.createModelFromObj("assets/Ship.obj", "player");
 
@@ -66,10 +66,14 @@ void SRender::render()
 	const auto direction_light_ids = mScene->getEntityIDs<CDirectionalLight>();
 	const auto point_light_ids = mScene->getEntityIDs<CPointLight,CTransform>();
 
-
-	glm::mat4 ortho_projection = glm::ortho(-settings::aspect_ratio, settings::aspect_ratio, -1.0f, 1.0f, -1.0f, 1.0f);
-
-
+	// Set up orthographic projection
+	int windowWidth = settings::window_width;
+	int windowHeight = settings::window_height;
+	glm::mat4 ortho_projection = glm::ortho(
+		0.0f, static_cast<float>(windowWidth),
+		0.0f, static_cast<float>(windowHeight)
+	);
+	
 	glEnable(GL_DEPTH_TEST);
 
 
@@ -103,6 +107,7 @@ void SRender::render()
 		texture_shader_3D->setFloat("pointLights[" + index + "].quadratic", light.quadratic);
 
 	}
+	
 	drawModels(transforms, *texture_shader_3D);
 //#ifdef _DEBUG
 	color_shader_3D->use();
@@ -118,6 +123,26 @@ void SRender::render()
 	color_shader_2D->setMat4("projection", ortho_projection);
 	color_shader_2D->setMat4("view", glm::mat4(1.0f));
 	drawUi(transforms, *color_shader_2D);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	auto textShader = mScene->mGraphicsManager.getShader("text");
+	textShader->use();
+	textShader->setMat4("projection", ortho_projection);
+
+	std::string text = "Test Hello World 123 ABC";
+	float x = 200.0f; // x position in pixels
+	float y = windowHeight - 100.0f; // Adjust y to start from top
+	float scale = 1.0f;
+	glm::vec3 textColor = { 0.3f, 0.5f, 0.7f };
+
+	mScene->mGraphicsManager.getFont("arial")->renderText(*textShader, text, x, y, scale, textColor);
+
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void SRender::shutdown()
@@ -221,3 +246,4 @@ void SRender::loadShaders() const
 		"sources/Shaders/text.vs",
 		"sources/Shaders/text.fs", "text");
 }
+

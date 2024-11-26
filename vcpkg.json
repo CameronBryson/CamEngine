@@ -1,5 +1,15 @@
 {
   "dependencies": [
-    "glfw3","glad", "openal-soft","freetype"
+    "glfw3",
+    "glad",
+    "openal-soft",
+    "freetype",
+    "gtest",
+    "glm",
+    "stb",
+    "benchmark",
+    "imgui",
+    "vulkan",
+	"directx-headers"
   ]
 }

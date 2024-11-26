@@ -43,8 +43,6 @@ function(add_sanitizers target)
 endfunction()
 
 # Include directories
-include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/include/glad/include)
 include_directories(${CMAKE_SOURCE_DIR}/sources)
 
 # Find packages
@@ -53,11 +51,10 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(OpenAL CONFIG REQUIRED)
 find_package(Freetype REQUIRED)
-
-# Add GLAD and STB source files
-set(GLAD_SOURCES ${CMAKE_SOURCE_DIR}/include/glad/src/gl.c)
-set(STB_IMAGE_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_image.h)
-set(STB_VORBIS_SOURCES ${CMAKE_SOURCE_DIR}/include/stb_vorbis.c)
+find_package(glad CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(Vulkan REQUIRED)
+find_package(directx-headers CONFIG REQUIRED)
 
 # Collect engine source files
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/Engine/*.cpp")
@@ -66,17 +63,17 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/User/*.cpp")
 
 # Create engine static library
-add_library(engine_lib STATIC ${ENGINE_SOURCES} ${GLAD_SOURCES} ${STB_IMAGE_SOURCES} ${STB_VORBIS_SOURCES})
+add_library(engine_lib STATIC ${ENGINE_SOURCES})
 
 # Include directories for engine library
 target_include_directories(engine_lib PUBLIC
     ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/glad/include
     ${CMAKE_SOURCE_DIR}/sources
+    ${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-windows/include
 )
 
 # Link libraries to engine library
-target_link_libraries(engine_lib PUBLIC OpenGL::GL glfw OpenAL::OpenAL Freetype::Freetype)
+target_link_libraries(engine_lib PUBLIC OpenGL::GL glfw OpenAL::OpenAL Freetype::Freetype glad::glad glm::glm Vulkan::Vulkan)
 
 # Create game executable
 add_executable(${PROJECT_NAME} ${GAME_SOURCES})
@@ -84,8 +81,8 @@ add_executable(${PROJECT_NAME} ${GAME_SOURCES})
 # Include directories for game executable
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/glad/include
     ${CMAKE_SOURCE_DIR}/sources
+    ${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-windows/include
 )
 
 # Link engine library to game executable
@@ -96,3 +93,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE engine_lib)
 
 # Define ASSETS_PATH
 target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/")
+
+# Define SHADERS_PATH within assets
+target_compile_definitions(${PROJECT_NAME} PUBLIC SHADERS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders/")

@@ -11,6 +11,7 @@
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Texture.hpp"
 #include "Engine/Graphics/Mesh.hpp"
+#include "Engine/Graphics/Font.hpp"
 
 class GraphicsManager
 {
@@ -45,6 +46,9 @@ public:
     // Retrieve a stored model
     std::shared_ptr<Model> getModel(const std::string& name);
 
+    std::shared_ptr<Font> loadFont(const std::string& fontPath, float fontSize, const std::string& fontName);
+	std::shared_ptr<Font> getFont(const std::string& name);
+
     void Clear();
 
     std::vector<std::string> loadObj(const std::string& file);
@@ -57,4 +61,5 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Mesh>> mesh_map;
     std::unordered_map<std::string, std::shared_ptr<Model>> model_map;
     std::unordered_map<std::string, std::shared_ptr<Material>> material_map;
+	std::unordered_map<std::string, std::shared_ptr<Font>> font_map;
 };

@@ -7,7 +7,6 @@
 class OpenGLShader : public Shader
 {
 public:
-    unsigned int shaderID;
     explicit OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath);
 
     void use() const override;
@@ -30,4 +29,6 @@ public:
     void setMat4(const std::string& name, const glm::mat4& value) const override;
 
 	void checkCompileError(unsigned shader, const std::string& type);
+private:
+    unsigned int shaderID;
 };

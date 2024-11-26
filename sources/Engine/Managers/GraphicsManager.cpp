@@ -77,6 +77,19 @@ std::shared_ptr<Model> GraphicsManager::getModel(const std::string& name)
 	return model_map.at(name);
 }
 
+std::shared_ptr<Font> GraphicsManager::loadFont(const std::string& fontPath, float fontSize,
+	const std::string& fontName)
+{
+	auto font = std::make_shared<Font>(fontPath, fontSize);
+	font_map.emplace(fontName, font);
+	return font;
+}
+
+std::shared_ptr<Font> GraphicsManager::getFont(const std::string& name)
+{
+	return font_map.at(name);
+}
+
 void GraphicsManager::Clear()
 {
 	// Properly delete all shaders

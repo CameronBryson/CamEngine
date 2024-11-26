@@ -11,8 +11,6 @@ class Mesh
 public:
 	virtual ~Mesh() = default;
 
-	virtual void setupMesh() = 0;
-
 	virtual void draw(const Shader& shader, GraphicsManager& graphicsManager) const = 0;
 
 	virtual void setMaterial(const std::string& name) = 0;
