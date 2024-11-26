@@ -12,7 +12,7 @@ class Shader;
 class OpenGLMesh : public Mesh
 {
 public:
-	explicit OpenGLMesh(const std::vector<Vertex>& vertices, const std::string& materialName);
+	explicit OpenGLMesh(const std::vector<Vertex>& vertices,const std::vector<unsigned> indices, const std::string& materialName);
 	~OpenGLMesh() override;
 
 	void draw(const Shader& shader, GraphicsManager& graphicsManager) const override;

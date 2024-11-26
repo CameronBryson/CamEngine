@@ -29,7 +29,7 @@ public:
     std::shared_ptr<Texture> getTexture(const std::string& name);
 
     // Create and store a mesh
-    std::shared_ptr<Mesh> createMesh(const std::string& name, const std::vector<Vertex>& vertices, const std::string& material_name);
+    std::shared_ptr<Mesh> createMesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices,const std::string& material_name);
     // Retrieve a stored mesh
     std::shared_ptr<Mesh> getMesh(const std::string& name);
 

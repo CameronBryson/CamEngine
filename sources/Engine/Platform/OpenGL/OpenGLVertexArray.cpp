@@ -13,6 +13,8 @@ OpenGLVertexArray::~OpenGLVertexArray()
 void OpenGLVertexArray::bind() const
 {
 	glBindVertexArray(mVAO);
+	if (mIndexBuffer)
+		mIndexBuffer->bind();
 }
 void OpenGLVertexArray::unbind() const
 {
@@ -24,12 +26,15 @@ void OpenGLVertexArray::addVertexBuffer(const std::shared_ptr<VertexBuffer>& ver
 	vertexBuffer->bind();
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	// Position Attribute
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
-	// vertex normals
+	// Normal Attribute
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-	// vertex texture coords
+
+	// Texture Coordinates Attribute
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_coordinates));
 

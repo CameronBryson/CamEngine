@@ -5,12 +5,12 @@
 class OpenGLIndexBuffer : public IndexBuffer
 {
 public:
-	OpenGLIndexBuffer(unsigned int* indices, unsigned int count);
+	OpenGLIndexBuffer(const std::vector<unsigned>& indices);
 	~OpenGLIndexBuffer();
 	void bind() const override;
 	void unbind() const override;
 	unsigned int getCount() const override;
 private:
-	GLuint mIBO;
+	GLuint mEBO;
 	unsigned int mCount;
 };

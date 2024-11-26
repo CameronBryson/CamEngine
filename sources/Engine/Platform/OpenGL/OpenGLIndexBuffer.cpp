@@ -1,20 +1,20 @@
 #include "OpenGLIndexBuffer.hpp"
 
-OpenGLIndexBuffer::OpenGLIndexBuffer(unsigned int* indices, unsigned int count) : mCount(count)
+OpenGLIndexBuffer::OpenGLIndexBuffer(const std::vector<unsigned>& indices) : mCount(indices.size())
 {
-	glGenBuffers(1, &mIBO);
-	bind();
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+	glGenBuffers(1, &mEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mCount * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 }
 
 OpenGLIndexBuffer::~OpenGLIndexBuffer()
 {
-	glDeleteBuffers(1, &mIBO);
+	glDeleteBuffers(1, &mEBO);
 }
 
 void OpenGLIndexBuffer::bind() const
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
 }
 
 void OpenGLIndexBuffer::unbind() const

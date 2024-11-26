@@ -4,12 +4,11 @@
 #include "Engine/Graphics/Shader.hpp"
 #include "Engine/Graphics/Material.hpp"
 
-OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::string& materialName) :mIndexCount(vertices.size()), material_name(materialName)
+OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::string& materialName) :mIndexCount(vertices.size()), material_name(materialName)
 {
 	mVertexArray = VertexArray::create();
-    std::shared_ptr<VertexBuffer> vertexBuffer = VertexBuffer::create(vertices);
-
-    mVertexArray->addVertexBuffer(vertexBuffer);
+	mVertexArray->addVertexBuffer(VertexBuffer::create(vertices));
+	mVertexArray->setIndexBuffer(IndexBuffer::create(indices));
     //Init VAO
     //Bind VAO
     //Attach VBO to VAO
@@ -29,7 +28,7 @@ void OpenGLMesh::draw(const Shader& shader, GraphicsManager& graphicsManager) co
 	mVertexArray->bind();
 	graphicsManager.getMaterial(material_name)->bind(shader);
 
-    glDrawArrays(GL_TRIANGLES, 0, mIndexCount);
+    glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
 	mVertexArray->unbind();
 	graphicsManager.getMaterial(material_name)->unbind();
 }

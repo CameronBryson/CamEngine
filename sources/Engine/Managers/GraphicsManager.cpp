@@ -31,9 +31,9 @@ std::shared_ptr<Texture> GraphicsManager::getTexture(const std::string& name)
 	return texture_map.at(name);
 }
 
-std::shared_ptr<Mesh> GraphicsManager::createMesh(const std::string& name, const std::vector<Vertex>& vertices, const std::string& material_name)
+std::shared_ptr<Mesh> GraphicsManager::createMesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::string& material_name)
 {
-	auto mesh = Mesh::createMesh(vertices, material_name);
+	auto mesh = Mesh::createMesh(vertices,indices, material_name);
 	mesh_map.emplace(name, mesh);
 	return mesh;
 }
@@ -124,6 +124,7 @@ std::vector<std::string> GraphicsManager::loadObj(const std::string& file)
 	std::vector<glm::vec3> temp_normals;
 	std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
 	std::vector<Vertex> vertices;
+	std::vector<unsigned> indices;
 	std::string currentMaterial = "Default";
 
 	std::string line, currentMeshName;
@@ -137,22 +138,26 @@ std::vector<std::string> GraphicsManager::loadObj(const std::string& file)
 	normalIndices.reserve(30000);
 	vertices.reserve(30000);
 	mesh_names.reserve(100);
+	indices.reserve(20000);
 
 	auto process_mesh = [&]()
 		{
 			vertices.reserve(vertexIndices.size());
+			indices.reserve(vertexIndices.size());
 
 			for (size_t i = 0; i < vertexIndices.size(); i++)
 			{
 				vertices.emplace_back(temp_vertices[vertexIndices[i]], temp_normals[normalIndices[i]], temp_uvs[uvIndices[i]] );
+				indices.emplace_back(i);
 			}
 
-			createMesh(currentMeshName, vertices, currentMaterial);
+			createMesh(currentMeshName, vertices, indices, currentMaterial);
 			mesh_names.emplace_back(currentMeshName);
 			vertices.clear();
 			vertexIndices.clear();
 			uvIndices.clear();
 			normalIndices.clear();
+			indices.clear();
 		};
 
 	while (std::getline(obj_file, line))

@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <vector>
 class IndexBuffer
 {
 public:
@@ -7,5 +8,5 @@ public:
 	virtual void bind() const = 0;
 	virtual void unbind() const = 0;
 	virtual unsigned int getCount() const = 0;
-	static std::shared_ptr<IndexBuffer> create(unsigned int* indices, unsigned int count);
+	static std::shared_ptr<IndexBuffer> create(const std::vector<unsigned>& indices);
 };
