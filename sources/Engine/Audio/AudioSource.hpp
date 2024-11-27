@@ -5,7 +5,7 @@ class AudioSource
 {
 public:
 	AudioSource(ALuint buffer);
-	~AudioSource() = default;
+	~AudioSource();
 	void play();
 	void pause();
 	void stop();

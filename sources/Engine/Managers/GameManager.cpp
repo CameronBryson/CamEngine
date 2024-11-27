@@ -37,6 +37,7 @@ void GameManager::shutdown()
 {
     mCurrentScene->shutdown();
 	mCurrentScene->lateShutdown();
+    mCurrentScene = nullptr;
 	OpenALUtil::shutdown();
 	OpenGlUtil::shutdown();
 }

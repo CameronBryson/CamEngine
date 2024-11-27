@@ -6,6 +6,10 @@
 
 #include "Engine/Util/OpenGLUtil.hpp"
 
+#include "stb_image.h"
+
+#include <functional>
+
 
 std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name)
 {
@@ -19,12 +23,14 @@ std::shared_ptr<Shader> GraphicsManager::getShader(const std::string& name)
 	return shader_map.at(name);
 }
 
-std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& file, const std::string& name)
+std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& file, aiTextureType type,  const std::string& name)
 {
-	auto texture = Texture::createTexture(file);
+	auto texture = Texture::createTexture(file, type);
 	texture_map.emplace(name, texture);
 	return texture;
 }
+
+
 
 std::shared_ptr<Texture> GraphicsManager::getTexture(const std::string& name)
 {
@@ -43,16 +49,14 @@ std::shared_ptr<Mesh> GraphicsManager::getMesh(const std::string& name)
 	return mesh_map.at(name);
 }
 
-std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& name, glm::vec3 Ka, glm::vec3 Kd, glm::vec3 Ks, float Ns, float Ni, float d, int illum,
-	const std::string& map_Ka_path, const std::string& map_Kd_path, const std::string& map_Ks_path, const std::string& map_Ns_path,
-	const std::string& map_d_path, const std::string& map_bump_path)
+std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& name, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess, float transparency, std::shared_ptr<Texture> ambientMap, std::shared_ptr<Texture> diffuseMap,
+	std::shared_ptr<Texture> specularMap, std::shared_ptr<Texture> normalMap)
 {
-	auto material = Material::createMaterial(Ka, Kd, Ks, Ns, Ni, d, illum,
-		map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path,
-		map_d_path, map_bump_path);
+	auto material = Material::createMaterial(ambient, diffuse, specular, shininess, transparency, ambientMap, diffuseMap, specularMap, normalMap);
 	material_map.emplace(name, material);
 	return material;
 }
+
 
 std::shared_ptr<Material> GraphicsManager::getMaterial(const std::string& name)
 {
@@ -66,11 +70,6 @@ std::shared_ptr<Model> GraphicsManager::createModel(const std::vector<std::strin
 	return model;
 }
 
-std::shared_ptr<Model> GraphicsManager::createModelFromObj(const std::string& file, const std::string& name)
-{
-	auto mesh_names = loadObj(file);
-	return createModel(mesh_names, name);
-}
 
 std::shared_ptr<Model> GraphicsManager::getModel(const std::string& name)
 {
@@ -108,266 +107,197 @@ void GraphicsManager::Clear()
 	material_map.clear();
 }
 
-std::vector<std::string> GraphicsManager::loadObj(const std::string& file)
+
+std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& file, const std::string& name)
 {
-	auto test = engine_util::buildPath(file);
-	std::ifstream obj_file(engine_util::buildPath(file));
-	if( ! obj_file.is_open() )
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_OptimizeMeshes | aiProcess_GenSmoothNormals | aiProcess_ValidateDataStructure);
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		std::cerr << "Failed to open file: " << file << std::endl;
-		return {};
+		std::cerr << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+		return nullptr;
+	}
+	processNode(scene->mRootNode, scene);
+	std::vector<std::string> mesh_names;
+	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+	{
+		std::string mesh_name = scene->mMeshes[i]->mName.C_Str();
+		if (mesh_name.empty())
+		{
+			mesh_name = name + "_mesh_" + std::to_string(i);
+		}
+		mesh_names.push_back(mesh_name);
+	}
+	//delete scene?
+	return createModel(mesh_names, name);
+}
+
+void GraphicsManager::processNode(aiNode* node, const aiScene* scene)
+{
+	// Process all the node's meshes
+	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		processMesh(mesh, scene);
+	}
+	for (unsigned int i = 0; i < node->mNumChildren; i++)
+	{
+		processNode(node->mChildren[i], scene);
+	}
+}
+
+void GraphicsManager::processMesh(aiMesh* mesh, const aiScene* scene)
+{
+	// Extract mesh name
+	std::string mesh_name = mesh->mName.C_Str();
+	if (mesh_name.empty())
+	{
+		mesh_name = "mesh_" + std::to_string(mesh_map.size());
 	}
 
-	std::vector<std::string> mesh_names;
-	std::vector<glm::vec3> temp_vertices;
-	std::vector<glm::vec2> temp_uvs;
-	std::vector<glm::vec3> temp_normals;
-	std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
 	std::vector<Vertex> vertices;
 	std::vector<unsigned> indices;
-	std::string currentMaterial = "Default";
 
-	std::string line, currentMeshName;
-	bool firstObject = true;
+	// Process vertices
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+	{
+		Vertex vertex;
 
-	temp_vertices.reserve(10000); // Adjust based on expected OBJ size
-	temp_uvs.reserve(5000);
-	temp_normals.reserve(5000);
-	vertexIndices.reserve(30000);
-	uvIndices.reserve(30000);
-	normalIndices.reserve(30000);
-	vertices.reserve(30000);
-	mesh_names.reserve(100);
-	indices.reserve(20000);
+		// Positions
+		vertex.position = glm::vec3(
+			mesh->mVertices[i].x,
+			mesh->mVertices[i].y,
+			mesh->mVertices[i].z);
 
-	auto process_mesh = [&]()
+		// Normals
+		if (mesh->HasNormals())
 		{
-			vertices.reserve(vertexIndices.size());
-			indices.reserve(vertexIndices.size());
+			vertex.normal = glm::vec3(
+				mesh->mNormals[i].x,
+				mesh->mNormals[i].y,
+				mesh->mNormals[i].z);
+		}
+		else
+		{
+			vertex.normal = glm::vec3(0.0f);
+		}
 
-			for (size_t i = 0; i < vertexIndices.size(); i++)
+		// Texture Coordinates
+		if (mesh->mTextureCoords[0]) // Check if the mesh contains texture coordinates
+		{
+			vertex.texture_coordinates = glm::vec2(
+				mesh->mTextureCoords[0][i].x,
+				mesh->mTextureCoords[0][i].y);
+		}
+		else
+		{
+			vertex.texture_coordinates = glm::vec2(0.0f);
+		}
+
+		vertices.push_back(vertex);
+	}
+
+	// Process indices
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+	{
+		aiFace face = mesh->mFaces[i];
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
+		{
+			indices.push_back(face.mIndices[j]);
+		}
+	}
+
+	// Process material
+	std::string material_name = "Default";
+	if (mesh->mMaterialIndex >= 0)
+	{
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		material_name = processMaterial(material,scene);
+	}
+
+	// Create and store the mesh
+	createMesh(mesh_name, vertices, indices, material_name);
+}
+
+std::string GraphicsManager::processMaterial(aiMaterial* material, const aiScene* scene)
+{
+	// Get the material name
+	aiString name;
+	material->Get(AI_MATKEY_NAME, name);
+	std::string material_name = name.C_Str();
+
+	// Check if the material already exists
+	if (material_map.find(material_name) != material_map.end())
+	{
+		return material_name;
+	}
+
+	// Initialize material properties
+	glm::vec3 ambient(0.0f); // Ambient color
+	glm::vec3 diffuse(0.0f); // Diffuse color
+	glm::vec3 specular(0.0f); // Specular color
+	float shininess = 0.0f;    // Shininess
+	float transparency = 1.0f;     // Transparency
+
+	// Retrieve material colors
+	aiColor3D color(0.0f, 0.0f, 0.0f);
+	if (material->Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS)
+	{
+		ambient = glm::vec3(color.r, color.g, color.b);
+	}
+	if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS)
+	{
+		diffuse = glm::vec3(color.r, color.g, color.b);
+	}
+	if (material->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS)
+	{
+		specular = glm::vec3(color.r, color.g, color.b);
+	}
+	material->Get(AI_MATKEY_SHININESS, shininess);
+
+	// Initialize textures
+	std::shared_ptr<Texture> ambientMap = nullptr;
+	std::shared_ptr<Texture> diffuseMap = nullptr;
+	std::shared_ptr<Texture> specularMap = nullptr;
+	std::shared_ptr<Texture> normalMap = nullptr;
+
+	// Helper lambda to load a texture of a given type
+	auto loadTextureOfType = [this, material](aiTextureType type) -> std::shared_ptr<Texture>
+		{
+			if (material->GetTextureCount(type) > 0)
 			{
-				vertices.emplace_back(temp_vertices[vertexIndices[i]], temp_normals[normalIndices[i]], temp_uvs[uvIndices[i]] );
-				indices.emplace_back(i);
-			}
+				aiString texPath;
+				material->GetTexture(type, 0, &texPath);
+				std::string path = texPath.C_Str();
 
-			createMesh(currentMeshName, vertices, indices, currentMaterial);
-			mesh_names.emplace_back(currentMeshName);
-			vertices.clear();
-			vertexIndices.clear();
-			uvIndices.clear();
-			normalIndices.clear();
-			indices.clear();
+				// Check if texture is already loaded
+				if (texture_map.find(path) != texture_map.end())
+				{
+					return texture_map[path];
+				}
+				std::shared_ptr<Texture> texture = loadTexture(path, type, path);
+				texture_map[path] = texture;
+
+				return texture;
+			}
+			return nullptr;
 		};
 
-	while (std::getline(obj_file, line))
+	// Load textures
+	ambientMap = loadTextureOfType(aiTextureType_AMBIENT);
+	diffuseMap = loadTextureOfType(aiTextureType_DIFFUSE);
+	specularMap = loadTextureOfType(aiTextureType_SPECULAR);
+	normalMap = loadTextureOfType(aiTextureType_NORMALS);
+	// If normal map not found under aiTextureType_NORMALS, try aiTextureType_HEIGHT
+	if (!normalMap)
 	{
-		if (line.empty() || line[0] == '#')
-			continue;
-
-		char prefix[16];
-		if (sscanf(line.c_str(), "%15s", prefix) != 1)
-			continue;
-
-		if (strcmp(prefix, "o") == 0)
-		{
-			if (!firstObject)
-				process_mesh();
-			firstObject = false;
-			sscanf(line.c_str(), "o %s", &currentMeshName[0]);
-			size_t space = line.find(' ');
-			if (space != std::string::npos)
-				currentMeshName = line.substr(space + 1);
-		}
-		else if (strcmp(prefix, "v") == 0)
-		{
-			glm::vec3 vertex;
-			sscanf(line.c_str(), "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
-			temp_vertices.emplace_back(vertex);
-		}
-		else if (strcmp(prefix, "vt") == 0)
-		{
-			glm::vec2 uv;
-			sscanf(line.c_str(), "vt %f %f", &uv.x, &uv.y);
-			temp_uvs.emplace_back(uv);
-		}
-		else if (strcmp(prefix, "vn") == 0)
-		{
-			glm::vec3 normal;
-			sscanf(line.c_str(), "vn %f %f %f", &normal.x, &normal.y, &normal.z);
-			temp_normals.emplace_back(normal);
-		}
-		else if (strcmp(prefix, "f") == 0)
-		{
-			unsigned int vIdx[3], uvIdx[3], nIdx[3];
-			sscanf(line.c_str(), "f %u/%u/%u %u/%u/%u %u/%u/%u",
-				&vIdx[0], &uvIdx[0], &nIdx[0],
-				&vIdx[1], &uvIdx[1], &nIdx[1],
-				&vIdx[2], &uvIdx[2], &nIdx[2]);
-
-			for (int i = 0; i < 3; ++i)
-			{
-				vertexIndices.emplace_back(vIdx[i] - 1);
-				uvIndices.emplace_back(uvIdx[i] - 1);
-				normalIndices.emplace_back(nIdx[i] - 1);
-			}
-		}
-		else if (strcmp(prefix, "usemtl") == 0)
-		{
-			size_t space = line.find(' ');
-			if (space != std::string::npos)
-				currentMaterial = line.substr(space + 1);
-		}
-		else if (strcmp(prefix, "mtllib") == 0)
-		{
-			size_t space = line.find(' ');
-			if (space != std::string::npos)
-			{
-				std::string mtl_file = line.substr(space + 1);
-				loadMtl(mtl_file.c_str());
-			}
-		}
+		normalMap = loadTextureOfType(aiTextureType_HEIGHT);
 	}
 
-	if (!currentMeshName.empty())
-		process_mesh();
+	// Create and store the material
+	createMaterial(material_name, ambient, diffuse, specular, shininess, transparency, ambientMap, diffuseMap, specularMap, normalMap);;
 
-	return mesh_names;
+	return material_name;
 }
 
 
-
-std::vector<std::string> GraphicsManager::loadMtl(const std::string& file)
-{
-
-	std::ifstream mtl_file(engine_util::buildPath(file));
-	if( ! mtl_file.is_open() )
-	{
-		std::cerr << "Failed to open file: " << file << std::endl;
-		return {};
-	}
-
-	std::vector<std::string> material_names;
-	std::string line;
-	std::string currentMaterialName;
-	std::string map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path, map_d_path, map_bump_path;
-	float Ns = 0.0f;
-	glm::vec3 Ka(0.0f), Kd(0.0f), Ks(0.0f);
-	float Ni = 0.0f;
-	float d = 0.0f;
-	int illum = 0;
-
-	while (std::getline(mtl_file, line))
-	{
-		if (line.empty() || line[0] == '#')
-			continue;
-
-		char prefix[16];
-		if (sscanf(line.c_str(), "%15s", prefix) != 1)
-			continue;
-
-		if (strcmp(prefix, "newmtl") == 0)
-		{
-			if (!currentMaterialName.empty())
-			{
-				createMaterial(currentMaterialName, Ka, Kd, Ks, Ns, Ni, d, illum,
-					map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path,
-					map_d_path, map_bump_path);
-				material_names.emplace_back(currentMaterialName);
-			}
-
-			char name[256];
-			sscanf(line.c_str(), "newmtl %255s", name);
-			currentMaterialName = std::string(name);
-
-			// Reset properties
-			map_Ka_path.clear();
-			map_Kd_path.clear();
-			map_Ks_path.clear();
-			map_Ns_path.clear();
-			map_d_path.clear();
-			map_bump_path.clear();
-			Ns = 0.0f;
-			Ka = glm::vec3(0.0f);
-			Kd = glm::vec3(0.0f);
-			Ks = glm::vec3(0.0f);
-			Ni = 0.0f;
-			d = 0.0f;
-			illum = 0;
-		}
-		else if (strcmp(prefix, "map_Ka") == 0)
-		{
-			char path[256];
-			sscanf(line.c_str(), "map_Ka %255s", path);
-			map_Ka_path = std::string(path);
-		}
-		else if (strcmp(prefix, "map_Kd") == 0)
-		{
-			char path[256];
-			sscanf(line.c_str(), "map_Kd %255s", path);
-			map_Kd_path = std::string(path);
-		}
-		else if (strcmp(prefix, "map_Ks") == 0)
-		{
-			char path[256];
-			sscanf(line.c_str(), "map_Ks %255s", path);
-			map_Ks_path = std::string(path);
-		}
-		else if (strcmp(prefix, "map_Ns") == 0)
-		{
-			char path[256];
-			sscanf(line.c_str(), "map_Ns %255s", path);
-			map_Ns_path = std::string(path);
-		}
-		else if (strcmp(prefix, "map_d") == 0)
-		{
-			char path[256];
-			sscanf(line.c_str(), "map_d %255s", path);
-			map_d_path = std::string(path);
-		}
-		else if (strcmp(prefix, "map_bump") == 0)
-		{
-			char path[256];
-			sscanf(line.c_str(), "map_bump %255s", path);
-			map_bump_path = std::string(path);
-		}
-		else if (strcmp(prefix, "Ns") == 0)
-		{
-			sscanf(line.c_str(), "Ns %f", &Ns);
-		}
-		else if (strcmp(prefix, "Ka") == 0)
-		{
-			sscanf(line.c_str(), "Ka %f %f %f", &Ka.x, &Ka.y, &Ka.z);
-		}
-		else if (strcmp(prefix, "Kd") == 0)
-		{
-			sscanf(line.c_str(), "Kd %f %f %f", &Kd.x, &Kd.y, &Kd.z);
-		}
-		else if (strcmp(prefix, "Ks") == 0)
-		{
-			sscanf(line.c_str(), "Ks %f %f %f", &Ks.x, &Ks.y, &Ks.z);
-		}
-		else if (strcmp(prefix, "Ni") == 0)
-		{
-			sscanf(line.c_str(), "Ni %f", &Ni);
-		}
-		else if (strcmp(prefix, "d") == 0)
-		{
-			sscanf(line.c_str(), "d %f", &d);
-		}
-		else if (strcmp(prefix, "illum") == 0)
-		{
-			sscanf(line.c_str(), "illum %d", &illum);
-		}
-	}
-
-	if (!currentMaterialName.empty())
-	{
-		createMaterial(currentMaterialName, Ka, Kd, Ks, Ns, Ni, d, illum,
-			map_Ka_path, map_Kd_path, map_Ks_path, map_Ns_path,
-			map_d_path, map_bump_path);
-		material_names.emplace_back(currentMaterialName);
-	}
-
-	return material_names;
-}

@@ -55,6 +55,7 @@ find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(directx-headers CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
 
 # Collect engine source files
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/Engine/*.cpp")
@@ -73,7 +74,7 @@ target_include_directories(engine_lib PUBLIC
 )
 
 # Link libraries to engine library
-target_link_libraries(engine_lib PUBLIC OpenGL::GL glfw OpenAL::OpenAL Freetype::Freetype glad::glad glm::glm Vulkan::Vulkan)
+target_link_libraries(engine_lib PUBLIC OpenGL::GL glfw OpenAL::OpenAL Freetype::Freetype glad::glad glm::glm Vulkan::Vulkan assimp::assimp)
 
 # Create game executable
 add_executable(${PROJECT_NAME} ${GAME_SOURCES})

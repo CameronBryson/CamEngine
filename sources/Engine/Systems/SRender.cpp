@@ -25,16 +25,26 @@ void SRender::init()
 	loadShaders();
 	//need to move all of this out of here and into a scene
 	mScene->mGraphicsManager.loadFont("assets/arial.ttf", 48, "arial");
-	mScene->mGraphicsManager.loadMtl("assets/Default.mtl");
-	mScene->mGraphicsManager.createModelFromObj("assets/Ship.obj", "player");
+	//mScene->mGraphicsManager.loadMtl("assets/Default.mtl");
 
-	mScene->mGraphicsManager.createModelFromObj("assets/sphere.obj", "sphere");
+	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/Ship.obj"), "player");
+
+	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/sphere.obj"), "sphere");
+	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/cube.obj"), "cube");
+	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/quad.obj"), "quad");
+	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/skybox.obj"), "skybox");
+	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/asteroid.obj"), "asteroid");
+	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/sat.obj"), "sat");
+	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/enemy_ship.obj"), "enemy");
+	//mScene->mGraphicsManager.createModelFromObj("assets/Ship.obj", "player");
+
+	/*mScene->mGraphicsManager.createModelFromObj("assets/sphere.obj", "sphere");
 	mScene->mGraphicsManager.createModelFromObj("assets/cube.obj", "cube");
 	mScene->mGraphicsManager.createModelFromObj("assets/quad.obj", "quad");
 	mScene->mGraphicsManager.createModelFromObj("assets/skybox.obj", "skybox");
 	mScene->mGraphicsManager.createModelFromObj("assets/asteroid.obj", "asteroid");
 	mScene->mGraphicsManager.createModelFromObj("assets/sat.obj", "sat");
-	mScene->mGraphicsManager.createModelFromObj("assets/enemy_ship.obj", "enemy");
+	mScene->mGraphicsManager.createModelFromObj("assets/enemy_ship.obj", "enemy");*/
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	// Enable backface culling

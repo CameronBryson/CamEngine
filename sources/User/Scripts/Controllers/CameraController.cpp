@@ -71,7 +71,11 @@ void CameraController::update(float deltaTime)
 	//    camera.Yaw += delta_x * camera_rotationspeed * dt * 0.1;
 	//    camera.Pitch += delta_y * camera_rotationspeed * dt * 0.1;
 	m_Camera->Position = glm::mix(m_Camera->Position, camera_position, 1 - std::pow(0.0001, deltaTime));
+	if (m_Camera->skybox_tranform)
+	{
 	m_Camera->skybox_tranform->position = m_Camera->Position;
+		
+	}
 
 	//camera.Position = camera_position;
 	m_Camera->updateCameraVectors();

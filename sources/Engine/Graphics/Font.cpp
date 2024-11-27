@@ -127,6 +127,7 @@ void Font::renderText(Shader& shader, const std::string& text, float x, float y,
 	// Activate corresponding render state
 	shader.use();
 	shader.setVec3("textColor", color);
+	shader.setInt("text", 0);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

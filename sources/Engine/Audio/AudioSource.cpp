@@ -11,6 +11,14 @@ AudioSource::AudioSource(ALuint buffer) : mBuffer(buffer), mSource(0)
 	updateSource();
 }
 
+AudioSource::~AudioSource()
+{
+	stop();
+	setBuffer(0);
+	OpenALUtil::deleteSoundBuffer(mBuffer);
+	OpenALUtil::deleteSource(mSource);
+}
+
 void AudioSource::play()
 {
 	alSourcePlay(mSource);

@@ -3,7 +3,7 @@
 #include "Engine/Platform/OpenGL/OpenGLTexture.hpp"
 
 
-std::shared_ptr<Texture> Texture::createTexture(const std::string& file)
+std::shared_ptr<Texture> Texture::createTexture(const std::string& file, aiTextureType type)
 {
-	return std::make_shared<OpenGLTexture>(file);
+	return std::make_shared<OpenGLTexture>(file, type);
 }

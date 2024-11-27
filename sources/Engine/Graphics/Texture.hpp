@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 
-
+#include "assimp/material.h"
 class Texture
 {
 public:
@@ -10,5 +10,8 @@ public:
 	virtual void bind() const = 0;
 	virtual void unbind() = 0;
 	virtual void deleteTexture() const = 0;
-	static std::shared_ptr<Texture> createTexture(const std::string& file);
+	virtual int getWidth() const = 0;
+	virtual int getHeight() const = 0;
+	virtual unsigned char* getData() const = 0;
+	static std::shared_ptr<Texture> createTexture(const std::string& file, aiTextureType type);
 };

@@ -3,6 +3,7 @@
 #include <memory>
 #include <glm/vec3.hpp>
 class Shader;
+class Texture;
 
 class Material
 {
@@ -11,6 +12,6 @@ public:
 	virtual void bind(const Shader& shader) = 0;
 	virtual void unbind() = 0;
 
-	static std::shared_ptr<Material> createMaterial(glm::vec3 Ka, glm::vec3 Kd, glm::vec3 Ks, float Ns, float Ni, float d, int illum, const std::string& map_Ka_path, const std::string& map_Kd_path,
-		const std::string& map_Ks_path, const std::string& map_Ns_path, const std::string& map_d_path, const std::string& map_bump_path);
+	static std::shared_ptr<Material> createMaterial(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess, float transparency, std::shared_ptr<Texture> ambientMap, std::shared_ptr<Texture> diffuseMap,
+		std::shared_ptr<Texture> specularMap, std::shared_ptr<Texture> normalMap);
 };

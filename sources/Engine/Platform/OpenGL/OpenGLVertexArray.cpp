@@ -38,6 +38,14 @@ void OpenGLVertexArray::addVertexBuffer(const std::shared_ptr<VertexBuffer>& ver
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_coordinates));
 
+	// Tangent Attribute
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+
+	// Bitangent Attribute
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+
 	mVertexBuffers.push_back(vertexBuffer);
 
 	unbind();

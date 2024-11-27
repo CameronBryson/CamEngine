@@ -9,23 +9,19 @@
 class OpenGLMaterial : public Material
 {
 public:
-	explicit OpenGLMaterial(glm::vec3 Ka, glm::vec3 Kd, glm::vec3 Ks, float Ns, float Ni, float d, int illum, const std::string& map_Ka_path, const std::string& map_Kd_path,
-		const std::string& map_Ks_path, const std::string& map_Ns_path, const std::string& map_d_path, const std::string& map_bump_path);
+	explicit OpenGLMaterial(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess, float transparency, std::shared_ptr<Texture> ambientMap, std::shared_ptr<Texture> diffuseMap,
+		std::shared_ptr<Texture> specularMap, std::shared_ptr<Texture> normalMap);
 
 	void bind(const Shader& shader) override;
 	void unbind() override;
 
-	glm::vec3 Ka; //Ka
-	glm::vec3 Kd; //Kd
-	glm::vec3 Ks; //Ks
-	float Ns;
-	float Ni;
-	float d;
-	int illum;
-	std::unique_ptr<Texture> map_Ka;
-	std::unique_ptr<Texture> map_Kd;
-	std::unique_ptr<Texture> map_Ks;
-	std::unique_ptr<Texture> map_Ns;
-	std::unique_ptr<Texture> map_d;
-	std::unique_ptr<Texture> map_bump;
+	glm::vec3 ambient; //Ka
+	glm::vec3 diffuse; //Kd
+	glm::vec3 specular; //Ks
+	float shininess;
+	float transparency;
+	std::shared_ptr<Texture> ambientMap;
+	std::shared_ptr<Texture> diffuseMap;
+	std::shared_ptr<Texture> specularMap;
+	std::shared_ptr<Texture> normalMap;
 };

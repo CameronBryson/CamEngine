@@ -5,7 +5,7 @@
 #include "stb_image.h"
 #include "Engine/Util/EngineUtil.hpp"
 
-OpenGLTexture::OpenGLTexture(const std::string& file)
+OpenGLTexture::OpenGLTexture(const std::string& file, aiTextureType type)
 {
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
@@ -15,8 +15,7 @@ OpenGLTexture::OpenGLTexture(const std::string& file)
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
+    int nrChannels;
     data = stbi_load(engine_util::buildPath(file).c_str(), &width, &height, &nrChannels, 0);
     if (!data)
     {
@@ -45,4 +44,19 @@ void OpenGLTexture::unbind()
 void OpenGLTexture::deleteTexture() const
 {
     glDeleteTextures(1, &textureID);
+}
+
+int OpenGLTexture::getWidth() const
+{
+	return width;
+}
+
+int OpenGLTexture::getHeight() const
+{
+	return height;
+}
+
+unsigned char* OpenGLTexture::getData() const
+{
+	return data;
 }
