@@ -25,8 +25,8 @@ void SRender::init()
 	loadShaders();
 	//need to move all of this out of here and into a scene
 	mScene->mGraphicsManager.loadFont("assets/arial.ttf", 48, "arial");
+	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/spaceship_V1.obj"), "bottle");
 	//mScene->mGraphicsManager.loadMtl("assets/Default.mtl");
-
 	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/Ship.obj"), "player");
 
 	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/sphere.obj"), "sphere");
@@ -45,7 +45,7 @@ void SRender::init()
 	mScene->mGraphicsManager.createModelFromObj("assets/asteroid.obj", "asteroid");
 	mScene->mGraphicsManager.createModelFromObj("assets/sat.obj", "sat");
 	mScene->mGraphicsManager.createModelFromObj("assets/enemy_ship.obj", "enemy");*/
-
+	glClearColor(0, 0, 0, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	// Enable backface culling
 	glEnable(GL_CULL_FACE);
@@ -241,19 +241,19 @@ void SRender::drawUi(SparseSet<CTransform> &transforms, const Shader &shader) co
 void SRender::loadShaders() const
 {
 	mScene->mGraphicsManager.loadShader(
-		"sources/Shaders/vertex.vs",
-		"sources/Shaders/3D_texture.fs", "3D_texture");
+		"sources/Shaders/vertex.vert",
+		"sources/Shaders/3D_texture.frag", "3D_texture");
 	mScene->mGraphicsManager.loadShader(
-			"sources/Shaders/vertex.vs",
-			"sources/Shaders/3D_color.fs", "3D_color");
+			"sources/Shaders/vertex.vert",
+			"sources/Shaders/3D_color.frag", "3D_color");
 	mScene->mGraphicsManager.loadShader(
-		"sources/Shaders/vertex.vs",
-		"sources/Shaders/2D_color.fs", "2D_texture");
+		"sources/Shaders/vertex.vert",
+		"sources/Shaders/2D_color.frag", "2D_texture");
 	mScene->mGraphicsManager.loadShader(
-			"sources/Shaders/vertex.vs",
-			"sources/Shaders/2D_color.fs", "2D_color");
+			"sources/Shaders/vertex.vert",
+			"sources/Shaders/2D_color.frag", "2D_color");
 	mScene->mGraphicsManager.loadShader(
-		"sources/Shaders/text.vs",
-		"sources/Shaders/text.fs", "text");
+		"sources/Shaders/text.vert",
+		"sources/Shaders/text.frag", "text");
 }
 

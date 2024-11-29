@@ -269,6 +269,7 @@ std::string GraphicsManager::processMaterial(aiMaterial* material, const aiScene
 				aiString texPath;
 				material->GetTexture(type, 0, &texPath);
 				std::string path = texPath.C_Str();
+				std::cout << path << std::endl;
 
 				// Check if texture is already loaded
 				if (texture_map.find(path) != texture_map.end())

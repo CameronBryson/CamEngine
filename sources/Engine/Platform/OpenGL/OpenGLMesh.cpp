@@ -4,7 +4,7 @@
 #include "Engine/Graphics/Shader.hpp"
 #include "Engine/Graphics/Material.hpp"
 
-OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::string& materialName) :mIndexCount(vertices.size()), material_name(materialName)
+OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::string& materialName) :mIndexCount(indices.size()), mVertexCount(vertices.size()), material_name(materialName)
 {
 	mVertexArray = VertexArray::create();
 	mVertexArray->addVertexBuffer(VertexBuffer::create(vertices));
@@ -36,4 +36,14 @@ void OpenGLMesh::draw(const Shader& shader, GraphicsManager& graphicsManager) co
 void OpenGLMesh::setMaterial(const std::string& name)
 {
 	material_name = name;
+}
+
+int OpenGLMesh::getVertexCount() const
+{
+	return mVertexCount;
+}
+
+int OpenGLMesh::getIndexCount() const
+{
+	return mIndexCount;
 }

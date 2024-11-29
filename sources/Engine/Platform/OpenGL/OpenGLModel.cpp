@@ -20,4 +20,15 @@ void OpenGLModel::draw(const Shader& shader, GraphicsManager& graphicsManager) c
 void OpenGLModel::addMesh(const std::string& meshName)
 {
 	meshes.push_back(meshName);
+
+}
+
+int OpenGLModel::getTotalVertexCount() const
+{
+	return mTotalVertexCount;
+}
+
+int OpenGLModel::getTotalTriangleCount() const
+{
+	return mTotalVertexCount / 3;
 }

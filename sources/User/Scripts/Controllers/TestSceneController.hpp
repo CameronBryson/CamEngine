@@ -5,11 +5,10 @@
 class TestSceneController final : public ScriptBase
 {
 public:
-	explicit TestSceneController(BaseScene* scene, unsigned short owner_ID) : ScriptBase(scene, owner_ID)
-	{
-		printf("TestSceneController created\n");
-	}
+	explicit TestSceneController(BaseScene* scene, unsigned short owner_ID);
+	void init() override;
 	void update(float deltaTime) override;
 private:
 	Camera* m_Camera;
+	float camera_movespeed = 10.0f;
 };

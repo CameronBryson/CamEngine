@@ -18,8 +18,12 @@ public:
 	void draw(const Shader& shader, GraphicsManager& graphicsManager) const override;
 
 	void setMaterial(const std::string& name) override;
+	int getVertexCount() const override;
+	int getIndexCount() const override;
+
 private:
 	size_t mIndexCount;
+	size_t mVertexCount;
 	std::shared_ptr<VertexArray> mVertexArray;
 	std::string material_name;
 };

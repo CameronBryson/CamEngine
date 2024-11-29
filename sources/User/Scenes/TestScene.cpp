@@ -14,14 +14,15 @@ void TestScene::init()
 {
 	Factory factory(this);
 	BaseScene::init();
-	auto player = factory.createPlayer();
-	addComponent<PlayerController>(player, this, player);
-	settings::player_id = player;
 
 	auto controller = createEntity();
 	addComponent<CameraController>(controller, this, controller);
 
-	factory.createDirectionalLight(glm::vec3{ 0,-0.2,-1.0 }, glm::vec3{ 0.6,0.6,0.6 }, glm::vec3{ 0.5f,0.5f,0.5f }, glm::vec3{ 0.2,0.2,0.2 });
+	factory.createDirectionalLight(glm::vec3{ 0,-0.2,-1.0 }, glm::vec3{ 1.0,1.0,1.0 }, glm::vec3{ 0.5f,0.5f,0.5f }, glm::vec3{ 0.2,0.2,0.2 });
+
+	auto testModel = createEntity();
+	addComponent<CModel>(testModel, "bottle");
+	addComponent<CTransform>(testModel, glm::vec3{ 0,0,-10 }, glm::vec3{ 0,0,0 }, glm::vec3{ 2.0,2.0,2.0 });
 }
 void TestScene::lateInit()
 {

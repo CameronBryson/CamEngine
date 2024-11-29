@@ -11,7 +11,7 @@ void SAudio::init()
 	mScene->mAudioManager.loadSoundBuffer("TestBuffer", "assets/test.ogg");
 	mScene->mAudioManager.loadAudioSource("TestSound", "TestBuffer");
 	auto test = mScene->mAudioManager.getAudioSource("TestSound");
-	test->play();
+	//test->play();
 }
 
 void SAudio::update(float deltaTime)
