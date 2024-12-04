@@ -15,11 +15,11 @@ AudioSource::~AudioSource()
 {
 	stop();
 	setBuffer(0);
-	OpenALUtil::deleteSoundBuffer(mBuffer);
+	//OpenALUtil::deleteSoundBuffer(mBuffer);
 	OpenALUtil::deleteSource(mSource);
 }
 
-void AudioSource::play()
+void AudioSource::play() const
 {
 	alSourcePlay(mSource);
 	if (alGetError() != AL_NO_ERROR)
@@ -45,7 +45,7 @@ void AudioSource::pause()
 	}
 }
 
-void AudioSource::stop()
+void AudioSource::stop() const
 {
 	alSourceStop(mSource);
 	if (alGetError() != AL_NO_ERROR)
@@ -58,7 +58,7 @@ void AudioSource::stop()
 	}
 }
 
-void AudioSource::setSourcePitch(float pitch)
+void AudioSource::setSourcePitch(float pitch) const
 {
 	alSourcef(mSource, AL_PITCH, pitch);
 	if (alGetError() != AL_NO_ERROR)
@@ -71,7 +71,7 @@ void AudioSource::setSourcePitch(float pitch)
 	}
 }
 
-void AudioSource::setSourceGain(float gain)
+void AudioSource::setSourceGain(float gain) const
 {
 	alSourcef(mSource, AL_GAIN, gain);
 	if (alGetError() != AL_NO_ERROR)
@@ -84,7 +84,7 @@ void AudioSource::setSourceGain(float gain)
 	}
 }
 
-void AudioSource::setSourceMinGain(float minGain)
+void AudioSource::setSourceMinGain(float minGain) const
 {
 	alSourcef(mSource, AL_MIN_GAIN, minGain);
 	if (alGetError() != AL_NO_ERROR)
@@ -97,7 +97,7 @@ void AudioSource::setSourceMinGain(float minGain)
 	}
 }
 
-void AudioSource::setSourceMaxGain(float maxGain)
+void AudioSource::setSourceMaxGain(float maxGain) const
 {
 	alSourcef(mSource, AL_MAX_GAIN, maxGain);
 	if (alGetError() != AL_NO_ERROR)
@@ -110,7 +110,7 @@ void AudioSource::setSourceMaxGain(float maxGain)
 	}
 }
 
-void AudioSource::setSourceMaxDistance(float maxDistance)
+void AudioSource::setSourceMaxDistance(float maxDistance) const
 {
 	alSourcef(mSource, AL_MAX_DISTANCE, maxDistance);
 	if (alGetError() != AL_NO_ERROR)
@@ -123,7 +123,7 @@ void AudioSource::setSourceMaxDistance(float maxDistance)
 	}
 }
 
-void AudioSource::setSourceRolloffFactor(float rolloffFactor)
+void AudioSource::setSourceRolloffFactor(float rolloffFactor) const
 {
 	alSourcef(mSource, AL_ROLLOFF_FACTOR, rolloffFactor);
 	if (alGetError() != AL_NO_ERROR)
@@ -136,7 +136,7 @@ void AudioSource::setSourceRolloffFactor(float rolloffFactor)
 	}
 }
 
-void AudioSource::setSourcePosition(const glm::vec3& position)
+void AudioSource::setSourcePosition(const glm::vec3& position) const
 {
 	alSource3f(mSource, AL_POSITION, position.x, position.y, position.z);
 	if (alGetError() != AL_NO_ERROR)
@@ -149,7 +149,7 @@ void AudioSource::setSourcePosition(const glm::vec3& position)
 	}
 }
 
-void AudioSource::setSourceVelocity(const glm::vec3& velocity)
+void AudioSource::setSourceVelocity(const glm::vec3& velocity) const
 {
 	alSource3f(mSource, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 	if (alGetError() != AL_NO_ERROR)
@@ -162,7 +162,7 @@ void AudioSource::setSourceVelocity(const glm::vec3& velocity)
 	}
 }
 
-void AudioSource::setSourceDirection(const glm::vec3& direction)
+void AudioSource::setSourceDirection(const glm::vec3& direction) const
 {
 	alSource3f(mSource, AL_DIRECTION, direction.x, direction.y, direction.z);
 	if (alGetError() != AL_NO_ERROR)
@@ -175,7 +175,7 @@ void AudioSource::setSourceDirection(const glm::vec3& direction)
 	}
 }
 
-void AudioSource::setSourceLoop(bool loop)
+void AudioSource::setSourceLoop(bool loop) const
 {
 	alSourcei(mSource, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
 	if (alGetError() != AL_NO_ERROR)
@@ -188,7 +188,7 @@ void AudioSource::setSourceLoop(bool loop)
 	}
 }
 
-void AudioSource::setBuffer(ALuint buffer)
+void AudioSource::setBuffer(ALuint buffer) const
 {
 	alSourcei(mSource, AL_BUFFER, buffer);
 	if (alGetError() != AL_NO_ERROR)

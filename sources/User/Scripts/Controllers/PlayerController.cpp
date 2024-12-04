@@ -53,6 +53,9 @@ void PlayerController::update(float deltaTime)
 		glm::vec2 window_size = OpenGlUtil::getWindowSize();
 		float x = (mouse_pos.x / window_size.x) * 2.0f - 1.0f;
 		float y = -(mouse_pos.y / window_size.y) * 2.0 + 1.0f;
+		/*glm::mat4 invVP = glm::inverse(m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix() *
+		                               glm::translate(glm::mat4(1), m_Camera->Position));*/
+
 		glm::mat4 invVP = glm::inverse(m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix() * glm::translate(glm::mat4(1), transforms.get_item(GetOwnerID()).position));
 		glm::vec4 screenPos = { x, y, 1, 1 };
 		glm::vec4 worldPos = (invVP * screenPos);
@@ -60,9 +63,9 @@ void PlayerController::update(float deltaTime)
 		glm::vec3 direction = glm::normalize(glm::vec3(worldPos));
 
 
+		//what if i add current player velo to proj
 
-
-		//EventHandler::GetInstance()->factoryDispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(GetOwnerID()).position, direction, 100.0f, settings::player_bitmask));
+		EventHandler::GetInstance()->factoryDispatcher.SendEvent(CreateProjectileEvent(transforms.get_item(GetOwnerID()).position, direction, 100.0f, settings::player_bitmask));
 	}
 }
 

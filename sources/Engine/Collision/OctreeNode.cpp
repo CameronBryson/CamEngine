@@ -1,206 +1,272 @@
 #include "OctreeNode.hpp"
 
-OctreeNode::OctreeNode(const BoundingBox& bounds, int capacity) : bounds(bounds), capacity(capacity), divided(false)
+OctreeNode::OctreeNode(const BoundingBox& bounds, int capacity)
+    : bounds(bounds), capacity(capacity), divided(false)
 {
 }
 
-bool OctreeNode::insert(const OctreePoint& point)
+bool OctreeNode::insert(const OctreeObject& obj)
 {
-	// Check if the point is within this node's bounds
-	if (!bounds.containsPoint(*point.position))
-	{
-		return false;
-	}
+    // If the object's bounds do not intersect this node's bounds, return false
+    if (!bounds.intersects(obj.bounds))
+    {
+        return false;
+    }
 
-	// If there's capacity and the node is not divided, add the point here
-	if (points.size() < capacity && !divided)
-	{
-		points.push_back(point);
-		return true;
-	}
+    // If there's capacity and the node is not divided, add the object here
+    if (objects.size() < capacity && !divided)
+    {
+        objects.push_back(obj);
+        return true;
+    }
 
-	// Otherwise, subdivide if not already divided
-	if (!divided)
-	{
-		subdivide();
-	}
+    // Subdivide if necessary
+    if (!divided)
+    {
+        subdivide();
+    }
 
-	// Try to insert the point into a child node
-	for (auto& child : children)
-	{
-		if (child->insert(point))
-		{
-			return true;
-		}
-	}
+    // Try to insert the object into child nodes
+    bool insertedIntoChild = false;
+    for (auto& child : children)
+    {
+        if (child->insert(obj))
+        {
+            insertedIntoChild = true;
+        }
+    }
 
-	// Should not reach here
-	return false;
+    // If the object doesn't fit into any child, keep it in this node
+    if (!insertedIntoChild)
+    {
+        objects.push_back(obj);
+    }
+
+    return true;
 }
-bool OctreeNode::remove(const OctreePoint& point)
+
+bool OctreeNode::remove(const OctreeObject& obj)
 {
-	// If the point is not within this node's bounds, it cannot be here
-	if (!bounds.containsPoint(*point.position))
-	{
-		return false;
-	}
+    // If the object's bounds do not intersect this node's bounds, it cannot be here
+    if (!bounds.intersects(obj.bounds))
+    {
+        return false;
+    }
 
-	// Attempt to find and remove the point from this node
-	auto it = std::find_if(points.begin(), points.end(),
-		[&](const OctreePoint& p) { return p.entityID == point.entityID; });
+    // Attempt to find and remove the object from this node
+    auto it = std::find_if(objects.begin(), objects.end(),
+        [&](const OctreeObject& o) { return o.entityID == obj.entityID; });
 
-	if (it != points.end())
-	{
-		points.erase(it);
-		return true;
-	}
+    if (it != objects.end())
+    {
+        objects.erase(it);
+        return true;
+    }
 
-	// Recursively attempt to remove the point from child nodes
-	if (divided)
-	{
-		for (auto& child : children)
-		{
-			if (child && child->remove(point))
-			{
-				// Optionally consolidate child nodes here
-				consolidate();
-				return true;
-			}
-		}
-	}
+    // Recursively attempt to remove the object from child nodes
+    if (divided)
+    {
+        for (auto& child : children)
+        {
+            if (child && child->remove(obj))
+            {
+                // Optionally consolidate child nodes here
+                consolidate();
+                return true;
+            }
+        }
+    }
 
-	// Point not found in this node or its descendants
-	return false;
+    // Object not found in this node or its descendants
+    return false;
 }
 
 bool OctreeNode::remove(unsigned short entityID)
 {
-	// Attempt to find and remove the point from this node
-	auto it = std::find_if(points.begin(), points.end(),
-		[&](const OctreePoint& p) { return p.entityID == entityID; });
+    // Attempt to find and remove the object from this node
+    auto it = std::find_if(objects.begin(), objects.end(),
+        [&](const OctreeObject& o) { return o.entityID == entityID; });
 
-	if (it != points.end())
-	{
-		points.erase(it);
-		return true;
-	}
+    if (it != objects.end())
+    {
+        objects.erase(it);
+        return true;
+    }
 
-	// If the node is divided, attempt to remove the point from child nodes
-	if (divided)
-	{
-		for (auto& child : children)
-		{
-			if (child && child->remove(entityID))
-			{
-				// After removal, check if children can be consolidated
-				consolidate();
-				return true;
-			}
-		}
-	}
+    // If the node is divided, attempt to remove the object from child nodes
+    if (divided)
+    {
+        for (auto& child : children)
+        {
+            if (child && child->remove(entityID))
+            {
+                // After removal, check if children can be consolidated
+                consolidate();
+                return true;
+            }
+        }
+    }
 
-	// Point not found in this node or its descendants
-	return false;
+    // Object not found in this node or its descendants
+    return false;
 }
 
-void OctreeNode::subdivide() {
+void OctreeNode::subdivide()
+{
 	const glm::vec3& min = bounds.min;
 	const glm::vec3& max = bounds.max;
 	glm::vec3 center = (min + max) * 0.5f;
 
 	// Create bounding boxes for each child
 	std::array<BoundingBox, 8> octants = {
-		// Octant 0: left-bottom-back
-		BoundingBox(min, center),
-
-		// Octant 1: right-bottom-back
-		BoundingBox({center.x, min.y, min.z}, {max.x, center.y, center.z}),
-
-		// Octant 2: left-top-back
-		BoundingBox({min.x, center.y, min.z}, {center.x, max.y, center.z}),
-
-		// Octant 3: right-top-back
-		BoundingBox({center.x, center.y, min.z}, {max.x, max.y, center.z}),
-
-		// Octant 4: left-bottom-front
-		BoundingBox({min.x, min.y, center.z}, {center.x, center.y, max.z}),
-
-		// Octant 5: right-bottom-front
-		BoundingBox({center.x, min.y, center.z}, {max.x, center.y, max.z}),
-
-		// Octant 6: left-top-front
-		BoundingBox({min.x, center.y, center.z}, {center.x, max.y, max.z}),
-
-		// Octant 7: right-top-front
-		BoundingBox(center, max)
+	    // Octant definitions...
 	};
 
 	// Create child nodes using unique_ptr
-	for (int i = 0; i < 8; ++i) {
+	for (int i = 0; i < 8; ++i)
+	{
 		children[i] = std::make_unique<OctreeNode>(octants[i], capacity);
 	}
 
 	divided = true;
 
-	// Move existing points into appropriate child nodes
-	for (const auto& point : points) {
-		for (auto& child : children) {
-			if (child->insert(point)) {
-				break;
+	// Temporary vector to hold objects that remain in this node
+	std::vector<OctreeObject> remainingObjects;
+
+	// Move existing objects into appropriate child nodes
+	for (const auto& obj : objects)
+	{
+		bool insertedIntoChild = false;
+		for (auto& child : children)
+		{
+			if (child->insert(obj))
+			{
+				insertedIntoChild = true;
+				// Do not break; allow insertion into all relevant child nodes
 			}
+		}
+
+		// If the object doesn't fit into any child, keep it in this node
+		if (!insertedIntoChild)
+		{
+			remainingObjects.push_back(obj);
 		}
 	}
 
-	// Clear the points from the current node
-	points.clear();
+	// Replace the objects in the current node with remaining ones
+	objects = std::move(remainingObjects);
 }
 
 void OctreeNode::consolidate()
 {
-	// Count total points in all children
-	int totalPoints = static_cast<int>(points.size());
-	for (const auto& child : children)
+    // Count total objects in all children
+    int totalObjects = static_cast<int>(objects.size());
+    for (const auto& child : children)
+    {
+        if (child)
+        {
+            totalObjects += static_cast<int>(child->objects.size());
+        }
+    }
+
+    // If total objects are less than capacity, merge them
+    if (totalObjects <= capacity)
+    {
+        // Collect objects from children
+        for (auto& child : children)
+        {
+            if (child)
+            {
+                objects.insert(objects.end(), child->objects.begin(), child->objects.end());
+                child.reset(); // Delete the child node
+            }
+        }
+        divided = false;
+    }
+}
+
+void OctreeNode::queryRange(const BoundingBox& range, std::vector<OctreeObject>& foundObjects) const
+{
+    // If the range doesn't intersect this node's bounds, return
+    if (!bounds.intersects(range))
+    {
+        return;
+    }
+
+    // Check objects at this node
+    for (const auto& obj : objects)
+    {
+        if (range.intersects(obj.bounds))
+        {
+            foundObjects.push_back(obj);
+        }
+    }
+
+    // If the node is divided, recursively check children
+    if (divided)
+    {
+        for (const auto& child : children)
+        {
+            child->queryRange(range, foundObjects);
+        }
+    }
+}
+
+void OctreeNode::collectPotentialCollisions(
+    std::vector<std::pair<unsigned short, unsigned short>>& collisionPairs) const
+{
+	// Collect potential collisions between objects within this node
+	if (objects.size() > 1)
 	{
-		if (child)
+		for (size_t i = 0; i < objects.size(); ++i)
 		{
-			totalPoints += static_cast<int>(child->points.size());
+			for (size_t j = i + 1; j < objects.size(); ++j)
+			{
+				collisionPairs.emplace_back(objects[i].entityID, objects[j].entityID);
+			}
 		}
 	}
 
-	// If total points are less than capacity, merge them
-	if (totalPoints <= capacity)
+	// If the node has children
+	if (divided)
 	{
-		// Collect points from children
-		for (auto& child : children)
+		// Collect collisions between objects in this node and in child nodes
+		for (const auto& child : children)
 		{
 			if (child)
 			{
-				points.insert(points.end(), child->points.begin(), child->points.end());
-				child.reset(); // Delete the child node
+				// Collide objects in current node with objects in child node
+				child->collectCollisionsWithParentObjects(objects, collisionPairs);
+
+				// Recurse into child node
+				child->collectPotentialCollisions(collisionPairs);
 			}
 		}
-		divided = false;
 	}
 }
 
-
-void OctreeNode::queryRange(const BoundingBox& range, std::vector<OctreePoint>& foundPoints) const {
-	// If the range doesn't intersect this node's bounds, return
-	if (!bounds.intersects(range)) {
-		return;
-	}
-
-	// Check points at this node
-	for (const auto& point : points) {
-		if (range.containsPoint(*point.position)) {
-			foundPoints.push_back(point);
+void OctreeNode::collectCollisionsWithParentObjects(
+    const std::vector<OctreeObject>& parentObjects,
+    std::vector<std::pair<unsigned short, unsigned short>>& collisionPairs) const
+{
+	// Collide objects in parentObjects with objects in this node
+	for (const auto& parentObj : parentObjects)
+	{
+		for (const auto& obj : objects)
+		{
+			collisionPairs.emplace_back(parentObj.entityID, obj.entityID);
 		}
 	}
 
-	// If the node is divided, recursively check children
-	if (divided) {
-		for (const auto& child : children) {
-			child->queryRange(range, foundPoints);
+	// If the node has children, recurse
+	if (divided)
+	{
+		for (const auto& child : children)
+		{
+			if (child)
+			{
+				child->collectCollisionsWithParentObjects(parentObjects, collisionPairs);
+			}
 		}
 	}
 }

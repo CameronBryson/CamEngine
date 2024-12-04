@@ -10,6 +10,7 @@ void HealthController::onCollisionEnter(unsigned short firstID, unsigned short s
 		auto& health = GetScene().getComponent<Health>(firstID);
 		auto& damage = GetScene().getComponent<Damage>(secondID);
 		health.health -= damage.damage;
+		printf("Health: %f\n", health.health);
 	}
 
 	if (GetScene().hasComponent<Health>(secondID) && GetScene().hasComponent<Damage>(firstID))
@@ -17,6 +18,7 @@ void HealthController::onCollisionEnter(unsigned short firstID, unsigned short s
 		auto& health = GetScene().getComponent<Health>(secondID);
 		auto& damage = GetScene().getComponent<Damage>(firstID);
 		health.health -= damage.damage;
+		printf("Health: %f\n", health.health);
 	}
 }
 

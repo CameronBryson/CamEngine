@@ -1,10 +1,14 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 project(CamEngine)
 
+# Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Message to display build type
+# Enable compile commands generation
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Display build type
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # Set policies
@@ -21,7 +25,7 @@ if(MSVC)
         add_compile_options(/MD /O2 /Ob2 /Oi /Ot /Oy /GL)
     endif()
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic -g -DCMAKE_EXPORT_COMPILE_COMMANDS=1)
+    add_compile_options(-Wall -Wextra -Wpedantic -g)
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         add_compile_options(-O0)
     else()
@@ -42,9 +46,6 @@ function(add_sanitizers target)
     endif()
 endfunction()
 
-# Include directories
-include_directories(${CMAKE_SOURCE_DIR}/sources)
-
 # Find packages
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
@@ -57,33 +58,50 @@ find_package(Vulkan REQUIRED)
 find_package(directx-headers CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 
-# Collect engine source files
+# Collect engine source and header files
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/Engine/*.cpp")
+file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/Engine/*.hpp")
 
-# Collect game source files
+# Collect game source and header files
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/User/*.cpp")
+file(GLOB_RECURSE GAME_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/sources/User/*.hpp")
 
-# Create engine static library
-add_library(engine_lib STATIC ${ENGINE_SOURCES})
+# Create engine static library with source and header files
+add_library(engine_lib STATIC
+    ${ENGINE_SOURCES}
+    ${ENGINE_HEADERS}
+)
 
 # Include directories for engine library
 target_include_directories(engine_lib PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/sources
-    ${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-windows/include
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/sources"
+    "${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-windows/include"
 )
 
 # Link libraries to engine library
-target_link_libraries(engine_lib PUBLIC OpenGL::GL glfw OpenAL::OpenAL Freetype::Freetype glad::glad glm::glm Vulkan::Vulkan assimp::assimp)
+target_link_libraries(engine_lib PUBLIC
+    OpenGL::GL
+    glfw
+    OpenAL::OpenAL
+    Freetype::Freetype
+    glad::glad
+    glm::glm
+    Vulkan::Vulkan
+    assimp::assimp
+)
 
-# Create game executable
-add_executable(${PROJECT_NAME} ${GAME_SOURCES})
+# Create game executable with source and header files
+add_executable(${PROJECT_NAME}
+    ${GAME_SOURCES}
+    ${GAME_HEADERS}
+)
 
 # Include directories for game executable
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/sources
-    ${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-windows/include
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/sources"
+    "${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-windows/include"
 )
 
 # Link engine library to game executable

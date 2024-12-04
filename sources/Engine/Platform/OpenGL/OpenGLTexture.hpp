@@ -8,6 +8,7 @@ class OpenGLTexture : public Texture
 {
 public:
 	explicit OpenGLTexture(const std::string& file, aiTextureType type);
+	~OpenGLTexture();
 	void bind() const override;
 	void unbind() override;
 	void deleteTexture() const override;

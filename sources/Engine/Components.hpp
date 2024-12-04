@@ -2,6 +2,7 @@
 #include <string>
 
 #include "glm/vec3.hpp"
+#include "glm/vec2.hpp"
 
 // Component for rendering-related data
 struct CRender
@@ -79,11 +80,11 @@ struct CDynamicBody
 {
     CDynamicBody(const float elasticity, const float drag, const float angularDrag)
         : elasticity(elasticity), drag(drag),  angularDrag(angularDrag) {}
-    float elasticity = 0.1f;
-    float drag = 0.0f;
+	float elasticity;
+	float drag;
     glm::vec3 velocity = {0, 0, 0};
     glm::vec3 acceleration = {0, 0, 0};
-    float angularDrag = 0.0f;
+	float angularDrag;
     glm::vec3 angularVelocity = {0, 0, 0};
     glm::vec3 angularAcceleration = {0, 0, 0};
 };
@@ -97,14 +98,18 @@ struct CBackground
 
 struct CRepeatAcceleration
 {
-    CRepeatAcceleration(const glm::vec3& acceleration, const glm::vec3& angularAcceleration) : acceleration(acceleration), angularAcceleration(angularAcceleration) {}
+	CRepeatAcceleration(const glm::vec3& acceleration, const glm::vec3& angularAcceleration)
+	    : acceleration(acceleration), angularAcceleration(angularAcceleration)
+	{
+	}
     glm::vec3 acceleration = {0, 0, 0};
     glm::vec3 angularAcceleration = {0, 0, 0};
 };
 struct CText
 {
-	CText(const std::string& text, const int font_size, const glm::vec3& color) : text(text), font_size(font_size), color(color) {}
+	CText(const std::string& text, const glm::vec2& position, const int font_size, const glm::vec3& color) : text(text), position(position),font_size(font_size), color(color) {}
 	std::string text;
 	int font_size;
+    glm::vec2 position;
 	glm::vec3 color;
 };

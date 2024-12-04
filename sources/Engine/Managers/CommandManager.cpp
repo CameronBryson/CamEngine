@@ -1,5 +1,6 @@
 #include "CommandManager.hpp"
 #include "Engine/Events/EventHandler.hpp"
+#include <Engine/Events/CommandEvents.hpp>
 
 CommandManager::CommandManager()
 {

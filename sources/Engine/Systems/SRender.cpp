@@ -24,7 +24,7 @@ void SRender::init()
 	printf("Render init\n");
 	loadShaders();
 	//need to move all of this out of here and into a scene
-	mScene->mGraphicsManager.loadFont("assets/arial.ttf", 48, "arial");
+	mScene->mGraphicsManager.loadFont("assets/Font/arial.ttf", 48, "arial");
 	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/spaceship_V1.obj"), "bottle");
 	//mScene->mGraphicsManager.loadMtl("assets/Default.mtl");
 	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/Ship.obj"), "player");
@@ -73,8 +73,10 @@ void SRender::render()
 	auto  texture_shader_2D = mScene->mGraphicsManager.getShader("2D_texture");
 	auto & direction_lights = mScene->getSparseSet<CDirectionalLight>();
 	auto & point_lights = mScene->getSparseSet<CPointLight>();
+	auto &texts = mScene->getSparseSet<CText>();
 	const auto direction_light_ids = mScene->getEntityIDs<CDirectionalLight>();
 	const auto point_light_ids = mScene->getEntityIDs<CPointLight,CTransform>();
+	const auto text_ids = mScene->getEntityIDs<CText>();
 
 	// Set up orthographic projection
 	int windowWidth = settings::window_width;
@@ -143,13 +145,12 @@ void SRender::render()
 	textShader->use();
 	textShader->setMat4("projection", ortho_projection);
 
-	std::string text = "Test Hello World 123 ABC";
-	float x = 200.0f; // x position in pixels
-	float y = windowHeight - 100.0f; // Adjust y to start from top
-	float scale = 1.0f;
-	glm::vec3 textColor = { 0.3f, 0.5f, 0.7f };
+	for (auto id : text_ids)
+	{
+		auto &text = texts.get_item(id);
+		mScene->mGraphicsManager.getFont("arial")->renderText(*textShader, text.text, text.position.x,text.position.y, text.font_size, text.color);
+	}
 
-	mScene->mGraphicsManager.getFont("arial")->renderText(*textShader, text, x, y, scale, textColor);
 
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);

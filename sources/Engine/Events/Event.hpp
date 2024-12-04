@@ -42,7 +42,7 @@ private:
 public:
 	int AddListener(T type, const Func& func)
 	{
-		std::lock_guard<std::mutex> lock(m_Mutex);
+		//std::lock_guard<std::mutex> lock(m_Mutex);
 		auto listener = std::make_shared<Func>(func);
 		m_Listeners[type].push_back(listener);
 		int handle = m_NextListenerID++;
@@ -52,7 +52,7 @@ public:
 
 	void RemoveListener(int handle)
 	{
-		std::lock_guard<std::mutex> lock(m_Mutex);
+		//std::lock_guard<std::mutex> lock(m_Mutex);
 		auto it = m_ListenerHandles.find(handle);
 		if (it != m_ListenerHandles.end())
 		{
@@ -69,7 +69,7 @@ public:
 
 	void SendEvent(const Event<T>& event)
 	{
-		std::lock_guard<std::mutex> lock(m_Mutex);
+		//std::lock_guard<std::mutex> lock(m_Mutex);
 		if (m_Listeners.find(event.GetType()) == m_Listeners.end())
 			return; // Return if no listener is there for this event.
 

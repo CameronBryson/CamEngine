@@ -61,7 +61,7 @@ void AudioManager::clear()
 	for (auto& pair : mAudioSourceMap)
 	{
 		pair.second->stop();
-		pair.second->setBuffer(0);
+		//pair.second->setBuffer(0);
 	}
 	mAudioSourceMap.clear();
 

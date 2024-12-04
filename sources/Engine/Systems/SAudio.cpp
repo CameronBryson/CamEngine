@@ -8,10 +8,10 @@ SAudio::SAudio(BaseScene* scene) : mScene(scene)
 
 void SAudio::init()
 {
-	mScene->mAudioManager.loadSoundBuffer("TestBuffer", "assets/test.ogg");
+	mScene->mAudioManager.loadSoundBuffer("TestBuffer", "assets/Audio/test.ogg");
 	mScene->mAudioManager.loadAudioSource("TestSound", "TestBuffer");
 	auto test = mScene->mAudioManager.getAudioSource("TestSound");
-	//test->play();
+	test->play();
 }
 
 void SAudio::update(float deltaTime)

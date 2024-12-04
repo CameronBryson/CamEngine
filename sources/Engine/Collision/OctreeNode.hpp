@@ -4,13 +4,13 @@
 #include <array>
 #include <glm/vec3.hpp>
 #include <memory>
-struct OctreePoint
+struct OctreeObject
 {
-	glm::vec3* position;
+	BoundingBox bounds;
 	unsigned short entityID;
 
-	OctreePoint(glm::vec3* position, unsigned short entityID)
-		: position(position), entityID(entityID)
+	OctreeObject(const BoundingBox& bounds, unsigned short entityID)
+		: bounds(bounds), entityID(entityID)
 	{
 
 	}
@@ -22,17 +22,22 @@ public:
 	OctreeNode(const BoundingBox& bounds, int capacity);
 	~OctreeNode() = default;
 
-	bool insert(const OctreePoint& point);
-	bool remove(const OctreePoint& point);
+	bool insert(const OctreeObject& obj);
+	bool remove(const OctreeObject& obj);
 	bool remove(unsigned short entityID);
 	void subdivide();
 	void consolidate();
-	void queryRange(const BoundingBox& range, std::vector<OctreePoint>& pointsInRange) const;
+	void queryRange(const BoundingBox& range, std::vector<OctreeObject>& foundObjects) const;
+	void collectPotentialCollisions(std::vector<std::pair<unsigned short, unsigned short>>& collisionPairs) const;
+	void collectCollisionsWithParentObjects(
+	    const std::vector<OctreeObject>& parentObjects,
+	    std::vector<std::pair<unsigned short, unsigned short>>& collisionPairs) const;
+
 
 private:
 	BoundingBox bounds;
 	int capacity;
-	std::vector<OctreePoint> points;
+	std::vector<OctreeObject> objects;
 	std::array<std::unique_ptr<OctreeNode>, 8> children;
 	bool divided;
 

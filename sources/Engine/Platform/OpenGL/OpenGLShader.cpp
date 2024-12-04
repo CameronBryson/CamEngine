@@ -1,14 +1,13 @@
 #include "OpenGLShader.hpp"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include "Engine/Util/EngineUtil.hpp"
-
+#include "glm/mat4x4.hpp"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
-#include "glm/mat4x4.hpp"
 
 OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath)
 {
@@ -24,12 +23,12 @@ OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fra
 	try
 	{
 		// open files
-		//vShaderFile.open(vertexPath);
+		// vShaderFile.open(vertexPath);
 		auto path = engine_util::buildPath(vertexPath);
 
 		vShaderFile.open(engine_util::buildPath(vertexPath));
 
-		//fShaderFile.open(fragmentPath);
+		// fShaderFile.open(fragmentPath);
 		fShaderFile.open(engine_util::buildPath(fragmentPath));
 
 		std::stringstream vShaderStream, fShaderStream;
@@ -72,10 +71,9 @@ OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fra
 	shaderID = ID;
 }
 
-void OpenGLShader::use() const
-{
-	glUseProgram(shaderID);
-}
+OpenGLShader::~OpenGLShader() { deleteShader(); }
+
+void OpenGLShader::use() const { glUseProgram(shaderID); }
 
 void OpenGLShader::setBool(const std::string& name, bool value) const
 {
@@ -124,8 +122,8 @@ void OpenGLShader::checkCompileError(unsigned shader, const std::string& type)
 		if (!success)
 		{
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog <<
-				"\n -- --------------------------------------------------- -- " << '\n';
+			std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"
+			          << infoLog << "\n -- --------------------------------------------------- -- " << '\n';
 		}
 	}
 	else
@@ -134,8 +132,8 @@ void OpenGLShader::checkCompileError(unsigned shader, const std::string& type)
 		if (!success)
 		{
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog <<
-				"\n -- --------------------------------------------------- -- " << '\n';
+			std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n"
+			          << infoLog << "\n -- --------------------------------------------------- -- " << '\n';
 		}
 	}
 }

@@ -80,7 +80,7 @@ unsigned short Factory::createPlayer() const
 	//registry.add_component<c_quad>(id, c_quad{.extents = {3.0f, 3.0f, 3.0f}});
 	m_Scene->addComponent<CCollider>(id, true,settings::player_bitmask);
 	m_Scene->addComponent<CModel>(id, "player");
-	m_Scene->addComponent<CDynamicBody>(id, 0.1f, 0.4f, 0.9f);
+	m_Scene->addComponent<CDynamicBody>(id, 0.1f, 0.7f, 0.9f);
 	m_Scene->addComponent<Damage>(id, 1);
 	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.8, 0.8, 0.8 }, glm::vec3{ 0.9, 0.9, 0.9 }, glm::vec3{ 0.5, 0.5, 0.5 }, 1.0f, 0.09f, 0.032f);
 
@@ -130,6 +130,7 @@ unsigned short Factory::createProjectile(const glm::vec3& position, const glm::v
 	m_Scene->addComponent<CCollider>(id,false,collisionBitmask);
 	m_Scene->addComponent<CDynamicBody>(id, 0,0,0);
 	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.4, 0.4, 0.4 }, glm::vec3{ 0.9, 0.9, 0.9 }, glm::vec3{ 0.8, 0.8, 0.8 }, 1.0f, 0.14f, 0.07f);
+	m_Scene->addComponent<CRepeatAcceleration>(id, direction * speed, glm::vec3{0, 0, 0});
 
 	// m_Scene->add_component<c_projectile>(id, c_projectile{.direction = direction, .speed = speed});
 	return id;

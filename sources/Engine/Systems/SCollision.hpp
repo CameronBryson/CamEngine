@@ -37,8 +37,8 @@ public:
 	void OnComponentRemoved(const Event<ComponentEvents>& event) const;
 private:
 	//maybe move octree to collision manager
-	BoundingBox mSceneBounds;
-	Octree mOctree;
+	//BoundingBox mSceneBounds;
+	//Octree mOctree;
 	BaseScene* mScene;
 	std::vector<int> mComponentEventHandles;
 };

@@ -79,4 +79,5 @@ void BaseScene::initSpaseSets()
     mRegistry.createSparseSet<CBackground>();
     mRegistry.createSparseSet<CPointLight>();
     mRegistry.createSparseSet<CRepeatAcceleration>();
+	mRegistry.createSparseSet<CText>();
 }

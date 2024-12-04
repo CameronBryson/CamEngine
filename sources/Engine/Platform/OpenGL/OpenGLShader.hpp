@@ -9,6 +9,8 @@ class OpenGLShader : public Shader
 public:
     explicit OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath);
 
+    ~OpenGLShader();
+
     void use() const override;
 
     void setBool(const std::string& name, bool value) const override;

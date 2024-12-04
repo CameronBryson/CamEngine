@@ -40,4 +40,6 @@ public:
 	static ALCdevice* mAudioDevice;
 	static ALCcontext* mAudioContext;
 	static std::unique_ptr<BaseScene> mCurrentScene;
+	static std::unique_ptr<AudioManager> mAudioManager;
+	static std::unique_ptr<GraphicsManager> mGraphicsManager;
 };

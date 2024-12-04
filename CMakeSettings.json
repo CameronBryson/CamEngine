@@ -1,37 +1,30 @@
 ﻿{
-  "configurations": [
-    {
-      "name": "x64-Debug",
-      "generator": "Ninja",
-      "configurationType": "Debug",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "buildRoot": "${projectDir}\\out\\build\\${name}",
-      "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "",
-      "ctestCommandArgs": "",
-      "variables": [
-        {
-          "name": "CMAKE_CXX_FLAGS",
-          "value": ""
-        },
-        {
-          "name": "CMAKE_EXE_LINKER_FLAGS",
-          "value": ""
-        }
-      ]
-    },
-    {
-      "name": "x64-Release",
-      "generator": "Ninja",
-      "configurationType": "RelWithDebInfo",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "buildRoot": "${projectDir}\\out\\build\\${name}",
-      "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "",
-      "ctestCommandArgs": ""
-    }
-  ]
+	"configurations": [
+		{
+			"name": "x64-Debug-Ninja",
+			"generator": "Ninja",
+			"configurationType": "Debug",
+			"inheritEnvironments": [ "msvc_x64_x64" ],
+			"buildRoot": "${projectDir}\\out\\build\\${name}",
+			"installRoot": "${projectDir}\\out\\install\\${name}",
+			"intellisenseOptions": {
+				"additionalCompilerArgs": "-DDEBUG_MODE",
+				"useCompilerDefaults": true
+			},
+			"intelliSenseMode": "windows-msvc-x64"
+		},
+		{
+			"name": "x64-Release-Ninja",
+			"generator": "Ninja",
+			"configurationType": "RelWithDebInfo",
+			"inheritEnvironments": [ "msvc_x64_x64" ],
+			"buildRoot": "${projectDir}\\out\\build\\${name}",
+			"installRoot": "${projectDir}\\out\\install\\${name}",
+			"intellisenseOptions": {
+				"additionalCompilerArgs": "-DNDEBUG",
+				"useCompilerDefaults": true
+			},
+			"intelliSenseMode": "windows-msvc-x64"
+		}
+	]
 }
-

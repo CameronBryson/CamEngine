@@ -31,12 +31,12 @@ void CollisionManager::handleCollisionDetectedEvent(const Event<CollisionEvents>
     auto pair = std::make_pair(newEvent.id1, newEvent.id2);
     if (!mCollisionMap.contains(pair))
     {
-        //printf("Collision Enter\n");
+        printf("Collision Enter\n");
         EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionEnterEvent(newEvent.id1, newEvent.id2));
     }
     else
     {
-        //printf("Collision Stay\n");
+        printf("Collision Stay\n");
         EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionStayEvent(newEvent.id1, newEvent.id2));
     }
     mCollisionMap[pair] = std::make_unique<CollisionManifold>(newEvent.manifold);
@@ -48,7 +48,7 @@ void CollisionManager::handleCollisionNotDetectedEvent(const Event<CollisionEven
     auto pair = std::make_pair(newEvent.id1, newEvent.id2);
     if (mCollisionMap.contains(pair))
     {
-        //printf("Collision Exit\n");
+        printf("Collision Exit\n");
         EventHandler::GetInstance()->collisionDispatcher.SendEvent(CollisionExitEvent(newEvent.id1, newEvent.id2));
         mCollisionMap.erase(pair);
     }

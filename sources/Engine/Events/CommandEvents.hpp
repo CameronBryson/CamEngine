@@ -6,7 +6,9 @@ enum class CommandEvents
 {
 	AddCommand,
 	ProcessCommands,
-	ClearCommands
+	ClearCommands,
+	ChangeScene,
+
 };
 class AddCommandEvent final : public Event<CommandEvents>
 {
@@ -19,4 +21,3 @@ class ProcessCommandEvent final : public Event<CommandEvents>
 public:
 	explicit ProcessCommandEvent() : Event<CommandEvents>(CommandEvents::ProcessCommands, "ProcessCommand") {}
 };
-

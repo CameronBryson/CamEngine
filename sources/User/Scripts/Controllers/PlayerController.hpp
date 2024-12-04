@@ -16,6 +16,6 @@ public:
 	void onCollisionEnter(unsigned short firstID, unsigned short secondID) override;
 private:
 	//should probably be in player class
-	float moveSpeed = 10.0f;
+	float moveSpeed = 20.0f;
 	float rotation_speed = 0.25f;
 };
