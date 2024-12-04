@@ -3,22 +3,31 @@
 
 CommandManager::CommandManager()
 {
-	EventHandler::GetInstance()->commandDispatcher.AddListener(CommandEvents::AddCommand, [this](const Event<CommandEvents>& event)
-		{
-			onAddCommandEvent(event);
-		});
-	EventHandler::GetInstance()->commandDispatcher.AddListener(CommandEvents::ProcessCommands, [this](const Event<CommandEvents>& event)
-		{
-			processCommands();
-		});
-	EventHandler::GetInstance()->commandDispatcher.AddListener(CommandEvents::ClearCommands, [this](const Event<CommandEvents>& event)
-		{
-			clearCommands();
-		});
+	auto* eventHandler = EventHandler::GetInstance();
+
+	// Bind command events and store handles
+	mCommandEventHandles.push_back(eventHandler->commandDispatcher.AddListener(
+	    CommandEvents::AddCommand, [this](const Event<CommandEvents>& event) { onAddCommandEvent(event); }));
+
+	mCommandEventHandles.push_back(eventHandler->commandDispatcher.AddListener(
+	    CommandEvents::ProcessCommands, [this](const Event<CommandEvents>& event) { processCommands(); }));
+
+	mCommandEventHandles.push_back(eventHandler->commandDispatcher.AddListener(
+	    CommandEvents::ClearCommands, [this](const Event<CommandEvents>& event) { clearCommands(); }));
 }
 
 CommandManager::~CommandManager()
 {
+	// Unbind event handlers
+	auto* eventHandler = EventHandler::GetInstance();
+
+	for (const auto& handle : mCommandEventHandles)
+	{
+		eventHandler->commandDispatcher.RemoveListener(handle);
+	}
+	mCommandEventHandles.clear();
+
+	// Clear any remaining commands
 	clearCommands();
 }
 

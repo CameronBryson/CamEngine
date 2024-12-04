@@ -12,18 +12,23 @@
 
 SCollision::SCollision(BaseScene* scene) : mSceneBounds(settings::world_boundry_min, settings::world_boundry_max), mOctree(mSceneBounds, 8), mScene(scene)
 {
+	mComponentEventHandles.push_back(EventHandler::GetInstance()->GetComponentDispatcher<CCollider>().AddListener(
+	    ComponentEvents::Added, [this](const Event<ComponentEvents>& event) { this->OnComponentAdded(event); }));
+	mComponentEventHandles.push_back(EventHandler::GetInstance()->GetComponentDispatcher<CCollider>().AddListener(
+	    ComponentEvents::Removed, [this](const Event<ComponentEvents>& event) { this->OnComponentRemoved(event); }));
+}
+
+SCollision::~SCollision() {
+	for (const auto& handle : mComponentEventHandles)
+	{
+		EventHandler::GetInstance()->GetComponentDispatcher<CCollider>().RemoveListener(handle);
+	}
+	mComponentEventHandles.clear();
 }
 
 void SCollision::init()
 {
-	EventHandler::GetInstance()->GetComponentDispatcher<CCollider>().AddListener(ComponentEvents::Added, [this](const Event<ComponentEvents>& event)
-		{
-			this->OnComponentAdded(event);
-		});
-	EventHandler::GetInstance()->GetComponentDispatcher<CCollider>().AddListener(ComponentEvents::Removed, [this](const Event<ComponentEvents>& event)
-		{
-			this->OnComponentRemoved(event);
-		});
+	
 
 	
 }

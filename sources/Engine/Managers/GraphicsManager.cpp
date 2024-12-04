@@ -11,7 +11,11 @@
 #include <functional>
 
 
-std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name)
+GraphicsManager::~GraphicsManager() { Clear(); }
+
+std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vShaderFile,
+                                                    const std::string& fShaderFile,
+                                                    const std::string& name)
 {
 	auto shader = Shader::createShader(vShaderFile, fShaderFile);
 	shader_map.emplace(name, shader);
@@ -93,8 +97,8 @@ void GraphicsManager::Clear()
 {
 	// Properly delete all shaders
 	for (auto& iter : shader_map)
+		iter.second->deleteShader();
 
-		//OpenGlUtil::deleteShaderProgram(iter.second->ID);
 
 	// Properly delete all textures
 	for (auto& iter : texture_map)

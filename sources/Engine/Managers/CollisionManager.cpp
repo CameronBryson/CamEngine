@@ -3,24 +3,26 @@
 
 CollisionManager::CollisionManager()
 {
-    EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::Detected, [this](const Event<CollisionEvents>& event)
-        {
-            handleCollisionDetectedEvent(event);
-        });
-    EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::NotDetected, [this](const Event<CollisionEvents>& event)
-        {
-            handleCollisionNotDetectedEvent(event);
-        });
-    EventHandler::GetInstance()->collisionDispatcher.AddListener(CollisionEvents::ProcessCollisions, [this](const Event<CollisionEvents>& event)
-        {
-            processCollisionResolutions();
-        });
+	auto* eventHandler = EventHandler::GetInstance();
+
+	// Bind collision events and store handles
+	mCollisionEventHandles.push_back(eventHandler->collisionDispatcher.AddListener(
+	    CollisionEvents::Detected,
+	    [this](const Event<CollisionEvents>& event) { handleCollisionDetectedEvent(event); }));
+
+	mCollisionEventHandles.push_back(eventHandler->collisionDispatcher.AddListener(
+	    CollisionEvents::NotDetected,
+	    [this](const Event<CollisionEvents>& event) { handleCollisionNotDetectedEvent(event); }));
+
+	mCollisionEventHandles.push_back(eventHandler->collisionDispatcher.AddListener(
+	    CollisionEvents::ProcessCollisions,
+	    [this](const Event<CollisionEvents>& event) { processCollisionResolutions(); }));
 }
 
 CollisionManager::~CollisionManager()
 {
-	//unbind event handlers
-    clearCollisions();
+	// Unbind event handlers
+	clearCollisions();
 }
 
 void CollisionManager::handleCollisionDetectedEvent(const Event<CollisionEvents>& event)
@@ -64,4 +66,15 @@ void CollisionManager::processCollisionResolutions()
 
 void CollisionManager::clearCollisions()
 {
+	auto* eventHandler = EventHandler::GetInstance();
+
+	// Unbind collision events using stored handles
+	for (const auto& handle : mCollisionEventHandles)
+	{
+		eventHandler->collisionDispatcher.RemoveListener(handle);
+	}
+	mCollisionEventHandles.clear();
+
+	// Optionally clear collision map if needed
+	mCollisionMap.clear();
 }

@@ -8,25 +8,37 @@
 #include "User/Scripts/Components/Asteroid.hpp"
 #include "User/Scripts/Components/Damage.hpp"
 
-Factory::Factory(BaseScene* scene) : m_Scene(scene) {
-	EventHandler::GetInstance()->factoryDispatcher.AddListener(FactoryEvents::CreateProjectile, [this](const Event<FactoryEvents>& event) {
-		this->onFactoryCreateProjectileEvent(event);
-	});
-	EventHandler::GetInstance()->factoryDispatcher.AddListener(FactoryEvents::CreateEnemy, [this](const Event<FactoryEvents>& event) {
-		this->onFactoryCreateEnemyEvent(event);
-	});
-	EventHandler::GetInstance()->factoryDispatcher.AddListener(FactoryEvents::CreateAsteroid, [this](const Event<FactoryEvents>& event) {
-		this->onFactoryCreateAsteroidEvent(event);
-	});
-	EventHandler::GetInstance()->factoryDispatcher.AddListener(FactoryEvents::CreateSpaceDebris, [this](const Event<FactoryEvents>& event) {
-		this->onFactoryCreateSpaceDebrisEvent(event);
-	});
+Factory::Factory(BaseScene* scene) : m_Scene(scene)
+{
+	auto* eventHandler = EventHandler::GetInstance();
 
+	// Bind factory events and store handles
+	mFactoryEventHandles.push_back(eventHandler->factoryDispatcher.AddListener(
+	    FactoryEvents::CreateProjectile,
+	    [this](const Event<FactoryEvents>& event) { onFactoryCreateProjectileEvent(event); }));
+
+	mFactoryEventHandles.push_back(eventHandler->factoryDispatcher.AddListener(
+	    FactoryEvents::CreateEnemy, [this](const Event<FactoryEvents>& event) { onFactoryCreateEnemyEvent(event); }));
+
+	mFactoryEventHandles.push_back(eventHandler->factoryDispatcher.AddListener(
+	    FactoryEvents::CreateAsteroid,
+	    [this](const Event<FactoryEvents>& event) { onFactoryCreateAsteroidEvent(event); }));
+
+	mFactoryEventHandles.push_back(eventHandler->factoryDispatcher.AddListener(
+	    FactoryEvents::CreateSpaceDebris,
+	    [this](const Event<FactoryEvents>& event) { onFactoryCreateSpaceDebrisEvent(event); }));
 }
 
 Factory::~Factory()
 {
-	//unbind here
+	auto* eventHandler = EventHandler::GetInstance();
+
+	// Unbind factory events using stored handles
+	for (const auto& handle : mFactoryEventHandles)
+	{
+		eventHandler->factoryDispatcher.RemoveListener(handle);
+	}
+	mFactoryEventHandles.clear();
 }
 
 void Factory::onFactoryCreateProjectileEvent(const Event<FactoryEvents> &event) const

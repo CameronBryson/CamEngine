@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 template<typename T>
 class Event;
 enum class CollisionEvents;
@@ -22,6 +23,8 @@ class ScriptBase
 private:
 	BaseScene* mScene;
 	unsigned short mOwnerId;
+	std::vector<int> mCollisionEventHandles;
+	std::vector<int> mScriptEventHandles;
   private:
 	virtual void init()
 	{

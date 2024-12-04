@@ -14,4 +14,5 @@ private:
 	void onInputPressEvent(const Event<InputEvents>& event);
 	void onInputReleaseEvent(const Event<InputEvents>& event);
 	std::unordered_map<int, KeyAction> mKeyMap;
+	std::vector<int> mInputEventHandles;
 };

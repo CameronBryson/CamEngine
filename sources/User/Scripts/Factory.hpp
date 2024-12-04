@@ -1,5 +1,6 @@
 #pragma once
 #include "User/Events/FactoryEvents.hpp"
+#include <vector>
 class BaseScene;
 class Factory
 {
@@ -22,4 +23,6 @@ public:
 	unsigned short createSpaceDebris(const glm::vec3& position, const glm::vec3& direction, const glm::vec3& spin, float speed) const;
 private:
 	BaseScene* m_Scene;
+	std::vector<int> mFactoryEventHandles;
+
 };

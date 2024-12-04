@@ -240,6 +240,7 @@ void SRender::drawUi(SparseSet<CTransform> &transforms, const Shader &shader) co
 
 void SRender::loadShaders() const
 {
+
 	mScene->mGraphicsManager.loadShader(
 		"sources/Shaders/vertex.vert",
 		"sources/Shaders/3D_texture.frag", "3D_texture");

@@ -5,6 +5,8 @@
 
 #include "Engine/Util/OpenALUtil.hpp"
 
+AudioManager::~AudioManager() { clear(); }
+
 void AudioManager::loadSoundBuffer(const std::string& soundName, const std::string& soundPath)
 {
 	ALuint buffer = OpenALUtil::createSoundBuffer(soundPath);

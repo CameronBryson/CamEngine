@@ -20,6 +20,7 @@ class GraphicsManager
 {
 public:
 	GraphicsManager() = default;
+	~GraphicsManager();
 
 	// Load and generate a shader program from vertex and fragment shader source files
 	std::shared_ptr<Shader> loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name);

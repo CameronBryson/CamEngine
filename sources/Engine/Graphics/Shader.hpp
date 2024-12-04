@@ -28,6 +28,8 @@ public:
 
     virtual void setMat4(const std::string& name, const glm::mat4& mat) const = 0;
 
+    virtual void deleteShader() = 0;
+
 
 	static std::shared_ptr<Shader> createShader(const std::string& vertexPath, const std::string& fragmentPath);
 };

@@ -1,8 +1,10 @@
 #include "TestScene.hpp"
+#include "PlayScene.hpp"
 #include "User/Scripts/Controllers/TestSceneController.hpp"
 #include "User/Scripts/Controllers/PlayerController.hpp"
 #include "User/Scripts/Controllers/CameraController.hpp"
 #include "User/Scripts/Factory.hpp"
+#include "Engine/Managers/GameManager.hpp"
 TestScene::TestScene() : BaseScene()
 {
 
@@ -35,6 +37,7 @@ void TestScene::update(float dt)
 void TestScene::lateUpdate(float dt)
 {
 	BaseScene::lateUpdate(dt);
+	
 }
 void TestScene::render()
 {
@@ -43,6 +46,7 @@ void TestScene::render()
 void TestScene::lateRender()
 {
 	BaseScene::lateRender();
+	GameManager::loadScene<PlayScene>();
 }
 void TestScene::shutdown()
 {

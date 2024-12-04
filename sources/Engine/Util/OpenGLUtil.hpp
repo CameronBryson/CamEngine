@@ -20,6 +20,7 @@ public:
 	static void drawText(const char* text, int posX, int posY, int fontSize, glm::vec3& color);
 
 	static void clearBackground();
+	
 
 	static glm::vec2 convertPointToScreen(glm::vec2& point);
 

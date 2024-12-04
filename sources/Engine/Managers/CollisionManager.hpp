@@ -26,5 +26,6 @@ public:
 
 private:
     std::unordered_map<std::pair<unsigned short, unsigned short>, std::unique_ptr<CollisionManifold>, HashPair> mCollisionMap;
+	std::vector<int> mCollisionEventHandles;
     //maybe put octee here
 };

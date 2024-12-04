@@ -28,6 +28,8 @@ public:
 
     void setMat4(const std::string& name, const glm::mat4& value) const override;
 
+    void deleteShader() override;
+
 	void checkCompileError(unsigned shader, const std::string& type);
 private:
     unsigned int shaderID;

@@ -15,4 +15,5 @@ public:
 
 private:
     std::queue<std::shared_ptr<ICommand>> mCommandQueue;
+	std::vector<int> mCommandEventHandles;
 };

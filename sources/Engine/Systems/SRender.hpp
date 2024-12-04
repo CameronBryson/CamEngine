@@ -18,6 +18,6 @@ private:
     void drawModels(SparseSet<CTransform>& transforms, const Shader& shader) const;
     void drawColliders(SparseSet<CTransform>& transforms, const Shader& shader) const;
     void drawUi(SparseSet<CTransform>& transforms, const Shader& shader) const;
-    void loadShaders() const;
+	void loadShaders() const;
     BaseScene* mScene;
 };

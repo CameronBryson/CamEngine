@@ -7,19 +7,27 @@ InputManager::InputManager()
 	{
 		mKeyMap[i] = KeyAction::None;
 	}
-	EventHandler::GetInstance()->inputDispatcher.AddListener(InputEvents::KeyPress, [this](const Event<InputEvents>& event)
-		{
-			onInputPressEvent(event);
-		});
-	EventHandler::GetInstance()->inputDispatcher.AddListener(InputEvents::KeyRelease, [this](const Event<InputEvents>& event)
-		{
-			onInputReleaseEvent(event);
-		});
+
+	auto* eventHandler = EventHandler::GetInstance();
+
+	// Bind input events and store handles
+	mInputEventHandles.push_back(eventHandler->inputDispatcher.AddListener(
+	    InputEvents::KeyPress, [this](const Event<InputEvents>& event) { onInputPressEvent(event); }));
+
+	mInputEventHandles.push_back(eventHandler->inputDispatcher.AddListener(
+	    InputEvents::KeyRelease, [this](const Event<InputEvents>& event) { onInputReleaseEvent(event); }));
 }
 
 InputManager::~InputManager()
 {
-	
+	auto* eventHandler = EventHandler::GetInstance();
+
+	// Unbind input events using stored handles
+	for (const auto& handle : mInputEventHandles)
+	{
+		eventHandler->inputDispatcher.RemoveListener(handle);
+	}
+	mInputEventHandles.clear();
 }
 
 KeyAction InputManager::getKeyAction(int key)

@@ -14,6 +14,10 @@ class EventHandler
 {
 public:
     EventHandler() {}
+    ~EventHandler()
+    {
+
+    }
     static EventHandler* GetInstance();
     EventDispatcher<CollisionEvents> collisionDispatcher;
     EventDispatcher<FactoryEvents> factoryDispatcher;

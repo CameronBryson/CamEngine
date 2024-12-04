@@ -5,8 +5,7 @@
 
 #include <iostream>
 
-#include "Engine/Util/OpenALUtil.hpp"
-#include "Engine/Util/OpenGLUtil.hpp"
+
 
 GLFWwindow * GameManager::mGameWindow = nullptr;
 std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
@@ -15,8 +14,6 @@ ALCcontext* GameManager::mAudioContext = nullptr;
 
 void GameManager::init()
 {
-    OpenGlUtil::init();
-	OpenALUtil::init();
     mCurrentScene->init();
 	mCurrentScene->lateInit();
 }
@@ -38,8 +35,6 @@ void GameManager::shutdown()
     mCurrentScene->shutdown();
 	mCurrentScene->lateShutdown();
     mCurrentScene = nullptr;
-	OpenALUtil::shutdown();
-	OpenGlUtil::shutdown();
 }
 
 

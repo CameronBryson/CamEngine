@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <mutex>
 template <typename T>
 	class Event
 {
@@ -31,35 +32,52 @@ class EventDispatcher
 {
 private:
 	using Func = std::function<void(const Event<T>&)>;
-	std::map<T, std::vector<Func>> m_Listeners;
+	using ListenerHandle = std::shared_ptr<Func>;
+
+	std::map<T, std::vector<ListenerHandle>> m_Listeners;
 	int m_NextListenerID = 0;
-	std::map<int, std::pair<T, typename std::vector<Func>::iterator>> m_ListenerHandles;
+	std::map<int, std::pair<T, ListenerHandle>> m_ListenerHandles;
+	std::mutex m_Mutex;
+
 public:
 	int AddListener(T type, const Func& func)
 	{
-		m_Listeners[type].push_back(func);
+		std::lock_guard<std::mutex> lock(m_Mutex);
+		auto listener = std::make_shared<Func>(func);
+		m_Listeners[type].push_back(listener);
 		int handle = m_NextListenerID++;
-		m_ListenerHandles[handle] = { type, std::prev(m_Listeners[type].end()) };
+		m_ListenerHandles[handle] = {type, listener};
 		return handle;
 	}
+
 	void RemoveListener(int handle)
 	{
+		std::lock_guard<std::mutex> lock(m_Mutex);
 		auto it = m_ListenerHandles.find(handle);
-		if (it != m_ListenerHandles.end()) {
+		if (it != m_ListenerHandles.end())
+		{
 			const auto& listenerInfo = it->second;
 			auto& listeners = m_Listeners[listenerInfo.first];
-			listeners.erase(listenerInfo.second);
+			auto listenerIt = std::find(listeners.begin(), listeners.end(), listenerInfo.second);
+			if (listenerIt != listeners.end())
+			{
+				listeners.erase(listenerIt);
+			}
 			m_ListenerHandles.erase(it);
 		}
 	}
+
 	void SendEvent(const Event<T>& event)
 	{
+		std::lock_guard<std::mutex> lock(m_Mutex);
 		if (m_Listeners.find(event.GetType()) == m_Listeners.end())
-			return; // Return if no Listner is there for this event.
+			return; // Return if no listener is there for this event.
 
-		// Loop though all Listeners. If the event is not handled yet, we continue to process it.
-		for (auto&& listener : m_Listeners.at(event.GetType())) {
-			if (!event.Handled()) listener(event);
+		// Loop through all listeners. If the event is not handled yet, we continue to process it.
+		for (const auto& listener : m_Listeners.at(event.GetType()))
+		{
+			if (!event.Handled())
+				(*listener)(event);
 		}
 	}
 };

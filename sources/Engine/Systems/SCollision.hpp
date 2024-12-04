@@ -18,6 +18,7 @@ class SCollision
 {
 public:
 	SCollision(BaseScene* scene);
+	~SCollision();
 	void init();
 	void update();
 	void shutdown();
@@ -39,4 +40,5 @@ private:
 	BoundingBox mSceneBounds;
 	Octree mOctree;
 	BaseScene* mScene;
+	std::vector<int> mComponentEventHandles;
 };

@@ -9,6 +9,7 @@ class AudioManager
 {
 public:
 	AudioManager() = default;
+	~AudioManager();
 	void loadSoundBuffer(const std::string& soundName, const std::string& soundPath);
 	ALuint getSoundBuffer(const std::string& soundName);
 
