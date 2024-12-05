@@ -21,6 +21,8 @@ class GraphicsManager
 public:
 	GraphicsManager() = default;
 	~GraphicsManager();
+	void loadResources();
+	void unloadResources();
 
 	// Load and generate a shader program from vertex and fragment shader source files
 	std::shared_ptr<Shader> loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name);
@@ -38,8 +40,8 @@ public:
 	std::shared_ptr<Mesh> getMesh(const std::string& name);
 
 	// Create and store a material
-	std::shared_ptr<Material> createMaterial(const std::string& name, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess, float transparency, std::shared_ptr<Texture> ambientMap, std::shared_ptr<Texture> diffuseMap,
-		std::shared_ptr<Texture> specularMap, std::shared_ptr<Texture> normalMap);
+	std::shared_ptr<Material> createMaterial(const std::string& name, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, glm::vec3 emissive, float shininess, float opticalDensity, float transparency, int illum, std::shared_ptr<Texture> ambientMap, std::shared_ptr<Texture> diffuseMap,
+		std::shared_ptr<Texture> specularMap, std::shared_ptr<Texture> normalMap, std::shared_ptr<Texture> roughnessMap);
 	// Retrieve a stored material
 	std::shared_ptr<Material> getMaterial(const std::string& name);
 

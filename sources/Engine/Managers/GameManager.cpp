@@ -2,16 +2,30 @@
 #include <thread>
 #include <chrono>
 #include "Engine/Base/BaseScene.hpp"
+#include "Engine/Managers/AudioManager.hpp"
+#include "Engine/Managers/GraphicsManager.hpp"
 
 #include <iostream>
 
+#include <Engine/Util/OpenGLUtil.hpp>
+#include <Engine/Util/OpenALUtil.hpp>
 
 
 GLFWwindow * GameManager::mGameWindow = nullptr;
 std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
 ALCdevice* GameManager::mAudioDevice = nullptr;
 ALCcontext* GameManager::mAudioContext = nullptr;
-
+std::unique_ptr<AudioManager> GameManager::mAudioManager = nullptr;
+std::unique_ptr<GraphicsManager> GameManager::mGraphicsManager = nullptr;
+void GameManager::firstInit()
+{
+	OpenGlUtil::init();
+	OpenALUtil::init();
+	mAudioManager = std::make_unique<AudioManager>();
+	mGraphicsManager = std::make_unique<GraphicsManager>();
+	mGraphicsManager->loadResources();
+	mAudioManager->loadResources();
+}
 void GameManager::init()
 {
     mCurrentScene->init();
@@ -35,6 +49,15 @@ void GameManager::shutdown()
     mCurrentScene->shutdown();
 	mCurrentScene->lateShutdown();
     mCurrentScene = nullptr;
+
+}
+
+void GameManager::finalShutdown() 
+{
+	mAudioManager->unloadResources();
+	mGraphicsManager->unloadResources();
+	OpenALUtil::shutdown();
+	OpenGlUtil::shutdown();
 }
 
 

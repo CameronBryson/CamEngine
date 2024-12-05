@@ -1,10 +1,8 @@
 #pragma once
 #include "Engine/Storage/Registry.hpp"
-#include "Engine/Managers/GraphicsManager.hpp"
 #include "Engine/Managers/CollisionManager.hpp"
 #include "Engine/Managers/CommandManager.hpp"
 #include "Engine/Managers/InputManager.hpp"
-#include "Engine/Managers/AudioManager.hpp"
 
 #include "Engine/Systems/SCollision.hpp"
 #include "Engine/Systems/SPhysics.hpp"
@@ -60,11 +58,11 @@ public:
 	Registry mRegistry;
 
 	//hold data
-	GraphicsManager mGraphicsManager;
+	//GraphicsManager mGraphicsManager;
 	CommandManager mCommandManager;
 	CollisionManager mCollisionManager;
 	InputManager mInputManager;
-	AudioManager mAudioManager;
+	//AudioManager mAudioManager;
 
 	//dont hold data or very little data
 	SCollision mCollisionSystem;

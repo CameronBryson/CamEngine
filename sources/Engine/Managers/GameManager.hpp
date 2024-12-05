@@ -3,18 +3,20 @@
 
 #include "Engine/Util/platform.hpp"
 #include "alc.h"
-
-
+class GraphicsManager;
+class AudioManager;
 class BaseScene;
 
 
 class GameManager
 {
 public:
+	static void firstInit();
 	static void init();
 	static void update(float dt);
 	static void render();
 	static void shutdown();
+	static void finalShutdown();
 	static void gameLoop();
 
 	template <typename T>

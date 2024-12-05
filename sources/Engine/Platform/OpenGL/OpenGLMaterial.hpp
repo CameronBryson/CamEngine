@@ -9,8 +9,10 @@
 class OpenGLMaterial : public Material
 {
 public:
-	explicit OpenGLMaterial(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess, float transparency, std::shared_ptr<Texture> ambientMap, std::shared_ptr<Texture> diffuseMap,
-		std::shared_ptr<Texture> specularMap, std::shared_ptr<Texture> normalMap);
+	explicit OpenGLMaterial(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, glm::vec3 emmisive, float shininess,float opticalDesnity, float transparency, int illum, std::shared_ptr<Texture> ambientMap, std::shared_ptr<Texture> diffuseMap,
+	                        std::shared_ptr<Texture> specularMap,
+	                        std::shared_ptr<Texture> normalMap,
+	                        std::shared_ptr<Texture> roughnessMap);
 
 	void bind(const Shader& shader) override;
 	void unbind() override;
@@ -18,10 +20,15 @@ public:
 	glm::vec3 ambient; //Ka
 	glm::vec3 diffuse; //Kd
 	glm::vec3 specular; //Ks
+	glm::vec3 emisive; // Ke
 	float shininess;
+	float opticalDensity;
 	float transparency;
+	int illum;
 	std::shared_ptr<Texture> ambientMap;
 	std::shared_ptr<Texture> diffuseMap;
 	std::shared_ptr<Texture> specularMap;
 	std::shared_ptr<Texture> normalMap;
+	std::shared_ptr<Texture> roughnessMap;
 };
+

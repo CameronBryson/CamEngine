@@ -5,7 +5,7 @@
 #include "Engine/Util/platform.hpp"
 
 #include "Engine/Util/OpenGLUtil.hpp"
-
+#include "Engine/Managers/GameManager.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"
 #include <string>
 #include "Engine/Base/BaseScene.hpp"
@@ -22,29 +22,7 @@ void SRender::init()
 {
 	
 	printf("Render init\n");
-	loadShaders();
-	//need to move all of this out of here and into a scene
-	mScene->mGraphicsManager.loadFont("assets/Font/arial.ttf", 48, "arial");
-	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/spaceship_V1.obj"), "bottle");
-	//mScene->mGraphicsManager.loadMtl("assets/Default.mtl");
-	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/Ship.obj"), "player");
-
-	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/sphere.obj"), "sphere");
-	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/cube.obj"), "cube");
-	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/quad.obj"), "quad");
-	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/skybox.obj"), "skybox");
-	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/asteroid.obj"), "asteroid");
-	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/sat.obj"), "sat");
-	mScene->mGraphicsManager.loadModel(engine_util::buildPath("assets/enemy_ship.obj"), "enemy");
-	//mScene->mGraphicsManager.createModelFromObj("assets/Ship.obj", "player");
-
-	/*mScene->mGraphicsManager.createModelFromObj("assets/sphere.obj", "sphere");
-	mScene->mGraphicsManager.createModelFromObj("assets/cube.obj", "cube");
-	mScene->mGraphicsManager.createModelFromObj("assets/quad.obj", "quad");
-	mScene->mGraphicsManager.createModelFromObj("assets/skybox.obj", "skybox");
-	mScene->mGraphicsManager.createModelFromObj("assets/asteroid.obj", "asteroid");
-	mScene->mGraphicsManager.createModelFromObj("assets/sat.obj", "sat");
-	mScene->mGraphicsManager.createModelFromObj("assets/enemy_ship.obj", "enemy");*/
+	
 	glClearColor(0, 0, 0, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	// Enable backface culling
@@ -63,14 +41,14 @@ void SRender::init()
 void SRender::render()
 {
 	OpenGlUtil::clearBackground();
-
+	
 	auto & view_matrix = mScene->mMainCamera.GetViewMatrix();
 	auto & proj_matrix = mScene->mMainCamera.GetProjectionMatrix();
 	auto & transforms = mScene->getSparseSet<CTransform>();
-	auto  texture_shader_3D = mScene->mGraphicsManager.getShader("3D_texture");
-	auto  color_shader_3D = mScene->mGraphicsManager.getShader("3D_color");
-	auto  color_shader_2D = mScene->mGraphicsManager.getShader("2D_color");
-	auto  texture_shader_2D = mScene->mGraphicsManager.getShader("2D_texture");
+	auto texture_shader_3D = GameManager::mGraphicsManager->getShader("3D_texture");
+	auto color_shader_3D = GameManager::mGraphicsManager->getShader("3D_color");
+	auto color_shader_2D = GameManager::mGraphicsManager->getShader("2D_color");
+	auto texture_shader_2D = GameManager::mGraphicsManager->getShader("2D_texture");
 	auto & direction_lights = mScene->getSparseSet<CDirectionalLight>();
 	auto & point_lights = mScene->getSparseSet<CPointLight>();
 	auto &texts = mScene->getSparseSet<CText>();
@@ -141,14 +119,15 @@ void SRender::render()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	auto textShader = mScene->mGraphicsManager.getShader("text");
+	auto textShader = GameManager::mGraphicsManager->getShader("text");
 	textShader->use();
 	textShader->setMat4("projection", ortho_projection);
 
 	for (auto id : text_ids)
 	{
 		auto &text = texts.get_item(id);
-		mScene->mGraphicsManager.getFont("arial")->renderText(*textShader, text.text, text.position.x,text.position.y, text.font_size, text.color);
+		GameManager::mGraphicsManager->getFont("arial")->renderText(*textShader, text.text, text.position.x,
+		                                                            text.position.y, text.font_size, text.color);
 	}
 
 
@@ -173,7 +152,7 @@ void SRender::drawModels(SparseSet<CTransform> & transforms, const Shader & shad
 			glm::scale(glm::mat4(1.0f), transform.scale) *
 			glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
 		shader.setMat4("model", model_matrix);
-		mScene->mGraphicsManager.getModel(model.name)->draw(shader, mScene->mGraphicsManager);
+		GameManager::mGraphicsManager->getModel(model.name)->draw(shader, *GameManager::mGraphicsManager);
 	}
 	for( auto id : mScene->getEntityIDs<CModel, CTransform>() )
 	{
@@ -183,7 +162,7 @@ void SRender::drawModels(SparseSet<CTransform> & transforms, const Shader & shad
 			glm::scale(glm::mat4(1.0f), transform.scale) *
 			glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
 		shader.setMat4("model", model_matrix);
-		mScene->mGraphicsManager.getModel(model.name)->draw(shader,mScene->mGraphicsManager);
+		GameManager::mGraphicsManager->getModel(model.name)->draw(shader, *GameManager::mGraphicsManager);
 	}
 
 }
@@ -205,8 +184,8 @@ void SRender::drawColliders(SparseSet<CTransform> & transforms, const Shader & s
 				* glm::scale(glm::mat4(1.0f), quad.extents * transform.scale);
 			shader.setMat4("model", model_matrix);
 
-			auto mesh = mScene->mGraphicsManager.getMesh("Cube");
-			mesh->draw(shader,mScene->mGraphicsManager);
+			auto mesh = GameManager::mGraphicsManager->getMesh("Cube");
+			mesh->draw(shader, *GameManager::mGraphicsManager);
 		}
 		else if(mScene->hasComponent<CSphereBounds>(id) )
 		{
@@ -216,8 +195,8 @@ void SRender::drawColliders(SparseSet<CTransform> & transforms, const Shader & s
 				glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z) *
 				glm::scale(glm::mat4(1.0f), transform.scale * (sphere.radius*2));
 			shader.setMat4("model", model_matrix);
-			auto  mesh = mScene->mGraphicsManager.getMesh("Sphere");
-			mesh->draw(shader, mScene->mGraphicsManager);
+			auto mesh = GameManager::mGraphicsManager->getMesh("Sphere");
+			mesh->draw(shader, *GameManager::mGraphicsManager);
 		}
 	}
 }
@@ -233,29 +212,9 @@ void SRender::drawUi(SparseSet<CTransform> &transforms, const Shader &shader) co
 								 glm::scale(glm::mat4(1.0f), transform.scale) *
 								 glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
 		shader.setMat4("model", model_matrix);
-		auto mesh = mScene->mGraphicsManager.getMesh("Quad");
-		mesh->draw(shader,mScene->mGraphicsManager);
+		auto mesh = GameManager::mGraphicsManager->getMesh("Quad");
+		mesh->draw(shader, *GameManager::mGraphicsManager);
 	}
 }
 
-
-void SRender::loadShaders() const
-{
-
-	mScene->mGraphicsManager.loadShader(
-		"sources/Shaders/vertex.vert",
-		"sources/Shaders/3D_texture.frag", "3D_texture");
-	mScene->mGraphicsManager.loadShader(
-			"sources/Shaders/vertex.vert",
-			"sources/Shaders/3D_color.frag", "3D_color");
-	mScene->mGraphicsManager.loadShader(
-		"sources/Shaders/vertex.vert",
-		"sources/Shaders/2D_color.frag", "2D_texture");
-	mScene->mGraphicsManager.loadShader(
-			"sources/Shaders/vertex.vert",
-			"sources/Shaders/2D_color.frag", "2D_color");
-	mScene->mGraphicsManager.loadShader(
-		"sources/Shaders/text.vert",
-		"sources/Shaders/text.frag", "text");
-}
 

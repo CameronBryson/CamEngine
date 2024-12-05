@@ -12,6 +12,29 @@
 
 GraphicsManager::~GraphicsManager() { Clear(); }
 
+void GraphicsManager::loadResources() 
+{
+	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/3D_texture.frag", "3D_texture");
+	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/3D_color.frag", "3D_color");
+	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/2D_color.frag", "2D_texture");
+	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/2D_color.frag", "2D_color");
+	loadShader("sources/Shaders/text.vert", "sources/Shaders/text.frag", "text");
+
+	loadFont("assets/Font/arial.ttf", 48, "arial");
+	loadModel(engine_util::buildPath("assets/f40.obj"), "bottle");
+	loadModel(engine_util::buildPath("assets/Ship.obj"), "player");
+
+	loadModel(engine_util::buildPath("assets/sphere.obj"), "sphere");
+	loadModel(engine_util::buildPath("assets/cube.obj"), "cube");
+	loadModel(engine_util::buildPath("assets/quad.obj"), "quad");
+	loadModel(engine_util::buildPath("assets/skybox.obj"), "skybox");
+	loadModel(engine_util::buildPath("assets/asteroid.obj"), "asteroid");
+	loadModel(engine_util::buildPath("assets/sat.obj"), "sat");
+	loadModel(engine_util::buildPath("assets/enemy_ship.obj"), "enemy");
+}
+
+void GraphicsManager::unloadResources() { Clear(); }
+
 std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vShaderFile,
                                                     const std::string& fShaderFile,
                                                     const std::string& name)
@@ -51,15 +74,19 @@ std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& nam
                                                           glm::vec3 ambient,
                                                           glm::vec3 diffuse,
                                                           glm::vec3 specular,
+	glm::vec3 emmisive,
                                                           float shininess,
+                                                          float opticalDensity,
                                                           float transparency,
+	int illum,
                                                           std::shared_ptr<Texture> ambientMap,
                                                           std::shared_ptr<Texture> diffuseMap,
                                                           std::shared_ptr<Texture> specularMap,
-                                                          std::shared_ptr<Texture> normalMap)
+                                                          std::shared_ptr<Texture> normalMap,
+														std::shared_ptr<Texture> roughnessMap)
 {
-	auto material = Material::createMaterial(ambient, diffuse, specular, shininess, transparency, ambientMap,
-	                                         diffuseMap, specularMap, normalMap);
+	auto material = Material::createMaterial(ambient, diffuse, specular, emmisive, shininess,opticalDensity, transparency, illum, ambientMap,
+	                                         diffuseMap, specularMap, normalMap,roughnessMap);
 	material_map.emplace(name, material);
 	return material;
 }
@@ -150,6 +177,9 @@ void GraphicsManager::processMesh(aiMesh* mesh, const aiScene* scene)
 	std::vector<Vertex> vertices;
 	std::vector<unsigned> indices;
 
+	// Check if mesh has tangents and bitangents
+	bool hasTangents = mesh->HasTangentsAndBitangents();
+
 	// Process vertices
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -176,6 +206,26 @@ void GraphicsManager::processMesh(aiMesh* mesh, const aiScene* scene)
 		else
 		{
 			vertex.texture_coordinates = glm::vec2(0.0f);
+		}
+
+		// Tangents
+		if (hasTangents)
+		{
+			vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+		}
+		else
+		{
+			vertex.tangent = glm::vec3(1.0f, 0.0f, 0.0f); // Default tangent
+		}
+
+		// Bitangents
+		if (hasTangents)
+		{
+			vertex.bitangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+		}
+		else
+		{
+			vertex.bitangent = glm::vec3(0.0f, 1.0f, 0.0f); // Default bitangent
 		}
 
 		vertices.push_back(vertex);
@@ -216,12 +266,15 @@ std::string GraphicsManager::processMaterial(aiMaterial* material, const aiScene
 		return material_name;
 	}
 
-	// Initialize material properties
-	glm::vec3 ambient(0.0f);   // Ambient color
-	glm::vec3 diffuse(0.0f);   // Diffuse color
-	glm::vec3 specular(0.0f);  // Specular color
-	float shininess = 0.0f;    // Shininess
-	float transparency = 1.0f; // Transparency
+	// Initialize material properties with reasonable defaults
+	glm::vec3 ambient(0.1f, 0.1f, 0.1f);  // Ambient color
+	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);  // Diffuse color
+	glm::vec3 specular(1.0f, 1.0f, 1.0f); // Specular color
+	glm::vec3 emissive(0.0f, 0.0f, 0.0f); // Emissive color
+	float shininess = 32.0f;              // Shininess
+	float opticalDensity = 1.0f;          // Optical density (index of refraction)
+	float transparency = 1.0f;            // Transparency factor
+	int illum = 2;                        // Illumination model
 
 	// Retrieve material colors
 	aiColor3D color(0.0f, 0.0f, 0.0f);
@@ -237,23 +290,34 @@ std::string GraphicsManager::processMaterial(aiMaterial* material, const aiScene
 	{
 		specular = glm::vec3(color.r, color.g, color.b);
 	}
+	if (material->Get(AI_MATKEY_COLOR_EMISSIVE, color) == AI_SUCCESS)
+	{
+		emissive = glm::vec3(color.r, color.g, color.b);
+	}
+
+	// Retrieve scalar properties
 	material->Get(AI_MATKEY_SHININESS, shininess);
+	material->Get(AI_MATKEY_REFRACTI, opticalDensity);
+	material->Get(AI_MATKEY_OPACITY, transparency);
+	material->Get(AI_MATKEY_SHADING_MODEL, illum);
 
 	// Initialize textures
 	std::shared_ptr<Texture> ambientMap = nullptr;
 	std::shared_ptr<Texture> diffuseMap = nullptr;
 	std::shared_ptr<Texture> specularMap = nullptr;
 	std::shared_ptr<Texture> normalMap = nullptr;
+	std::shared_ptr<Texture> roughnessMap = nullptr;
 
 	// Helper lambda to load a texture of a given type
-	auto loadTextureOfType = [this, material](aiTextureType type) -> std::shared_ptr<Texture>
+	auto loadTextureOfType = [this, material](aiTextureType type,
+	                                          const std::string& typeName) -> std::shared_ptr<Texture>
 	{
 		if (material->GetTextureCount(type) > 0)
 		{
 			aiString texPath;
 			material->GetTexture(type, 0, &texPath);
 			std::string path = texPath.C_Str();
-			std::cout << path << std::endl;
+			std::cout << "Loading " << typeName << " texture: " << path << std::endl;
 
 			// Check if texture is already loaded
 			if (texture_map.find(path) != texture_map.end())
@@ -269,20 +333,20 @@ std::string GraphicsManager::processMaterial(aiMaterial* material, const aiScene
 	};
 
 	// Load textures
-	ambientMap = loadTextureOfType(aiTextureType_AMBIENT);
-	diffuseMap = loadTextureOfType(aiTextureType_DIFFUSE);
-	specularMap = loadTextureOfType(aiTextureType_SPECULAR);
-	normalMap = loadTextureOfType(aiTextureType_NORMALS);
+	ambientMap = loadTextureOfType(aiTextureType_AMBIENT, "ambient");
+	diffuseMap = loadTextureOfType(aiTextureType_DIFFUSE, "diffuse");
+	specularMap = loadTextureOfType(aiTextureType_SPECULAR, "specular");
+	normalMap = loadTextureOfType(aiTextureType_NORMALS, "normal");
 	// If normal map not found under aiTextureType_NORMALS, try aiTextureType_HEIGHT
 	if (!normalMap)
 	{
-		normalMap = loadTextureOfType(aiTextureType_HEIGHT);
+		normalMap = loadTextureOfType(aiTextureType_HEIGHT, "height (used as normal)");
 	}
+	roughnessMap = loadTextureOfType(aiTextureType_DIFFUSE_ROUGHNESS, "roughness");
 
-	// Create and store the material
-	createMaterial(material_name, ambient, diffuse, specular, shininess, transparency, ambientMap, diffuseMap,
-	               specularMap, normalMap);
-	;
+	// Create and store the material with the new properties
+	createMaterial(material_name, ambient, diffuse, specular, emissive, shininess, opticalDensity, transparency, illum,
+	               ambientMap, diffuseMap, specularMap, normalMap, roughnessMap);
 
 	return material_name;
 }

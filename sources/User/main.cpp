@@ -1,6 +1,4 @@
 #include "Engine/Managers/GameManager.hpp"
-#include "Engine/Util/OpenALUtil.hpp"
-#include "Engine/Util/OpenGLUtil.hpp"
 #include "User/Scenes/PlayScene.hpp"
 #include "User/Scenes/TestScene.hpp"
 #include "User/Scenes/MenuScene.hpp"
@@ -9,12 +7,11 @@
 
 int main()
 {
-	OpenGlUtil::init();
-	OpenALUtil::init();
+	GameManager::firstInit();
 	GameManager::loadScene<MenuScene>();
 	GameManager::gameLoop();
 	GameManager::shutdown();
-	OpenALUtil::shutdown();
-	OpenGlUtil::shutdown();
+	GameManager::finalShutdown();
+	
 	return 0;
 }

@@ -42,7 +42,7 @@ void PlayScene::init()
 	mFactory.createBoundary(glm::vec3{0, 45, 0}, glm::vec3{45, 1, 1});
 
 	auto skybox = mFactory.createSkybox(glm::vec3{0, 0, 0}, 10);
-	mFactory.createDirectionalLight(glm::vec3{0, -0.2, -1.0}, glm::vec3{0.6, 0.6, 0.6}, glm::vec3{0.5f, 0.5f, 0.5f},
+	mFactory.createDirectionalLight(glm::vec3{0, -0.2, -1.0}, glm::vec3{0.0, 0.0, 0.0}, glm::vec3{0.1f, 0.1f, 0.1f},
 	                                glm::vec3{0.2, 0.2, 0.2});
 
 	mCommandManager.processCommands();

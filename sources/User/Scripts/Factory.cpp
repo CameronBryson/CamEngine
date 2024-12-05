@@ -82,7 +82,7 @@ unsigned short Factory::createPlayer() const
 	m_Scene->addComponent<CModel>(id, "player");
 	m_Scene->addComponent<CDynamicBody>(id, 0.1f, 0.7f, 0.9f);
 	m_Scene->addComponent<Damage>(id, 1);
-	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.8, 0.8, 0.8 }, glm::vec3{ 0.9, 0.9, 0.9 }, glm::vec3{ 0.5, 0.5, 0.5 }, 1.0f, 0.09f, 0.032f);
+	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.0, 0.0, 0.0 }, glm::vec3{ 0.4, 0.4, 0.4 }, glm::vec3{ 0.2, 0.2, 0.2 }, 1.0f, 0.09f, 0.032f);
 
 	return id;
 
@@ -129,7 +129,7 @@ unsigned short Factory::createProjectile(const glm::vec3& position, const glm::v
 	m_Scene->addComponent<CModel>(id, "sphere");
 	m_Scene->addComponent<CCollider>(id,false,collisionBitmask);
 	m_Scene->addComponent<CDynamicBody>(id, 0,0,0);
-	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.4, 0.4, 0.4 }, glm::vec3{ 0.9, 0.9, 0.9 }, glm::vec3{ 0.8, 0.8, 0.8 }, 1.0f, 0.14f, 0.07f);
+	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.0, 0.0, 0.0 }, glm::vec3{ 0.2, 0.2, 0.2 }, glm::vec3{ 0.3, 0.3, 0.3 }, 1.0f, 0.14f, 0.07f);
 	m_Scene->addComponent<CRepeatAcceleration>(id, direction * speed, glm::vec3{0, 0, 0});
 
 	// m_Scene->add_component<c_projectile>(id, c_projectile{.direction = direction, .speed = speed});
@@ -147,7 +147,7 @@ unsigned short Factory::createEnemyShip(const glm::vec3& position, float radius,
 	m_Scene->addComponent<CCollider>(id, false, settings::enemy_bitmask);
 	m_Scene->addComponent<CDynamicBody>(id, 0.5,0.8,0.5);
 	m_Scene->addComponent<Damage>(id, 1);
-	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.5, 0.5, 0.5 }, glm::vec3{ 1, 1, 1 }, glm::vec3{ 1, 1, 1 }, 1.0f, 0.14f, 0.07f);
+	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.0, 0.0, 0.0 }, glm::vec3{ 0.3, 0.3, 0.3 }, glm::vec3{ 0.2, 0.2, 0.2 }, 1.0f, 0.14f, 0.07f);
 
 	return id;
 }
@@ -161,7 +161,7 @@ unsigned short Factory::createAsteroid(const glm::vec3& position, float radius, 
 	m_Scene->addComponent<CCollider>(id, false, settings::enemy_bitmask);
 	m_Scene->addComponent<CSphereBounds>(id, radius);
 	m_Scene->addComponent<CDynamicBody>(id,0.5, 0.8f, 0.3f);
-	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.5, 0.5, 0.5 }, glm::vec3{ 0.9, 0.9, 0.9 }, glm::vec3{ 0.5, 0.5, 0.5 }, 1.0f, 0.09f, 0.032f);
+	m_Scene->addComponent<CPointLight>(id, glm::vec3{ 0.0, 0.0, 0.0 }, glm::vec3{ 0.3, 0.3, 0.3 }, glm::vec3{ 0.3, 0.3, 0.3 }, 1.0f, 0.09f, 0.032f);
 	m_Scene->addComponent<CRepeatAcceleration>(id, glm::vec3{ 0, 0, 1 } * speed, glm::vec3{ -0.2, -0.2, -0.2 });
 	m_Scene->addComponent<Damage>(id, 10);
 	return id;

@@ -1,5 +1,6 @@
 #include "SAudio.hpp"
-
+#include "Engine/Managers/GameManager.hpp"
+#include "Engine/Managers/AudioManager.hpp"
 #include "Engine/Base/BaseScene.hpp"
 
 SAudio::SAudio(BaseScene* scene) : mScene(scene)
@@ -8,9 +9,8 @@ SAudio::SAudio(BaseScene* scene) : mScene(scene)
 
 void SAudio::init()
 {
-	mScene->mAudioManager.loadSoundBuffer("TestBuffer", "assets/Audio/test.ogg");
-	mScene->mAudioManager.loadAudioSource("TestSound", "TestBuffer");
-	auto test = mScene->mAudioManager.getAudioSource("TestSound");
+	
+	auto test = GameManager::mAudioManager->getAudioSource("TestSound");	
 	test->play();
 }
 

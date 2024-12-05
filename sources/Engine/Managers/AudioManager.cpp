@@ -7,6 +7,14 @@
 
 AudioManager::~AudioManager() { clear(); }
 
+void AudioManager::loadResources()
+{
+	loadSoundBuffer("TestBuffer", "assets/Audio/test.ogg");
+	loadAudioSource("TestSound", "TestBuffer");
+}
+
+void AudioManager::unloadResources() { clear(); }
+
 void AudioManager::loadSoundBuffer(const std::string& soundName, const std::string& soundPath)
 {
 	ALuint buffer = OpenALUtil::createSoundBuffer(soundPath);
