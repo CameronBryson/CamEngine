@@ -1,5 +1,6 @@
 #include "CollisionManager.hpp"
 #include "Engine/Events/EventHandler.hpp"
+#include "Engine/Collision/CollisionManifold.hpp"
 
 CollisionManager::CollisionManager()
 {

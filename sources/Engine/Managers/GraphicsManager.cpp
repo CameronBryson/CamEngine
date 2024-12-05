@@ -6,6 +6,12 @@
 #include <iostream>
 
 #include "Engine/Graphics/Shader.hpp"
+#include "Engine//Graphics/Material.hpp"
+#include "Engine/Graphics/Model.hpp"
+#include "Engine/Graphics/Font.hpp"
+#include "Engine/Graphics/Texture.hpp"
+#include "Engine/Graphics/Mesh.hpp"
+#include "Engine/Graphics/Vertex.hpp"
 #include "Engine/Util/OpenGLUtil.hpp"
 #include "stb_image.h"
 
@@ -21,7 +27,7 @@ void GraphicsManager::loadResources()
 	loadShader("sources/Shaders/text.vert", "sources/Shaders/text.frag", "text");
 
 	loadFont("assets/Font/arial.ttf", 48, "arial");
-	loadModel(engine_util::buildPath("assets/f40.obj"), "bottle");
+	loadModel(engine_util::buildPath("assets/porsche.obj"), "bottle");
 	loadModel(engine_util::buildPath("assets/Ship.obj"), "player");
 
 	loadModel(engine_util::buildPath("assets/sphere.obj"), "sphere");

@@ -2,8 +2,8 @@
 #include <unordered_map>
 #include <memory>
 #include <utility>
-#include "Engine/Collision/CollisionManifold.hpp"
 #include "Engine/Events/CollisionEvents.hpp"
+class CollisionManifold;
 struct HashPair
 {
     std::size_t operator()(const std::pair<unsigned short, unsigned short>& p) const

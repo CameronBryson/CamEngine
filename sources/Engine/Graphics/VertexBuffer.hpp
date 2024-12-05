@@ -1,7 +1,7 @@
 #pragma once
-#include "Engine/Graphics/Vertex.hpp"
 #include <vector>
 #include <memory>
+#include "Engine/Graphics/Vertex.hpp"
 class VertexBuffer
 {
 public:

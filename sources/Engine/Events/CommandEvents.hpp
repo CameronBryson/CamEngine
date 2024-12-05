@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/Events/Event.hpp"
-#include "Engine/ICommand.hpp"
 #include <memory>
+class ICommand;
 enum class CommandEvents
 {
 	AddCommand,

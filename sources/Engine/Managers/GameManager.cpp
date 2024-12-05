@@ -1,18 +1,22 @@
-#include "GameManager.hpp"
-#include <thread>
-#include <chrono>
-#include "Engine/Base/BaseScene.hpp"
 #include "Engine/Managers/AudioManager.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"
+#include "GameManager.hpp"
+#include <chrono>
+#include <thread>
 
 #include <iostream>
 
-#include <Engine/Util/OpenGLUtil.hpp>
 #include <Engine/Util/OpenALUtil.hpp>
+#include <Engine/Util/OpenGLUtil.hpp>
 
-
+#include <Engine/Base/BaseScene.hpp>
+#include <AL/alc.h>
+#include <GLFW/glfw3.h>
+#include <memory>
 GLFWwindow * GameManager::mGameWindow = nullptr;
 std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
+std::unique_ptr<BaseScene> GameManager::mPendingScene = nullptr;
+
 ALCdevice* GameManager::mAudioDevice = nullptr;
 ALCcontext* GameManager::mAudioContext = nullptr;
 std::unique_ptr<AudioManager> GameManager::mAudioManager = nullptr;
@@ -96,6 +100,13 @@ void GameManager::gameLoop()
         if( frameTime < fpsLimit )
         {
             std::this_thread::sleep_for(std::chrono::duration<double>(fpsLimit - frameTime));
+        }
+        if (mPendingScene)
+        {
+			shutdown();
+		    mCurrentScene = std::move(mPendingScene);
+		    init();
+
         }
     }
 }

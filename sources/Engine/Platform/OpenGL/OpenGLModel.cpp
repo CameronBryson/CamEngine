@@ -1,5 +1,6 @@
 #include "OpenGLModel.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"
+#include "Engine/Graphics/Mesh.hpp"
 
 OpenGLModel::OpenGLModel(const std::vector<std::string>& meshes)
 {

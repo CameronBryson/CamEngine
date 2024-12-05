@@ -4,9 +4,8 @@
 #include <memory>
 
 #include "Engine/Graphics/Mesh.hpp"
-#include "Engine/Graphics/Vertex.hpp"
-#include "Engine/Graphics/VertexArray.hpp"
-#include "Engine/Graphics/VertexBuffer.hpp"
+class Vertex;
+class VertexArray;
 class GraphicsManager;
 class Shader;
 class OpenGLMesh : public Mesh

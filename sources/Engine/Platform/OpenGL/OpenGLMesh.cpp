@@ -3,6 +3,9 @@
 #include "Engine/Managers/GraphicsManager.hpp"
 #include "Engine/Graphics/Shader.hpp"
 #include "Engine/Graphics/Material.hpp"
+#include "Engine/Graphics/IndexBuffer.hpp"
+#include "Engine/Graphics/VertexArray.hpp"
+#include "Engine/Graphics/VertexBuffer.hpp"
 
 OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::string& materialName) :mIndexCount(indices.size()), mVertexCount(vertices.size()), material_name(materialName)
 {

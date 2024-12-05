@@ -136,11 +136,6 @@ void main()
         result += calculatePointLight(pointLights[i], norm, FragPos, viewDir);
     }
 
-    // Add emissive color based on illumination model
-    if (material.illum == 7) { // Example illumination model that supports emissive
-        result += material.emissiveColor;
-    }
-
     // Gamma Correction
     float gamma = 2.2;
     result = pow(result, vec3(1.0 / gamma));

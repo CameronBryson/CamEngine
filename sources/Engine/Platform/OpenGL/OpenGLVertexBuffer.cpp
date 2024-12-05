@@ -1,5 +1,5 @@
 #include "OpenGLVertexBuffer.hpp"
-
+#include "Engine/Graphics/Vertex.hpp"
 OpenGLVertexBuffer::OpenGLVertexBuffer(const std::vector<Vertex>& vertices)
 {
 	glGenBuffers(1, &mVBO);

@@ -5,17 +5,17 @@
 #include <vector>
 #include <memory>
 #include "glm/vec3.hpp"
-#include "Engine/Graphics/Shader.hpp"
-#include "Engine/Graphics/Vertex.hpp"
-#include "Engine/Graphics/Model.hpp"
-#include "Engine/Graphics/Material.hpp"
-#include "Engine/Graphics/Texture.hpp"
-#include "Engine/Graphics/Mesh.hpp"
-#include "Engine/Graphics/Font.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "Engine/Graphics/Vertex.hpp"
+class Shader;
+class Texture;
+class Mesh;
+class Material;
+class Model;
+class Font;
 class GraphicsManager
 {
 public:

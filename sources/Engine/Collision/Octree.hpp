@@ -1,7 +1,6 @@
 #pragma once
-#include "OctreeNode.hpp"
 #include <memory> 
-
+#include "OctreeNode.hpp"
 class Octree
 {
 public:

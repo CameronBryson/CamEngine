@@ -5,7 +5,7 @@
 #include "Engine/Graphics/Texture.hpp"
 #include "Engine/Graphics/Material.hpp"
 
-
+class Texture;
 class OpenGLMaterial : public Material
 {
 public:

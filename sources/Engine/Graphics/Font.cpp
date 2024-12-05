@@ -1,5 +1,6 @@
 #include "Font.hpp"
 #include "Engine/Util/EngineUtil.hpp"
+#include "Engine/Graphics/Shader.hpp"
 #include <iostream>
 
 Font::Font(const std::string& fontPath, float fontSize)

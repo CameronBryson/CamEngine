@@ -7,6 +7,10 @@
 #include "Engine/Util/OpenGLUtil.hpp"
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"
+#include "Engine/Graphics/Shader.hpp"
+#include "Engine/Graphics/Model.hpp"
+#include "Engine/Graphics/Mesh.hpp"
+#include "Engine/Graphics/Font.hpp"
 #include <string>
 #include "Engine/Base/BaseScene.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
@@ -34,6 +38,9 @@ void SRender::init()
 	// Optionally, specify the front face winding order (default is GL_CCW)
 	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
+	// Enable blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 
@@ -131,7 +138,7 @@ void SRender::render()
 	}
 
 
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 }
 

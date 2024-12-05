@@ -1,8 +1,7 @@
 #pragma once
-#include <memory>
-
 #include "Engine/Util/platform.hpp"
-#include "alc.h"
+#include <AL/alc.h>
+#include <memory>
 class GraphicsManager;
 class AudioManager;
 class BaseScene;
@@ -22,10 +21,7 @@ public:
 	template <typename T>
 	static void loadScene()
 	{
-		if (mCurrentScene)
-			shutdown();
-		mCurrentScene = std::make_unique<T>();
-		init();
+		mPendingScene = std::make_unique<T>();
 	}
 
 	static GLFWwindow* get_glfw_window();
@@ -42,6 +38,8 @@ public:
 	static ALCdevice* mAudioDevice;
 	static ALCcontext* mAudioContext;
 	static std::unique_ptr<BaseScene> mCurrentScene;
+	static std::unique_ptr<BaseScene> mPendingScene;
 	static std::unique_ptr<AudioManager> mAudioManager;
 	static std::unique_ptr<GraphicsManager> mGraphicsManager;
+	//static std::function<std::unique_ptr<BaseScene>()> mPendingScene;
 };

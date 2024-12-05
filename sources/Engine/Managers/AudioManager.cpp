@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <ostream>
+#include "Engine/Audio/AudioSource.hpp"
 
 #include "Engine/Util/OpenALUtil.hpp"
 
@@ -11,6 +12,9 @@ void AudioManager::loadResources()
 {
 	loadSoundBuffer("TestBuffer", "assets/Audio/test.ogg");
 	loadAudioSource("TestSound", "TestBuffer");
+
+	loadSoundBuffer("ButtonBuffer", "assets/Audio/Button.ogg");
+	loadAudioSource("ButtonSound", "ButtonBuffer");
 }
 
 void AudioManager::unloadResources() { clear(); }

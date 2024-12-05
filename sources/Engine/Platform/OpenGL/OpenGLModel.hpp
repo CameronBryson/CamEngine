@@ -2,8 +2,8 @@
 #include <vector>
 #include <string>
 
-#include "Engine/Graphics/Mesh.hpp"
 #include "Engine/Graphics/Model.hpp"
+class Mesh;
 class Shader;
 class GraphicsManager;
 class OpenGLModel : public Model

@@ -2,9 +2,10 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <AL/al.h>
 
 #include "Engine/Audio/AudioListener.hpp"
-#include "Engine/Audio/AudioSource.hpp"
+class AudioSource;
 class AudioManager
 {
 public:

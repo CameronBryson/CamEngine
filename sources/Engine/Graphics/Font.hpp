@@ -3,11 +3,10 @@
 #include <string>
 #include <unordered_map>
 #include <glm/vec3.hpp>
-#include "Engine/Graphics/Shader.hpp"
 #include "Engine/Util/platform.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
+class Shader;
 struct Character
 {
     GLuint TextureID;   // ID handle of the glyph texture

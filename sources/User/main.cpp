@@ -8,7 +8,9 @@
 int main()
 {
 	GameManager::firstInit();
-	GameManager::loadScene<MenuScene>();
+	GameManager::mCurrentScene = std::make_unique<MenuScene>();
+	GameManager::init();
+	//GameManager::loadScene<MenuScene>();
 	GameManager::gameLoop();
 	GameManager::shutdown();
 	GameManager::finalShutdown();

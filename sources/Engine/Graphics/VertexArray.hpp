@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "VertexBuffer.hpp"
-#include "IndexBuffer.hpp"
+class VertexBuffer;
+class IndexBuffer;
 class VertexArray
 {
 public:

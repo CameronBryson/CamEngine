@@ -2,6 +2,7 @@
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Managers/AudioManager.hpp"
 #include "Engine/Base/BaseScene.hpp"
+#include "Engine/Audio/AudioSource.hpp"
 
 SAudio::SAudio(BaseScene* scene) : mScene(scene)
 {

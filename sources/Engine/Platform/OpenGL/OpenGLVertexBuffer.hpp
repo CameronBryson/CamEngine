@@ -1,8 +1,8 @@
 #pragma once
 #include "Engine/Graphics/VertexBuffer.hpp"
 #include "Engine/Util/platform.hpp"
-#include "Engine/Graphics/Vertex.hpp"
 #include <vector>
+class Vertex;
 class OpenGLVertexBuffer : public VertexBuffer
 {
 public:

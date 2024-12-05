@@ -2,6 +2,7 @@
 #include "Engine/Graphics/IndexBuffer.hpp"
 #include "Engine/Util/platform.hpp"
 #include "Engine/Graphics/Vertex.hpp"
+#include "Engine/Graphics/VertexBuffer.hpp"
 OpenGLVertexArray::OpenGLVertexArray()
 {
 	glGenVertexArrays(1, &mVAO);

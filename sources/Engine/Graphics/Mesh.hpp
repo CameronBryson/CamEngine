@@ -2,8 +2,7 @@
 #include <memory>
 #include <vector>
 #include <string>
-
-#include "Vertex.hpp"
+#include "Engine/Graphics/Vertex.hpp"
 class GraphicsManager;
 class Shader;
 class Mesh
