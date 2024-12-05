@@ -27,7 +27,7 @@ void GraphicsManager::loadResources()
 	loadShader("sources/Shaders/text.vert", "sources/Shaders/text.frag", "text");
 
 	loadFont("assets/Font/arial.ttf", 48, "arial");
-	loadModel(engine_util::buildPath("assets/porsche.obj"), "bottle");
+	loadModel(engine_util::buildPath("assets/stang.obj"), "bottle");
 	loadModel(engine_util::buildPath("assets/Ship.obj"), "player");
 
 	loadModel(engine_util::buildPath("assets/sphere.obj"), "sphere");
@@ -134,7 +134,7 @@ void GraphicsManager::Clear()
 std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& file, const std::string& name)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(file, aiProcess_Triangulate | aiProcess_FlipUVs |
+	const aiScene* scene = importer.ReadFile(file, aiProcess_FlipUVs |
 	                                                   aiProcess_CalcTangentSpace | aiProcess_OptimizeMeshes |
 	                                                   aiProcess_GenSmoothNormals | aiProcess_ValidateDataStructure);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)

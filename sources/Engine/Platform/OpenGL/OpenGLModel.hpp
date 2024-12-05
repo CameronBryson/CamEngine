@@ -20,5 +20,5 @@ public:
 private:
 	std::vector<std::string> meshes;
 	int mTotalVertexCount = 0;
-	std::vector<std::shared_ptr<Mesh>> mMeshes;
+	//std::vector<std::shared_ptr<Mesh>> mMeshes;
 };

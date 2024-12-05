@@ -32,8 +32,8 @@ void PlayScene::init()
 	addComponent<BoundaryController>(controller, this, controller);
 	addComponent<HealthController>(controller, this, controller);
 
-	auto text = mRegistry.createEntity();
-	addComponent<CText>(text, "Test Hello World 123 ABC", glm::vec2{200.0f, 100.0f}, 1.0f, glm::vec3{0.3f, 0.5f, 0.7f});
+	//auto text = mRegistry.createEntity();
+	//addComponent<CText>(text, "Test Hello World 123 ABC", glm::vec2{200.0f, 100.0f}, 1.0f, glm::vec3{0.3f, 0.5f, 0.7f});
 
 
 	mFactory.createBoundary(glm::vec3{-45, 0, 0}, glm::vec3{1, 45, 1});
