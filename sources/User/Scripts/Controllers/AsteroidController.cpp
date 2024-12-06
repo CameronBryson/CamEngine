@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "AsteroidController.hpp"
 #include "User/Scripts/Components/Asteroid.hpp"
 #include "Engine/Base/BaseScene.hpp"

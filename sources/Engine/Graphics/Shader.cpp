@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "Shader.hpp"
 
 #include "Engine/Platform/OpenGL/OpenGLShader.hpp"

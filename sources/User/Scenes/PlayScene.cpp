@@ -1,6 +1,7 @@
+#include "Engine/pch.hpp"
+#include "PlayScene.hpp"
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Util/GameSettings.hpp"
-#include "PlayScene.hpp"
 #include "TestScene.hpp"
 #include "User/Scripts/Controllers/AsteroidController.hpp"
 #include "User/Scripts/Controllers/BoundaryController.hpp"

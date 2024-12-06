@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "OpenGLMesh.hpp"
 #include "Engine/Util/platform.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"

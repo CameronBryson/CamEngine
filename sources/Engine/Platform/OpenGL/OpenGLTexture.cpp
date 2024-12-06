@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "OpenGLTexture.hpp"
 
 #include <stdexcept>
@@ -31,11 +32,6 @@ OpenGLTexture::OpenGLTexture(const std::string& file, aiTextureType type)
 		format = GL_RED;
 		internalFormat = GL_RED;
 	}
-	else if (nrChannels == 2)
-	{
-		format = GL_RG;
-		internalFormat = GL_RG;
-	}
 	else if (nrChannels == 3)
 	{
 		format = GL_RGB;
@@ -55,16 +51,23 @@ OpenGLTexture::OpenGLTexture(const std::string& file, aiTextureType type)
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	OpenGLTexture::unbind();
 
 	stbi_image_free(data);
 }
 
 OpenGLTexture::~OpenGLTexture() { deleteTexture(); }
 
-void OpenGLTexture::bind() const { glBindTexture(GL_TEXTURE_2D, textureID); }
+void OpenGLTexture::bind(unsigned int slot ) const
+{ 
+	glActiveTexture(GL_TEXTURE0 + slot);
+	glBindTexture(GL_TEXTURE_2D, textureID); 
+}
 
-void OpenGLTexture::unbind() { glBindTexture(GL_TEXTURE_2D, 0); }
+void OpenGLTexture::unbind(unsigned int slot) 
+{ 
+	glActiveTexture(GL_TEXTURE0 + slot);
+	glBindTexture(GL_TEXTURE_2D, 0); 
+}
 
 void OpenGLTexture::deleteTexture() const { glDeleteTextures(1, &textureID); }
 

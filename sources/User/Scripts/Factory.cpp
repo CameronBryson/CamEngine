@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "Factory.hpp"
 #include "Engine/Events/Event.hpp"
 #include "User/Events/FactoryEvents.hpp"

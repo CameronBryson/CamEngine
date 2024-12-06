@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "OctreeNode.hpp"
 
 OctreeNode::OctreeNode(const BoundingBox& bounds, int capacity)

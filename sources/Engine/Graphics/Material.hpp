@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <memory>
-#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 class Shader;
 class Texture;
 
@@ -12,8 +12,14 @@ public:
 	virtual void bind(const Shader& shader) = 0;
 	virtual void unbind() = 0;
 
-	static std::shared_ptr<Material> createMaterial(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, glm::vec3 emmisive, float shininess,float opicalDensity, float transparency, int illum, std::shared_ptr<Texture> ambientMap, std::shared_ptr<Texture> diffuseMap,
-	                                                std::shared_ptr<Texture> specularMap,
-	                                                std::shared_ptr<Texture> normalMap,
-	                                                std::shared_ptr<Texture> roughnessMap);
+	static std::shared_ptr<Material> createMaterial(const glm::vec4& albedo,
+	                        float metallic,
+	                        float roughness,
+	                        float AO,
+	                        std::shared_ptr<Texture> albedoTexture,
+	                        std::shared_ptr<Texture> normalTexture,
+	                        std::shared_ptr<Texture> metallicTexture,
+	                        std::shared_ptr<Texture> roughNessTexture,
+	                        std::shared_ptr<Texture> AOTexture,
+	                        std::shared_ptr<Texture> emissiveTexture);
 };

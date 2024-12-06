@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "WaveController.hpp"
 
 #include "Engine/Util/GameSettings.hpp"

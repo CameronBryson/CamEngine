@@ -1,5 +1,6 @@
-#include "Engine/Base/BaseScene.hpp"
+#include "Engine/pch.hpp"
 #include "SpinningLightController.hpp"
+#include "Engine/Base/BaseScene.hpp"
 void SpinningLightController::update(float dt)
 {
 	const auto modelIds = GetScene().mRegistry.getEntityIDs<CPointLight, CTransform>();

@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "OpenGLVertexBuffer.hpp"
 #include "Engine/Graphics/Vertex.hpp"
 OpenGLVertexBuffer::OpenGLVertexBuffer(const std::vector<Vertex>& vertices)

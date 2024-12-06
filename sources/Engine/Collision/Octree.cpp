@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "Octree.hpp"
 
 Octree::Octree(const BoundingBox& boundary, int capacity)

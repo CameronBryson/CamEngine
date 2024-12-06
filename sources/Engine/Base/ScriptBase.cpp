@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "ScriptBase.hpp"
 
 #include "BaseScene.hpp"

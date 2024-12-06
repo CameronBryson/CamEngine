@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "EngineUtil.hpp"
 
 #include <Engine/Events/EventHandler.hpp>
@@ -67,9 +68,10 @@ std::string engine_util::buildPath(const std::string& path)
 {
 //#ifdef _WIN32
 	auto current_path = std::filesystem::current_path();
-	auto parent_path = current_path.parent_path().parent_path().parent_path();
-	return (parent_path / path).make_preferred().string();
-//#else
+auto parent_path = current_path.parent_path().parent_path().parent_path();
+
+	auto new_path = (parent_path / path).make_preferred().string();
+	return new_path;
 	//return "../" + path;
 	//return (std::filesystem::current_path() / path).string();
 //#endif

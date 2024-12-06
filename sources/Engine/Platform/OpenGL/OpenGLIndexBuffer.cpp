@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "OpenGLIndexBuffer.hpp"
 
 OpenGLIndexBuffer::OpenGLIndexBuffer(const std::vector<unsigned>& indices) : mCount(indices.size())

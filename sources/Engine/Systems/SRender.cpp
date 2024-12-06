@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "SRender.hpp"
 
 #include "Engine/Components.hpp"
@@ -41,6 +42,7 @@ void SRender::init()
 	// Enable blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glDepthMask(GL_FALSE);
 }
 
 
@@ -52,10 +54,10 @@ void SRender::render()
 	auto & view_matrix = mScene->mMainCamera.GetViewMatrix();
 	auto & proj_matrix = mScene->mMainCamera.GetProjectionMatrix();
 	auto & transforms = mScene->getSparseSet<CTransform>();
-	auto texture_shader_3D = GameManager::mGraphicsManager->getShader("3D_texture");
-	auto color_shader_3D = GameManager::mGraphicsManager->getShader("3D_color");
-	auto color_shader_2D = GameManager::mGraphicsManager->getShader("2D_color");
-	auto texture_shader_2D = GameManager::mGraphicsManager->getShader("2D_texture");
+	auto texture_shader_3D = GameManager::mGraphicsManager->getShader("PBR");
+	//auto color_shader_3D = GameManager::mGraphicsManager->getShader("3D_color");
+	//auto color_shader_2D = GameManager::mGraphicsManager->getShader("2D_color");
+	//auto texture_shader_2D = GameManager::mGraphicsManager->getShader("2D_texture");
 	auto & direction_lights = mScene->getSparseSet<CDirectionalLight>();
 	auto & point_lights = mScene->getSparseSet<CPointLight>();
 	auto &texts = mScene->getSparseSet<CText>();
@@ -106,40 +108,40 @@ void SRender::render()
 	}
 	
 	drawModels(transforms, *texture_shader_3D);
-//#ifdef _DEBUG
-	color_shader_3D->use();
-	color_shader_3D->setMat4("projection", proj_matrix);
-	color_shader_3D->setMat4("view", view_matrix);
-	drawColliders(transforms, *color_shader_3D);
-//#endif
-
-
-
-	color_shader_2D->use();
-
-	color_shader_2D->setMat4("projection", ortho_projection);
-	color_shader_2D->setMat4("view", glm::mat4(1.0f));
-	drawUi(transforms, *color_shader_2D);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	auto textShader = GameManager::mGraphicsManager->getShader("text");
-	textShader->use();
-	textShader->setMat4("projection", ortho_projection);
-
-	for (auto id : text_ids)
-	{
-		auto &text = texts.get_item(id);
-		GameManager::mGraphicsManager->getFont("arial")->renderText(*textShader, text.text, text.position.x,
-		                                                            text.position.y, text.font_size, text.color);
-	}
-
-
-	//glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+////#ifdef _DEBUG
+//	color_shader_3D->use();
+//	color_shader_3D->setMat4("projection", proj_matrix);
+//	color_shader_3D->setMat4("view", view_matrix);
+//	drawColliders(transforms, *color_shader_3D);
+////#endif
+//
+//
+//
+//	color_shader_2D->use();
+//
+//	color_shader_2D->setMat4("projection", ortho_projection);
+//	color_shader_2D->setMat4("view", glm::mat4(1.0f));
+//	drawUi(transforms, *color_shader_2D);
+//
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//	glDisable(GL_DEPTH_TEST);
+//	glEnable(GL_BLEND);
+//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//
+//	auto textShader = GameManager::mGraphicsManager->getShader("text");
+//	textShader->use();
+//	textShader->setMat4("projection", ortho_projection);
+//
+//	for (auto id : text_ids)
+//	{
+//		auto &text = texts.get_item(id);
+//		GameManager::mGraphicsManager->getFont("arial")->renderText(*textShader, text.text, text.position.x,
+//		                                                            text.position.y, text.font_size, text.color);
+//	}
+//
+//
+//	//glDisable(GL_BLEND);
+//	glEnable(GL_DEPTH_TEST);
 }
 
 void SRender::shutdown()

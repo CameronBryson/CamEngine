@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "Font.hpp"
 #include "Engine/Util/EngineUtil.hpp"
 #include "Engine/Graphics/Shader.hpp"
@@ -174,5 +175,5 @@ void Font::renderText(Shader& shader, const std::string& text, float x, float y,
 
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 }

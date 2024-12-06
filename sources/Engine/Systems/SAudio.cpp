@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "SAudio.hpp"
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Managers/AudioManager.hpp"
@@ -11,8 +12,8 @@ SAudio::SAudio(BaseScene* scene) : mScene(scene)
 void SAudio::init()
 {
 	
-	auto test = GameManager::mAudioManager->getAudioSource("TestSound");	
-	test->play();
+	/*auto test = GameManager::mAudioManager->getAudioSource("TestSound");	
+	test->play();*/
 }
 
 void SAudio::update(float deltaTime)

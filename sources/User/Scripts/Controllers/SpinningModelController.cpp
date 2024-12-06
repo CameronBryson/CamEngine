@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "SpinningModelController.hpp"
 #include "Engine/Base/BaseScene.hpp"
 void SpinningModelController::update(float dt)

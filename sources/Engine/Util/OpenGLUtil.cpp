@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "OpenGLUtil.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"
 #include <stb_image.h>

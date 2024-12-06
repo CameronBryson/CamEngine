@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "VertexArray.hpp"
 #include "Engine/Platform/OpenGL/OpenGLVertexArray.hpp"
 

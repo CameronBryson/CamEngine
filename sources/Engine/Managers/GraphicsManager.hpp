@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -40,8 +41,17 @@ public:
 	std::shared_ptr<Mesh> getMesh(const std::string& name);
 
 	// Create and store a material
-	std::shared_ptr<Material> createMaterial(const std::string& name, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, glm::vec3 emissive, float shininess, float opticalDensity, float transparency, int illum, std::shared_ptr<Texture> ambientMap, std::shared_ptr<Texture> diffuseMap,
-		std::shared_ptr<Texture> specularMap, std::shared_ptr<Texture> normalMap, std::shared_ptr<Texture> roughnessMap);
+	std::shared_ptr<Material> createMaterial(const std::string& name,
+	                                         const glm::vec4& albedo,
+	                                         float metallic,
+	                                         float roughness,
+	                                         float AO,
+	                                         std::shared_ptr<Texture> albedoTexture,
+	                                         std::shared_ptr<Texture> normalTexture,
+	                                         std::shared_ptr<Texture> metallicTexture,
+	                                         std::shared_ptr<Texture> roughNessTexture,
+	                                         std::shared_ptr<Texture> AOTexture,
+	                                         std::shared_ptr<Texture> emissiveTexture);
 	// Retrieve a stored material
 	std::shared_ptr<Material> getMaterial(const std::string& name);
 

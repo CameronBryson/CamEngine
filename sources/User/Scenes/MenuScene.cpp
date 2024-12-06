@@ -1,3 +1,4 @@
+#include "Engine/pch.hpp"
 #include "MenuScene.hpp"
 #include "User/Scripts/Controllers/MainMenuController.hpp"
 #include "User/Scripts/Controllers/SpinningModelController.hpp"
@@ -9,12 +10,12 @@ void MenuScene::init()
 	BaseScene::init();
 	Factory factory(this);
 
-	factory.createDirectionalLight(glm::vec3{0, -0.2, -1.0}, glm::vec3{0.005, 0.005, 0.005}, glm::vec3{0.1f, 0.1f, 0.1f},
+	factory.createDirectionalLight(glm::vec3{0, -0.2, -1.0}, glm::vec3{0.05, 0.05, 0.05}, glm::vec3{0.1f, 0.1f, 0.1f},
 	                               glm::vec3{0.15, 0.15, 0.15});
 
 	auto testModel = createEntity();
 	addComponent<CModel>(testModel, "bottle");
-	addComponent<CTransform>(testModel, glm::vec3{0, -1, -5}, glm::vec3{0, 0, 0}, glm::vec3{1.0, 1.0, 1.0});
+	addComponent<CTransform>(testModel, glm::vec3{0, -1, -10}, glm::vec3{0, 0, 0}, glm::vec3{1.0, 1.0, 1.0});
 	auto text = mRegistry.createEntity();
 	addComponent<CText>(text, "Engine Demo", glm::vec2{200.0f, 100.0f}, 1.0f, glm::vec3{0.3f, 0.5f, 0.7f});
 
