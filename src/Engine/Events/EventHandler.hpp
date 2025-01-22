@@ -2,7 +2,6 @@
 #include <memory>
 
 #include "Event.hpp"
-#include "CollisionEvents.hpp"
 #include "InputEvents.hpp"
 #include "ScriptEvents.hpp"
 #include "ComponentEvents.hpp"
@@ -19,7 +18,6 @@ public:
 
     }
     static EventHandler* GetInstance();
-    EventDispatcher<CollisionEvents> collisionDispatcher;
     EventDispatcher<FactoryEvents> factoryDispatcher;
     EventDispatcher<InputEvents> inputDispatcher;
     EventDispatcher<HealthEvents> healthDispatcher;

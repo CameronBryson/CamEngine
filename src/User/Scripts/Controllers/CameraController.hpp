@@ -1,10 +1,11 @@
 #pragma once
 #include "Engine/Base/ScriptBase.hpp"
+#include <entt/entity/fwd.hpp>
 
 class CameraController : public ScriptBase
 {
   public:
-	explicit CameraController(BaseScene* scene, unsigned short owner_ID) : ScriptBase(scene, owner_ID)
+	  explicit CameraController(BaseScene* scene, entt::entity owner_ID) : ScriptBase(scene, owner_ID)
 	{
 	}
   private:

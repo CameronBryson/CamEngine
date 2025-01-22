@@ -4,7 +4,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-TestSceneController::TestSceneController(BaseScene* scene, unsigned short owner_ID) : ScriptBase(scene, owner_ID)
+TestSceneController::TestSceneController(BaseScene* scene, entt::entity owner_ID) : ScriptBase(scene, owner_ID)
 {
 	printf("TestSceneController created\n");
 }

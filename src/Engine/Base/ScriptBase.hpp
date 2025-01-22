@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <entt/entity/fwd.hpp>
 template<typename T>
 class Event;
 enum class CollisionEvents;
@@ -9,21 +10,17 @@ class BaseScene;
 class ScriptBase
 {
   protected:
-	ScriptBase(BaseScene* scene, unsigned short owner_ID);
+	ScriptBase(BaseScene* scene, entt::entity owner_ID);
 	~ScriptBase();
   private:
 	void bindEvents();
 	void unBindEvents();
-	void onCollisionEnterEvent(const Event<CollisionEvents>& event);
-	void onCollisionStayEvent(const Event<CollisionEvents>& event);
-	void onCollisionExitEvent(const Event<CollisionEvents>& event);
   protected:
 	BaseScene& GetScene() const { return *mScene; }
-	unsigned short GetOwnerID() const { return mOwnerId; }
+	entt::entity GetOwnerID() const { return mOwnerId; }
 private:
 	BaseScene* mScene;
-	unsigned short mOwnerId;
-	std::vector<int> mCollisionEventHandles;
+	entt::entity mOwnerId;
 	std::vector<int> mScriptEventHandles;
   private:
 	virtual void init()
@@ -48,15 +45,6 @@ private:
 	{
 	}
 	virtual void lateShutdown()
-	{
-	}
-	virtual void onCollisionEnter(unsigned short firstID, unsigned short secondID)
-	{
-	}
-	virtual void onCollisionStay(unsigned short firstID, unsigned short secondID)
-	{
-	}
-	virtual void onCollisionExit(unsigned short firstID, unsigned short secondID)
 	{
 	}
 };

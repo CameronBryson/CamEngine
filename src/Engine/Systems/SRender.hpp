@@ -14,9 +14,10 @@ public:
     void render();
     void shutdown();
 
+    void drawModels(const Shader& shader) const;
+
+    void drawUi(const Shader& shader) const;
+
 private:
-    void drawModels(SparseSet<CTransform>& transforms, const Shader& shader) const;
-    void drawColliders(SparseSet<CTransform>& transforms, const Shader& shader) const;
-    void drawUi(SparseSet<CTransform>& transforms, const Shader& shader) const;
     BaseScene* mScene;
 };

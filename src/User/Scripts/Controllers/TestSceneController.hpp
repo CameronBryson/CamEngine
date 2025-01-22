@@ -5,7 +5,7 @@
 class TestSceneController final : public ScriptBase
 {
 public:
-	explicit TestSceneController(BaseScene* scene, unsigned short owner_ID);
+	explicit TestSceneController(BaseScene* scene, entt::entity owner_ID);
 	void init() override;
 	void update(float deltaTime) override;
 private:

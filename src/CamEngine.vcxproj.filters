@@ -69,26 +69,11 @@
     <ClInclude Include="Engine\Base\ScriptBase.hpp">
       <Filter>Engine\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Collision\BoundngBox.hpp">
-      <Filter>Engine\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Collision\CollisionManifold.hpp">
-      <Filter>Engine\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Collision\Octree.hpp">
-      <Filter>Engine\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Collision\OctreeNode.hpp">
-      <Filter>Engine\Collision</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Commands.hpp">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Components.hpp">
       <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Events\CollisionEvents.hpp">
-      <Filter>Engine\Events</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Events\CommandEvents.hpp">
       <Filter>Engine\Events</Filter>
@@ -162,9 +147,6 @@
     <ClInclude Include="Engine\Managers\AudioManager.hpp">
       <Filter>Engine\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Managers\CollisionManager.hpp">
-      <Filter>Engine\Managers</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Managers\CommandManager.hpp">
       <Filter>Engine\Managers</Filter>
     </ClInclude>
@@ -204,25 +186,7 @@
     <ClInclude Include="Engine\Platform\OpenGL\OpenGLVertexBuffer.hpp">
       <Filter>Engine\Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Storage\ISparseSet.hpp">
-      <Filter>Engine\Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Storage\Registry.hpp">
-      <Filter>Engine\Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Storage\Snapshot.hpp">
-      <Filter>Engine\Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Storage\SparseSet.hpp">
-      <Filter>Engine\Storage</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Systems\SAudio.hpp">
-      <Filter>Engine\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Systems\SCollision.hpp">
-      <Filter>Engine\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Systems\SPhysics.hpp">
       <Filter>Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Systems\SRender.hpp">
@@ -255,12 +219,6 @@
     <ClInclude Include="User\Events\HealthEvents.hpp">
       <Filter>User\Events</Filter>
     </ClInclude>
-    <ClInclude Include="User\Scenes\MenuScene.hpp">
-      <Filter>User\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="User\Scenes\PlayScene.hpp">
-      <Filter>User\Scenes</Filter>
-    </ClInclude>
     <ClInclude Include="User\Scenes\TestScene.hpp">
       <Filter>User\Scenes</Filter>
     </ClInclude>
@@ -282,37 +240,13 @@
     <ClInclude Include="User\Scripts\Components\Projectile.hpp">
       <Filter>User\Scripts\Components</Filter>
     </ClInclude>
-    <ClInclude Include="User\Scripts\Controllers\AsteroidController.hpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="User\Scripts\Controllers\BoundaryController.hpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClInclude>
     <ClInclude Include="User\Scripts\Controllers\CameraController.hpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="User\Scripts\Controllers\EnemyShipController.hpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="User\Scripts\Controllers\HealthController.hpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="User\Scripts\Controllers\MainMenuController.hpp">
       <Filter>User\Scripts\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="User\Scripts\Controllers\PlayerController.hpp">
       <Filter>User\Scripts\Controllers</Filter>
     </ClInclude>
-    <ClInclude Include="User\Scripts\Controllers\SpinningLightController.hpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="User\Scripts\Controllers\SpinningModelController.hpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClInclude>
     <ClInclude Include="User\Scripts\Controllers\TestSceneController.hpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="User\Scripts\Controllers\WaveController.hpp">
       <Filter>User\Scripts\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="User\Scripts\Factory.hpp">
@@ -332,15 +266,6 @@
     </ClCompile>
     <ClCompile Include="Engine\Base\ScriptBase.cpp">
       <Filter>Engine\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Collision\CollisionManifold.cpp">
-      <Filter>Engine\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Collision\Octree.cpp">
-      <Filter>Engine\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Collision\OctreeNode.cpp">
-      <Filter>Engine\Collision</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Events\EventHandler.cpp">
       <Filter>Engine\Events</Filter>
@@ -390,9 +315,6 @@
     <ClCompile Include="Engine\Managers\AudioManager.cpp">
       <Filter>Engine\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Managers\CollisionManager.cpp">
-      <Filter>Engine\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Managers\CommandManager.cpp">
       <Filter>Engine\Managers</Filter>
     </ClCompile>
@@ -432,16 +354,7 @@
     <ClCompile Include="Engine\Platform\OpenGL\OpenGLVertexBuffer.cpp">
       <Filter>Engine\Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Storage\Registry.cpp">
-      <Filter>Engine\Storage</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Systems\SAudio.cpp">
-      <Filter>Engine\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Systems\SCollision.cpp">
-      <Filter>Engine\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Systems\SPhysics.cpp">
       <Filter>Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Systems\SRender.cpp">
@@ -456,46 +369,16 @@
     <ClCompile Include="Engine\Util\OpenGLUtil.cpp">
       <Filter>Engine\Util</Filter>
     </ClCompile>
-    <ClCompile Include="User\Scenes\MenuScene.cpp">
-      <Filter>User\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="User\Scenes\PlayScene.cpp">
-      <Filter>User\Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="User\Scenes\TestScene.cpp">
       <Filter>User\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="User\Scripts\Controllers\AsteroidController.cpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="User\Scripts\Controllers\BoundaryController.cpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClCompile>
     <ClCompile Include="User\Scripts\Controllers\CameraController.cpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="User\Scripts\Controllers\EnemyShipController.cpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="User\Scripts\Controllers\HealthController.cpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="User\Scripts\Controllers\MainMenuController.cpp">
       <Filter>User\Scripts\Controllers</Filter>
     </ClCompile>
     <ClCompile Include="User\Scripts\Controllers\PlayerController.cpp">
       <Filter>User\Scripts\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="User\Scripts\Controllers\SpinningLightController.cpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="User\Scripts\Controllers\SpinningModelController.cpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClCompile>
     <ClCompile Include="User\Scripts\Controllers\TestSceneController.cpp">
-      <Filter>User\Scripts\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="User\Scripts\Controllers\WaveController.cpp">
       <Filter>User\Scripts\Controllers</Filter>
     </ClCompile>
     <ClCompile Include="User\Scripts\Factory.cpp">

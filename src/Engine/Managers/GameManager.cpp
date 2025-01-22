@@ -14,6 +14,7 @@
 #include <AL/alc.h>
 #include <GLFW/glfw3.h>
 #include <memory>
+#include <GameSettings.hpp>
 GLFWwindow * GameManager::mGameWindow = nullptr;
 std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
 std::unique_ptr<BaseScene> GameManager::mPendingScene = nullptr;
