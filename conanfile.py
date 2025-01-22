@@ -13,5 +13,5 @@ class ConanTutorialRecipe(ConanFile):
         self.requires("openal/1.22.2")
         self.requires("glm/cci.20230113")
         self.requires("imgui/cci.20230105+1.89.2.docking")
-        self.requires("freetype/2.13.3")
+        self.requires("freetype/2.11.1")
         self.requires("stb/cci.20230920")
