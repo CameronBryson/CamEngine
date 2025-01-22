@@ -66,7 +66,7 @@ void GraphicsManager::loadResources()
 	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/2D_color.frag", "2D_texture");
 	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/2D_color.frag", "2D_color");
 	loadShader("sources/Shaders/text.vert", "sources/Shaders/text.frag", "text");*/
-	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/PBR.frag", "PBR");
+	loadShader("src/Shaders/vertex.vert", "src/Shaders/PBR.frag", "PBR");
 
 	// loadFont("assets/Font/arial.ttf", 48, "arial");
 	loadModel(engine_util::buildPath("assets/scene.gltf"), "bottle");
