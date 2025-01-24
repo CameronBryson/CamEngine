@@ -14,9 +14,10 @@ public:
     void render();
     void shutdown();
 
+    void buildDirectionalLights(const Shader& shader);
+	void buildPointLights(const Shader& shader);
     void drawModels(const Shader& shader) const;
-
-    void drawUi(const Shader& shader) const;
+	void drawImGui() const;
 
 private:
     BaseScene* mScene;

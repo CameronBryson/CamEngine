@@ -18,22 +18,42 @@ workspace "CamEngine"
         pchsource "src/pch.cpp"
         includedirs {
             "%{prj.location}",
-            "%{prj.location}/**"
+            "%{prj.location}/**"  
         }
+        
         files {
             "%{prj.location}/**.h",
             "%{prj.location}/**.hpp",
             "%{prj.location}/**.cpp"
         }
 
+        flags {
+            "MultiProcessorCompile",  
+            "NoMinimalRebuild"        
+        }
+
+        warnings "Extra"                   
+        vectorextensions "AVX2"           
+        defines {
+            "_CRT_SECURE_NO_WARNINGS",     
+            "NOMINMAX",
+            "WIN32_LEAN_AND_MEAN"
+        }
+
         filter "configurations:Debug"
             defines { "DEBUG" }
             symbols "On"
-        filter {}
+            runtime "Debug"
+            optimize "Off"
+            editandcontinue "On"
 
         filter "configurations:Release"
             defines { "NDEBUG" }
-            optimize "On"
+            optimize "Speed"
+            runtime "Release"
+            flags { "LinkTimeOptimization" }
+            inlining "Auto"
+
         filter {}
 
         conan_setup()

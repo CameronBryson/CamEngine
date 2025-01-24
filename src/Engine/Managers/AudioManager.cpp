@@ -11,11 +11,11 @@ AudioManager::~AudioManager() { clear(); }
 
 void AudioManager::loadResources()
 {
-	loadSoundBuffer("TestBuffer", "assets/Audio/test.ogg");
+	/*loadSoundBuffer("TestBuffer", "assets/Audio/test.ogg");
 	loadAudioSource("TestSound", "TestBuffer");
 
 	loadSoundBuffer("ButtonBuffer", "assets/Audio/Button.ogg");
-	loadAudioSource("ButtonSound", "ButtonBuffer");
+	loadAudioSource("ButtonSound", "ButtonBuffer");*/
 }
 
 void AudioManager::unloadResources() { clear(); }

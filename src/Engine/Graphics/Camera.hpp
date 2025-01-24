@@ -27,11 +27,6 @@ public:
     float Zoom;
     glm::mat4 projection_matrix;
     glm::mat4 view_matrix;
-    CTransform * camera_follow_target_;
-    CTransform * skybox_tranform;
-    glm::vec3 follow_offset;
-    double previous_mouse_x = 0;
-    double previous_mouse_y = 0;
 
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);

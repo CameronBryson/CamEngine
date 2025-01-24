@@ -5,6 +5,7 @@
 #include "Engine/Managers/AudioManager.hpp"
 #include "Engine/Base/BaseScene.hpp"
 #include "Engine/Audio/AudioSource.hpp"
+#include <edyn/edyn.hpp>
 
 SAudio::SAudio(BaseScene* scene) : mScene(scene)
 {
@@ -19,6 +20,7 @@ void SAudio::init()
 
 void SAudio::update(float deltaTime)
 {
+	edyn::update(mScene->mEnttRegistry);
 	
 }
 

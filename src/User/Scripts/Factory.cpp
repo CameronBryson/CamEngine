@@ -21,8 +21,6 @@ entt::entity Factory::createDirectionalLight(const glm::vec3& direction, const g
 {
 	const auto id = m_Scene->mEnttRegistry.create();
 	m_Scene->mEnttRegistry.emplace<CDirectionalLight>(id, direction, ambient, diffuse, specular);
-	//const auto id = m_Scene->createEntity();
-	//m_Scene->addComponent<CDirectionalLight>(id, direction, ambient, diffuse, specular);
 	return id;
 }
 

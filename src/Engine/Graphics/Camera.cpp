@@ -12,11 +12,6 @@ Camera::Camera(glm::vec3 position, glm::vec3 up,
 	       WorldUp = up;
 	       Yaw = yaw;
 	       Pitch = pitch;
-	       camera_follow_target_ = nullptr;
-	       skybox_tranform = nullptr;
-
-	       follow_offset = { 0, 0.5, 5 };
-	       //follow_offset = {0, 2, 10};
 	       updateCameraVectors();
 	       projection_matrix = glm::perspective(glm::radians(Zoom), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 200.0f);
 	       view_matrix = glm::lookAt(Position, Position + Front, Up);

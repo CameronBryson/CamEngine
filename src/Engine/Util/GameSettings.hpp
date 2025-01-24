@@ -8,8 +8,8 @@ namespace settings
     inline unsigned int player_bitmask = LAYER_ENEMY; // Player collides with enemies, power-ups, and terrain
     inline unsigned int enemy_bitmask   = LAYER_PLAYER;           // Enemy collides with players
 
-    inline int window_width = 1920;
-    inline int window_height = 1080;
+    inline int window_width = 2560;
+    inline int window_height = 1440;
     inline float aspect_ratio = (float) window_width / (float) window_height;
     inline glm::vec3 world_boundry_min = {-50,-50,-200};
     inline glm::vec3 world_boundry_max = {50,50,10};

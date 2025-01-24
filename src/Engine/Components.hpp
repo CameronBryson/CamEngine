@@ -12,41 +12,6 @@ struct CRender
     glm::vec3 color;
 };
 
-// Component for position, rotation, and scale
-struct CTransform
-{
-    CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) : position(position), rotation(rotation), scale(scale) {}
-    glm::vec3 position = {0, 0, 0};
-    glm::vec3 rotation = {0, 0, 0};
-    glm::vec3 scale = {1, 1, 1};
-};
-
-// Component for collider-related data
-struct CCollider
-{
-    CCollider(const bool is_trigger, const unsigned int collision_bitmask) : is_trigger(is_trigger), collision_bitmask(collision_bitmask) {}
-    bool is_trigger = false;
-    unsigned int collision_bitmask = 0xFFFFFFFF; // Default bitmask allowing all collisions
-};
-
-
-
-struct CBoxBounds
-{
-    CBoxBounds(const glm::vec3& extents) : extents(extents) {}
-    glm::vec3 extents;
-};
-
-struct CSphereBounds
-{
-    CSphereBounds(float radius) : radius(radius) {}
-    float radius;
-};
-
-struct CUI
-{
-    bool follow_cursor = false;
-};
 
 struct CModel
 {
@@ -66,8 +31,9 @@ struct CDirectionalLight
 
 struct CPointLight
 {
-    CPointLight(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, const float constant, const float linear, const float quadratic)
-        : ambient(ambient), diffuse(diffuse), specular(specular), constant(constant), linear(linear), quadratic(quadratic) {}
+    CPointLight(const glm::vec3 position,const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, const float constant, const float linear, const float quadratic)
+        : position(position), ambient(ambient), diffuse(diffuse), specular(specular), constant(constant), linear(linear), quadratic(quadratic) {}
+    glm::vec3 position;
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
@@ -76,35 +42,6 @@ struct CPointLight
     float quadratic;
 };
 
-struct CDynamicBody
-{
-    CDynamicBody(const float elasticity, const float drag, const float angularDrag)
-        : elasticity(elasticity), drag(drag),  angularDrag(angularDrag) {}
-	float elasticity;
-	float drag;
-    glm::vec3 velocity = {0, 0, 0};
-    glm::vec3 acceleration = {0, 0, 0};
-	float angularDrag;
-    glm::vec3 angularVelocity = {0, 0, 0};
-    glm::vec3 angularAcceleration = {0, 0, 0};
-};
-
-
-struct CBackground
-{
-    CBackground() = default;
-};
-
-
-struct CRepeatAcceleration
-{
-	CRepeatAcceleration(const glm::vec3& acceleration, const glm::vec3& angularAcceleration)
-	    : acceleration(acceleration), angularAcceleration(angularAcceleration)
-	{
-	}
-    glm::vec3 acceleration = {0, 0, 0};
-    glm::vec3 angularAcceleration = {0, 0, 0};
-};
 struct CText
 {
 	CText(const std::string& text, const glm::vec2& position, const int font_size, const glm::vec3& color) : text(text), position(position),font_size(font_size), color(color) {}

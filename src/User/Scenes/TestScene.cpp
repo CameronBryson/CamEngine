@@ -6,13 +6,14 @@
 #include "User/Scripts/Controllers/PlayerController.hpp"
 #include "User/Scripts/Controllers/TestSceneController.hpp"
 #include "User/Scripts/Factory.hpp"
+#include "edyn/edyn.hpp"
 TestScene::TestScene() : BaseScene() {}
 TestScene::~TestScene() {}
 void TestScene::init()
 {
 	Factory factory(this);
 	BaseScene::init();
-
+	edyn::set_gravity(mEnttRegistry, edyn::vector3{ 0, -9.81, 0 });
 	//auto controller = createEntity();
 	//addComponent<CameraController>(controller, this, controller);
 
@@ -24,10 +25,18 @@ void TestScene::init()
 
 	auto testModel = mEnttRegistry.create();
 	mEnttRegistry.emplace<CModel>(testModel, "bottle");
-	mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -10 }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 2.0, 2.0, 2.0 });
-	//auto testModel = createEntity();
-	//addComponent<CModel>(testModel, "bottle");
-	//addComponent<CTransform>(testModel, glm::vec3{0, 0, -10}, glm::vec3{0, 0, 0}, glm::vec3{2.0, 2.0, 2.0});
+	auto rigidBody = edyn::rigidbody_def();
+	rigidBody.presentation = true;
+	rigidBody.shape = edyn::box_shape{ 1, 1, 1 };
+	rigidBody.mass = 1;
+	rigidBody.kind = edyn::rigidbody_kind::rb_dynamic;
+	rigidBody.position = edyn::vector3{ 0, 0, -10 };
+	rigidBody.gravity = edyn::vector3{ 0, 0, 0 };
+	edyn::make_rigidbody(testModel, mEnttRegistry,  rigidBody);
+
+	//mEnttRegistry.emplace<edyn::position>(testModel, edyn::vector3{ 0, 0, -10 });
+	//mEnttRegistry.emplace<edyn::present_position>(testModel, edyn::vector3{ 0, 0, -10 });
+	//mEnttRegistry.emplace<edyn::present_orientation>(testModel, edyn::quaternion());
 }
 void TestScene::lateInit() { BaseScene::lateInit(); }
 void TestScene::update(float dt) { BaseScene::update(dt); }
