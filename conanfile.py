@@ -1,8 +1,7 @@
 from conan import ConanFile
 from conan.tools.files import copy
-import os
 
-class ConanTutorialRecipe(ConanFile):
+class ConanRecipe(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "PremakeDeps"
 
