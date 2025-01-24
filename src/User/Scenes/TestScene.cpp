@@ -1,12 +1,16 @@
 #include "pch.hpp"
 #include "TestScene.hpp"
 
-#include "Engine/Managers/GameManager.hpp"
 #include "User/Scripts/Controllers/CameraController.hpp"
-#include "User/Scripts/Controllers/PlayerController.hpp"
-#include "User/Scripts/Controllers/TestSceneController.hpp"
 #include "User/Scripts/Factory.hpp"
-#include "edyn/edyn.hpp"
+#include <BaseScene.hpp>
+#include <Components.hpp>
+#include <edyn/math/vector3.hpp>
+#include <edyn/shapes/box_shape.hpp>
+#include <edyn/util/gravity_util.hpp>
+#include <edyn/util/rigidbody.hpp>
+#include <entt/entity/registry.hpp>
+#include <glm/ext/vector_float3.hpp>
 TestScene::TestScene() : BaseScene() {}
 TestScene::~TestScene() {}
 void TestScene::init()

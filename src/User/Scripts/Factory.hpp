@@ -1,7 +1,6 @@
 #pragma once
-#include "User/Events/FactoryEvents.hpp"
-#include <vector>
 #include <entt/entity/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 class BaseScene;
 class Factory
 {

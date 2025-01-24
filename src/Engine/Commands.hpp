@@ -1,11 +1,13 @@
 #pragma once
 #include "Engine/ICommand.hpp"
 #include "Engine/Storage/SparseSet.hpp"
-#include <deque>
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
 #include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 template <typename T, typename... Args>
 class AddComponentCommand final : public ICommand

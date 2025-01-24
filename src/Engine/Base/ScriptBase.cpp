@@ -4,6 +4,9 @@
 #include "BaseScene.hpp"
 #include "Engine/Events/EventHandler.hpp"
 #include <vector>
+#include <Event.hpp>
+#include <ScriptEvents.hpp>
+#include <entt/entity/fwd.hpp>
 ScriptBase::ScriptBase(BaseScene* scene, entt::entity owner_ID) : mScene(scene), mOwnerId(owner_ID) { bindEvents(); }
 
 ScriptBase::~ScriptBase()

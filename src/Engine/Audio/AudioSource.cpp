@@ -5,6 +5,8 @@
 #include <ostream>
 
 #include "Engine/Util/OpenALUtil.hpp"
+#include <al.h>
+#include <glm/ext/vector_float3.hpp>
 
 
 AudioSource::AudioSource(ALuint buffer) : mBuffer(buffer), mSource(0)

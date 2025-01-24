@@ -6,8 +6,6 @@
 #include "ScriptEvents.hpp"
 #include "ComponentEvents.hpp"
 #include "CommandEvents.hpp"
-#include "User/Events/FactoryEvents.hpp"
-#include <User/Events/HealthEvents.hpp>
 
 class EventHandler
 {
@@ -18,9 +16,7 @@ public:
 
     }
     static EventHandler* GetInstance();
-    EventDispatcher<FactoryEvents> factoryDispatcher;
     EventDispatcher<InputEvents> inputDispatcher;
-    EventDispatcher<HealthEvents> healthDispatcher;
     EventDispatcher<ScriptEvents> scriptDispatcher;
     EventDispatcher<CommandEvents> commandDispatcher;
     template<typename T>

@@ -1,13 +1,9 @@
-// GraphicsManager.cpp
 #include "pch.hpp"
 #include "GraphicsManager.hpp"
 
 #include <Engine/Util/EngineUtil.hpp>
-#include <fstream>
-#include <functional>
 #include <iostream>
 #include <optional>
-#include <unordered_map>
 
 #include "Engine/Graphics/Font.hpp"
 #include "Engine/Graphics/Material.hpp"
@@ -16,9 +12,20 @@
 #include "Engine/Graphics/Shader.hpp"
 #include "Engine/Graphics/Texture.hpp"
 #include "Engine/Graphics/Vertex.hpp"
-#include "Engine/Util/OpenGLUtil.hpp"
-#include "stb_image.h"
-#include "glm/vec4.hpp"
+#include <cstdio>
+#include <memory>
+#include <string>
+#include <vector>
+#include <assimp/Importer.hpp>
+#include <assimp/material.h>
+#include <assimp/mesh.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/texture.h>
+#include <assimp/types.h>
+#include <glm/ext/vector_float2.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 
 // Enum for different texture roles
 enum class TextureRole

@@ -4,7 +4,8 @@
 #include <iostream>
 #include <ostream>
 
-#include "Engine/Util/OpenALUtil.hpp"
+#include <al.h>
+#include <glm/ext/vector_float3.hpp>
 
 void AudioListener::setPosition(const glm::vec3& position)
 {

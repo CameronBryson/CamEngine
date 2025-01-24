@@ -1,18 +1,18 @@
 #include "pch.hpp"
 #include "Factory.hpp"
-#include "User/Events/FactoryEvents.hpp"
-#include "Engine/Base/BaseScene.hpp"
-#include "EventHandler.hpp"
+#include "Components.hpp"
+#include "BaseScene.hpp"
+#include <entt/entity/fwd.hpp>
+#include <entt/entity/registry.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 Factory::Factory(BaseScene* scene) : m_Scene(scene)
 {
-	auto* eventHandler = EventHandler::GetInstance();
 
 }
 
 Factory::~Factory()
 {
-	auto* eventHandler = EventHandler::GetInstance();
 
 }
 
