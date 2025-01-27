@@ -1,8 +1,12 @@
 #pragma once
 #include <string>
 
-#include "glm/vec3.hpp"
-#include "glm/vec2.hpp"
+#include <entt/entity/fwd.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/vector_float2.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/gtc/quaternion.hpp> // Include the complete quaternion header
+#include <glm/fwd.hpp>
 
 // Component for rendering-related data
 struct CRender
@@ -11,7 +15,6 @@ struct CRender
     int layer = 0;
     glm::vec3 color;
 };
-
 
 struct CModel
 {
@@ -44,9 +47,20 @@ struct CPointLight
 
 struct CText
 {
-	CText(const std::string& text, const glm::vec2& position, const int font_size, const glm::vec3& color) : text(text), position(position),font_size(font_size), color(color) {}
-	std::string text;
-	int font_size;
+    CText(const std::string& text, const glm::vec2& position, const int font_size, const glm::vec3& color) : text(text), position(position),font_size(font_size), color(color) {}
+    std::string text;
+    int font_size;
     glm::vec2 position;
-	glm::vec3 color;
+    glm::vec3 color;
+};
+
+struct CTransform 
+{
+    CTransform(const entt::entity parent, const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) : parent(parent),position(position), rotation(rotation), scale(scale), model_matrix(1.0f), dirty(true) {}
+    glm::vec3 position;
+    glm::quat rotation;
+    glm::vec3 scale;
+    glm::mat4 model_matrix;
+    bool dirty;
+    entt::entity parent;
 };

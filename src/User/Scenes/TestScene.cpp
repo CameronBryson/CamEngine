@@ -18,29 +18,31 @@ void TestScene::init()
 	Factory factory(this);
 	BaseScene::init();
 	edyn::set_gravity(mEnttRegistry, edyn::vector3{ 0, -9.81, 0 });
-	//auto controller = createEntity();
-	//addComponent<CameraController>(controller, this, controller);
+	auto sceneRoot = mEnttRegistry.create();
+	mEnttRegistry.emplace<CTransform>(sceneRoot, entt::null, glm::vec3{ 0, 0, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 1, 1, 1 });
 
 	auto controller = mEnttRegistry.create();
 	mEnttRegistry.emplace<CameraController>(controller, this, controller);
 
-	factory.createDirectionalLight(glm::vec3{0, -0.2, -1.0}, glm::vec3{1.0, 1.0, 1.0}, glm::vec3{0.5f, 0.5f, 0.5f},
-	                               glm::vec3{0.2, 0.2, 0.2});
-
+	
+	auto testParent = mEnttRegistry.create();
+	mEnttRegistry.emplace<CTransform>(testParent, sceneRoot, glm::vec3{ 0, 0, 0 }, glm::quat(), glm::vec3{ 1, 1, 1 });
 	auto testModel = mEnttRegistry.create();
-	mEnttRegistry.emplace<CModel>(testModel, "bottle");
+	mEnttRegistry.emplace<CModel>(testModel, "scene");
+	mEnttRegistry.emplace<CTransform>(testModel, testParent, glm::vec3{ 0, 0, 0 }, glm::quat(), glm::vec3{1, 1, 1});
 	auto rigidBody = edyn::rigidbody_def();
 	rigidBody.presentation = true;
 	rigidBody.shape = edyn::box_shape{ 1, 1, 1 };
 	rigidBody.mass = 1;
 	rigidBody.kind = edyn::rigidbody_kind::rb_dynamic;
 	rigidBody.position = edyn::vector3{ 0, 0, -10 };
-	rigidBody.gravity = edyn::vector3{ 0, 0, 0 };
+	rigidBody.gravity = edyn::vector3{ 0, -10, 0 };
 	edyn::make_rigidbody(testModel, mEnttRegistry,  rigidBody);
 
-	//mEnttRegistry.emplace<edyn::position>(testModel, edyn::vector3{ 0, 0, -10 });
-	//mEnttRegistry.emplace<edyn::present_position>(testModel, edyn::vector3{ 0, 0, -10 });
-	//mEnttRegistry.emplace<edyn::present_orientation>(testModel, edyn::quaternion());
+
+
+	factory.createDirectionalLight(glm::vec3{ 0, -0.2, -1.0 }, glm::vec3{ 1.0, 1.0, 1.0 }, glm::vec3{ 0.5f, 0.5f, 0.5f },
+		glm::vec3{ 0.2, 0.2, 0.2 });
 }
 void TestScene::lateInit() { BaseScene::lateInit(); }
 void TestScene::update(float dt) { BaseScene::update(dt); }

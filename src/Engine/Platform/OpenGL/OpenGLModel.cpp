@@ -3,7 +3,7 @@
 #include "Engine/Managers/GraphicsManager.hpp"
 #include "Engine/Graphics/Mesh.hpp"
 
-OpenGLModel::OpenGLModel(const std::vector<std::string>& meshes)
+OpenGLModel::OpenGLModel(const std::vector<std::shared_ptr<Mesh>>& meshes)
 {
 	for (const auto& mesh_name : meshes)
 	{
@@ -11,18 +11,19 @@ OpenGLModel::OpenGLModel(const std::vector<std::string>& meshes)
 	}
 }
 
-void OpenGLModel::draw(const Shader& shader, GraphicsManager& graphicsManager) const
+void OpenGLModel::draw(const Shader& shader) const
 {
-	for (const auto& mesh : meshes)
+	for (const auto& mesh : mMeshes)
 	{
-		graphicsManager.getMesh(mesh)->draw(shader, graphicsManager);
+		mesh->draw(shader);
 	}
 }
 
-void OpenGLModel::addMesh(const std::string& meshName)
-{
-	meshes.push_back(meshName);
 
+void OpenGLModel::addMesh(const std::shared_ptr<Mesh>& meshName)
+{
+	mTotalVertexCount += meshName->getVertexCount();
+	mMeshes.emplace_back(meshName);
 }
 
 int OpenGLModel::getTotalVertexCount() const

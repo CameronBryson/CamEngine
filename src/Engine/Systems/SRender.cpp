@@ -147,29 +147,21 @@ void SRender::drawModels(const Shader& shader) const
 {
     auto& registry = mScene->mEnttRegistry;
 
-    auto modelView = registry.view<CModel, edyn::present_position, edyn::present_orientation>();
-	auto testView = registry.view<edyn::present_position, edyn::present_orientation>();
+    // View for entities with CModel and CTransform components
+    auto modelView = registry.view<CModel, CTransform>();
 
     for (auto entity : modelView)
     {
         auto& modelComp = modelView.get<CModel>(entity);
-        const auto& position = modelView.get<edyn::present_position>(entity);
-		const auto& orientation = modelView.get<edyn::present_orientation>(entity);
+        const auto& transform = modelView.get<CTransform>(entity);
 
-        glm::vec3 glmPosition = glm::vec3(position.x, position.y, position.z);
-        glm::quat glmOrientation = glm::quat(orientation.w, orientation.x, orientation.y, orientation.z);
-
-        glm::vec3 scale = { 1.0f, 1.0f, 1.0f }; 
-
-        glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glmPosition) *
-            glm::mat4_cast(glmOrientation) *
-            glm::scale(glm::mat4(1.0f), scale);
-            
+        glm::mat4 model_matrix = transform.model_matrix;
 
         shader.setMat4("model", model_matrix);
-        GameManager::mGraphicsManager->getModel(modelComp.name)->draw(shader, *GameManager::mGraphicsManager);
+        GameManager::mGraphicsManager->getModel(modelComp.name)->draw(shader);
     }
 }
+
 
 void SRender::drawImGui() const
 {

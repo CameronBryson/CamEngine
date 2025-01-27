@@ -3,6 +3,7 @@
 #include <string>
 
 #include "assimp/material.h"
+#include <assimp/texture.h>
 class Texture
 {
 public:
@@ -14,4 +15,5 @@ public:
 	virtual int getHeight() const = 0;
 	virtual unsigned char* getData() const = 0;
 	static std::shared_ptr<Texture> createTexture(const std::string& file, aiTextureType type);
+	static std::shared_ptr<Texture> createEmbeddedTexture(const aiTexture* aiTex, aiTextureType type);
 };

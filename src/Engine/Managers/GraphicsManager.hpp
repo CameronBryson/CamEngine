@@ -4,81 +4,86 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
+#include "glm/mat4x4.hpp"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 #include "Engine/Graphics/Vertex.hpp"
-class Shader;
-class Texture;
-class Mesh;
-class Material;
-class Model;
-class Font;
+#include "Engine/Graphics/Shader.hpp"
+#include "Engine/Graphics/Texture.hpp"
+#include "Engine/Graphics/Mesh.hpp"
+#include "Engine/Graphics/Material.hpp"
+#include "Engine/Graphics/Model.hpp"
+#include "Engine/Graphics/Font.hpp"
+
+
+
 class GraphicsManager
 {
 public:
-	GraphicsManager() = default;
-	~GraphicsManager();
-	void loadResources();
-	void unloadResources();
+    GraphicsManager() = default;
+    ~GraphicsManager();
 
-	// Load and generate a shader program from vertex and fragment shader source files
-	std::shared_ptr<Shader> loadShader(const std::string& vShaderFile, const std::string& fShaderFile, const std::string& name);
-	// Retrieve a stored shader
-	std::shared_ptr<Shader> getShader(const std::string& name);
+    void loadResources();
+    void unloadResources();
 
-	// Load and generate a texture from a file
-	std::shared_ptr<Texture> loadTexture(const std::string& file, aiTextureType type,  const std::string& name);
-	// Retrieve a stored texture
-	std::shared_ptr<Texture> getTexture(const std::string& name);
+    // Shader management
+    std::shared_ptr<Shader> loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& name);
+    std::shared_ptr<Shader> getShader(const std::string& name);
 
-	// Create and store a mesh
-	std::shared_ptr<Mesh> createMesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices,const std::string& material_name);
-	// Retrieve a stored mesh
-	std::shared_ptr<Mesh> getMesh(const std::string& name);
+    // Texture management
+    std::shared_ptr<Texture> loadTexture(const std::string& path, aiTextureType type, const aiScene* scene = nullptr);
+    std::shared_ptr<Texture> getTexture(const std::string& path);
 
-	// Create and store a material
-	std::shared_ptr<Material> createMaterial(const std::string& name,
-	                                         const glm::vec4& albedo,
-	                                         float metallic,
-	                                         float roughness,
-	                                         float AO,
-	                                         std::shared_ptr<Texture> albedoTexture,
-	                                         std::shared_ptr<Texture> normalTexture,
-	                                         std::shared_ptr<Texture> metallicTexture,
-	                                         std::shared_ptr<Texture> roughNessTexture,
-	                                         std::shared_ptr<Texture> AOTexture,
-	                                         std::shared_ptr<Texture> emissiveTexture);
-	// Retrieve a stored material
-	std::shared_ptr<Material> getMaterial(const std::string& name);
+    // Material management
+    std::shared_ptr<Material> createMaterial(const std::string& name,
+        const glm::vec4& albedo,
+        float metallic,
+        float roughness,
+        float AO,
+        const std::shared_ptr<Texture>& albedoTexture,
+        const std::shared_ptr<Texture>& normalTexture,
+        const std::shared_ptr<Texture>& metallicTexture,
+        const std::shared_ptr<Texture>& roughnessTexture,
+        const std::shared_ptr<Texture>& AOTexture,
+        const std::shared_ptr<Texture>& emissiveTexture);
+    std::shared_ptr<Material> getMaterial(const std::string& name);
 
-	// Create and store a model
-	std::shared_ptr<Model> createModel(const std::vector<std::string>& mesh_names, const std::string& name);
-	// Retrieve a stored model
-	std::shared_ptr<Model> getModel(const std::string& name);
+    // Mesh management
+    std::shared_ptr<Mesh> createMesh(const std::string& name,
+        const std::vector<Vertex>& vertices,
+        const std::vector<unsigned int>& indices,
+        const std::shared_ptr<Material>& material);
+    std::shared_ptr<Mesh> getMesh(const std::string& name);
 
-	std::shared_ptr<Font> loadFont(const std::string& fontPath, float fontSize, const std::string& fontName);
-	std::shared_ptr<Font> getFont(const std::string& name);
-
-	void Clear();
+    // Model and Scene management
+    std::shared_ptr<Model> createModel(const std::vector<std::shared_ptr<Mesh>>& meshes, const std::string& name);
+    std::shared_ptr<Model> getModel(const std::string& name);
+    std::shared_ptr<Model> loadModel(const std::string& path, const std::string& name);
 
 
-	std::shared_ptr<Model> loadModel(const std::string& file, const std::string& name);
+    // Font management
+    std::shared_ptr<Font> loadFont(const std::string& fontPath, float fontSize);
+    std::shared_ptr<Font> getFont(const std::string& name);
 
-	void processNode(aiNode* node, const aiScene* scene);
-	void processMesh(aiMesh* mesh, const aiScene* scene);
-	std::string processMaterial(aiMaterial* material, const aiScene* scene);
-
+    // Resource cleanup
+    void clear();
 
 private:
-	// Maps to store shared pointers to resources
-	std::unordered_map<std::string, std::shared_ptr<Shader>> shader_map;
-	std::unordered_map<std::string, std::shared_ptr<Texture>> texture_map;
-	std::unordered_map<std::string, std::shared_ptr<Mesh>> mesh_map;
-	std::unordered_map<std::string, std::shared_ptr<Model>> model_map;
-	std::unordered_map<std::string, std::shared_ptr<Material>> material_map;
-	std::unordered_map<std::string, std::shared_ptr<Font>> font_map;
+    // Resource maps
+    std::unordered_map<std::string, std::shared_ptr<Shader>> shader_map_;
+    std::unordered_map<std::string, std::shared_ptr<Texture>> texture_map_;
+    std::unordered_map<std::string, std::shared_ptr<Material>> material_map_;
+    std::unordered_map<std::string, std::shared_ptr<Mesh>> mesh_map_;
+    std::unordered_map<std::string, std::shared_ptr<Model>> model_map_;
+    std::unordered_map<std::string, std::shared_ptr<Font>> font_map_;
+
+
+    std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory);
+    std::shared_ptr<Material> loadMaterial(aiMaterial* mat, const std::string& directory, const aiScene* scene);
+    std::vector<std::shared_ptr<Texture>> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& directory, const aiScene* scene);
 };

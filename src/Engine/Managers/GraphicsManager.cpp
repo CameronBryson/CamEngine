@@ -1,487 +1,510 @@
 #include "pch.hpp"
+#include "EngineUtil.hpp"
 #include "GraphicsManager.hpp"
-
-#include <Engine/Util/EngineUtil.hpp>
+#include <filesystem>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
-#include <optional>
+#include <functional>
 
-#include "Engine/Graphics/Font.hpp"
-#include "Engine/Graphics/Material.hpp"
-#include "Engine/Graphics/Mesh.hpp"
-#include "Engine/Graphics/Model.hpp"
-#include "Engine/Graphics/Shader.hpp"
-#include "Engine/Graphics/Texture.hpp"
-#include "Engine/Graphics/Vertex.hpp"
-#include <cstdio>
-#include <memory>
-#include <string>
-#include <vector>
-#include <assimp/Importer.hpp>
-#include <assimp/material.h>
-#include <assimp/mesh.h>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <assimp/texture.h>
-#include <assimp/types.h>
-#include <glm/ext/vector_float2.hpp>
-#include <glm/ext/vector_float3.hpp>
-#include <glm/ext/vector_float4.hpp>
 
-// Enum for different texture roles
-enum class TextureRole
+GraphicsManager::~GraphicsManager()
 {
-	Diffuse,
-	Specular,
-	Albedo,
-	Metalness,
-	Roughness,
-	AmbientOcclusion,
-	Normal,
-	Emissive
-};
-
-// Utility function to map aiTextureType to TextureRole
-std::optional<TextureRole> GetTextureRole(aiTextureType type)
-{
-	switch (type)
-	{
-		case aiTextureType_DIFFUSE:
-			return TextureRole::Diffuse;
-		case aiTextureType_SPECULAR:
-			return TextureRole::Specular;
-		case aiTextureType_BASE_COLOR:
-			return TextureRole::Albedo;
-		case aiTextureType_METALNESS:
-			return TextureRole::Metalness;
-		case aiTextureType_DIFFUSE_ROUGHNESS:
-			return TextureRole::Roughness;
-		case aiTextureType_AMBIENT_OCCLUSION:
-			return TextureRole::AmbientOcclusion;
-		case aiTextureType_EMISSIVE:
-			return TextureRole::Emissive;
-		default:
-			return std::nullopt;
-	}
+    clear();
 }
-
-GraphicsManager::~GraphicsManager() { Clear(); }
 
 void GraphicsManager::loadResources()
 {
-	/*loadShader("sources/Shaders/vertex.vert", "sources/Shaders/3D_texture.frag", "3D_texture");
-	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/3D_color.frag", "3D_color");
-	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/2D_color.frag", "2D_texture");
-	loadShader("sources/Shaders/vertex.vert", "sources/Shaders/2D_color.frag", "2D_color");
-	loadShader("sources/Shaders/text.vert", "sources/Shaders/text.frag", "text");*/
-	loadShader("src/Shaders/vertex.vert", "src/Shaders/PBR.frag", "PBR");
+    loadShader("src/Shaders/vertex.vert", "src/Shaders/PBR.frag", "PBR");
 
-	// loadFont("assets/Font/arial.ttf", 48, "arial");
-	loadModel(engine_util::buildPath("assets/scene.gltf"), "bottle");
-	/*loadModel(engine_util::buildPath("assets/Ship.obj"), "player");
-
-	loadModel(engine_util::buildPath("assets/sphere.obj"), "sphere");
-	loadModel(engine_util::buildPath("assets/cube.obj"), "cube");
-	loadModel(engine_util::buildPath("assets/quad.obj"), "quad");
-	loadModel(engine_util::buildPath("assets/skybox.obj"), "skybox");
-	loadModel(engine_util::buildPath("assets/asteroid.obj"), "asteroid");
-	loadModel(engine_util::buildPath("assets/sat.obj"), "sat");
-	loadModel(engine_util::buildPath("assets/enemy_ship.obj"), "enemy");*/
+    // Load fonts, models, or other resources here
+    loadModel(engine_util::buildPath("assets/scene.gltf"), "scene");
 }
 
-void GraphicsManager::unloadResources() { Clear(); }
-
-std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vShaderFile,
-                                                    const std::string& fShaderFile,
-                                                    const std::string& name)
+void GraphicsManager::unloadResources()
 {
-	auto shader = Shader::createShader(vShaderFile, fShaderFile);
-	shader_map.emplace(name, shader);
-	return shader;
+    clear();
+}
+
+void GraphicsManager::clear()
+{
+    shader_map_.clear();
+    texture_map_.clear();
+    material_map_.clear();
+    mesh_map_.clear();
+    model_map_.clear();
+    font_map_.clear();
+}
+
+std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& name)
+{
+    // Check if shader already loaded
+    auto it = shader_map_.find(name);
+    if (it != shader_map_.end())
+    {
+        return it->second;
+    }
+
+    // Load and compile shader
+    auto shader = Shader::createShader(vertexPath, fragmentPath);
+    if (shader)
+    {
+        shader_map_.emplace(name, shader);
+    }
+    else
+    {
+        std::cerr << "Failed to load shader: " << name << std::endl;
+    }
+    return shader;
 }
 
 std::shared_ptr<Shader> GraphicsManager::getShader(const std::string& name)
 {
-	auto it = shader_map.find(name);
-	if (it != shader_map.end())
-	{
-		return it->second;
-	}
-	std::cerr << "Shader not found: " << name << std::endl;
-	return nullptr;
+    auto it = shader_map_.find(name);
+    if (it != shader_map_.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        std::cerr << "Shader not found: " << name << std::endl;
+        return nullptr;
+    }
 }
 
-std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& file,
-                                                      aiTextureType type,
-                                                      const std::string& name)
+// Texture management
+
+std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path, aiTextureType type, const aiScene* scene)
 {
-	// Check if texture is already loaded
-	auto it = texture_map.find(name);
-	if (it != texture_map.end())
-	{
-		return it->second;
-	}
+    // Use canonical path as key to avoid duplicates
+    std::string full_path = path;
+    if (std::filesystem::exists(path))
+    {
+        full_path = std::filesystem::canonical(path).string();
+    }
 
-	auto texture = Texture::createTexture(file, type);
-	if (texture)
-	{
-		texture_map.emplace(name, texture);
-	}
-	else
-	{
-		std::cerr << "Failed to load texture: " << file << std::endl;
-	}
-	return texture;
+    auto it = texture_map_.find(full_path);
+    if (it != texture_map_.end())
+    {
+        return it->second;
+    }
+
+    // Check if texture is embedded
+    if (path.substr(0, 1) == "*") // Embedded texture
+    {
+        unsigned int textureIndex = std::stoi(path.substr(1));
+        aiTexture* aiTex = scene->mTextures[textureIndex];
+
+        // Load embedded texture
+        auto texture = Texture::createEmbeddedTexture(aiTex, type);
+        if (texture)
+        {
+            texture_map_.emplace(full_path, texture);
+        }
+        else
+        {
+            std::cerr << "Failed to load embedded texture at index: " << textureIndex << std::endl;
+        }
+        return texture;
+    }
+    else
+    {
+        // Load texture from file
+        auto texture = Texture::createTexture(full_path, type);
+        if (texture)
+        {
+            texture_map_.emplace(full_path, texture);
+        }
+        else
+        {
+            std::cerr << "Failed to load texture: " << full_path << std::endl;
+        }
+        return texture;
+    }
 }
 
-std::shared_ptr<Texture> GraphicsManager::getTexture(const std::string& name)
+std::shared_ptr<Texture> GraphicsManager::getTexture(const std::string& path)
 {
-	auto it = texture_map.find(name);
-	if (it != texture_map.end())
-	{
-		return it->second;
-	}
-	std::cerr << "Texture not found: " << name << std::endl;
-	return nullptr;
+    auto it = texture_map_.find(path);
+    if (it != texture_map_.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        std::cerr << "Texture not found: " << path << std::endl;
+        return nullptr;
+    }
 }
 
-std::shared_ptr<Mesh> GraphicsManager::createMesh(const std::string& name,
-                                                  const std::vector<Vertex>& vertices,
-                                                  const std::vector<unsigned>& indices,
-                                                  const std::string& material_name)
-{
-	auto mesh = Mesh::createMesh(vertices, indices, material_name);
-	mesh_map.emplace(name, mesh);
-	return mesh;
-}
-
-std::shared_ptr<Mesh> GraphicsManager::getMesh(const std::string& name)
-{
-	auto it = mesh_map.find(name);
-	if (it != mesh_map.end())
-	{
-		return it->second;
-	}
-	std::cerr << "Mesh not found: " << name << std::endl;
-	return nullptr;
-}
+// Material management
 
 std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& name,
-                                                          const glm::vec4& albedo,
-                                                          float metallic,
-                                                          float roughness,
-                                                          float AO,
-                                                          std::shared_ptr<Texture> albedoTexture,
-                                                          std::shared_ptr<Texture> normalTexture,
-                                                          std::shared_ptr<Texture> metallicTexture,
-                                                          std::shared_ptr<Texture> roughNessTexture,
-                                                          std::shared_ptr<Texture> AOTexture,
-                                                          std::shared_ptr<Texture> emissiveTexture)
+    const glm::vec4& albedo,
+    float metallic,
+    float roughness,
+    float AO,
+    const std::shared_ptr<Texture>& albedoTexture,
+    const std::shared_ptr<Texture>& normalTexture,
+    const std::shared_ptr<Texture>& metallicTexture,
+    const std::shared_ptr<Texture>& roughnessTexture,
+    const std::shared_ptr<Texture>& AOTexture,
+    const std::shared_ptr<Texture>& emissiveTexture)
 {
-	auto material = Material::createMaterial(albedo, metallic, roughness, AO, albedoTexture, normalTexture,
-	                                         metallicTexture, roughNessTexture, AOTexture, emissiveTexture);
-	material_map.emplace(name, material);
-	return material;
+    // Check if material already exists
+    auto it = material_map_.find(name);
+    if (it != material_map_.end())
+    {
+        return it->second;
+    }
+
+    // Create new material
+    auto material = Material::createMaterial(albedo, metallic, roughness, AO,
+        albedoTexture, normalTexture, metallicTexture,
+        roughnessTexture, AOTexture, emissiveTexture);
+    material_map_.emplace(name, material);
+
+    return material;
 }
 
 std::shared_ptr<Material> GraphicsManager::getMaterial(const std::string& name)
 {
-	auto it = material_map.find(name);
-	if (it != material_map.end())
-	{
-		return it->second;
-	}
-	std::cerr << "Material not found: " << name << std::endl;
-	return nullptr;
+    auto it = material_map_.find(name);
+    if (it != material_map_.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        std::cerr << "Material not found: " << name << std::endl;
+        return nullptr;
+    }
 }
 
-std::shared_ptr<Model> GraphicsManager::createModel(const std::vector<std::string>& mesh_names, const std::string& name)
+// Mesh management
+
+std::shared_ptr<Mesh> GraphicsManager::createMesh(const std::string& name,
+    const std::vector<Vertex>& vertices,
+    const std::vector<unsigned int>& indices,
+    const std::shared_ptr<Material>& material)
 {
-	auto model = Model::createModel(mesh_names);
-	model_map.emplace(name, model);
-	return model;
+    // Check if mesh already exists
+    auto it = mesh_map_.find(name);
+    if (it != mesh_map_.end())
+    {
+        return it->second;
+    }
+
+    // Create new mesh
+    auto mesh = Mesh::createMesh(vertices, indices, material);
+    mesh_map_.emplace(name, mesh);
+
+    return mesh;
+}
+
+std::shared_ptr<Mesh> GraphicsManager::getMesh(const std::string& name)
+{
+    auto it = mesh_map_.find(name);
+    if (it != mesh_map_.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        std::cerr << "Mesh not found: " << name << std::endl;
+        return nullptr;
+    }
+}
+
+// Model and Scene management
+
+std::shared_ptr<Model> GraphicsManager::createModel(const std::vector<std::shared_ptr<Mesh>>& meshes, const std::string& name)
+{
+    // Check if model already exists
+    auto it = model_map_.find(name);
+    if (it != model_map_.end())
+    {
+        return it->second;
+    }
+
+    // Create new model
+    auto model = Model::createModel(meshes);
+    model_map_.emplace(name, model);
+
+    return model;
 }
 
 std::shared_ptr<Model> GraphicsManager::getModel(const std::string& name)
 {
-	auto it = model_map.find(name);
-	if (it != model_map.end())
-	{
-		return it->second;
-	}
-	std::cerr << "Model not found: " << name << std::endl;
-	return nullptr;
+    auto it = model_map_.find(name);
+    if (it != model_map_.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        std::cerr << "Model not found: " << name << std::endl;
+        return nullptr;
+    }
 }
 
-std::shared_ptr<Font> GraphicsManager::loadFont(const std::string& fontPath,
-                                                float fontSize,
-                                                const std::string& fontName)
+std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& path, const std::string& name)
 {
-	// Check if font is already loaded
-	auto it = font_map.find(fontName);
-	if (it != font_map.end())
-	{
-		return it->second;
-	}
+    // Check if model already loaded
+    auto it = model_map_.find(name);
+    if (it != model_map_.end())
+    {
+        return it->second;
+    }
 
-	auto font = std::make_shared<Font>(fontPath, fontSize);
-	if (font)
-	{
-		font_map.emplace(fontName, font);
-	}
-	else
-	{
-		std::cerr << "Failed to load font: " << fontPath << std::endl;
-	}
-	return font;
+    // Load model using Assimp
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(path,
+        aiProcess_Triangulate |
+        aiProcess_FlipUVs |
+        aiProcess_CalcTangentSpace |
+        aiProcess_GenSmoothNormals |
+        aiProcess_OptimizeMeshes |
+        aiProcess_ValidateDataStructure |
+        aiProcess_EmbedTextures);
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+    {
+        std::cerr << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+        return nullptr;
+    }
+
+    std::string directory = std::filesystem::path(path).parent_path().string();
+
+    // Process all meshes
+    std::vector<std::shared_ptr<Mesh>> meshes;
+    for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+    {
+        aiMesh* ai_mesh = scene->mMeshes[i];
+        auto mesh = processMesh(ai_mesh, scene, directory);
+        if (mesh)
+        {
+            meshes.emplace_back(mesh);
+        }
+    }
+
+    // Create the model
+    auto model = createModel(meshes, name);
+
+    return model;
+}
+
+
+
+std::shared_ptr<Mesh> GraphicsManager::processMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory)
+{
+    // Generate unique mesh name
+    std::string mesh_name = mesh->mName.C_Str();
+    if (mesh_name.empty())
+    {
+        mesh_name = "mesh_" + std::to_string(mesh_map_.size());
+    }
+
+    // Check if mesh already exists
+    auto it = mesh_map_.find(mesh_name);
+    if (it != mesh_map_.end())
+    {
+        return it->second;
+    }
+
+    // Process vertices
+    std::vector<Vertex> vertices;
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+    {
+        Vertex vertex;
+
+        // Positions
+        vertex.position = glm::vec3(mesh->mVertices[i].x,
+            mesh->mVertices[i].y,
+            mesh->mVertices[i].z);
+
+        // Normals
+        if (mesh->HasNormals())
+        {
+            vertex.normal = glm::vec3(mesh->mNormals[i].x,
+                mesh->mNormals[i].y,
+                mesh->mNormals[i].z);
+        }
+
+        // Texture Coordinates
+        if (mesh->HasTextureCoords(0))
+        {
+            vertex.texture_coordinates = glm::vec2(mesh->mTextureCoords[0][i].x,
+                mesh->mTextureCoords[0][i].y);
+        }
+        else
+        {
+            vertex.texture_coordinates = glm::vec2(0.0f, 0.0f);
+        }
+
+        // Tangents and Bitangents
+        if (mesh->HasTangentsAndBitangents())
+        {
+            vertex.tangent = glm::vec3(mesh->mTangents[i].x,
+                mesh->mTangents[i].y,
+                mesh->mTangents[i].z);
+
+            vertex.bitangent = glm::vec3(mesh->mBitangents[i].x,
+                mesh->mBitangents[i].y,
+                mesh->mBitangents[i].z);
+        }
+
+        vertices.push_back(vertex);
+    }
+
+    // Process indices
+    std::vector<unsigned int> indices;
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+    {
+        aiFace face = mesh->mFaces[i];
+        for (unsigned int j = 0; j < face.mNumIndices; j++)
+        {
+            indices.push_back(face.mIndices[j]);
+        }
+    }
+
+    // Process material
+    aiMaterial* ai_material = scene->mMaterials[mesh->mMaterialIndex];
+    auto material = loadMaterial(ai_material, directory, scene);
+
+    // Create the mesh
+    auto new_mesh = createMesh(mesh_name, vertices, indices, material);
+
+    return new_mesh;
+}
+
+std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const std::string& directory, const aiScene* scene)
+{
+    // Get material name
+    aiString name;
+    mat->Get(AI_MATKEY_NAME, name);
+    std::string material_name = name.C_Str();
+    if (material_name.empty())
+    {
+        material_name = "material_" + std::to_string(material_map_.size());
+    }
+
+    // Check if material already exists
+    auto it = material_map_.find(material_name);
+    if (it != material_map_.end())
+    {
+        return it->second;
+    }
+
+    // Material properties
+    glm::vec4 albedo(1.0f);
+    float metallic = 0.0f;
+    float roughness = 1.0f;
+    float AO = 1.0f;
+
+    // Load textures
+    std::shared_ptr<Texture> albedoTexture;
+    std::shared_ptr<Texture> normalTexture;
+    std::shared_ptr<Texture> metallicTexture;
+    std::shared_ptr<Texture> roughnessTexture;
+    std::shared_ptr<Texture> AOTexture;
+    std::shared_ptr<Texture> emissiveTexture;
+
+    // Load the textures based on aiTextureType
+    auto albedoTextures = loadMaterialTextures(mat, aiTextureType_BASE_COLOR, directory, scene);
+    if (!albedoTextures.empty()) albedoTexture = albedoTextures[0];
+
+    auto normalTextures = loadMaterialTextures(mat, aiTextureType_NORMAL_CAMERA, directory, scene);
+    if (!normalTextures.empty()) normalTexture = normalTextures[0];
+
+    auto metallicTextures = loadMaterialTextures(mat, aiTextureType_METALNESS, directory, scene);
+    if (!metallicTextures.empty()) metallicTexture = metallicTextures[0];
+
+    auto roughnessTextures = loadMaterialTextures(mat, aiTextureType_DIFFUSE_ROUGHNESS, directory, scene);
+    if (!roughnessTextures.empty()) roughnessTexture = roughnessTextures[0];
+
+    auto AOTextures = loadMaterialTextures(mat, aiTextureType_AMBIENT_OCCLUSION, directory, scene);
+    if (!AOTextures.empty()) AOTexture = AOTextures[0];
+
+    auto emissiveTextures = loadMaterialTextures(mat, aiTextureType_EMISSION_COLOR, directory, scene);
+    if (!emissiveTextures.empty()) emissiveTexture = emissiveTextures[0];
+
+    // Create the material
+    auto material = createMaterial(material_name, albedo, metallic, roughness, AO,
+        albedoTexture, normalTexture, metallicTexture,
+        roughnessTexture, AOTexture, emissiveTexture);
+
+    return material;
+}
+
+std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
+    aiMaterial* mat,
+    aiTextureType type,
+    const std::string& directory,
+    const aiScene* scene)
+{
+    std::vector<std::shared_ptr<Texture>> textures;
+    for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+    {
+        aiString ai_str;
+        mat->GetTexture(type, i, &ai_str);
+
+        std::string texture_path = ai_str.C_Str();
+        std::string full_path;
+
+        // Determine if the texture is embedded
+        if (!texture_path.empty() && texture_path[0] == '*')
+        {
+            // Embedded texture: Use the texture path as-is
+            full_path = texture_path;
+        }
+        else
+        {
+            // External texture: Prepend the directory path
+            full_path = directory + "/" + texture_path;
+        }
+
+        auto texture = loadTexture(full_path, type, scene);
+        if (texture)
+        {
+            textures.push_back(texture);
+        }
+        else
+        {
+            std::cerr << "Failed to load texture: " << full_path << std::endl;
+        }
+    }
+    return textures;
+}
+
+
+// Font management
+
+std::shared_ptr<Font> GraphicsManager::loadFont(const std::string& fontPath, float fontSize)
+{
+    // Check if font already loaded
+    auto it = font_map_.find(fontPath);
+    if (it != font_map_.end())
+    {
+        return it->second;
+    }
+
+    // Load font
+    auto font = std::make_shared<Font>(fontPath, fontSize);
+    font_map_.emplace(fontPath, font);
+    return font;
 }
 
 std::shared_ptr<Font> GraphicsManager::getFont(const std::string& name)
 {
-	auto it = font_map.find(name);
-	if (it != font_map.end())
-	{
-		return it->second;
-	}
-	std::cerr << "Font not found: " << name << std::endl;
-	return nullptr;
-}
-
-void GraphicsManager::Clear()
-{
-	shader_map.clear();
-	texture_map.clear();
-	mesh_map.clear();
-	model_map.clear();
-	material_map.clear();
-	font_map.clear();
-}
-
-std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& file, const std::string& name)
-{
-	Assimp::Importer importer;
-	const aiScene* scene =
-	    importer.ReadFile(file, aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_OptimizeMeshes |
-	                                aiProcess_GenSmoothNormals | aiProcess_ValidateDataStructure);
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-	{
-		std::cerr << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-		return nullptr;
-	}
-	processNode(scene->mRootNode, scene);
-	std::vector<std::string> mesh_names;
-	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
-	{
-		std::string mesh_name = scene->mMeshes[i]->mName.C_Str();
-		if (mesh_name.empty())
-		{
-			mesh_name = name + "_mesh_" + std::to_string(i);
-		}
-		mesh_names.push_back(mesh_name);
-	}
-	return createModel(mesh_names, name);
-}
-
-void GraphicsManager::processNode(aiNode* node, const aiScene* scene)
-{
-	// Process all the node's meshes
-	for (unsigned int i = 0; i < node->mNumMeshes; i++)
-	{
-		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		processMesh(mesh, scene);
-	}
-	// Then do the same for each of its children
-	for (unsigned int i = 0; i < node->mNumChildren; i++)
-	{
-		processNode(node->mChildren[i], scene);
-	}
-}
-
-void GraphicsManager::processMesh(aiMesh* mesh, const aiScene* scene)
-{
-	// Extract mesh name
-	std::string mesh_name = mesh->mName.C_Str();
-	if (mesh_name.empty())
-	{
-		mesh_name = "mesh_" + std::to_string(mesh_map.size());
-	}
-
-	std::vector<Vertex> vertices;
-	std::vector<unsigned> indices;
-
-	// Check if mesh has tangents and bitangents
-	bool hasTangents = mesh->HasTangentsAndBitangents();
-
-	// Process vertices
-	vertices.reserve(mesh->mNumVertices);
-	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
-	{
-		Vertex vertex;
-
-		// Positions
-		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-
-		// Normals
-		vertex.normal = mesh->HasNormals() ? glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z) :
-		                                     glm::vec3(0.0f);
-
-		// Texture Coordinates
-		if (mesh->mTextureCoords[0]) // Check if the mesh contains texture coordinates
-		{
-			vertex.texture_coordinates = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-		}
-		else
-		{
-			vertex.texture_coordinates = glm::vec2(0.0f);
-		}
-
-		// Tangents
-		vertex.tangent = hasTangents ? glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z) :
-		                               glm::vec3(1.0f, 0.0f, 0.0f); // Default tangent
-
-		// Bitangents
-		vertex.bitangent = hasTangents ?
-		                       glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z) :
-		                       glm::vec3(0.0f, 1.0f, 0.0f); // Default bitangent
-
-		vertices.push_back(vertex);
-	}
-
-	// Process indices
-	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
-	{
-		aiFace face = mesh->mFaces[i];
-		for (unsigned int j = 0; j < face.mNumIndices; j++)
-		{
-			indices.push_back(face.mIndices[j]);
-		}
-	}
-
-	// Process material
-	std::string material_name = "Default";
-	if (mesh->mMaterialIndex >= 0)
-	{
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		material_name = processMaterial(material, scene);
-	}
-
-	// Create and store the mesh
-	createMesh(mesh_name, vertices, indices, material_name);
-}
-
-std::string GraphicsManager::processMaterial(aiMaterial* material, const aiScene* scene)
-{
-	// Get the material name
-	aiString name;
-	material->Get(AI_MATKEY_NAME, name);
-	std::string material_name = name.C_Str();
-	if (material_name.empty())
-	{
-		material_name = "Material_" + std::to_string(material_map.size());
-	}
-
-	// Check if the material already exists
-	if (material_map.find(material_name) != material_map.end())
-	{
-		return material_name;
-	}
-
-	// Initialize PBR material properties with default values
-	glm::vec4 albedo(0.0f, 0.0f, 0.0f,0.0f);   // Albedo color
-	float metallic = 0.0f;                // Metallic factor
-	float roughness = 0.0f;               // Roughness factor
-	float AO = 0.0f;                      // Ambient Occlusion
-
-	// Retrieve material colors (if available)
-	aiColor3D color(0.0f, 0.0f, 0.0f);
-	if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS)
-	{
-		albedo = glm::vec4(color.r, color.g, color.b,1);
-	}
-
-	// Retrieve scalar properties (if available)
-	material->Get(AI_MATKEY_METALLIC_FACTOR, metallic);
-	material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);
-	material->Get(AI_MATKEY_OPACITY, AO); // Using opacity as AO factor for demonstration
-
-	// Load PBR textures
-	std::shared_ptr<Texture> albedoMap = nullptr;
-	std::shared_ptr<Texture> normalMap = nullptr;
-	std::shared_ptr<Texture> metallicMap = nullptr;
-	std::shared_ptr<Texture> roughnessMap = nullptr;
-	std::shared_ptr<Texture> AOMap = nullptr;
-	std::shared_ptr<Texture> emissiveMap = nullptr;
-
-	// Iterate through all texture types supported by Assimp
-	for (unsigned int type = 0; type < aiTextureType_UNKNOWN; ++type)
-	{
-		aiTextureType aiType = static_cast<aiTextureType>(type);
-		auto roleOpt = GetTextureRole(aiType);
-		if (roleOpt.has_value())
-		{
-			TextureRole role = roleOpt.value();
-			if (material->GetTextureCount(aiType) > 0)
-			{
-				aiString texPath;
-				if (material->GetTexture(aiType, 0, &texPath) == AI_SUCCESS)
-				{
-					std::string path = texPath.C_Str();
-					std::cout << "Loading texture (" << static_cast<int>(role) << "): " << path << std::endl;
-
-					// Check if texture is embedded
-					const aiTexture* embeddedTex = scene->GetEmbeddedTexture(path.c_str());
-					std::shared_ptr<Texture> texture = nullptr;
-
-					if (embeddedTex)
-					{
-						// Handle embedded texture
-						printf("Cant handle embedded textures\n");
-					}
-					else
-					{
-						// Handle texture from file
-						texture = loadTexture(path, aiType, path);
-						if (!texture)
-						{
-							std::cerr << "Failed to load texture from file: " << path << std::endl;
-							continue;
-						}
-					}
-
-					// Assign texture to the appropriate map
-					switch (role)
-					{
-						case TextureRole::Albedo:
-							albedoMap = texture;
-							break;
-						case TextureRole::Metalness:
-							metallicMap = texture;
-							break;
-						case TextureRole::Roughness:
-							roughnessMap = texture;
-							break;
-						case TextureRole::AmbientOcclusion:
-							AOMap = texture;
-							break;
-						case TextureRole::Normal:
-							normalMap = texture;
-							break;
-						case TextureRole::Emissive:
-							emissiveMap = texture;
-							break;
-						case TextureRole::Diffuse:
-						case TextureRole::Specular:
-						default:
-							// Handle other texture roles if necessary
-							break;
-					}
-				}
-			}
-		}
-	}
-
-	// Create and store the PBR material
-	createMaterial(material_name, albedo, metallic, roughness, AO, albedoMap, normalMap, metallicMap, roughnessMap,
-	               AOMap, emissiveMap);
-
-	return material_name;
+    auto it = font_map_.find(name);
+    if (it != font_map_.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        std::cerr << "Font not found: " << name << std::endl;
+        return nullptr;
+    }
 }

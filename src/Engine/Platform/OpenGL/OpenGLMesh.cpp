@@ -8,16 +8,16 @@
 #include "Engine/Graphics/VertexArray.hpp"
 #include "Engine/Graphics/VertexBuffer.hpp"
 
-OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::string& materialName) :mIndexCount(indices.size()), mVertexCount(vertices.size()), material_name(materialName)
+
+OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::shared_ptr<Material>& material) : mIndexCount(indices.size()), mVertexCount(vertices.size()), mMaterial(material)
 {
 	mVertexArray = VertexArray::create();
 	mVertexArray->addVertexBuffer(VertexBuffer::create(vertices));
 	mVertexArray->setIndexBuffer(IndexBuffer::create(indices));
-    //Init VAO
-    //Bind VAO
-    //Attach VBO to VAO
-    //Attach EBO TO VAO
-
+	//Init VAO
+	//Bind VAO
+	//Attach VBO to VAO
+	//Attach EBO TO VAO
 }
 
 OpenGLMesh::~OpenGLMesh()
@@ -25,21 +25,20 @@ OpenGLMesh::~OpenGLMesh()
 
 }
 
-
-void OpenGLMesh::draw(const Shader& shader, GraphicsManager& graphicsManager) const
+void OpenGLMesh::draw(const Shader& shader) const
 {
-    shader.use();
+	shader.use();
 	mVertexArray->bind();
-	graphicsManager.getMaterial(material_name)->bind(shader);
-
-    glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
+	mMaterial->bind(shader);
+	glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
+	mMaterial->unbind();
 	mVertexArray->unbind();
-	graphicsManager.getMaterial(material_name)->unbind();
 }
 
-void OpenGLMesh::setMaterial(const std::string& name)
+
+void OpenGLMesh::setMaterial(const std::shared_ptr<Material>& material)
 {
-	material_name = name;
+	mMaterial = material;
 }
 
 int OpenGLMesh::getVertexCount() const

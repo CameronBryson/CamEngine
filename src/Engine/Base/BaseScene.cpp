@@ -3,7 +3,7 @@
 #include "Engine/Components.hpp"
 #include "Engine/Events/EventHandler.hpp"
 #include "edyn/edyn.hpp"
-BaseScene::BaseScene() : mRenderSystem(this), mAudioSystem(this)
+BaseScene::BaseScene() : mRenderSystem(this), mAudioSystem(this), mTransformSystem(this)
 {
 }
 void BaseScene::init()
@@ -23,6 +23,7 @@ void BaseScene::lateInit()
 void BaseScene::update(float dt)
 {
 	edyn::update(mEnttRegistry);
+	mTransformSystem.update(dt);
 	mAudioSystem.update(dt);
 	EventHandler::GetInstance()->scriptDispatcher.SendEvent(UpdateEvent(dt));
 }

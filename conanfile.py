@@ -16,3 +16,4 @@ class ConanRecipe(ConanFile):
         self.requires("imgui/1.91.5")
         self.requires("freetype/2.11.1")
         self.requires("stb/cci.20230920")
+        self.requires("eastl/3.21.12")

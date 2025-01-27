@@ -2,8 +2,9 @@
 #include "Engine/Managers/CommandManager.hpp"
 #include "Engine/Managers/InputManager.hpp"
 
-#include "Engine/Systems/SRender.hpp"
 #include "Engine/Systems/SAudio.hpp"
+#include "Engine/Systems/SRender.hpp"
+#include "Engine/Systems/STransform.hpp"
 
 #include "Engine/Graphics/Camera.hpp"
 #include <entt/entt.hpp>
@@ -38,6 +39,7 @@ public:
 	//dont hold data or very little data
 	SRender mRenderSystem;
 	SAudio mAudioSystem;
+	STransform mTransformSystem;
 
 	Camera mMainCamera;
 	//current snapshot?
