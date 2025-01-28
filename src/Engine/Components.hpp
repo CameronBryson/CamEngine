@@ -7,6 +7,7 @@
 #include <glm/ext/vector_float3.hpp>
 #include <glm/gtc/quaternion.hpp> // Include the complete quaternion header
 #include <glm/fwd.hpp>
+#include <vector>
 
 // Component for rendering-related data
 struct CRender
@@ -56,11 +57,20 @@ struct CText
 
 struct CTransform 
 {
-    CTransform(const entt::entity parent, const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) : parent(parent),position(position), rotation(rotation), scale(scale), model_matrix(1.0f), dirty(true) {}
+    CTransform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) : position(position), rotation(rotation), scale(scale), model_matrix(1.0f), dirty(true) {}
     glm::vec3 position;
     glm::quat rotation;
     glm::vec3 scale;
     glm::mat4 model_matrix;
     bool dirty;
-    entt::entity parent;
+};
+struct CParent
+{
+	CParent(entt::entity parent) : parent(parent) {}
+	entt::entity parent;
+};
+struct CChildren
+{
+	CChildren() : children(children) {}
+	std::vector<entt::entity> children;
 };

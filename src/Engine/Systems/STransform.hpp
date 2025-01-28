@@ -1,24 +1,18 @@
 #pragma once
-#include <entt/entt.hpp>
-#include <glm/glm.hpp>
-#include <unordered_set>
-#include "Components.hpp"
+
+#include <glm/mat4x4.hpp>
+#include <entt/entity/registry.hpp>
 class BaseScene;
-class STransform
-{
+class STransform {
 public:
-	STransform(BaseScene* scene);
-	void update(float dt);
+    STransform(BaseScene* scene);
+    void update(float dt);
+
 private:
-	BaseScene* mScene;
-    // Helper functions
-    void updateTransform(entt::entity entity, entt::registry& registry,
-        std::unordered_set<entt::entity>& visited,
-        const std::function<void(entt::entity)>& updateFunc);
+    BaseScene* mScene;
 
-    bool hasPhysicsComponents(entt::entity entity, entt::registry& registry) const;
-    glm::mat4 computePhysicsMatrix(entt::entity entity, entt::registry& registry) const;
+    void updateTransform(entt::entity entity, entt::registry& registry);
     glm::mat4 computeLocalMatrix(const CTransform& transform) const;
-    glm::mat4 computeModelMatrix(const glm::mat4& parentMatrix, const glm::mat4& physicsMatrix, const glm::mat4& localMatrix, bool hasPhysics) const;
+    glm::mat4 computePhysicsMatrix(entt::entity entity, entt::registry& registry) const;
+    bool hasPhysicsComponents(entt::entity entity, entt::registry& registry) const;
 };
-

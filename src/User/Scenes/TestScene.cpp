@@ -18,18 +18,28 @@ void TestScene::init()
 	Factory factory(this);
 	BaseScene::init();
 	edyn::set_gravity(mEnttRegistry, edyn::vector3{ 0, -9.81, 0 });
-	auto sceneRoot = mEnttRegistry.create();
-	mEnttRegistry.emplace<CTransform>(sceneRoot, entt::null, glm::vec3{ 0, 0, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 1, 1, 1 });
-
 	auto controller = mEnttRegistry.create();
 	mEnttRegistry.emplace<CameraController>(controller, this, controller);
 
+
+	auto sceneRoot = mEnttRegistry.create();
+	mEnttRegistry.emplace<CTransform>(sceneRoot, glm::vec3{ 0, 0, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 1, 1, 1 });
+	mEnttRegistry.emplace<CChildren>(sceneRoot);
+
+	
+
 	
 	auto testParent = mEnttRegistry.create();
-	mEnttRegistry.emplace<CTransform>(testParent, sceneRoot, glm::vec3{ 0, 0, 0 }, glm::quat(), glm::vec3{ 1, 1, 1 });
+	mEnttRegistry.emplace<CTransform>(testParent, glm::vec3{ 0, 0, 0 }, glm::quat(), glm::vec3{ 1, 1, 1 });
+	mEnttRegistry.emplace<CParent>(testParent, sceneRoot);
+	mEnttRegistry.emplace<CChildren>(testParent);
+	mEnttRegistry.get<CChildren>(sceneRoot).children.push_back(testParent);
+
 	auto testModel = mEnttRegistry.create();
 	mEnttRegistry.emplace<CModel>(testModel, "scene");
-	mEnttRegistry.emplace<CTransform>(testModel, testParent, glm::vec3{ 0, 0, 0 }, glm::quat(), glm::vec3{1, 1, 1});
+	mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, 0 }, glm::quat(), glm::vec3{1, 1, 1});
+	mEnttRegistry.emplace<CParent>(testModel, testParent);
+	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
 	auto rigidBody = edyn::rigidbody_def();
 	rigidBody.presentation = true;
 	rigidBody.shape = edyn::box_shape{ 1, 1, 1 };

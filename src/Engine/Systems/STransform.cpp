@@ -1,19 +1,65 @@
 #include "pch.hpp"
-#include "STransform.hpp"
 #include "BaseScene.hpp"
-#include <edyn/comp/present_position.hpp>
-#include "Components.hpp"
+#include "STransform.hpp"
+#include "Components.hpp" // Include Components.hpp directly
+
 #include <edyn/comp/present_orientation.hpp>
+#include <edyn/comp/present_position.hpp>
+
 #define GLM_ENABLE_EXPERIMENTAL
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/gtx/euler_angles.hpp"
-#include <iostream>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <entt/entt.hpp>
+#include <entt/entity/utility.hpp>
 
+STransform::STransform(BaseScene* scene)
+    : mScene(scene) {
+}
 
+void STransform::update(float dt) {
+    auto& registry = mScene->mEnttRegistry;
 
-STransform::STransform(BaseScene* scene) : mScene(scene)
-{
+    auto view = registry.view<CTransform>(entt::exclude<CParent>);
+
+    for (auto entity : view) {
+        updateTransform(entity, registry);
+    }
+}
+
+void STransform::updateTransform(entt::entity entity, entt::registry& registry) {
+    auto& transform = registry.get<CTransform>(entity);
+
+    glm::mat4 localMatrix = computeLocalMatrix(transform);
+
+    glm::mat4 physicsMatrix = glm::mat4(1.0f);
+    bool hasPhysics = hasPhysicsComponents(entity, registry);
+    if (hasPhysics) {
+        physicsMatrix = computePhysicsMatrix(entity, registry);
+    }
+
+    if (registry.any_of<CParent>(entity)) {
+        auto parent = registry.get<CParent>(entity).parent;
+        const auto& parentTransform = registry.get<CTransform>(parent);
+        transform.model_matrix = parentTransform.model_matrix * localMatrix * physicsMatrix;
+    }
+    else {
+        transform.model_matrix = localMatrix * physicsMatrix;
+    }
+
+    if (registry.any_of<CChildren>(entity)) {
+        auto& children = registry.get<CChildren>(entity).children;
+        for (auto child : children) {
+            updateTransform(child, registry);
+        }
+    }
+}
+
+glm::mat4 STransform::computeLocalMatrix(const CTransform& transform) const {
+    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.position);
+    glm::mat4 rotationMatrix = glm::mat4_cast(transform.rotation);
+    glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
+
+    return translationMatrix * rotationMatrix * scaleMatrix;
 }
 
 bool STransform::hasPhysicsComponents(entt::entity entity, entt::registry& registry) const {
@@ -24,87 +70,9 @@ glm::mat4 STransform::computePhysicsMatrix(entt::entity entity, entt::registry& 
     const auto& physicsPos = registry.get<edyn::present_position>(entity);
     const auto& physicsOri = registry.get<edyn::present_orientation>(entity);
 
-    glm::vec3 globalPosition(physicsPos.x, physicsPos.y, physicsPos.z);
-    glm::quat globalOrientation(physicsOri.w, physicsOri.x, physicsOri.y, physicsOri.z);
-    globalOrientation = glm::normalize(globalOrientation);
+    glm::vec3 position(physicsPos.x, physicsPos.y, physicsPos.z);
+    glm::quat orientation(physicsOri.w, physicsOri.x, physicsOri.y, physicsOri.z);
+    orientation = glm::normalize(orientation);
 
-    return glm::translate(glm::mat4(1.0f), globalPosition) * glm::mat4_cast(globalOrientation);
+    return glm::translate(glm::mat4(1.0f), position) * glm::mat4_cast(orientation);
 }
-
-glm::mat4 STransform::computeLocalMatrix(const CTransform& transform) const {
-    glm::mat4 local = glm::translate(glm::mat4(1.0f), transform.position);
-    local *= glm::mat4_cast(transform.rotation); 
-    local = glm::scale(local, transform.scale);
-    return local;
-}
-
-glm::mat4 STransform::computeModelMatrix(const glm::mat4& parentMatrix, const glm::mat4& physicsMatrix, const glm::mat4& localMatrix, bool hasPhysics) const {
-    if (hasPhysics) {
-        // Parent * Physics * Local
-        return parentMatrix * physicsMatrix * localMatrix;
-    }
-    else {
-        // Parent * Local
-        return parentMatrix * localMatrix;
-    }
-}
-
-void STransform::updateTransform(entt::entity entity, entt::registry& registry,
-    std::unordered_set<entt::entity>& visited,
-    const std::function<void(entt::entity)>& updateFunc)
-{
-
-    visited.insert(entity);
-
-    auto& transform = registry.get<CTransform>(entity);
-
-    glm::mat4 physicsMatrix(1.0f);
-    bool hasPhysics = false;
-
-    if (hasPhysicsComponents(entity, registry)) {
-        hasPhysics = true;
-        physicsMatrix = computePhysicsMatrix(entity, registry);
-    }
-
-    glm::mat4 parentMatrix(1.0f);
-
-    if (transform.parent != entt::null && registry.valid(transform.parent)) {
-        auto& parentTransform = registry.get<CTransform>(transform.parent);
-
-        if (parentTransform.dirty) {
-            updateTransform(transform.parent, registry, visited, updateFunc);
-        }
-
-        parentMatrix = parentTransform.model_matrix;
-    }
-
-    glm::mat4 localMatrix = computeLocalMatrix(transform);
-
-    glm::mat4 modelMatrix = computeModelMatrix(parentMatrix, physicsMatrix, localMatrix, hasPhysics);
-
-    transform.model_matrix = modelMatrix;
-    transform.dirty = false;
-
-    visited.erase(entity);
-}
-
-void STransform::update(float dt) {
-    auto& registry = mScene->mEnttRegistry;
-
-    // To prevent cyclic dependencies
-    std::unordered_set<entt::entity> visited;
-
-    std::function<void(entt::entity)> updateFunc = [&](entt::entity entity) {
-        updateTransform(entity, registry, visited, updateFunc);
-        };
-
-    auto view = registry.view<CTransform>();
-
-    for (auto entity : view) {
-        auto& transform = view.get<CTransform>(entity);
-            updateFunc(entity);
-        if (transform.dirty) {
-        }
-    }
-}
-
