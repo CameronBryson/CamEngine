@@ -16,7 +16,6 @@ public:
 	void deleteTexture() const override;
 	int getWidth() const override;
 	int getHeight() const override;
-	unsigned char* getData() const override;
 
 private:
 	GLuint textureID = 0;

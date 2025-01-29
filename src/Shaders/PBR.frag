@@ -1,305 +1,241 @@
 #version 330 core
 
-// ------------------------------
-// Output Fragment Color
-// ------------------------------
 out vec4 FragColor;
 
-// ------------------------------
-// Input Variables from Vertex Shader
-// ------------------------------
-in vec2 TexCoord;     // Texture coordinates
-in vec3 FragPos;      // Fragment position in world space
-in mat3 TBN;          // Tangent-Bitangent-Normal matrix for normal mapping
+in vec2 TexCoord;
+in vec3 FragPos;
+in mat3 TBN;
 
-// ------------------------------
-// Material Structure
-// ------------------------------
+// --------------------------------------------------
+// Material structure
+// --------------------------------------------------
 struct Material
 {
+    // Basic texture booleans
     bool hasAlbedoMap;
     bool hasNormalMap;
+
+    // Separate textures
     bool hasMetallicMap;
     bool hasRoughnessMap;
+
+    // Combined metal-rough
+    bool hasMetalRoughMap;
+
     bool hasAOMap;
     bool hasEmissiveMap;
-    
+
+    // Samplers
     sampler2D albedoMap;
     sampler2D normalMap;
     sampler2D metallicMap;
     sampler2D roughnessMap;
+    sampler2D metalRoughMap; // Combined
     sampler2D AOMap;
     sampler2D emissiveMap;
-    
+
+    // Fallback values
     vec4 albedo;
     float metallic;
     float roughness;
     float AO;
 };
 
-// ------------------------------
-// Directional Light Structure
-// ------------------------------
-struct DirectionalLight {
-    vec3 direction;   // Direction of the light
-    vec3 ambient;     // Ambient color component
-    vec3 diffuse;     // Diffuse color component
-    vec3 specular;    // Specular color component
-};
-
-// ------------------------------
-// Point Light Structure
-// ------------------------------
+// --------------------------------------------------
+// Point Light (for simplicity; ignore directional in example)
+// --------------------------------------------------
 struct PointLight {
-    vec3 position;    // Position of the point light
-    vec3 ambient;     // Ambient color component
-    vec3 diffuse;     // Diffuse color component
-    vec3 specular;    // Specular color component
-    
-    float constant;   // Attenuation constant
-    float linear;     // Attenuation linear factor
-    float quadratic;  // Attenuation quadratic factor
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
-// ------------------------------
-// Uniform Variables
-// ------------------------------
-uniform Material material;               // Material properties
-uniform int numDirLights;                // Number of directional lights
-uniform DirectionalLight dirLights[50];  // Array of directional lights
-uniform int numPointLights;              // Number of point lights
-uniform PointLight pointLights[50];      // Array of point lights
-uniform vec3 viewPos;                     // Camera position in world space
+uniform int numPointLights;
+uniform PointLight pointLights[50];
 
-// ------------------------------
-// Function Declarations
-// ------------------------------
-vec3 getNormal();
-vec3 getAlbedo();
-float getMetallic();
-float getRoughness();
-float getAO();
-vec3 getEmissive();
+uniform Material material;
+uniform vec3 viewPos;
 
-// The following functions are retained but not utilized in this simplified shader
-vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec3 albedo, float metallic, float roughness);
-vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 albedo, float metallic, float roughness);
-vec3 fresnelSchlick(float cosTheta, vec3 F0);
-float distributionGGX(vec3 N, vec3 H, float roughness);
-float geometrySchlickGGX(float NdotV, float roughness);
-float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
+uniform samplerCube environmentMap;
 
-// Constants
-const float pi = 3.14159265359;
+// (If you still want directional lights, keep them. We omit here for brevity.)
 
-// ------------------------------
-// Main Function
-// ------------------------------
+// --------------------------------------------------
+// Constants & Helper Functions
+// --------------------------------------------------
+const float PI = 3.14159265359;
+
+float DistributionGGX(vec3 N, vec3 H, float roughness);
+float GeometrySchlickGGX(float NdotV, float roughness);
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
+vec3  fresnelSchlick(float cosTheta, vec3 F0);
+
+// --------------------------------------------------
+// Main
+// --------------------------------------------------
 void main()
 {
-    // Retrieve material properties
-    vec3 albedoColor = getAlbedo();
-    float ambientFactor = getAO();
-
-    // Define a hardcoded ambient light color (e.g., soft white)
-    vec3 ambientLight = vec3(0.4, 0.4, 0.4);
-
-    // Calculate ambient lighting with Ambient Occlusion applied
-    vec3 ambient = ambientLight * albedoColor * ambientFactor;
-
-    // Initialize diffuse and specular components
-    vec3 diffuse = vec3(0.0);
-    vec3 specular = vec3(0.0);
-
-    // Check if there is at least one directional light
-    if(numDirLights > 0)
+    // 1) Base color (if sRGB loaded, no pow. If not, do pow(...,2.2))
+    vec3 albedoColor = material.albedo.rgb;
+    if (material.hasAlbedoMap)
     {
-        // Use the first directional light for diffuse and specular lighting
-        DirectionalLight light = dirLights[0];
-        
-        // Compute the light direction
-        vec3 lightDir = normalize(-light.direction);
-        
-        // Calculate the normal vector
-        vec3 normal = getNormal();
-        
-        // Calculate the view direction
-        vec3 viewDir = normalize(viewPos - FragPos);
-        
-        // Compute the diffuse intensity using Lambertian reflectance
-        float diff = max(dot(normal, lightDir), 0.0);
-        
-        // Calculate the diffuse color
-        diffuse += light.diffuse * diff * albedoColor;
-        
-        // Compute the halfway vector for Blinn-Phong
-        vec3 halfwayDir = normalize(lightDir + viewDir);
-        
-        // Calculate the specular intensity using Blinn-Phong
-        float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0); // Shininess factor set to 32
-        
-        // Calculate the specular color
-        specular += light.specular * spec;
+        // If your engine loads albedoMap as sRGB, just read it:
+        albedoColor = texture(material.albedoMap, TexCoord).rgb;
     }
-    // Combine ambient, diffuse, and specular components
-    vec3 color = ambient + diffuse*material.albedo.a + specular;
 
-    // Set the final fragment color
+    // 2) Normal
+    vec3 N;
+    if (material.hasNormalMap)
+    {
+        vec3 tangentNormal = texture(material.normalMap, TexCoord).rgb;
+        tangentNormal = tangentNormal * 2.0 - 1.0;
+        N = normalize(TBN * tangentNormal);
+    }
+    else
+    {
+        // fallback, if you store geometry normal or TBN’s z-axis
+        N = normalize(TBN[2]);
+    }
+
+    // 3) Metallic & Roughness
+    float metallicValue  = material.metallic;
+    float roughnessValue = material.roughness;
+
+    if (material.hasMetalRoughMap)
+    {
+        // If combined texture: G=Roughness, B=Metallic
+        vec3 mrSample = texture(material.metalRoughMap, TexCoord).rgb;
+        roughnessValue = mrSample.g;
+        metallicValue  = mrSample.b;
+
+        // optionally, if AO is also in .r, you can use that 
+        // if you don't have a separate AO map:
+        // float aoFromMR = mrSample.r;
+        // ...
+    }
+    else
+    {
+        // if separate
+        if (material.hasMetallicMap)
+        {
+            // e.g. .r channel for metallic
+            metallicValue = texture(material.metallicMap, TexCoord).r;
+        }
+        if (material.hasRoughnessMap)
+        {
+            roughnessValue = texture(material.roughnessMap, TexCoord).r;
+        }
+    }
+
+    // 4) AO
+    float aoValue = material.AO;
+    if (material.hasAOMap)
+    {
+        aoValue = texture(material.AOMap, TexCoord).r;
+    }
+
+    // 5) Emissive
+    vec3 emissiveColor = vec3(0.0);
+    if (material.hasEmissiveMap)
+    {
+        emissiveColor = texture(material.emissiveMap, TexCoord).rgb;
+        // if your emissive is sRGB or not depends on your pipeline
+    }
+
+    // 6) PBR Lighting
+    vec3 V = normalize(viewPos - FragPos);
+
+    // base reflectivity
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, albedoColor, metallicValue);
+
+    // accumulate
+    vec3 Lo = vec3(0.0);
+
+    for (int i = 0; i < numPointLights; i++)
+    {
+        vec3 L = normalize(pointLights[i].position - FragPos);
+        vec3 H = normalize(V + L);
+
+        float distance    = length(pointLights[i].position - FragPos);
+        float attenuation = 1.0 / (distance * distance);
+        vec3 radiance     = pointLights[i].diffuse * attenuation;
+
+        float NDF = DistributionGGX(N, H, roughnessValue);
+        float G   = GeometrySmith(N, V, L, roughnessValue);
+        vec3  F   = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+        vec3 kS = F;
+        vec3 kD = (vec3(1.0) - kS) * (1.0 - metallicValue);
+
+        float NdotL      = max(dot(N, L), 0.0);
+        float denominator = 4.0 * max(dot(N, V), 0.0) * NdotL + 0.0001;
+        vec3 numerator    = NDF * G * F;
+        vec3 specular     = numerator / denominator;
+
+        Lo += (kD * albedoColor / PI + specular) * radiance * NdotL;
+    }
+
+    // minimal ambient
+    vec3 ambient = 0.03 * albedoColor * aoValue;
+
+    // final
+    vec3 color = ambient + Lo + emissiveColor;
+    // tone map
+    vec3 R = reflect(-V, N);
+    vec3 envColor = texture(environmentMap, R).rgb;
+
+// combine it with your existing color
+// you might scale it by a factor or a Fresnel, etc.
+    color += envColor * 0.3; // or some factor
+
+// tone map & gamma
+    color = color / (color + vec3(1.0));
+    color = pow(color, vec3(1.0/2.2));
+
     FragColor = vec4(color, 1.0);
 }
 
-// ------------------------------
-// Function Definitions
-// ------------------------------
-
-// Retrieves the normal vector, applying normal mapping if available
-vec3 getNormal()
+// --------------------------------------------------
+// Helpers ...
+// --------------------------------------------------
+float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
-    vec3 normal = vec3(0.0, 0.0, 1.0); // Default normal
+    float a  = roughness*roughness;
+    float a2 = a*a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2= NdotH*NdotH;
 
-    if(material.hasNormalMap)
-    {
-        // Sample the normal map texture
-        vec3 tangentNormal = texture(material.normalMap, TexCoord).rgb;
-        // Transform the normal from [0,1] to [-1,1]
-        tangentNormal = tangentNormal * 2.0 - 1.0;
-        // Transform the normal vector to world space using the TBN matrix
-        normal = normalize(TBN * tangentNormal);
-    }
-    else
-    {
-        // If no normal map, use the default normal
-        normal = normalize(normal);
-    }
+    float denom = (NdotH2*(a2-1.0)+1.0);
+    denom = PI * denom * denom;
 
-    return normal;
+    return a2 / denom;
 }
 
-// Retrieves the albedo color, using the albedo map if available
-vec3 getAlbedo()
+float GeometrySchlickGGX(float NdotV, float roughness)
 {
-    if(material.hasAlbedoMap)
-    {
-        return pow(texture(material.albedoMap, TexCoord).rgb, vec3(2.2)); // Convert from sRGB to linear space
-    }
-    else
-    {
-        return material.albedo.rgb;
-    }
+    float r = (roughness+1.0);
+    float k = (r*r)/8.0;
+    float num   = NdotV;
+    float denom = NdotV*(1.0 - k) + k;
+    return num/denom;
 }
 
-// Retrieves the metallic factor, using the metallic map if available
-float getMetallic()
-{
-    if(material.hasMetallicMap)
-    {
-        return texture(material.metallicMap, TexCoord).r;
-    }
-    else
-    {
-        return material.metallic;
-    }
-}
-
-// Retrieves the roughness factor, using the roughness map if available
-float getRoughness()
-{
-    if(material.hasRoughnessMap)
-    {
-        return texture(material.roughnessMap, TexCoord).r;
-    }
-    else
-    {
-        return material.roughness;
-    }
-}
-
-// Retrieves the Ambient Occlusion factor, using the AO map if available
-float getAO()
-{
-    if(material.hasAOMap)
-    {
-        return texture(material.AOMap, TexCoord).r;
-    }
-    else
-    {
-        return material.AO;
-    }
-}
-
-// Retrieves the emissive color, using the emissive map if available
-vec3 getEmissive()
-{
-    if(material.hasEmissiveMap)
-    {
-        return texture(material.emissiveMap, TexCoord).rgb;
-    }
-    else
-    {
-        return vec3(0.0);
-    }
-}
-
-// The following functions are retained but not utilized in this simplified shader
-
-// Calculates lighting contribution from a directional light
-vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec3 albedo, float metallic, float roughness)
-{
-    // Function body remains unchanged
-    return vec3(0.0);
-}
-
-// Calculates lighting contribution from a point light
-vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 albedo, float metallic, float roughness)
-{
-    // Function body remains unchanged
-    return vec3(0.0);
-}
-
-// Schlick's approximation for Fresnel factor
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
-{
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-}
-
-// GGX Normal Distribution Function
-float distributionGGX(vec3 N, vec3 H, float roughness)
-{
-    float a      = roughness * roughness;
-    float a2     = a * a;
-    float NdotH  = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH * NdotH;
-
-    float numerator   = a2;
-    float denominator = (NdotH2 * (a2 - 1.0) + 1.0);
-    denominator = pi * denominator * denominator;
-
-    return numerator / denominator;
-}
-
-// Schlick-GGX Geometry Function for a single direction
-float geometrySchlickGGX(float NdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r * r) / 8.0;
-
-    float numerator   = NdotV;
-    float denominator = NdotV * (1.0 - k) + k;
-
-    return numerator / denominator;
-}
-
-// Smith's Geometry Function
-float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = geometrySchlickGGX(NdotV, roughness);
-    float ggx1 = geometrySchlickGGX(NdotL, roughness);
-
+    float ggx1  = GeometrySchlickGGX(NdotV, roughness);
+    float ggx2  = GeometrySchlickGGX(NdotL, roughness);
     return ggx1 * ggx2;
 }
 
-// ------------------------------
-// End of Shader
-// ------------------------------
+vec3 fresnelSchlick(float cosTheta, vec3 F0)
+{
+    return F0 + (1.0 - F0)*pow(1.0 - cosTheta, 5.0);
+}

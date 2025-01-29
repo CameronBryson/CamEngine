@@ -19,6 +19,7 @@
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Model.hpp"
 #include "Engine/Graphics/Font.hpp"
+#include "Engine/Graphics/Cubemap.hpp"
 
 
 
@@ -40,17 +41,7 @@ public:
     std::shared_ptr<Texture> getTexture(const std::string& path);
 
     // Material management
-    std::shared_ptr<Material> createMaterial(const std::string& name,
-        const glm::vec4& albedo,
-        float metallic,
-        float roughness,
-        float AO,
-        const std::shared_ptr<Texture>& albedoTexture,
-        const std::shared_ptr<Texture>& normalTexture,
-        const std::shared_ptr<Texture>& metallicTexture,
-        const std::shared_ptr<Texture>& roughnessTexture,
-        const std::shared_ptr<Texture>& AOTexture,
-        const std::shared_ptr<Texture>& emissiveTexture);
+    std::shared_ptr<Material> createMaterial(const std::string& name, const glm::vec4& albedo, float metallic, float roughness, float AO, const std::shared_ptr<Texture>& albedoTexture, const std::shared_ptr<Texture>& normalTexture, const std::shared_ptr<Texture>& metallicTexture, const std::shared_ptr<Texture>& roughnessTexture, const std::shared_ptr<Texture>& AOTexture, const std::shared_ptr<Texture>& emissiveTexture, const std::shared_ptr<Texture>& metalRoughTexture);
     std::shared_ptr<Material> getMaterial(const std::string& name);
 
     // Mesh management
@@ -70,6 +61,9 @@ public:
     std::shared_ptr<Font> loadFont(const std::string& fontPath, float fontSize);
     std::shared_ptr<Font> getFont(const std::string& name);
 
+	std::shared_ptr<Cubemap> loadCubemap(const std::vector<std::string>& facePaths, const std::string& name);
+	std::shared_ptr<Cubemap> getCubemap(const std::string& name);
+
     // Resource cleanup
     void clear();
 
@@ -81,6 +75,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Mesh>> mesh_map_;
     std::unordered_map<std::string, std::shared_ptr<Model>> model_map_;
     std::unordered_map<std::string, std::shared_ptr<Font>> font_map_;
+	std::unordered_map<std::string, std::shared_ptr<Cubemap>> cubemap_map_;
 
 
     std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory);

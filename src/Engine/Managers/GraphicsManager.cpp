@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <functional>
+#include <Material.hpp>
 
 
 GraphicsManager::~GraphicsManager()
@@ -16,9 +17,25 @@ GraphicsManager::~GraphicsManager()
 void GraphicsManager::loadResources()
 {
     loadShader("src/Shaders/vertex.vert", "src/Shaders/PBR.frag", "PBR");
-
-    // Load fonts, models, or other resources here
+	loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
+     //Load fonts, models, or other resources here
     loadModel(engine_util::buildPath("assets/scene.gltf"), "scene");
+    loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
+    loadModel(engine_util::buildPath("assets/TextureSettingsTest.gltf"), "TextureWrap");
+	loadModel(engine_util::buildPath("assets/TextureCoordinateTest.gltf"), "TextureCord");
+    loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");
+    std::vector<std::string> facePaths;
+	facePaths.push_back(engine_util::buildPath("assets/skybox/right.jpg"));
+	facePaths.push_back(engine_util::buildPath("assets/skybox/left.jpg"));
+	facePaths.push_back(engine_util::buildPath("assets/skybox/top.jpg"));
+	facePaths.push_back(engine_util::buildPath("assets/skybox/bottom.jpg"));
+	facePaths.push_back(engine_util::buildPath("assets/skybox/front.jpg"));
+	facePaths.push_back(engine_util::buildPath("assets/skybox/back.jpg"));
+	loadCubemap(facePaths, "Skybox");
+
+
+
+
 }
 
 void GraphicsManager::unloadResources()
@@ -74,46 +91,77 @@ std::shared_ptr<Shader> GraphicsManager::getShader(const std::string& name)
 
 // Texture management
 
-std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path, aiTextureType type, const aiScene* scene)
+std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
+    aiTextureType type,
+    const aiScene* scene)
 {
-    // Use canonical path as key to avoid duplicates
-    std::string full_path = path;
-    if (std::filesystem::exists(path))
-    {
-        full_path = std::filesystem::canonical(path).string();
-    }
+    // We'll build a unique key for texture_map_.
+    std::string uniqueKey;
 
-    auto it = texture_map_.find(full_path);
-    if (it != texture_map_.end())
+    // If this is an embedded texture (path starts with '*'):
+    if (!path.empty() && path[0] == '*')
     {
-        return it->second;
-    }
+        // Example: embedded textures often show up as "*0", "*1", etc.
+        // We'll combine the pointer to the aiScene plus the index for uniqueness.
+        // This ensures two scenes each having "*0" won't collide.
+        unsigned int textureIndex = std::stoi(path.substr(1)); // e.g. from "*0"
 
-    // Check if texture is embedded
-    if (path.substr(0, 1) == "*") // Embedded texture
-    {
-        unsigned int textureIndex = std::stoi(path.substr(1));
-        aiTexture* aiTex = scene->mTextures[textureIndex];
+        // Construct a unique key: e.g., "Embedded_140535221312672_*0"
+        // scene is cast to a numeric value to help differentiate.
+        // You can also store a "model name" if you have it.
+        uintptr_t scenePtr = reinterpret_cast<uintptr_t>(scene);
+        uniqueKey = "Embedded_" + std::to_string(scenePtr) + "_" + path;
 
-        // Load embedded texture
+        // Check if we already have it
+        if (auto it = texture_map_.find(uniqueKey); it != texture_map_.end())
+        {
+            return it->second; // Already loaded
+        }
+
+        // Actually load the embedded texture from Assimp
+        unsigned int texIndex = textureIndex;
+        aiTexture* aiTex = scene->mTextures[texIndex];
         auto texture = Texture::createEmbeddedTexture(aiTex, type);
         if (texture)
         {
-            texture_map_.emplace(full_path, texture);
+            texture_map_.emplace(uniqueKey, texture);
         }
         else
         {
-            std::cerr << "Failed to load embedded texture at index: " << textureIndex << std::endl;
+            std::cerr << "Failed to load embedded texture at index: " << texIndex << std::endl;
         }
         return texture;
     }
     else
     {
-        // Load texture from file
+        // External file. We continue with your existing logic of canonical paths.
+
+        // Start with the raw input path.
+        std::string full_path = path;
+
+        // If the file actually exists, get its canonical path.
+        if (std::filesystem::exists(path))
+        {
+            full_path = std::filesystem::canonical(path).string();
+        }
+
+        // Optionally also incorporate the texture type in the key if you want:
+        // e.g. full_path += "#type_" + std::to_string(type);
+
+        // Now this is your unique key for external textures.
+        uniqueKey = full_path;
+
+        // Check if we already have this external texture loaded
+        if (auto it = texture_map_.find(uniqueKey); it != texture_map_.end())
+        {
+            return it->second;
+        }
+
+        // Otherwise, load from file
         auto texture = Texture::createTexture(full_path, type);
         if (texture)
         {
-            texture_map_.emplace(full_path, texture);
+            texture_map_.emplace(uniqueKey, texture);
         }
         else
         {
@@ -122,6 +170,7 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path, a
         return texture;
     }
 }
+
 
 std::shared_ptr<Texture> GraphicsManager::getTexture(const std::string& path)
 {
@@ -149,7 +198,8 @@ std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& nam
     const std::shared_ptr<Texture>& metallicTexture,
     const std::shared_ptr<Texture>& roughnessTexture,
     const std::shared_ptr<Texture>& AOTexture,
-    const std::shared_ptr<Texture>& emissiveTexture)
+    const std::shared_ptr<Texture>& emissiveTexture,
+    const std::shared_ptr<Texture>& metalRoughTexture)
 {
     // Check if material already exists
     auto it = material_map_.find(name);
@@ -161,7 +211,7 @@ std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& nam
     // Create new material
     auto material = Material::createMaterial(albedo, metallic, roughness, AO,
         albedoTexture, normalTexture, metallicTexture,
-        roughnessTexture, AOTexture, emissiveTexture);
+        roughnessTexture, AOTexture, emissiveTexture, metalRoughTexture);
     material_map_.emplace(name, material);
 
     return material;
@@ -402,6 +452,22 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
     float roughness = 1.0f;
     float AO = 1.0f;
 
+    // Retrieve Metallic Factor
+    if (AI_SUCCESS == mat->Get(AI_MATKEY_METALLIC_FACTOR, metallic)) {
+        // Successfully retrieved metallic factor
+    }
+    else {
+        std::cerr << "Metallic factor not found for material: " << material_name << ". Using default: " << metallic << std::endl;
+    }
+
+    // Retrieve Roughness Factor
+    if (AI_SUCCESS == mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness)) {
+        // Successfully retrieved roughness factor
+    }
+    else {
+        std::cerr << "Roughness factor not found for material: " << material_name << ". Using default: " << roughness << std::endl;
+    }
+
     // Load textures
     std::shared_ptr<Texture> albedoTexture;
     std::shared_ptr<Texture> normalTexture;
@@ -409,6 +475,7 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
     std::shared_ptr<Texture> roughnessTexture;
     std::shared_ptr<Texture> AOTexture;
     std::shared_ptr<Texture> emissiveTexture;
+	std::shared_ptr<Texture> metalRoughTexture;
 
     // Load the textures based on aiTextureType
     auto albedoTextures = loadMaterialTextures(mat, aiTextureType_BASE_COLOR, directory, scene);
@@ -429,13 +496,23 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
     auto emissiveTextures = loadMaterialTextures(mat, aiTextureType_EMISSION_COLOR, directory, scene);
     if (!emissiveTextures.empty()) emissiveTexture = emissiveTextures[0];
 
-    // Create the material
+	auto metalRoughTextures = loadMaterialTextures(mat, aiTextureType_UNKNOWN, directory, scene);
+	if (!metalRoughTextures.empty()) metalRoughTexture = metalRoughTextures[0];
+
+    if (metalRoughTextures.size() > 1) {
+        printf("Brub");
+    }
+
+
+
+    // Create the material with updated metallic and roughness
     auto material = createMaterial(material_name, albedo, metallic, roughness, AO,
         albedoTexture, normalTexture, metallicTexture,
-        roughnessTexture, AOTexture, emissiveTexture);
+        roughnessTexture, AOTexture, emissiveTexture, metalRoughTexture);
 
     return material;
 }
+
 
 std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
     aiMaterial* mat,
@@ -507,4 +584,30 @@ std::shared_ptr<Font> GraphicsManager::getFont(const std::string& name)
         std::cerr << "Font not found: " << name << std::endl;
         return nullptr;
     }
+}
+
+std::shared_ptr<Cubemap> GraphicsManager::loadCubemap(const std::vector<std::string>& facePaths, const std::string& name)
+{
+	auto it = cubemap_map_.find(name);
+	if (it != cubemap_map_.end())
+	{
+		return it->second;
+	}
+	auto cubemap = Cubemap::createCubemap(facePaths);
+	cubemap_map_.emplace(name, cubemap);
+	return cubemap;
+}
+
+std::shared_ptr<Cubemap> GraphicsManager::getCubemap(const std::string& name)
+{
+	auto it = cubemap_map_.find(name);
+	if (it != cubemap_map_.end())
+	{
+		return it->second;
+	}
+	else
+	{
+		std::cerr << "Cubemap not found: " << name << std::endl;
+		return nullptr;
+	}
 }

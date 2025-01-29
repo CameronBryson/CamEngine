@@ -18,7 +18,8 @@ public:
 	                        std::shared_ptr<Texture> metallicTexture,
 	                        std::shared_ptr<Texture> roughNessTexture,
 	                        std::shared_ptr<Texture> AOTexture,
-	                        std::shared_ptr<Texture> emissiveTexture);
+	                        std::shared_ptr<Texture> emissiveTexture,
+	std::shared_ptr<Texture> metalRoughTexture =nullptr );
 
 	void bind(const Shader& shader) override;
 	void unbind() override;
@@ -34,5 +35,6 @@ public:
 	std::shared_ptr<Texture> roughnessTexture;
 	std::shared_ptr<Texture> AOTexture;
 	std::shared_ptr<Texture> emissiveTexture;
+	std::shared_ptr<Texture> metalRoughTexture;
 };
 

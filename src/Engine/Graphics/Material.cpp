@@ -14,7 +14,8 @@ std::shared_ptr<Material> Material::createMaterial(const glm::vec4& albedo,
 	                        std::shared_ptr<Texture> metallicTexture,
 	                        std::shared_ptr<Texture> roughNessTexture,
 	                        std::shared_ptr<Texture> AOTexture,
-	                        std::shared_ptr<Texture> emissiveTexture)
+	                        std::shared_ptr<Texture> emissiveTexture,
+	std::shared_ptr<Texture> metalRoughTexture)
 {
-	return std::make_shared<OpenGLMaterial>(albedo,metallic,roughness,AO, albedoTexture, normalTexture, metallicTexture,roughNessTexture,AOTexture,emissiveTexture);
+	return std::make_shared<OpenGLMaterial>(albedo,metallic,roughness,AO, albedoTexture, normalTexture, metallicTexture,roughNessTexture,AOTexture,emissiveTexture, metalRoughTexture);
 }

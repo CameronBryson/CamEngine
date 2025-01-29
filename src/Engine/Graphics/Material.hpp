@@ -21,5 +21,6 @@ public:
 	                        std::shared_ptr<Texture> metallicTexture,
 	                        std::shared_ptr<Texture> roughNessTexture,
 	                        std::shared_ptr<Texture> AOTexture,
-	                        std::shared_ptr<Texture> emissiveTexture);
+	                        std::shared_ptr<Texture> emissiveTexture,
+	std::shared_ptr<Texture> metalRoughTexture);
 };

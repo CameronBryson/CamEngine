@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Components.hpp"
 #include "glm/fwd.hpp"
+#include <platform.hpp>
 template<typename T>
 class SparseSet;
 class BaseScene;
@@ -21,4 +22,21 @@ public:
 
 private:
     BaseScene* mScene;
+
+    // HDR Framebuffer
+    GLuint hdrFBO;
+    GLuint hdrColorBuffer;
+
+    // MSAA Framebuffer
+    GLuint msFBO;
+    GLuint msColorBuffer;
+    GLuint msDepthBuffer;
+
+    // Framebuffer dimensions
+    unsigned int width;
+    unsigned int height;
+
+    // Initialize Framebuffers
+    void setupHDRFramebuffer();
+    void setupMSAAFramebuffer();
 };

@@ -54,6 +54,6 @@ void CameraController::update(float deltaTime)
 	//    camera.Yaw += delta_x * camera_rotationspeed * dt * 0.1;
 	//    camera.Pitch += delta_y * camera_rotationspeed * dt * 0.1;
 
-	//camera.Position = camera_position;
+	m_Camera->Position = camera_position;
 	m_Camera->updateCameraVectors();
 }

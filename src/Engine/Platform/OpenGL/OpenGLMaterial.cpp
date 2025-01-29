@@ -6,12 +6,13 @@
 #include "OpenGLTexture.hpp"
 
 // Define texture unit offsets for clarity and maintainability
-constexpr unsigned int TEXTURE_UNIT_ALBEDO = 0;
-constexpr unsigned int TEXTURE_UNIT_NORMAL = 1;
-constexpr unsigned int TEXTURE_UNIT_METALLIC = 2;
-constexpr unsigned int TEXTURE_UNIT_ROUGHNESS = 3;
-constexpr unsigned int TEXTURE_UNIT_AO = 4;
-constexpr unsigned int TEXTURE_UNIT_EMISSIVE = 5;
+constexpr unsigned int TEXTURE_UNIT_ALBEDO = 1;
+constexpr unsigned int TEXTURE_UNIT_NORMAL = 2;
+constexpr unsigned int TEXTURE_UNIT_METALLIC = 3;
+constexpr unsigned int TEXTURE_UNIT_ROUGHNESS = 4;
+constexpr unsigned int TEXTURE_UNIT_AO = 5;
+constexpr unsigned int TEXTURE_UNIT_EMISSIVE = 6;
+constexpr unsigned int TEXTURE_UNIT_METALROUGH = 7;
 
 OpenGLMaterial::OpenGLMaterial(const glm::vec4& albedo,
                                float metallic,
@@ -22,7 +23,8 @@ OpenGLMaterial::OpenGLMaterial(const glm::vec4& albedo,
                                std::shared_ptr<Texture> metallicTexture,
                                std::shared_ptr<Texture> roughnessTexture,
                                std::shared_ptr<Texture> AOTexture,
-                               std::shared_ptr<Texture> emissiveTexture)
+                               std::shared_ptr<Texture> emissiveTexture,
+	std::shared_ptr<Texture> metalRoughTexture)
 {
 	this->albedo = albedo;
 	this->metallic = metallic;
@@ -34,6 +36,7 @@ OpenGLMaterial::OpenGLMaterial(const glm::vec4& albedo,
 	this->roughnessTexture = std::move(roughnessTexture);
 	this->AOTexture = std::move(AOTexture);
 	this->emissiveTexture = std::move(emissiveTexture);
+	this->metalRoughTexture = std::move(metalRoughTexture);
 }
 
 void OpenGLMaterial::bind(const Shader& shader)
@@ -111,6 +114,17 @@ void OpenGLMaterial::bind(const Shader& shader)
 	{
 		shader.setBool("material.hasEmissiveMap", false);
 	}
+	// Combined MetalRough
+	if (metalRoughTexture)
+	{
+		shader.setBool("material.hasMetalRoughMap", true);
+		shader.setInt("material.metalRoughMap", TEXTURE_UNIT_METALROUGH);
+		metalRoughTexture->bind(TEXTURE_UNIT_METALROUGH);
+	}
+	else
+	{
+		shader.setBool("material.hasMetalRoughMap", false);
+	}
 
 	// Set material properties in shader
 	shader.setVec4("material.albedo", albedo);
@@ -119,44 +133,17 @@ void OpenGLMaterial::bind(const Shader& shader)
 	shader.setFloat("material.AO", AO);
 }
 
+
 void OpenGLMaterial::unbind()
 {
-	// Unbind Albedo Texture
-	if (albedoTexture)
-	{
-		albedoTexture->unbind(TEXTURE_UNIT_ALBEDO);
-	}
+	if (albedoTexture)      albedoTexture->unbind(TEXTURE_UNIT_ALBEDO);
+	if (normalTexture)      normalTexture->unbind(TEXTURE_UNIT_NORMAL);
+	if (metallicTexture)    metallicTexture->unbind(TEXTURE_UNIT_METALLIC);
+	if (roughnessTexture)   roughnessTexture->unbind(TEXTURE_UNIT_ROUGHNESS);
+	if (AOTexture)          AOTexture->unbind(TEXTURE_UNIT_AO);
+	if (emissiveTexture)    emissiveTexture->unbind(TEXTURE_UNIT_EMISSIVE);
+	if (metalRoughTexture)  metalRoughTexture->unbind(TEXTURE_UNIT_METALROUGH);
 
-	// Unbind Normal Texture
-	if (normalTexture)
-	{
-		normalTexture->unbind(TEXTURE_UNIT_NORMAL);
-	}
-
-	// Unbind Metallic Texture
-	if (metallicTexture)
-	{
-		metallicTexture->unbind(TEXTURE_UNIT_METALLIC);
-	}
-
-	// Unbind Roughness Texture
-	if (roughnessTexture)
-	{
-		roughnessTexture->unbind(TEXTURE_UNIT_ROUGHNESS);
-	}
-
-	// Unbind Ambient Occlusion Texture
-	if (AOTexture)
-	{
-		AOTexture->unbind(TEXTURE_UNIT_AO);
-	}
-
-	// Unbind Emissive Texture
-	if (emissiveTexture)
-	{
-		emissiveTexture->unbind(TEXTURE_UNIT_EMISSIVE);
-	}
-
-	// Reset active texture to default
+	// reset
 	glActiveTexture(GL_TEXTURE0);
 }

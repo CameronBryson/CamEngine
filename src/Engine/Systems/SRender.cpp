@@ -45,12 +45,19 @@ void SRender::init()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Retrieve window dimensions
+    GLFWwindow* window = GameManager::get_glfw_window();
+    glfwGetFramebufferSize(window, reinterpret_cast<int*>(&width), reinterpret_cast<int*>(&height));
+
+    // Setup HDR and MSAA Framebuffers
+    setupHDRFramebuffer();
+    setupMSAAFramebuffer();
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     float xscale, yscale;
-    GLFWwindow* window = GameManager::get_glfw_window();
     glfwGetWindowContentScale(window, &xscale, &yscale);
     float dpi_scale = (xscale + yscale) * 0.5f;
 
@@ -80,20 +87,35 @@ void SRender::render()
     const auto& view_matrix = mScene->mMainCamera.GetViewMatrix();
     const auto& proj_matrix = mScene->mMainCamera.GetProjectionMatrix();
 
+    auto skybox = GameManager::mGraphicsManager->getCubemap("Skybox");
     auto shader = GameManager::mGraphicsManager->getShader("PBR");
-
     shader->use();
     shader->setMat4("projection", proj_matrix);
     shader->setMat4("view", view_matrix);
     shader->setVec3("viewPos", mScene->mMainCamera.Position);
+	shader->setInt("environmentMap", 0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getID());
     
 	buildDirectionalLights(*shader);
 	buildPointLights(*shader);
 
-    
+	
 
     // Draw models
     drawModels(*shader);
+
+    auto skyboxShader = GameManager::mGraphicsManager->getShader("Skybox");
+
+
+    skyboxShader->use();
+    glm::mat4 view_no_translation = glm::mat4(glm::mat3(view_matrix));
+    skyboxShader->setMat4("view", view_no_translation);
+    skyboxShader->setMat4("projection", proj_matrix);
+
+    skybox->draw(*skyboxShader);
+
     drawImGui();
     
 }
@@ -172,6 +194,14 @@ void SRender::drawImGui() const
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void SRender::setupHDRFramebuffer()
+{
+}
+
+void SRender::setupMSAAFramebuffer()
+{
 }
 
 

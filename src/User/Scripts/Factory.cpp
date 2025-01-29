@@ -24,6 +24,13 @@ entt::entity Factory::createDirectionalLight(const glm::vec3& direction, const g
 	return id;
 }
 
+entt::entity Factory::createPointLight(const glm::vec3& position, const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, const float constant, const float linear, const float quadratic) const
+{
+	const auto id = m_Scene->mEnttRegistry.create();
+	m_Scene->mEnttRegistry.emplace<CPointLight>(id, position, ambient, diffuse, specular, constant, linear, quadratic);
+	return id;
+}
+
 
 
 
