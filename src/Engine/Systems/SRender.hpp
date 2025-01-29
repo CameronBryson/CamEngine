@@ -23,20 +23,4 @@ public:
 private:
     BaseScene* mScene;
 
-    // HDR Framebuffer
-    GLuint hdrFBO;
-    GLuint hdrColorBuffer;
-
-    // MSAA Framebuffer
-    GLuint msFBO;
-    GLuint msColorBuffer;
-    GLuint msDepthBuffer;
-
-    // Framebuffer dimensions
-    unsigned int width;
-    unsigned int height;
-
-    // Initialize Framebuffers
-    void setupHDRFramebuffer();
-    void setupMSAAFramebuffer();
 };

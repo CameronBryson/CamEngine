@@ -47,11 +47,6 @@ void SRender::init()
 
     // Retrieve window dimensions
     GLFWwindow* window = GameManager::get_glfw_window();
-    glfwGetFramebufferSize(window, reinterpret_cast<int*>(&width), reinterpret_cast<int*>(&height));
-
-    // Setup HDR and MSAA Framebuffers
-    setupHDRFramebuffer();
-    setupMSAAFramebuffer();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -196,12 +191,5 @@ void SRender::drawImGui() const
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void SRender::setupHDRFramebuffer()
-{
-}
-
-void SRender::setupMSAAFramebuffer()
-{
-}
 
 
