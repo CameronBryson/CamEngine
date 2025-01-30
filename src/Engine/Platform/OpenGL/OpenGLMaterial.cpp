@@ -6,13 +6,13 @@
 #include "OpenGLTexture.hpp"
 
 // Define texture unit offsets for clarity and maintainability
-constexpr unsigned int TEXTURE_UNIT_ALBEDO = 1;
-constexpr unsigned int TEXTURE_UNIT_NORMAL = 2;
-constexpr unsigned int TEXTURE_UNIT_METALLIC = 3;
-constexpr unsigned int TEXTURE_UNIT_ROUGHNESS = 4;
-constexpr unsigned int TEXTURE_UNIT_AO = 5;
-constexpr unsigned int TEXTURE_UNIT_EMISSIVE = 6;
-constexpr unsigned int TEXTURE_UNIT_METALROUGH = 7;
+constexpr unsigned int TEXTURE_UNIT_ALBEDO = 4;
+constexpr unsigned int TEXTURE_UNIT_NORMAL = 5;
+constexpr unsigned int TEXTURE_UNIT_METALLIC = 6;
+constexpr unsigned int TEXTURE_UNIT_ROUGHNESS = 7;
+constexpr unsigned int TEXTURE_UNIT_AO = 8;
+constexpr unsigned int TEXTURE_UNIT_EMISSIVE = 9;
+constexpr unsigned int TEXTURE_UNIT_METALROUGH = 10;
 
 OpenGLMaterial::OpenGLMaterial(const glm::vec4& albedo,
                                float metallic,

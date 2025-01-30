@@ -61,7 +61,7 @@ public:
     std::shared_ptr<Font> loadFont(const std::string& fontPath, float fontSize);
     std::shared_ptr<Font> getFont(const std::string& name);
 
-	std::shared_ptr<Cubemap> loadCubemap(const std::vector<std::string>& facePaths, const std::string& name);
+	std::shared_ptr<Cubemap> loadCubemap(const std::string& path, const std::string& name);
 	std::shared_ptr<Cubemap> getCubemap(const std::string& name);
 
     // Resource cleanup

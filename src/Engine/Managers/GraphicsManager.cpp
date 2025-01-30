@@ -17,21 +17,14 @@ GraphicsManager::~GraphicsManager()
 void GraphicsManager::loadResources()
 {
     loadShader("src/Shaders/vertex.vert", "src/Shaders/PBR.frag", "PBR");
-	loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
+	loadShader("src/Shaders/background.vert", "src/Shaders/background.frag", "Skybox");
      //Load fonts, models, or other resources here
     loadModel(engine_util::buildPath("assets/scene.gltf"), "scene");
     loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
     loadModel(engine_util::buildPath("assets/TextureSettingsTest.gltf"), "TextureWrap");
 	loadModel(engine_util::buildPath("assets/TextureCoordinateTest.gltf"), "TextureCord");
-    loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");
-    std::vector<std::string> facePaths;
-	facePaths.push_back(engine_util::buildPath("assets/skybox/right.jpg"));
-	facePaths.push_back(engine_util::buildPath("assets/skybox/left.jpg"));
-	facePaths.push_back(engine_util::buildPath("assets/skybox/top.jpg"));
-	facePaths.push_back(engine_util::buildPath("assets/skybox/bottom.jpg"));
-	facePaths.push_back(engine_util::buildPath("assets/skybox/front.jpg"));
-	facePaths.push_back(engine_util::buildPath("assets/skybox/back.jpg"));
-	loadCubemap(facePaths, "Skybox");
+    loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");;
+	loadCubemap(engine_util::buildPath("assets/newport_loft.hdr"), "Skybox");
 
 
 
@@ -586,14 +579,14 @@ std::shared_ptr<Font> GraphicsManager::getFont(const std::string& name)
     }
 }
 
-std::shared_ptr<Cubemap> GraphicsManager::loadCubemap(const std::vector<std::string>& facePaths, const std::string& name)
+std::shared_ptr<Cubemap> GraphicsManager::loadCubemap(const std::string& path, const std::string& name)
 {
 	auto it = cubemap_map_.find(name);
 	if (it != cubemap_map_.end())
 	{
 		return it->second;
 	}
-	auto cubemap = Cubemap::createCubemap(facePaths);
+	auto cubemap = Cubemap::createCubemap(path);
 	cubemap_map_.emplace(name, cubemap);
 	return cubemap;
 }

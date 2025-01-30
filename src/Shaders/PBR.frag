@@ -1,49 +1,37 @@
-#version 330 core
+#version 400 core
 
 out vec4 FragColor;
 
 in vec2 TexCoord;
 in vec3 FragPos;
-in mat3 TBN;
+in mat3 TBN; 
 
-// --------------------------------------------------
-// Material structure
-// --------------------------------------------------
+
 struct Material
 {
-    // Basic texture booleans
     bool hasAlbedoMap;
     bool hasNormalMap;
-
-    // Separate textures
     bool hasMetallicMap;
     bool hasRoughnessMap;
-
-    // Combined metal-rough
     bool hasMetalRoughMap;
-
     bool hasAOMap;
     bool hasEmissiveMap;
 
-    // Samplers
     sampler2D albedoMap;
     sampler2D normalMap;
     sampler2D metallicMap;
     sampler2D roughnessMap;
-    sampler2D metalRoughMap; // Combined
+    sampler2D metalRoughMap;
     sampler2D AOMap;
     sampler2D emissiveMap;
 
-    // Fallback values
     vec4 albedo;
     float metallic;
     float roughness;
     float AO;
 };
 
-// --------------------------------------------------
-// Point Light (for simplicity; ignore directional in example)
-// --------------------------------------------------
+
 struct PointLight {
     vec3 position;
     vec3 ambient;
@@ -58,72 +46,60 @@ struct PointLight {
 uniform int numPointLights;
 uniform PointLight pointLights[50];
 
+
 uniform Material material;
 uniform vec3 viewPos;
 
-uniform samplerCube environmentMap;
+uniform samplerCube irradianceMap;  // diffuse part
+uniform samplerCube prefilterMap;   // specular prefiltered environment
+uniform sampler2D brdfLUT;          // 2D LUT for specular F/G terms
 
-// (If you still want directional lights, keep them. We omit here for brevity.)
-
-// --------------------------------------------------
+// ------------------------------------------------------------------
 // Constants & Helper Functions
-// --------------------------------------------------
+// ------------------------------------------------------------------
 const float PI = 3.14159265359;
 
+// Function prototypes
 float DistributionGGX(vec3 N, vec3 H, float roughness);
-float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3  fresnelSchlick(float cosTheta, vec3 F0);
+vec3  fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
+vec3  getNormalFromMap();
 
-// --------------------------------------------------
-// Main
-// --------------------------------------------------
 void main()
 {
-    // 1) Base color (if sRGB loaded, no pow. If not, do pow(...,2.2))
+    //----------------------------------------------------------------
+    // 1) Base Albedo
+    //----------------------------------------------------------------
     vec3 albedoColor = material.albedo.rgb;
     if (material.hasAlbedoMap)
     {
-        // If your engine loads albedoMap as sRGB, just read it:
         albedoColor = texture(material.albedoMap, TexCoord).rgb;
+        // Apply gamma correction to convert from sRGB to linear space
+        albedoColor = pow(albedoColor, vec3(2.2));
     }
 
-    // 2) Normal
-    vec3 N;
-    if (material.hasNormalMap)
-    {
-        vec3 tangentNormal = texture(material.normalMap, TexCoord).rgb;
-        tangentNormal = tangentNormal * 2.0 - 1.0;
-        N = normalize(TBN * tangentNormal);
-    }
-    else
-    {
-        // fallback, if you store geometry normal or TBN’s z-axis
-        N = normalize(TBN[2]);
-    }
+    //----------------------------------------------------------------
+    // 2) Calculate the Normal
+    //----------------------------------------------------------------
+    vec3 N = getNormalFromMap();
 
+    //----------------------------------------------------------------
     // 3) Metallic & Roughness
+    //----------------------------------------------------------------
     float metallicValue  = material.metallic;
     float roughnessValue = material.roughness;
 
     if (material.hasMetalRoughMap)
     {
-        // If combined texture: G=Roughness, B=Metallic
         vec3 mrSample = texture(material.metalRoughMap, TexCoord).rgb;
         roughnessValue = mrSample.g;
         metallicValue  = mrSample.b;
-
-        // optionally, if AO is also in .r, you can use that 
-        // if you don't have a separate AO map:
-        // float aoFromMR = mrSample.r;
-        // ...
     }
     else
     {
-        // if separate
         if (material.hasMetallicMap)
         {
-            // e.g. .r channel for metallic
             metallicValue = texture(material.metallicMap, TexCoord).r;
         }
         if (material.hasRoughnessMap)
@@ -132,31 +108,41 @@ void main()
         }
     }
 
-    // 4) AO
+    // Clamp roughness to prevent division by zero in the microfacet equations
+    roughnessValue = clamp(roughnessValue, 0.05, 1.0);
+
+    //----------------------------------------------------------------
+    // 4) Ambient Occlusion
+    //----------------------------------------------------------------
     float aoValue = material.AO;
     if (material.hasAOMap)
     {
         aoValue = texture(material.AOMap, TexCoord).r;
     }
 
+    //----------------------------------------------------------------
     // 5) Emissive
+    //----------------------------------------------------------------
     vec3 emissiveColor = vec3(0.0);
     if (material.hasEmissiveMap)
     {
         emissiveColor = texture(material.emissiveMap, TexCoord).rgb;
-        // if your emissive is sRGB or not depends on your pipeline
     }
 
-    // 6) PBR Lighting
+    //----------------------------------------------------------------
+    // 6) Basic Setup
+    //----------------------------------------------------------------
     vec3 V = normalize(viewPos - FragPos);
+    vec3 R = reflect(-V, N);
 
-    // base reflectivity
+    // Reflectance at normal incidence
     vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedoColor, metallicValue);
 
-    // accumulate
+    //----------------------------------------------------------------
+    // 7) Direct Lighting (Point Lights)
+    //----------------------------------------------------------------
     vec3 Lo = vec3(0.0);
-
     for (int i = 0; i < numPointLights; i++)
     {
         vec3 L = normalize(pointLights[i].position - FragPos);
@@ -166,52 +152,88 @@ void main()
         float attenuation = 1.0 / (distance * distance);
         vec3 radiance     = pointLights[i].diffuse * attenuation;
 
+        // Cook-Torrance BRDF
         float NDF = DistributionGGX(N, H, roughnessValue);
         float G   = GeometrySmith(N, V, L, roughnessValue);
         vec3  F   = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
-        vec3 kS = F;
-        vec3 kD = (vec3(1.0) - kS) * (1.0 - metallicValue);
+        float NdotL = max(dot(N, L), 0.0);
 
-        float NdotL      = max(dot(N, L), 0.0);
-        float denominator = 4.0 * max(dot(N, V), 0.0) * NdotL + 0.0001;
         vec3 numerator    = NDF * G * F;
-        vec3 specular     = numerator / denominator;
+        float denominator = 4.0 * max(dot(N, V), 0.0) * NdotL + 0.0001;
+        vec3 specular = numerator / denominator;
 
+        // kS is equal to Fresnel
+        vec3 kS = F;
+        // For energy conservation, the diffuse and specular light can't be above 1.0
+        vec3 kD = vec3(1.0) - kS;
+        kD *= (1.0 - metallicValue);
+
+        // Accumulate contribution
         Lo += (kD * albedoColor / PI + specular) * radiance * NdotL;
     }
 
-    // minimal ambient
-    vec3 ambient = 0.03 * albedoColor * aoValue;
+    //----------------------------------------------------------------
+    // 8) Image-Based Lighting (IBL)
+    //----------------------------------------------------------------
+    // Ambient Lighting via IBL
+    vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughnessValue);
 
-    // final
+    vec3 kS = F;
+    vec3 kD = vec3(1.0) - kS;
+    kD *= (1.0 - metallicValue);
+
+    // IBL Diffuse
+    vec3 irradiance = texture(irradianceMap, N).rgb;
+    vec3 diffuseIBL = irradiance * albedoColor;
+
+    // IBL Specular
+    const float MAX_REFLECTION_LOD = 4.0;
+    float NdotV = max(dot(N, V), 0.0);
+    vec3 prefilteredColor = textureLod(prefilterMap, R, roughnessValue * MAX_REFLECTION_LOD).rgb;
+    vec2 brdf  = texture(brdfLUT, vec2(NdotV, roughnessValue)).rg;
+    vec3 specularIBL = prefilteredColor * (F * brdf.x + brdf.y);
+
+    vec3 ambient = (kD * diffuseIBL + specularIBL) * aoValue;
+
+    //----------------------------------------------------------------
+    // 9) Combine Lighting Components
+    //----------------------------------------------------------------
     vec3 color = ambient + Lo + emissiveColor;
-    // tone map
-    vec3 R = reflect(-V, N);
-    vec3 envColor = texture(environmentMap, R).rgb;
 
-// combine it with your existing color
-// you might scale it by a factor or a Fresnel, etc.
-    color += envColor * 0.3; // or some factor
-
-// tone map & gamma
+    // HDR tone mapping (Reinhard)
     color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2));
+
+    // Gamma correction (linear to sRGB)
+    color = pow(color, vec3(1.0 / 2.2));
 
     FragColor = vec4(color, 1.0);
 }
 
-// --------------------------------------------------
-// Helpers ...
-// --------------------------------------------------
+
+vec3 getNormalFromMap()
+{
+    vec3 N;
+    if (material.hasNormalMap)
+    {
+        vec3 tangentNormal = texture(material.normalMap, TexCoord).xyz * 2.0 - 1.0;
+        N = normalize(TBN * tangentNormal);
+    }
+    else
+    {
+        N = normalize(TBN[2]);
+    }
+    return N;
+}
+
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
-    float a  = roughness*roughness;
-    float a2 = a*a;
-    float NdotH = max(dot(N, H), 0.0);
-    float NdotH2= NdotH*NdotH;
+    float a      = roughness * roughness;
+    float a2     = a * a;
+    float NdotH  = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
 
-    float denom = (NdotH2*(a2-1.0)+1.0);
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
     denom = PI * denom * denom;
 
     return a2 / denom;
@@ -219,23 +241,32 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
 
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
-    float r = (roughness+1.0);
-    float k = (r*r)/8.0;
-    float num   = NdotV;
-    float denom = NdotV*(1.0 - k) + k;
-    return num/denom;
+    float r = roughness + 1.0;
+    float k = (r * r) / 8.0;
+
+    float numerator   = NdotV;
+    float denominator = NdotV * (1.0 - k) + k;
+
+    return numerator / denominator;
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
-    float ggx1  = GeometrySchlickGGX(NdotV, roughness);
-    float ggx2  = GeometrySchlickGGX(NdotL, roughness);
+    float ggx1  = GeometrySchlickGGX(NdotL, roughness);
+    float ggx2  = GeometrySchlickGGX(NdotV, roughness);
     return ggx1 * ggx2;
 }
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
-    return F0 + (1.0 - F0)*pow(1.0 - cosTheta, 5.0);
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    // Allows the Fresnel term to become more diffuse at high roughness
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) *
+           pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }

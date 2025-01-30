@@ -44,6 +44,7 @@ void SRender::init()
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     // Retrieve window dimensions
     GLFWwindow* window = GameManager::get_glfw_window();
@@ -64,7 +65,7 @@ void SRender::init()
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
+    ImGui_ImplOpenGL3_Init("#version 400");
 
 }
 
@@ -88,10 +89,21 @@ void SRender::render()
     shader->setMat4("projection", proj_matrix);
     shader->setMat4("view", view_matrix);
     shader->setVec3("viewPos", mScene->mMainCamera.Position);
-	shader->setInt("environmentMap", 0);
+	shader->setInt("irradianceMap", 1);
+	shader->setInt("prefilterMap", 2);
+	shader->setInt("brdfLUT", 3);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getID());
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getIrradianceMapID());
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getPrefilterMapID());
+
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, skybox->getBRDFLUT());
+
+
+
     
 	buildDirectionalLights(*shader);
 	buildPointLights(*shader);

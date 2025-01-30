@@ -5,16 +5,22 @@ class VertexArray;
 class OpenGLCubemap : public Cubemap
 {
 public:
-	OpenGLCubemap(const std::vector<std::string> facePaths);
+
+	OpenGLCubemap(const std::string& facePaths);
 	~OpenGLCubemap();
 	void draw(const Shader& shader) const override;
 	int getID() const override { return cubemapID; }
+	int getIrradianceMapID() const override { return irradianceMapID; }
+	int getPrefilterMapID() const override { return prefilteredMapID; }
+	int getBRDFLUT() const override { return brdfLUTID; }
 private:
 	void createSkyboxVAO();
-	GLuint vao;
-	GLuint vbo;
+	int width, height;
 	GLuint cubemapID;
-	int width;
-	int height;
+	GLuint irradianceMapID;
+	GLuint prefilteredMapID;
+	GLuint brdfLUTID;
+
+	GLuint vao, vbo;
 };
 

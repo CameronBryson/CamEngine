@@ -2,7 +2,7 @@
 #include "Cubemap.hpp"
 #include "OpenGLCubemap.hpp"
 
-std::shared_ptr<Cubemap> Cubemap::createCubemap(const std::vector<std::string> facePaths)
+std::shared_ptr<Cubemap> Cubemap::createCubemap(const std::string& path)
 {
-	return std::make_shared<OpenGLCubemap>(facePaths);
+	return std::make_shared<OpenGLCubemap>(path);
 }

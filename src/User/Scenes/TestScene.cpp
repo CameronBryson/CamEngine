@@ -51,7 +51,7 @@ void TestScene::init()
 	rigidBody.gravity = edyn::vector3{ 0, 0, 0 };
 	edyn::make_rigidbody(testModel, mEnttRegistry,  rigidBody);
 
-	glm::vec3 intensity = glm::vec3(900.0f, 900.0f, 900.0f);
+	glm::vec3 intensity = glm::vec3(25.0f, 25.0f, 25.0f);
 
 	// Point Light 1
 	factory.createPointLight(
