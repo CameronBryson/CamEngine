@@ -5,24 +5,25 @@
 #include "Engine/Util/EngineUtil.hpp"
 #include "Engine/Util/platform.hpp"
 
-#include "Engine/Util/OpenGLUtil.hpp"
+#include "edyn/edyn.hpp"
+#include "Engine/Base/BaseScene.hpp"
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"
-#include "Shader.hpp"
+#include "Engine/Util/OpenGLUtil.hpp"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 #include "Mesh.hpp"
 #include "Model.hpp"
-#include <string>
-#include "Engine/Base/BaseScene.hpp"
-#include "imgui.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_glfw.h"
 #include "platform.hpp"
-#include "edyn/edyn.hpp"
+#include "Shader.hpp"
+#include <string>
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtx/euler_angles.hpp"
 #include <GameSettings.hpp>
+#include <TextureSlots.hpp>
 
 SRender::SRender(BaseScene* scene) : mScene(scene)
 {
@@ -82,24 +83,23 @@ void SRender::render()
     const auto& view_matrix = mScene->mCurrentCamera.GetViewMatrix();
     const auto& proj_matrix = mScene->mCurrentCamera.GetProjectionMatrix();
 
-    auto skybox = mScene->mEnvironmentMap;
+    auto skybox = mEnvironmentMap;
     auto shader = GameManager::mGraphicsManager->getShader("PBR");
     shader->use();
     shader->setMat4("projection", proj_matrix);
     shader->setMat4("view", view_matrix);
     shader->setVec3("viewPos", mScene->mCurrentCamera.Position);
-	shader->setInt("irradianceMap", 1);
-	shader->setInt("prefilterMap", 2);
-	shader->setInt("brdfLUT", 3);
+	shader->setInt("irradianceMap", TEXTURE_UNIT_IRRADIANCE);
+	shader->setInt("prefilterMap", TEXTURE_UNIT_PREFILTER);
+	shader->setInt("brdfLUT", TEXTURE_UNIT_BRDFLUT);
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getIrradianceMapID());
+    auto irradianceShader = GameManager::mGraphicsManager->getShader("irradiance");
+	auto prefilterShader = GameManager::mGraphicsManager->getShader("prefilter");
+	auto brdfShader = GameManager::mGraphicsManager->getShader("brdf");
+    skybox->bindIrradiance();
+	skybox->bindPrefilter();
+	skybox->bindBRDFLUT();
 
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getPrefilterMapID());
-
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, skybox->getBRDFLUT());
 
 
 
@@ -120,7 +120,7 @@ void SRender::render()
     skyboxShader->setMat4("view", view_no_translation);
     skyboxShader->setMat4("projection", proj_matrix);
 
-    skybox->draw(*skyboxShader);
+	skybox->drawSkybox(skyboxShader);
 
     drawImGui();
     
@@ -185,8 +185,7 @@ void SRender::drawModels(const Shader& shader) const
 
         glm::mat4 model_matrix = transform.model_matrix;
 
-        shader.setMat4("model", model_matrix);
-        GameManager::mGraphicsManager->getModel(modelComp.name)->draw(shader);
+        GameManager::mGraphicsManager->getModel(modelComp.name)->draw(model_matrix);
     }
 }
 

@@ -17,3 +17,5 @@ class ConanRecipe(ConanFile):
         self.requires("freetype/2.11.1")
         self.requires("stb/cci.20230920")
         self.requires("eastl/3.21.12")
+    def configure(self):
+        self.options['glad'].gl_version = '4.5'

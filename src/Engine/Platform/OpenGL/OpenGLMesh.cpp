@@ -6,17 +6,14 @@
 #include "IndexBuffer.hpp"
 #include "VertexArray.hpp"
 #include "VertexBuffer.hpp"
+#include "glm/ext/matrix_float4x4_precision.hpp"
 
 
-OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::shared_ptr<Material>& material) : mIndexCount(indices.size()), mVertexCount(vertices.size()), mMaterial(material)
+OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::shared_ptr<Material>& material) : mMaterial(material)
 {
 	mVertexArray = VertexArray::create();
 	mVertexArray->addVertexBuffer(VertexBuffer::create(vertices));
 	mVertexArray->setIndexBuffer(IndexBuffer::create(indices));
-	//Init VAO
-	//Bind VAO
-	//Attach VBO to VAO
-	//Attach EBO TO VAO
 }
 
 OpenGLMesh::~OpenGLMesh()
@@ -24,17 +21,24 @@ OpenGLMesh::~OpenGLMesh()
 
 }
 
-void OpenGLMesh::draw(const Shader& shader) const
+void OpenGLMesh::draw(glm::mat4 model) const
 {
-	shader.use();
-	mVertexArray->bind();
-	if (mMaterial)
-		mMaterial->bind(shader);
-	glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
-	if (mMaterial)
-		mMaterial->unbind();
-	mVertexArray->unbind();
+    if (!mMaterial)
+        return;
+
+    
+	mMaterial->getShader()->use();
+
+    mVertexArray->bind();
+    
+
+    // Retrieve index count from IndexBuffer
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mVertexArray->getIndexBuffer()->getCount()), GL_UNSIGNED_INT, nullptr);
+
+    mVertexArray->unbind();
+    mMaterial->unbind();
 }
+
 
 
 void OpenGLMesh::setMaterial(const std::shared_ptr<Material>& material)
@@ -42,12 +46,3 @@ void OpenGLMesh::setMaterial(const std::shared_ptr<Material>& material)
 	mMaterial = material;
 }
 
-int OpenGLMesh::getVertexCount() const
-{
-	return mVertexCount;
-}
-
-int OpenGLMesh::getIndexCount() const
-{
-	return mIndexCount;
-}

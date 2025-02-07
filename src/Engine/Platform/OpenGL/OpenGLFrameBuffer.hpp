@@ -10,6 +10,7 @@ public:
 
     void bind() override;
     void unbind() override;
+	void resize(int width, int height) override;
 
 private:
     GLuint mRendererID = 0;

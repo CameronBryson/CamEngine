@@ -11,6 +11,4 @@ public:
 
 private:
     GLuint mRendererID = 0;
-    unsigned int mSize = 0;
-    unsigned int mBinding = 0;
 };

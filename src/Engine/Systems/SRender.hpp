@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Components.hpp"
 #include "glm/fwd.hpp"
+#include <EnvironmentMap.hpp>
 #include <platform.hpp>
 template<typename T>
 class SparseSet;
@@ -22,5 +23,6 @@ public:
 
 private:
     BaseScene* mScene;
+	std::shared_ptr<EnvironmentMap> mEnvironmentMap;
 
 };

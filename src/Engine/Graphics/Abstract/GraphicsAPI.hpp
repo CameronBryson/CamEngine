@@ -10,6 +10,5 @@ public:
 	virtual void clear() = 0;
 	virtual void setClearColor(float r, float g, float b, float a) = 0;
 
-
 	static std::shared_ptr<GraphicsAPI> createGraphicsAPI();
 };

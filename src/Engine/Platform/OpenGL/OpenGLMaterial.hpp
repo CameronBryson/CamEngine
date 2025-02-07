@@ -20,8 +20,10 @@ public:
 	                        std::shared_ptr<Texture> emissiveTexture,
 	std::shared_ptr<Texture> metalRoughTexture =nullptr );
 
-	void bind(const Shader& shader) override;
+	void bind() override;
 	void unbind() override;
+	void setShader(std::shared_ptr<Shader> shader) override;
+	std::shared_ptr<Shader> getShader() override;
 
 	glm::vec4 albedo;
 	float metallic;
@@ -35,5 +37,6 @@ public:
 	std::shared_ptr<Texture> AOTexture;
 	std::shared_ptr<Texture> emissiveTexture;
 	std::shared_ptr<Texture> metalRoughTexture;
+	std::shared_ptr<Shader> shader;
 };
 

@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "OpenGLModel.hpp"
 #include "Mesh.hpp"
+#include "glm/ext/matrix_float4x4_precision.hpp"
 
 OpenGLModel::OpenGLModel(const std::vector<std::shared_ptr<Mesh>>& meshes)
 {
@@ -10,27 +11,17 @@ OpenGLModel::OpenGLModel(const std::vector<std::shared_ptr<Mesh>>& meshes)
 	}
 }
 
-void OpenGLModel::draw(const Shader& shader) const
+void OpenGLModel::draw(glm::mat4 model) const
 {
 	for (const auto& mesh : mMeshes)
 	{
-		mesh->draw(shader);
+		mesh->draw(model);
 	}
 }
 
 
 void OpenGLModel::addMesh(const std::shared_ptr<Mesh>& meshName)
 {
-	mTotalVertexCount += meshName->getVertexCount();
 	mMeshes.emplace_back(meshName);
 }
 
-int OpenGLModel::getTotalVertexCount() const
-{
-	return mTotalVertexCount;
-}
-
-int OpenGLModel::getTotalTriangleCount() const
-{
-	return mTotalVertexCount / 3;
-}

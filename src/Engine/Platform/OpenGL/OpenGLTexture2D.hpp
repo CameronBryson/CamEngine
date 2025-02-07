@@ -8,12 +8,12 @@ class aiTexture;
 class OpenGLTexture2D : public Texture2D
 {
 public:
-	explicit OpenGLTexture2D(const std::string& file, aiTextureType type);
-	explicit OpenGLTexture2D(const aiTexture* aiTex, aiTextureType type);
+	explicit OpenGLTexture2D(const std::string& file);
+	explicit OpenGLTexture2D(const aiTexture* aiTex);
+	explicit OpenGLTexture2D(GLuint textureID, int width, int height);
 	~OpenGLTexture2D();
 	void bind(unsigned int slot) const override;
 	void unbind(unsigned int slot) override;
-	void deleteTexture() const override;
 	int getWidth() const override;
 	int getHeight() const override;
 
@@ -22,5 +22,4 @@ private:
 	unsigned char* data = nullptr;
 	int width = 0;
 	int height = 0;
-	aiTextureType type;
 };

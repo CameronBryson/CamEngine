@@ -38,7 +38,6 @@ public:
 	STransform mTransformSystem;
 
 	Camera mCurrentCamera;
-	EnvironmentMap mEnvironmentMap;
 	//current snapshot?
 
 

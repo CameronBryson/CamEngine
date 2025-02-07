@@ -7,7 +7,6 @@
 #include <iostream>
 #include <functional>
 #include <Material.hpp>
-#include <MaterialPBR.hpp>
 #include <Texture2D.cpp>
 
 
@@ -19,13 +18,19 @@ GraphicsManager::~GraphicsManager()
 void GraphicsManager::loadResources()
 {
     loadShader("src/Shaders/vertex.vert", "src/Shaders/PBR.frag", "PBR");
+    //Probably not nessesary since we are using opengl to render it behind everything
+	//Used to render environment maps
 	loadShader("src/Shaders/background.vert", "src/Shaders/background.frag", "Skybox");
-     //Load fonts, models, or other resources here
-    //loadModel(engine_util::buildPath("assets/scene.gltf"), "scene");
+    //This is needed to create a cubemap texture from an hdr
+	loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
+    //Used to create environment maps
+	loadShader("src/Shaders/cubemap.vert", "src/Shaders/irradiance.frag", "irradiance");
+	//Used to create environment maps
+	loadShader("src/Shaders/cubemap.vert", "src/Shaders/prefilter.frag", "prefilter");
+	//Used to create environment maps
+	loadShader("src/Shaders/brdf.vert", "src/Shaders/brdf.frag", "brdf");
+
     loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
-    //loadModel(engine_util::buildPath("assets/TextureSettingsTest.gltf"), "TextureWrap");
-	//loadModel(engine_util::buildPath("assets/TextureCoordinateTest.gltf"), "TextureCord");
-    //loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");;
 
 
 
@@ -115,7 +120,7 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
         // Actually load the embedded texture from Assimp
         unsigned int texIndex = textureIndex;
         aiTexture* aiTex = scene->mTextures[texIndex];
-        auto texture = Texture2D::createTexture2D(aiTex, type);
+        auto texture = Texture2D::createTexture2D(aiTex);
         if (texture)
         {
             texture_map_.emplace(uniqueKey, texture);
@@ -152,7 +157,7 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
         }
 
         // Otherwise, load from file
-        auto texture = Texture2D::createTexture2D(full_path, type);
+        auto texture = Texture2D::createTexture2D(full_path);
         if (texture)
         {
             texture_map_.emplace(uniqueKey, texture);
@@ -203,7 +208,7 @@ std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& nam
     }
 
     // Create new material
-    auto material = MaterialPBR::createMaterialPBR(albedo, metallic, roughness, AO,
+    auto material = Material::createMaterial(albedo, metallic, roughness, AO,
         albedoTexture, normalTexture, metallicTexture,
         roughnessTexture, AOTexture, emissiveTexture, metalRoughTexture);
     material_map_.emplace(name, material);

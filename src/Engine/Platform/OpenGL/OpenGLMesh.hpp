@@ -15,15 +15,11 @@ public:
 	explicit OpenGLMesh(const std::vector<Vertex>& vertices,const std::vector<unsigned> indices, const std::shared_ptr<Material>& material);
 	~OpenGLMesh() override;
 
-	void draw(const Shader& shader) const override;
+	void draw(glm::mat4 model) const override;
 
 	void setMaterial(const std::shared_ptr<Material>& material) override;
-	int getVertexCount() const override;
-	int getIndexCount() const override;
 
 private:
-	size_t mIndexCount;
-	size_t mVertexCount;
 	std::shared_ptr<VertexArray> mVertexArray;
 	std::shared_ptr<Material> mMaterial;
 };
