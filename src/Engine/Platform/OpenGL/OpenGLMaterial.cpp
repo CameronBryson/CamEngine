@@ -3,7 +3,7 @@
 #include "OpenGLMaterial.hpp"
 
 #include "OpenGLShader.hpp"
-#include "OpenGLTexture.hpp"
+#include "OpenGLTexture2D.hpp"
 
 // Define texture unit offsets for clarity and maintainability
 constexpr unsigned int TEXTURE_UNIT_ALBEDO = 4;

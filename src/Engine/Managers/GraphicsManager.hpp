@@ -12,14 +12,14 @@
 #include "glm/vec4.hpp"
 #include "glm/mat4x4.hpp"
 
-#include "Engine/Graphics/Vertex.hpp"
-#include "Engine/Graphics/Shader.hpp"
-#include "Engine/Graphics/Texture.hpp"
-#include "Engine/Graphics/Mesh.hpp"
-#include "Engine/Graphics/Material.hpp"
-#include "Engine/Graphics/Model.hpp"
-#include "Engine/Graphics/Font.hpp"
-#include "Engine/Graphics/Cubemap.hpp"
+#include "Vertex.hpp"
+#include "Shader.hpp"
+#include "Texture.hpp"
+#include "Mesh.hpp"
+#include "Material.hpp"
+#include "Model.hpp"
+#include "Font.hpp"
+
 
 
 
@@ -61,8 +61,6 @@ public:
     std::shared_ptr<Font> loadFont(const std::string& fontPath, float fontSize);
     std::shared_ptr<Font> getFont(const std::string& name);
 
-	std::shared_ptr<Cubemap> loadCubemap(const std::string& path, const std::string& name);
-	std::shared_ptr<Cubemap> getCubemap(const std::string& name);
 
     // Resource cleanup
     void clear();
@@ -75,7 +73,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Mesh>> mesh_map_;
     std::unordered_map<std::string, std::shared_ptr<Model>> model_map_;
     std::unordered_map<std::string, std::shared_ptr<Font>> font_map_;
-	std::unordered_map<std::string, std::shared_ptr<Cubemap>> cubemap_map_;
 
 
     std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory);

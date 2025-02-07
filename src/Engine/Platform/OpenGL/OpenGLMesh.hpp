@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-#include "Engine/Graphics/Mesh.hpp"
+#include "Mesh.hpp"
 class Vertex;
 class VertexArray;
 class GraphicsManager;

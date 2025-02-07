@@ -2,7 +2,6 @@
 #include "pch.hpp"
 #include "EngineUtil.hpp"
 
-#include <Engine/Events/EventHandler.hpp>
 #include <Engine/Managers/GameManager.hpp>
 
 void engine_util::errorCallback(int error, const char* description)
@@ -15,22 +14,18 @@ void engine_util::keyCallback(GLFWwindow* window, int key, int scancode, int act
 	glfwSetWindowShouldClose(window, GLFW_TRUE);
 	if( action == GLFW_PRESS )
 	{
-	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyPressEvent(key));
 	}
 	if( action == GLFW_RELEASE )
 	{
-	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyReleaseEvent(key));
 	}
 }
 void engine_util::mouseKeyCallback(GLFWwindow* window, int button, int action, int mods)
 {
 	if( action == GLFW_PRESS )
 	{
-	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyPressEvent(button));
 	}
 	if( action == GLFW_RELEASE )
 	{
-	EventHandler::GetInstance()->inputDispatcher.SendEvent(KeyReleaseEvent(button));
 	}
 }
 bool engine_util::isKeyReleased(int key)

@@ -7,6 +7,8 @@
 #include <iostream>
 #include <functional>
 #include <Material.hpp>
+#include <MaterialPBR.hpp>
+#include <Texture2D.cpp>
 
 
 GraphicsManager::~GraphicsManager()
@@ -19,12 +21,11 @@ void GraphicsManager::loadResources()
     loadShader("src/Shaders/vertex.vert", "src/Shaders/PBR.frag", "PBR");
 	loadShader("src/Shaders/background.vert", "src/Shaders/background.frag", "Skybox");
      //Load fonts, models, or other resources here
-    loadModel(engine_util::buildPath("assets/scene.gltf"), "scene");
+    //loadModel(engine_util::buildPath("assets/scene.gltf"), "scene");
     loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
-    loadModel(engine_util::buildPath("assets/TextureSettingsTest.gltf"), "TextureWrap");
-	loadModel(engine_util::buildPath("assets/TextureCoordinateTest.gltf"), "TextureCord");
-    loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");;
-	loadCubemap(engine_util::buildPath("assets/newport_loft.hdr"), "Skybox");
+    //loadModel(engine_util::buildPath("assets/TextureSettingsTest.gltf"), "TextureWrap");
+	//loadModel(engine_util::buildPath("assets/TextureCoordinateTest.gltf"), "TextureCord");
+    //loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");;
 
 
 
@@ -114,7 +115,7 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
         // Actually load the embedded texture from Assimp
         unsigned int texIndex = textureIndex;
         aiTexture* aiTex = scene->mTextures[texIndex];
-        auto texture = Texture::createEmbeddedTexture(aiTex, type);
+        auto texture = Texture2D::createTexture2D(aiTex, type);
         if (texture)
         {
             texture_map_.emplace(uniqueKey, texture);
@@ -151,7 +152,7 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
         }
 
         // Otherwise, load from file
-        auto texture = Texture::createTexture(full_path, type);
+        auto texture = Texture2D::createTexture2D(full_path, type);
         if (texture)
         {
             texture_map_.emplace(uniqueKey, texture);
@@ -202,7 +203,7 @@ std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& nam
     }
 
     // Create new material
-    auto material = Material::createMaterial(albedo, metallic, roughness, AO,
+    auto material = MaterialPBR::createMaterialPBR(albedo, metallic, roughness, AO,
         albedoTexture, normalTexture, metallicTexture,
         roughnessTexture, AOTexture, emissiveTexture, metalRoughTexture);
     material_map_.emplace(name, material);
@@ -579,28 +580,3 @@ std::shared_ptr<Font> GraphicsManager::getFont(const std::string& name)
     }
 }
 
-std::shared_ptr<Cubemap> GraphicsManager::loadCubemap(const std::string& path, const std::string& name)
-{
-	auto it = cubemap_map_.find(name);
-	if (it != cubemap_map_.end())
-	{
-		return it->second;
-	}
-	auto cubemap = Cubemap::createCubemap(path);
-	cubemap_map_.emplace(name, cubemap);
-	return cubemap;
-}
-
-std::shared_ptr<Cubemap> GraphicsManager::getCubemap(const std::string& name)
-{
-	auto it = cubemap_map_.find(name);
-	if (it != cubemap_map_.end())
-	{
-		return it->second;
-	}
-	else
-	{
-		std::cerr << "Cubemap not found: " << name << std::endl;
-		return nullptr;
-	}
-}

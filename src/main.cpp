@@ -1,6 +1,6 @@
 #include "pch.hpp"
 #include "Engine/Managers/GameManager.hpp"
-#include "User/Scenes/TestScene.hpp"
+#include "TestScene.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 

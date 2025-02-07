@@ -34,14 +34,3 @@ void OpenGLAPI::clear()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void OpenGLAPI::drawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
-{
-	vertexArray->bind();
-	glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
-}
-
-void OpenGLAPI::drawIndexed(const std::shared_ptr<VertexArray>& vertexArray, unsigned int indexCount)
-{
-	vertexArray->bind();
-	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
-}

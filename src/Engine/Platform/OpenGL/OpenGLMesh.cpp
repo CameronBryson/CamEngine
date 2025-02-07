@@ -1,12 +1,11 @@
 #include "pch.hpp"
 #include "OpenGLMesh.hpp"
 #include "Engine/Util/platform.hpp"
-#include "Engine/Managers/GraphicsManager.hpp"
-#include "Engine/Graphics/Shader.hpp"
-#include "Engine/Graphics/Material.hpp"
-#include "Engine/Graphics/IndexBuffer.hpp"
-#include "Engine/Graphics/VertexArray.hpp"
-#include "Engine/Graphics/VertexBuffer.hpp"
+#include "Shader.hpp"
+#include "Material.hpp"
+#include "IndexBuffer.hpp"
+#include "VertexArray.hpp"
+#include "VertexBuffer.hpp"
 
 
 OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::shared_ptr<Material>& material) : mIndexCount(indices.size()), mVertexCount(vertices.size()), mMaterial(material)
@@ -29,9 +28,11 @@ void OpenGLMesh::draw(const Shader& shader) const
 {
 	shader.use();
 	mVertexArray->bind();
-	mMaterial->bind(shader);
+	if (mMaterial)
+		mMaterial->bind(shader);
 	glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
-	mMaterial->unbind();
+	if (mMaterial)
+		mMaterial->unbind();
 	mVertexArray->unbind();
 }
 

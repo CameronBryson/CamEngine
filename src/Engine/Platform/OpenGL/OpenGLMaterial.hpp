@@ -2,8 +2,7 @@
 #include <string>
 #include <memory>
 #include <glm/vec4.hpp>
-#include "Engine/Graphics/Texture.hpp"
-#include "Engine/Graphics/Material.hpp"
+#include "Material.hpp"
 
 class Texture;
 class OpenGLMaterial : public Material

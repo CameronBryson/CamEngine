@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Graphics/VertexBuffer.hpp"
+#include "VertexBuffer.hpp"
 #include "Engine/Util/platform.hpp"
 #include <vector>
 class Vertex;

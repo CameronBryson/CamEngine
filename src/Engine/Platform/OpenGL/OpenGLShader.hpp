@@ -1,8 +1,7 @@
 #pragma once
 #include <glm/fwd.hpp>
 #include <string>
-
-#include "Engine/Graphics/Shader.hpp"
+#include "Shader.hpp"
 
 class OpenGLShader : public Shader
 {

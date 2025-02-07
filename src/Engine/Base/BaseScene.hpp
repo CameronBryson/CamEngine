@@ -1,6 +1,4 @@
 #pragma once
-#include "Engine/Managers/CommandManager.hpp"
-#include "Engine/Managers/InputManager.hpp"
 
 #include "Engine/Systems/SAudio.hpp"
 #include "Engine/Systems/SRender.hpp"
@@ -8,7 +6,7 @@
 
 #include "Engine/Graphics/Camera.hpp"
 #include <entt/entt.hpp>
-#include <KeyAction.hpp>
+#include "EnvironmentMap.hpp"
 
 class BaseScene
 {
@@ -32,8 +30,6 @@ public:
 
 	//hold data
 	//GraphicsManager mGraphicsManager;
-	CommandManager mCommandManager;
-	InputManager mInputManager;
 	//AudioManager mAudioManager;
 
 	//dont hold data or very little data
@@ -41,7 +37,8 @@ public:
 	SAudio mAudioSystem;
 	STransform mTransformSystem;
 
-	Camera mMainCamera;
+	Camera mCurrentCamera;
+	EnvironmentMap mEnvironmentMap;
 	//current snapshot?
 
 

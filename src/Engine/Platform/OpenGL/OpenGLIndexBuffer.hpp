@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Graphics/IndexBuffer.hpp"
+#include "IndexBuffer.hpp"
 #include <memory>
 #include "Engine/Util/platform.hpp"
 class OpenGLIndexBuffer : public IndexBuffer

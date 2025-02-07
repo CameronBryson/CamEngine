@@ -8,10 +8,9 @@
 #include "Engine/Util/OpenGLUtil.hpp"
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"
-#include "Engine/Graphics/Shader.hpp"
-#include "Engine/Graphics/Model.hpp"
-#include "Engine/Graphics/Mesh.hpp"
-#include "Engine/Graphics/Font.hpp"
+#include "Shader.hpp"
+#include "Mesh.hpp"
+#include "Model.hpp"
 #include <string>
 #include "Engine/Base/BaseScene.hpp"
 #include "imgui.h"
@@ -80,15 +79,15 @@ void SRender::render()
 
     auto& registry = mScene->mEnttRegistry;
 
-    const auto& view_matrix = mScene->mMainCamera.GetViewMatrix();
-    const auto& proj_matrix = mScene->mMainCamera.GetProjectionMatrix();
+    const auto& view_matrix = mScene->mCurrentCamera.GetViewMatrix();
+    const auto& proj_matrix = mScene->mCurrentCamera.GetProjectionMatrix();
 
-    auto skybox = GameManager::mGraphicsManager->getCubemap("Skybox");
+    auto skybox = mScene->mEnvironmentMap;
     auto shader = GameManager::mGraphicsManager->getShader("PBR");
     shader->use();
     shader->setMat4("projection", proj_matrix);
     shader->setMat4("view", view_matrix);
-    shader->setVec3("viewPos", mScene->mMainCamera.Position);
+    shader->setVec3("viewPos", mScene->mCurrentCamera.Position);
 	shader->setInt("irradianceMap", 1);
 	shader->setInt("prefilterMap", 2);
 	shader->setInt("brdfLUT", 3);

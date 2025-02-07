@@ -1,9 +1,9 @@
 #include "pch.hpp"
 #include "OpenGLVertexArray.hpp"
-#include "Engine/Graphics/IndexBuffer.hpp"
+#include "IndexBuffer.hpp"
 #include "Engine/Util/platform.hpp"
 #include "Engine/Graphics/Vertex.hpp"
-#include "Engine/Graphics/VertexBuffer.hpp"
+#include "VertexBuffer.hpp"
 OpenGLVertexArray::OpenGLVertexArray()
 {
 	glGenVertexArrays(1, &mVAO);

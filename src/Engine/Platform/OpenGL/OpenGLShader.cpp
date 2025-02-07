@@ -16,6 +16,8 @@ OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fra
 	std::string fragmentCode;
 	std::ifstream vShaderFile;
 	std::ifstream fShaderFile;
+	std::cout << "vertexPath: " << engine_util::buildPath(vertexPath) << '\n';
+	std::cout << "fragmentPath: " << engine_util::buildPath(fragmentPath) << '\n';
 	// ensure ifstream objects can throw exceptions:
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);

@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-#include "Engine/Graphics/Model.hpp"
+#include "Model.hpp"
 class Mesh;
 class Shader;
 class GraphicsManager;
