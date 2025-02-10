@@ -18,6 +18,7 @@
 #include "Mesh.hpp"
 #include "Material.hpp"
 #include "Model.hpp"
+#include "EnvironmentMap.hpp"
 #include "Font.hpp"
 
 
@@ -61,6 +62,9 @@ public:
     std::shared_ptr<Font> loadFont(const std::string& fontPath, float fontSize);
     std::shared_ptr<Font> getFont(const std::string& name);
 
+    std::shared_ptr<EnvironmentMap> loadEnvironmentMap(const std::string& name, const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
+    std::shared_ptr<EnvironmentMap> getEnvironmentMap(const std::string& name);
+
 
     // Resource cleanup
     void clear();
@@ -73,6 +77,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Mesh>> mesh_map_;
     std::unordered_map<std::string, std::shared_ptr<Model>> model_map_;
     std::unordered_map<std::string, std::shared_ptr<Font>> font_map_;
+    std::unordered_map<std::string, std::shared_ptr<EnvironmentMap>> environment_map_;
 
 
     std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory);

@@ -22,15 +22,18 @@ void GraphicsManager::loadResources()
 	//Used to render environment maps
 	loadShader("src/Shaders/background.vert", "src/Shaders/background.frag", "Skybox");
     //This is needed to create a cubemap texture from an hdr
-	loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
+	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps
-	loadShader("src/Shaders/cubemap.vert", "src/Shaders/irradiance.frag", "irradiance");
+	auto irradianceShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/irradiance.frag", "irradiance");
 	//Used to create environment maps
-	loadShader("src/Shaders/cubemap.vert", "src/Shaders/prefilter.frag", "prefilter");
+	auto prefilterShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/prefilter.frag", "prefilter");
 	//Used to create environment maps
-	loadShader("src/Shaders/brdf.vert", "src/Shaders/brdf.frag", "brdf");
+	auto brdfShader = loadShader("src/Shaders/brdf.vert", "src/Shaders/brdf.frag", "brdf");
 
     loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
+
+    loadEnvironmentMap("default", "assets/puresky.hdr", equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    
 
 
 
@@ -581,6 +584,32 @@ std::shared_ptr<Font> GraphicsManager::getFont(const std::string& name)
     else
     {
         std::cerr << "Font not found: " << name << std::endl;
+        return nullptr;
+    }
+}
+
+std::shared_ptr<EnvironmentMap> GraphicsManager::loadEnvironmentMap(const std::string& name, const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader)
+{
+    auto it = environment_map_.find(name);
+    if (it != environment_map_.end())
+    {
+        return it->second;
+    }
+    auto environmentMap = EnvironmentMap::createEnvironmentMap(hdrPath, equirectangularToCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    environment_map_.emplace(name, environmentMap);
+    return environmentMap;
+}
+
+std::shared_ptr<EnvironmentMap> GraphicsManager::getEnvironmentMap(const std::string& name)
+{
+    auto it = environment_map_.find(name);
+    if (it != environment_map_.end()) 
+    {
+        return it->second;
+    }
+    else
+    {
+        std::cerr << "EnvironmentMap not found" << name << std::endl;
         return nullptr;
     }
 }

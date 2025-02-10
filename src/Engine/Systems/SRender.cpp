@@ -83,7 +83,8 @@ void SRender::render()
     const auto& view_matrix = mScene->mCurrentCamera.GetViewMatrix();
     const auto& proj_matrix = mScene->mCurrentCamera.GetProjectionMatrix();
 
-    auto skybox = mEnvironmentMap;
+    auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
+
     auto shader = GameManager::mGraphicsManager->getShader("PBR");
     shader->use();
     shader->setMat4("projection", proj_matrix);

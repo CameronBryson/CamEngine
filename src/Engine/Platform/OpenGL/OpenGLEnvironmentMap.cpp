@@ -12,6 +12,7 @@ OpenGLEnvironmentMap::OpenGLEnvironmentMap(const std::string& hdrPath, std::shar
 	// Load the environment cubemap ( skybox )
 	mSkyboxCubemap = OpenGLTextureCubemap::createTextureCubemap(hdrPath, equirectangularToCubemapShader);
 	// Initialize the skybox mesh
+
 	mQuadMesh = MeshFactory::createQuad();
 	mCubeMesh = MeshFactory::createCube();
 }
@@ -34,6 +35,7 @@ void OpenGLEnvironmentMap::generateBRDFLUT()
 
 void OpenGLEnvironmentMap::bindIrradiance(int slot)
 {
+
 	mIrradianceCubemap->bind(slot);
 	mIrradianceShader->setInt("irradianceMap", slot);
 }

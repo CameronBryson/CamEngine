@@ -23,6 +23,5 @@ public:
 
 private:
     BaseScene* mScene;
-	std::shared_ptr<EnvironmentMap> mEnvironmentMap;
 
 };
