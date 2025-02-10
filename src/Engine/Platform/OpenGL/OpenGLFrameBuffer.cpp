@@ -20,3 +20,7 @@ void OpenGLFrameBuffer::bind()
 void OpenGLFrameBuffer::unbind()
 {
 }
+
+void OpenGLFrameBuffer::resize(int width, int height)
+{
+}

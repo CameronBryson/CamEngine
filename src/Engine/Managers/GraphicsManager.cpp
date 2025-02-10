@@ -7,7 +7,7 @@
 #include <iostream>
 #include <functional>
 #include <Material.hpp>
-#include <Texture2D.cpp>
+#include <Texture2D.hpp>
 
 
 GraphicsManager::~GraphicsManager()
