@@ -45,6 +45,22 @@ struct CPointLight
     float linear;
     float quadratic;
 };
+struct CSpotLight
+{
+	CSpotLight(const glm::vec3 position, const glm::vec3 direction, const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, const float constant, const float linear, const float quadratic, const float innerCutoff, const float outerCutoff)
+		: position(position), direction(direction), ambient(ambient), diffuse(diffuse), specular(specular), constant(constant), linear(linear), quadratic(quadratic), innerCutoff(innerCutoff), outerCutoff(outerCutoff) {
+	}
+	glm::vec3 position;
+	glm::vec3 direction;
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+	float constant;
+	float linear;
+	float quadratic;
+	float innerCutoff;
+	float outerCutoff;
+};
 
 struct CText
 {

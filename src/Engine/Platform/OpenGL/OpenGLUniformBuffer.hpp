@@ -10,5 +10,7 @@ public:
     void setData(const void* data, unsigned int size, unsigned int offset = 0) override;
 
 private:
-    GLuint mRendererID = 0;
+    GLuint mRendererID;
+    unsigned int mSize;
+	unsigned int mBinding;
 };

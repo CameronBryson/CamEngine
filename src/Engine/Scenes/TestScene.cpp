@@ -47,10 +47,14 @@ void TestScene::init()
 	rigidBody.gravity = edyn::vector3{ 0, 0, 0 };
 	edyn::make_rigidbody(testModel, mEnttRegistry,  rigidBody);
 
-	glm::vec3 intensity = glm::vec3(25.0f, 25.0f, 25.0f);
-	glm::vec3 direction = glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f));
-	//auto light = mEnttRegistry.create();
-	//mEnttRegistry.emplace<CDirectionalLight>(light, direction, glm::vec3(0.95f), glm::vec3(0.4f), glm::vec3(0.5f));
+	auto light = mEnttRegistry.create();
+	glm::vec3 ambient = glm::vec3(0.1f, 0.1f, 0.1f);
+	glm::vec3 diffuse = glm::vec3(10.0f, 10.0f, 10.0f);
+	glm::vec3 specular = glm::vec3(10.0f, 10.0f, 10.0f);
+	float constant = 1.0f;
+	float linear = 0.09f;
+	float quadratic = 0.032f;
+	mEnttRegistry.emplace<CPointLight>(light, glm::vec3(0, 0, 0), ambient, diffuse, specular, constant, linear, quadratic);
 
 
 }
