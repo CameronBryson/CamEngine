@@ -20,13 +20,20 @@
 static glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.f, 0.1f, 10.f);
 static glm::mat4 captureViews[] =
 {
-    glm::lookAt(glm::vec3(0,0,0), glm::vec3(1,  0,  0), glm::vec3(0,-1,  0)),
-    glm::lookAt(glm::vec3(0,0,0), glm::vec3(-1,  0,  0), glm::vec3(0,-1,  0)),
-    glm::lookAt(glm::vec3(0,0,0), glm::vec3(0,  1,  0), glm::vec3(0,  0,-1)),
-    glm::lookAt(glm::vec3(0,0,0), glm::vec3(0, -1,  0), glm::vec3(0,  0, 1)),
-    glm::lookAt(glm::vec3(0,0,0), glm::vec3(0,  0,  1), glm::vec3(0,-1,  0)),
-    glm::lookAt(glm::vec3(0,0,0), glm::vec3(0,  0, -1), glm::vec3(0,-1,  0))
+    // +X face
+    glm::lookAt(glm::vec3(0.0f), glm::vec3(1.0f,  0.0f,  0.0f),  glm::vec3(0.0f, -1.0f,  0.0f)),
+    // -X face
+    glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f,  0.0f,  0.0f),  glm::vec3(0.0f, -1.0f,  0.0f)),
+    // +Y face (Top)
+    glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  1.0f,  0.0f),  glm::vec3(0.0f,  0.0f,  1.0f)),
+    // -Y face (Bottom)
+    glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f,  0.0f),  glm::vec3(0.0f,  0.0f, -1.0f)),
+    // +Z face
+    glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f,  1.0f),  glm::vec3(0.0f, -1.0f,  0.0f)),
+    // -Z face
+    glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f, -1.0f),  glm::vec3(0.0f, -1.0f,  0.0f))
 };
+
 // -----------------------------------------------------------------------------
 
 OpenGLEnvironmentMap::OpenGLEnvironmentMap(const std::string& hdrPath,
