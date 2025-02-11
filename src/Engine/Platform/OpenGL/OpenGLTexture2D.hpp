@@ -16,6 +16,7 @@ public:
 	void unbind(unsigned int slot) override;
 	int getWidth() const override;
 	int getHeight() const override;
+	unsigned int getTextureID() const override { return textureID; }
 
 private:
 	GLuint textureID = 0;

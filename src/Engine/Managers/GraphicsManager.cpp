@@ -32,7 +32,7 @@ void GraphicsManager::loadResources()
 
     loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
 
-    loadEnvironmentMap("default", "assets/puresky.hdr", equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    loadEnvironmentMap("default", engine_util::buildPath("assets/newport_loft.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
     
 
 
@@ -214,6 +214,7 @@ std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& nam
     auto material = Material::createMaterial(albedo, metallic, roughness, AO,
         albedoTexture, normalTexture, metallicTexture,
         roughnessTexture, AOTexture, emissiveTexture, metalRoughTexture);
+	material->setShader(getShader("PBR"));
     material_map_.emplace(name, material);
 
     return material;

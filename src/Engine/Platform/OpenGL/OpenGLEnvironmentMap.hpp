@@ -5,6 +5,7 @@
 #include <Texture2D.hpp>
 #include <Mesh.hpp>
 #include "Shader.hpp"
+#include <VertexArray.hpp>
 class OpenGLEnvironmentMap : public EnvironmentMap
 {
 public:
@@ -21,14 +22,12 @@ public:
 
     // Draw a skybox using the environment map
     void drawSkybox(std::shared_ptr<Shader>& skyboxShader) override;
+
 private:
     std::shared_ptr<TextureCubemap> mSkyboxCubemap;     // Equirect->Cubemap
     std::shared_ptr<TextureCubemap> mIrradianceCubemap; // Convolved irradiance
     std::shared_ptr<TextureCubemap> mPrefilterCubemap;  // Prefiltered env
     std::shared_ptr<Texture2D>      mBRDFLUT;
-    //We could have static quad mesh becuase it will be the same for all instances
-    std::shared_ptr<Mesh> mQuadMesh;
-	std::shared_ptr<Mesh> mCubeMesh;
 
 	std::shared_ptr<Shader> mEquirectangularToCubemapShader;
 	std::shared_ptr<Shader> mIrradianceShader;

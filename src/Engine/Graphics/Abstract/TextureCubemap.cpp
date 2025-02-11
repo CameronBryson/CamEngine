@@ -9,3 +9,8 @@ std::shared_ptr<TextureCubemap> TextureCubemap::createTextureCubemap(const std::
 	return std::make_shared<OpenGLTextureCubemap>(file, shader);
 }
 
+std::shared_ptr<TextureCubemap> TextureCubemap::createTextureCubemap(GLuint textureID, int width, int height)
+{
+	return std::make_shared<OpenGLTextureCubemap>(textureID, width, height);
+}
+

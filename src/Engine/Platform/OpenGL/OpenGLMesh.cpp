@@ -28,6 +28,7 @@ void OpenGLMesh::draw(glm::mat4 model) const
 
     
 	mMaterial->getShader()->use();
+	mMaterial->getShader()->setMat4("model", model);
 
     mVertexArray->bind();
     

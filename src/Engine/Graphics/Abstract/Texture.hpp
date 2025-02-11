@@ -7,4 +7,5 @@ public:
 	virtual void unbind(unsigned int slot) = 0;
 	virtual int getWidth() const = 0;
 	virtual int getHeight() const = 0;
+	virtual unsigned int getTextureID() const = 0;
 };

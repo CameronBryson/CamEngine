@@ -46,6 +46,8 @@ void SRender::init()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
+
+
     // Retrieve window dimensions
     GLFWwindow* window = GameManager::get_glfw_window();
 
@@ -84,7 +86,9 @@ void SRender::render()
     const auto& proj_matrix = mScene->mCurrentCamera.GetProjectionMatrix();
 
     auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
-
+    skybox->bindIrradiance(TEXTURE_UNIT_IRRADIANCE);
+    skybox->bindPrefilter(TEXTURE_UNIT_PREFILTER);
+    skybox->bindBRDFLUT(TEXTURE_UNIT_BRDFLUT);
     auto shader = GameManager::mGraphicsManager->getShader("PBR");
     shader->use();
     shader->setMat4("projection", proj_matrix);
@@ -94,12 +98,8 @@ void SRender::render()
 	shader->setInt("prefilterMap", TEXTURE_UNIT_PREFILTER);
 	shader->setInt("brdfLUT", TEXTURE_UNIT_BRDFLUT);
 
-    auto irradianceShader = GameManager::mGraphicsManager->getShader("irradiance");
-	auto prefilterShader = GameManager::mGraphicsManager->getShader("prefilter");
-	auto brdfShader = GameManager::mGraphicsManager->getShader("brdf");
-    skybox->bindIrradiance();
-	skybox->bindPrefilter();
-	skybox->bindBRDFLUT();
+    
+
 
 
 
