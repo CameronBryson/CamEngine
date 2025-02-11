@@ -191,16 +191,36 @@ void SRender::drawModels(const Shader& shader) const
 }
 
 
+#include <glm/gtc/type_ptr.hpp> // Add this include at the top of the file
+
 void SRender::drawImGui() const
 {
-    ImGui::Begin("Hello, ImGui!");
-    ImGui::Text("This is a simple test window.");
+    auto& camera = mScene->mCurrentCamera;
+
+    ImGui::Begin("Camera Controls");
+    ImGui::Text("Adjust the camera parameters:");
+
+    // Position controls
+    ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -100.0f, 100.0f);
+
+    // Orientation controls (Yaw and Pitch)
+    ImGui::SliderFloat("Yaw", &camera.Yaw, -180.0f, 180.0f);
+    ImGui::SliderFloat("Pitch", &camera.Pitch, -89.0f, 89.0f);
+
+    // Zoom control
+    ImGui::SliderFloat("FOV", &camera.FOV, 1.0f, 120.0f);
+
+    // Update camera vectors after changes
+    camera.updateCameraVectors();
+    camera.updateProjectionMatrix();
+
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
     ImGui::End();
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
 
 
 
