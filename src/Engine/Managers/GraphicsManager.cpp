@@ -20,7 +20,7 @@ void GraphicsManager::loadResources()
     loadShader("src/Shaders/vertex.vert", "src/Shaders/PBR.frag", "PBR");
     //Probably not nessesary since we are using opengl to render it behind everything
 	//Used to render environment maps
-	loadShader("src/Shaders/background.vert", "src/Shaders/background.frag", "Skybox");
+	loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
     //This is needed to create a cubemap texture from an hdr
 	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps
