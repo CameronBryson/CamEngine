@@ -9,14 +9,15 @@
 #include "Engine/Graphics/TextureSlots.hpp"
 #include "Engine/Util/OpenGLUtil.hpp"
 
+#include <FrameBuffer.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <cmath>
 #include <stb_image.h>
 
-// -----------------------------------------------------------------------------
-// These matrices are used when rendering to cubemap faces.
+
 static glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.f, 0.1f, 10.f);
 static glm::mat4 captureViews[] =
 {
@@ -35,7 +36,6 @@ static glm::mat4 captureViews[] =
 };
 
 // -----------------------------------------------------------------------------
-
 OpenGLEnvironmentMap::OpenGLEnvironmentMap(const std::string& hdrPath,
     std::shared_ptr<Shader> equirectangularToCubemapShader,
     std::shared_ptr<Shader> irradianceShader,
@@ -46,21 +46,27 @@ OpenGLEnvironmentMap::OpenGLEnvironmentMap(const std::string& hdrPath,
     , mPrefilterShader(prefilterShader)
     , mBRDFShader(brdfShader)
 {
-    // Save the current viewport to restore it later.
+    // Save the current viewport
     GLint oldViewport[4];
     glGetIntegerv(GL_VIEWPORT, oldViewport);
-	mSkyboxCubemap = TextureCubemap::createTextureCubemap(hdrPath, equirectangularToCubemapShader);
 
+    // Create the main skybox cubemap from the HDR path
+    mSkyboxCubemap = TextureCubemap::createTextureCubemap(hdrPath, equirectangularToCubemapShader);
 
+    // Now generate the environment-based maps
     generateIrradianceMap();
     generatePrefilterMap();
     generateBRDFLUT();
+
+    // Restore old viewport
     glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
 }
+
 
 void OpenGLEnvironmentMap::generateIrradianceMap()
 {
     const unsigned int irradianceSize = 32;
+
     GLuint irradianceCubemapID;
     glGenTextures(1, &irradianceCubemapID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceCubemapID);
@@ -77,37 +83,50 @@ void OpenGLEnvironmentMap::generateIrradianceMap()
 
     mIrradianceCubemap = TextureCubemap::createTextureCubemap(irradianceCubemapID, irradianceSize, irradianceSize);
 
-    GLuint captureFBO, captureRBO;
-    glGenFramebuffers(1, &captureFBO);
-    glGenRenderbuffers(1, &captureRBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, irradianceSize, irradianceSize);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
+    auto fbo = FrameBuffer::createFrameBuffer(
+        irradianceSize,
+        irradianceSize,
+        {
+            { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth24 }
+        }
+    );
+    fbo->bind();
+
+    // Setup the shader
     mIrradianceShader->use();
     mIrradianceShader->setMat4("projection", captureProjection);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, mSkyboxCubemap->getTextureID());
+    mSkyboxCubemap->bind(0);
 
     glViewport(0, 0, irradianceSize, irradianceSize);
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+
+    // For each face, attach that face as color 0 and draw
     for (unsigned int i = 0; i < 6; ++i)
     {
         mIrradianceShader->setMat4("view", captureViews[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceCubemapID, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        fbo->attachExternalTexture(
+            GL_COLOR_ATTACHMENT0,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+            irradianceCubemapID,
+            0
+        );
+        fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
+
+        fbo->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         OpenGlUtil::drawCube();
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDeleteFramebuffers(1, &captureFBO);
-    glDeleteRenderbuffers(1, &captureRBO);
+
+    fbo->unbind();
+    // Instead of glDeleteFramebuffers(...) & glDeleteRenderbuffers(...),
+    // the FrameBuffer destructor will clean up.
 }
 
 void OpenGLEnvironmentMap::generatePrefilterMap()
 {
     const unsigned int prefilterSize = 128;
+
     GLuint prefilterCubemapID;
     glGenTextures(1, &prefilterCubemapID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterCubemapID);
@@ -125,48 +144,65 @@ void OpenGLEnvironmentMap::generatePrefilterMap()
 
     mPrefilterCubemap = TextureCubemap::createTextureCubemap(prefilterCubemapID, prefilterSize, prefilterSize);
 
-    GLuint captureFBO, captureRBO;
-    glGenFramebuffers(1, &captureFBO);
-    glGenRenderbuffers(1, &captureRBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    auto fbo = FrameBuffer::createFrameBuffer(
+        prefilterSize,
+        prefilterSize,
+        {
+            { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth24 }
+        }
+    );
 
     mPrefilterShader->use();
     mPrefilterShader->setMat4("projection", captureProjection);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, mSkyboxCubemap->getTextureID());
+	mSkyboxCubemap->bind(0);
 
     const unsigned int maxMipLevels = 5;
+
     for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
     {
-        unsigned int mipWidth = prefilterSize * std::pow(0.5, mip);
-        unsigned int mipHeight = mipWidth;
-        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
-        glViewport(0, 0, mipWidth, mipHeight);
 
-        float roughness = (float)mip / (maxMipLevels - 1);
+        unsigned int mipWidth = (unsigned int)(prefilterSize * std::pow(0.5, mip));
+        unsigned int mipHeight = mipWidth;
+        fbo->resize(mipWidth, mipHeight);
+
+        glViewport(0, 0, mipWidth, mipHeight);
+        fbo->bind();
+
+        float roughness = (float)mip / (float)(maxMipLevels - 1);
         mPrefilterShader->setFloat("roughness", roughness);
+
+        // For each face, attach that face + mip, then clear & draw
         for (unsigned int i = 0; i < 6; ++i)
         {
             mPrefilterShader->setMat4("view", captureViews[i]);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterCubemapID, mip);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            fbo->attachExternalTexture(
+                GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                prefilterCubemapID,
+                mip
+            );
+            fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
+
+            fbo->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             OpenGlUtil::drawCube();
         }
+
+        fbo->unbind();
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDeleteFramebuffers(1, &captureFBO);
-    glDeleteRenderbuffers(1, &captureRBO);
 }
 
 void OpenGLEnvironmentMap::generateBRDFLUT()
 {
     const unsigned int brdfLUTSize = 512;
+
+    // Create the 2D LUT texture
     GLuint brdfLUTID;
     glGenTextures(1, &brdfLUTID);
     glBindTexture(GL_TEXTURE_2D, brdfLUTID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, brdfLUTSize, brdfLUTSize, 0, GL_RG, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F,
+        brdfLUTSize, brdfLUTSize, 0,
+        GL_RG, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -174,42 +210,40 @@ void OpenGLEnvironmentMap::generateBRDFLUT()
 
     mBRDFLUT = Texture2D::createTexture2D(brdfLUTID, brdfLUTSize, brdfLUTSize);
 
-    GLuint captureFBO;
-    glGenFramebuffers(1, &captureFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTID, 0);
-
+    auto fbo = FrameBuffer::createFrameBuffer(
+        brdfLUTSize,
+        brdfLUTSize,
+        { /* no built-in color attachments, so we rely on external for color. */ }
+    );
+    fbo->bind();
     glViewport(0, 0, brdfLUTSize, brdfLUTSize);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    fbo->attachExternalTexture(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTID, 0);
+    fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
+
+    // Clear + draw
+    fbo->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     mBRDFShader->use();
     OpenGlUtil::drawQuad();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDeleteFramebuffers(1, &captureFBO);
+    fbo->unbind();
 }
 
-// -----------------------------------------------------------------------------
-// Binding functions for use in your PBR shader pass.
-// -----------------------------------------------------------------------------
 void OpenGLEnvironmentMap::bindIrradiance(int slot)
 {
-	mIrradianceCubemap->bind(slot);
+    mIrradianceCubemap->bind(slot);
 }
 
 void OpenGLEnvironmentMap::bindPrefilter(int slot)
 {
-	mPrefilterCubemap->bind(slot);
+    mPrefilterCubemap->bind(slot);
 }
 
 void OpenGLEnvironmentMap::bindBRDFLUT(int slot)
 {
-	mBRDFLUT->bind(slot);
+    mBRDFLUT->bind(slot);
 }
 
-// -----------------------------------------------------------------------------
-// Draw the skybox using the environment cubemap.
-// -----------------------------------------------------------------------------
 void OpenGLEnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
 {
     glDepthFunc(GL_LEQUAL);
@@ -219,4 +253,3 @@ void OpenGLEnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
     OpenGlUtil::drawCube();
     glDepthFunc(GL_LESS);
 }
-

@@ -5,6 +5,7 @@
 #include <platform.hpp>
 #include <UniformBuffer.hpp>
 #include "UniformStructs.hpp"
+#include <FrameBuffer.hpp>
 template<typename T>
 class SparseSet;
 class BaseScene;
@@ -28,5 +29,8 @@ private:
     BaseScene* mScene;
     std::shared_ptr<UniformBuffer> mCameraUBO;
 	std::shared_ptr<UniformBuffer> mLightUBO;
+
+    std::shared_ptr<FrameBuffer> mHDRFramebuffer;
+    std::shared_ptr<FrameBuffer> mShadowFramebuffer;
 
 };
