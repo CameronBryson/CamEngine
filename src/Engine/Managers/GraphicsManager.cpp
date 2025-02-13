@@ -31,8 +31,9 @@ void GraphicsManager::loadResources()
 	auto brdfShader = loadShader("src/Shaders/brdf.vert", "src/Shaders/brdf.frag", "brdf");
 
     loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
+	loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");
 
-    loadEnvironmentMap("default", engine_util::buildPath("assets/newport_loft.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    loadEnvironmentMap("default", engine_util::buildPath("assets/puresky.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
     
 
 

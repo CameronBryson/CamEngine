@@ -248,8 +248,7 @@ void OpenGLEnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
 {
     glDepthFunc(GL_LEQUAL);
     skyboxShader->use();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, mSkyboxCubemap->getTextureID());
+    mSkyboxCubemap->bind(TEXTURE_UNIT_SKYBOX);
     OpenGlUtil::drawCube();
     glDepthFunc(GL_LESS);
 }

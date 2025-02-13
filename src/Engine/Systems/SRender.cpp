@@ -238,30 +238,145 @@ void SRender::drawModels(const Shader& shader) const
 void SRender::drawImGui() const
 {
     auto& camera = mScene->mCurrentCamera;
+    auto& registry = mScene->mEnttRegistry;
 
+    // Existing Camera Controls
     ImGui::Begin("Camera Controls");
     ImGui::Text("Adjust the camera parameters:");
-
-    // Position controls
-    ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -100.0f, 100.0f);
-
-    // Orientation controls (Yaw and Pitch)
+    ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -1000.0f, 1000.0f);
     ImGui::SliderFloat("Yaw", &camera.Yaw, -180.0f, 180.0f);
     ImGui::SliderFloat("Pitch", &camera.Pitch, -89.0f, 89.0f);
-
-    // Zoom control
     ImGui::SliderFloat("FOV", &camera.FOV, 1.0f, 120.0f);
-
-    // Update camera vectors after changes
     camera.updateCameraVectors();
     camera.updateProjectionMatrix();
-
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
     ImGui::End();
 
+    // New window for light controls
+    ImGui::Begin("Light Controls");
+    ImGui::Text("Adjust the lighting parameters:");
+
+    // Directional Lights
+    auto dirLightView = registry.view<CDirectionalLight>();
+    int dirLightIndex = 0;
+    for (auto entity : dirLightView)
+    {
+        auto& light = dirLightView.get<CDirectionalLight>(entity);
+        ImGui::PushID(dirLightIndex);
+        if (ImGui::TreeNode("Directional Light"))
+        {
+            ImGui::SliderFloat3("Direction", glm::value_ptr(light.direction), -1.0f, 1.0f);
+            ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
+            ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
+            ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
+            ImGui::TreePop();
+        }
+        ImGui::PopID();
+        dirLightIndex++;
+    }
+
+    // Point Lights
+    auto pointLightView = registry.view<CPointLight>();
+    int pointLightIndex = 0;
+    for (auto entity : pointLightView)
+    {
+        auto& light = pointLightView.get<CPointLight>(entity);
+        ImGui::PushID(pointLightIndex);
+        if (ImGui::TreeNode("Point Light"))
+        {
+            ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -1000.0f, 1000.0f);
+            ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
+            ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
+            ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
+            ImGui::SliderFloat("Constant", &light.constant, 0.0f, 1.0f);
+            ImGui::SliderFloat("Linear", &light.linear, 0.0f, 1.0f);
+            ImGui::SliderFloat("Quadratic", &light.quadratic, 0.0f, 1.0f);
+            ImGui::TreePop();
+        }
+        ImGui::PopID();
+        pointLightIndex++;
+    }
+
+    // Spot Lights
+    auto spotLightView = registry.view<CSpotLight>();
+    int spotLightIndex = 0;
+    for (auto entity : spotLightView)
+    {
+        auto& light = spotLightView.get<CSpotLight>(entity);
+        ImGui::PushID(spotLightIndex);
+        if (ImGui::TreeNode("Spot Light"))
+        {
+            ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -1000.0f, 1000.0f);
+            ImGui::SliderFloat3("Direction", glm::value_ptr(light.direction), -1.0f, 1.0f);
+            ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
+            ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
+            ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
+            ImGui::SliderFloat("Inner Cutoff", &light.innerCutoff, 0.0f, glm::pi<float>());
+            ImGui::SliderFloat("Outer Cutoff", &light.outerCutoff, 0.0f, glm::pi<float>());
+            ImGui::TreePop();
+        }
+        ImGui::PopID();
+        spotLightIndex++;
+    }
+
+    ImGui::End();
+    ImGui::Begin("Object Controls");
+    ImGui::Text("Select an object to manipulate:");
+
+    // Create a list of entities with CModel and CTransform components
+    static int selectedEntityIndex = -1;
+    std::vector<entt::entity> entities;
+    std::vector<std::string> entityLabels;
+
+    auto view = registry.view<CModel, CTransform>();
+    for (auto entity : view)
+    {
+        entities.push_back(entity);
+        auto& modelComp = view.get<CModel>(entity);
+        entityLabels.push_back(modelComp.name + " (" + std::to_string(static_cast<uint32_t>(entity)) + ")");
+    }
+
+    // Convert labels to const char* array for ImGui
+    std::vector<const char*> labelPointers;
+    for (const auto& label : entityLabels)
+    {
+        labelPointers.push_back(label.c_str());
+    }
+
+    // Entity selection dropdown
+    ImGui::ListBox("Entities", &selectedEntityIndex, labelPointers.data(), static_cast<int>(labelPointers.size()), 5);
+
+    if (selectedEntityIndex >= 0 && selectedEntityIndex < entities.size())
+    {
+        auto entity = entities[selectedEntityIndex];
+        auto& transform = view.get<CTransform>(entity);
+
+        ImGui::Separator();
+        ImGui::Text("Transform Controls:");
+
+        // Position Control
+        ImGui::SliderFloat3("Position", glm::value_ptr(transform.position), -1000.0f, 1000.0f);
+
+        // Rotation Control (Euler angles)
+        glm::vec3 eulerDegrees = glm::degrees(glm::eulerAngles(transform.rotation));
+        ImGui::SliderFloat3("Rotation (Degrees)", glm::value_ptr(eulerDegrees), -180.0f, 180.0f);
+        transform.rotation = glm::quat(glm::radians(eulerDegrees));
+
+        // Scale Control
+        ImGui::SliderFloat3("Scale", glm::value_ptr(transform.scale), 0.0f, 10.0f);
+
+        // Mark transform as dirty to update model matrix
+        transform.dirty = true;
+    }
+
+    ImGui::End();
+
+    // Render ImGui
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
+
 
 
 

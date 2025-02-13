@@ -38,6 +38,14 @@ void TestScene::init()
 	mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -25 }, rotationQuat, glm::vec3{1, 1, 1});
 	mEnttRegistry.emplace<CParent>(testModel, testParent);
 	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
+
+	auto testModel2 = mEnttRegistry.create();
+	mEnttRegistry.emplace<CModel>(testModel2, "Sponza");
+	glm::vec3 rotationEulerAngles2 = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
+	glm::quat rotationQuat2 = glm::quat(rotationEulerAngles2);
+	mEnttRegistry.emplace<CTransform>(testModel2, glm::vec3{ 0, -100, -25 }, rotationQuat2, glm::vec3{ 1, 1, 1 });
+	mEnttRegistry.emplace<CParent>(testModel2, testParent);
+	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel2);
 	auto rigidBody = edyn::rigidbody_def();
 	rigidBody.presentation = true;
 	rigidBody.shape = edyn::box_shape{ 1, 1, 1 };
