@@ -9,7 +9,7 @@
 #include "glm/ext/matrix_float4x4_precision.hpp"
 
 
-OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::shared_ptr<Material>& material) : mMaterial(material)
+OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned> indices, const std::shared_ptr<Material>& material) : mMaterial(material), mVertices(vertices)
 {
 	mVertexArray = VertexArray::create();
 	mVertexArray->addVertexBuffer(VertexBuffer::create(vertices));
@@ -55,5 +55,10 @@ void OpenGLMesh::drawShadow(std::shared_ptr<Shader>& shadowShader, glm::mat4 mod
 void OpenGLMesh::setMaterial(const std::shared_ptr<Material>& material)
 {
 	mMaterial = material;
+}
+
+std::vector<Vertex>& OpenGLMesh::getVertices()
+{
+	return mVertices;
 }
 

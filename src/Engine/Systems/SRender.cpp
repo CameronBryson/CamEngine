@@ -35,19 +35,10 @@ SRender::SRender(BaseScene* scene) : mScene(scene)
 void SRender::init()
 {
     glClearColor(0, 0, 0, 0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    glEnable(GL_CULL_FACE);
-
-    glCullFace(GL_BACK);
-
-    glFrontFace(GL_CCW);
 
     glEnable(GL_DEPTH_TEST);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 
 
@@ -70,18 +61,22 @@ void SRender::init()
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 400");
+    ImGui_ImplOpenGL3_Init("#version 450");
 
 	mCameraUBO = UniformBuffer::createUniformBuffer(sizeof(CameraData), CAMERA_BINDING);
 	mLightUBO = UniformBuffer::createUniformBuffer(sizeof(LightData), LIGHT_BINDING);
-
-    mDirectionalShadowFramebuffers.resize(MAX_DIRECTIONAL_LIGHTS);
-    for (int i = 0; i < MAX_DIRECTIONAL_LIGHTS; i++) {
-        mDirectionalShadowFramebuffers[i] = FrameBuffer::createFrameBuffer(
-            mShadowMapWidth, mShadowMapHeight,
-            { { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth24 } }
-        );
+	mShadowMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, { { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth32F } });
+    if (!mShadowMapBuffer->isComplete())
+    {
+        throw std::runtime_error("Shadow map framebuffer incomplete!");
     }
+
+    // Verify the depth texture was created
+    if (!mShadowMapBuffer->getDepthAttachment())
+    {
+        throw std::runtime_error("Shadow map depth attachment missing!");
+    }
+    calculateSceneBounds();
 
 }
 
@@ -116,29 +111,32 @@ void SRender::render()
 	mCameraUBO->setData(&cameraData, sizeof(CameraData));
 
 	auto shadowShader = GameManager::mGraphicsManager->getShader("ShadowMap");
+    shadowShader->use();
+    shadowShader->setMat4("lightSpaceMatrix", lightData.directionalLights[0].lightSpaceMatrix );
+	mShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
+	mShadowMapBuffer->bind();
+	mShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
+	drawModelsShader(shadowShader);
+	mShadowMapBuffer->unbind();
 
-    //Shadow pass for each directional light
-    for (int i = 0; i < lightData.counts.z; ++i)
-    {
-		mDirectionalShadowFramebuffers[i]->bind();
-		mDirectionalShadowFramebuffers[i]->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
-		mDirectionalShadowFramebuffers[i]->clear(GL_DEPTH_BUFFER_BIT);
+    int width, height;
+    glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
+    glViewport(0, 0, width, height);
 
-        shadowShader->use();
-		shadowShader->setMat4("lightSpaceMatrix", lightData.directionalLights[i].lightSpaceMatrix);
-
-        //Anything else we need to do here with the framebuffer?
-        //Set bindings or indexes?
-
-        drawModelsShadow(shadowShader);
-
-		mDirectionalShadowFramebuffers[i]->unbind();
-        
-    }
-
-
+	if (mShowShadowMap)
+	{
+        auto debugShader = GameManager::mGraphicsManager->getShader("Debug");
+		mShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_SHADOW);
+		debugShader->use();
+		debugShader->setInt("depthMap", TEXTURE_UNIT_SHADOW);
+		drawModelsShader(debugShader);
+        drawImGui();
+        return;
+	}
 
     auto pbrShader = GameManager::mGraphicsManager->getShader("PBR");
+
+    
     pbrShader->use();
 
     auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
@@ -150,24 +148,9 @@ void SRender::render()
 	pbrShader->setInt("prefilterMap", TEXTURE_UNIT_PREFILTER);
 	pbrShader->setInt("brdfLUT", TEXTURE_UNIT_BRDFLUT);
 
-    // Bind shadow maps
-    for (int i = 0; i < lightData.counts.z; ++i)
-    {
-        // Define a unique texture unit for each shadow map
-        const unsigned int shadowMapUnit = TEXTURE_UNIT_SHADOW + i;
+	mShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_SHADOW);
+	pbrShader->setInt("directionalShadowMap", TEXTURE_UNIT_SHADOW);
 
-        // Bind the shadow map's depth texture to the texture unit
-        mDirectionalShadowFramebuffers[i]->getDepthAttachment()->bind(shadowMapUnit);
-
-        // Set the sampler uniform in the PBR shader to use the correct texture unit
-        pbrShader->setInt("shadowMaps[" + std::to_string(i) + "]", shadowMapUnit);
-
-    }
-
-    
-
-
-	
 
     // Draw models
     drawModels();
@@ -203,40 +186,68 @@ void SRender::buildDirectionalLights(LightData& lightData)
             break;
         auto& light = dirLightView.get<CDirectionalLight>(entity);
 
+        // Fill in the light's basic properties.
         DirectionalLightData& data = lightData.directionalLights[numDirLights];
         data.direction = glm::vec4(light.direction, 0.0f);
         data.ambient = glm::vec4(light.ambient, 0.0f);
         data.diffuse = glm::vec4(light.diffuse, 0.0f);
         data.specular = glm::vec4(light.specular, 0.0f);
 
-        // Compute the light-space matrix for shadow mapping.
-        // 1. Choose parameters for an orthographic projection.
-        float orthoSize = 20.0f;     // Adjust based on your scene's scale.
-        float nearPlane = 1.0f;
-        float farPlane = 100.0f;
-        glm::mat4 lightProj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, nearPlane, farPlane);
+        // Compute the light view matrix.
+        // We position the light far enough along its direction so that the scene is fully in view.
+        glm::vec3 lightDir = glm::normalize(glm::vec3(light.direction));
+        glm::vec3 lightPos = mSceneBounds.center - lightDir * (mSceneBounds.radius * 2.0f);
+        glm::vec3 up = fabs(glm::dot(lightDir, glm::vec3(0, 1, 0))) > 0.99f
+            ? glm::vec3(1, 0, 0)
+            : glm::vec3(0, 1, 0);
+        glm::mat4 lightView = glm::lookAt(lightPos, mSceneBounds.center, up);
 
-        // 2. Compute the light's direction (we assume light.direction is defined as the direction FROM the light)
-        // So the light "rays" travel in that same direction.
-        glm::vec3 lightDir = glm::normalize(-glm::vec3(light.direction));
-        // 3. Pick a scene center (for example, the origin) and place the light a fixed distance away.
-        glm::vec3 sceneCenter = glm::vec3(0.0f);
-        float distance = 10.0f; // This value may be adjusted to cover your scene.
-        glm::vec3 lightPos = sceneCenter - lightDir * distance;
-        // 4. Compute the view matrix from the light's perspective.
-        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-        // If lightDir is nearly parallel to up, choose an alternative up vector.
-        if (fabs(glm::dot(lightDir, up)) > 0.99f)
-            up = glm::vec3(1.0f, 0.0f, 0.0f);
-        glm::mat4 lightView = glm::lookAt(lightPos, sceneCenter, up);
+        // Now transform the eight corners of the scene bounding box into light space.
+        glm::vec3 boxCorners[8] = {
+            glm::vec3(mSceneBounds.min.x, mSceneBounds.min.y, mSceneBounds.min.z),
+            glm::vec3(mSceneBounds.max.x, mSceneBounds.min.y, mSceneBounds.min.z),
+            glm::vec3(mSceneBounds.min.x, mSceneBounds.max.y, mSceneBounds.min.z),
+            glm::vec3(mSceneBounds.max.x, mSceneBounds.max.y, mSceneBounds.min.z),
+            glm::vec3(mSceneBounds.min.x, mSceneBounds.min.y, mSceneBounds.max.z),
+            glm::vec3(mSceneBounds.max.x, mSceneBounds.min.y, mSceneBounds.max.z),
+            glm::vec3(mSceneBounds.min.x, mSceneBounds.max.y, mSceneBounds.max.z),
+            glm::vec3(mSceneBounds.max.x, mSceneBounds.max.y, mSceneBounds.max.z)
+        };
 
-        // 5. The light-space matrix:
+        glm::vec3 lightSpaceMin(std::numeric_limits<float>::max());
+        glm::vec3 lightSpaceMax(std::numeric_limits<float>::lowest());
+
+        for (int i = 0; i < 8; ++i) {
+            glm::vec3 cornerLS = glm::vec3(lightView * glm::vec4(boxCorners[i], 1.0f));
+            lightSpaceMin = glm::min(lightSpaceMin, cornerLS);
+            lightSpaceMax = glm::max(lightSpaceMax, cornerLS);
+        }
+
+        // Optionally add a small padding to avoid clipping.
+        float padding = glm::length(lightSpaceMax - lightSpaceMin) * 0.05f;
+        lightSpaceMin -= glm::vec3(padding);
+        lightSpaceMax += glm::vec3(padding);
+
+        // Build an orthographic projection using the tight bounds.
+        glm::mat4 lightProj = glm::ortho(
+            lightSpaceMin.x, lightSpaceMax.x,
+            lightSpaceMin.y, lightSpaceMax.y,
+            -lightSpaceMax.z, -lightSpaceMin.z
+        );
+
+        // Combine projection and view to form the final light space matrix.
         data.lightSpaceMatrix = lightProj * lightView;
 
         numDirLights++;
     }
     lightData.counts.z = numDirLights;
 }
+
+
+
+
+
+
 
 
 void SRender::buildPointLights(LightData& lightData)
@@ -306,7 +317,7 @@ void SRender::drawModels() const
     }
 }
 
-void SRender::drawModelsShadow(std::shared_ptr<Shader>& shader) const
+void SRender::drawModelsShader(std::shared_ptr<Shader>& shader) const
 {
 	auto& registry = mScene->mEnttRegistry;
 	// View for entities with CModel and CTransform components
@@ -324,7 +335,7 @@ void SRender::drawModelsShadow(std::shared_ptr<Shader>& shader) const
 
 #include <glm/gtc/type_ptr.hpp> // Add this include at the top of the file
 
-void SRender::drawImGui() const
+void SRender::drawImGui()
 {
     auto& camera = mScene->mCurrentCamera;
     auto& registry = mScene->mEnttRegistry;
@@ -457,13 +468,148 @@ void SRender::drawImGui() const
         // Mark transform as dirty to update model matrix
         transform.dirty = true;
     }
+    ImGui::End();
+
+    // Add Debug Controls
+    ImGui::Begin("Debug Controls");
+    ImGui::Checkbox("Show Shadow Debug View", &mShowShadowMap);
+    ImGui::End();
+
+    // Add Scene Bounds Controls
+    ImGui::Begin("Scene Bounds Controls");
+    ImGui::Text("Scene Bounds Parameters:");
+
+    // Center control
+    ImGui::Text("Center:");
+    if (ImGui::SliderFloat3("##Center", glm::value_ptr(mSceneBounds.center), -1000.0f, 1000.0f))
+    {
+        // Recalculate bounds when center changes
+        glm::vec3 extents = (mSceneBounds.max - mSceneBounds.min) * 0.5f;
+        mSceneBounds.min = mSceneBounds.center - extents;
+        mSceneBounds.max = mSceneBounds.center + extents;
+    }
+
+    // Radius control
+    if (ImGui::SliderFloat("Radius", &mSceneBounds.radius, 0.1f, 1000.0f))
+    {
+        // Update min/max based on radius change
+        glm::vec3 extents = glm::vec3(mSceneBounds.radius);
+        mSceneBounds.min = mSceneBounds.center - extents;
+        mSceneBounds.max = mSceneBounds.center + extents;
+    }
+
+    // Min/Max bounds
+    if (ImGui::TreeNode("Advanced"))
+    {
+        ImGui::Text("Min/Max Bounds:");
+        bool boundsChanged = false;
+        boundsChanged |= ImGui::SliderFloat3("Min", glm::value_ptr(mSceneBounds.min), -1000.0f, 1000.0f);
+        boundsChanged |= ImGui::SliderFloat3("Max", glm::value_ptr(mSceneBounds.max), -1000.0f, 1000.0f);
+
+        if (boundsChanged)
+        {
+            // Update center and radius when min/max change
+            mSceneBounds.center = (mSceneBounds.max + mSceneBounds.min) * 0.5f;
+            mSceneBounds.radius = glm::length(mSceneBounds.max - mSceneBounds.center);
+        }
+
+        ImGui::TreePop();
+    }
+
+    // Add buttons for common operations
+    if (ImGui::Button("Recalculate Bounds"))
+    {
+        calculateSceneBounds();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Add 10% Padding"))
+    {
+        float padding = mSceneBounds.radius * 0.1f;
+        mSceneBounds.min -= glm::vec3(padding);
+        mSceneBounds.max += glm::vec3(padding);
+        mSceneBounds.radius *= 1.1f;
+    }
+
+    // Display current values
+    ImGui::Separator();
+    ImGui::Text("Current Values:");
+    ImGui::Text("Center: (%.2f, %.2f, %.2f)",
+        mSceneBounds.center.x, mSceneBounds.center.y, mSceneBounds.center.z);
+    ImGui::Text("Radius: %.2f", mSceneBounds.radius);
+    ImGui::Text("Min: (%.2f, %.2f, %.2f)",
+        mSceneBounds.min.x, mSceneBounds.min.y, mSceneBounds.min.z);
+    ImGui::Text("Max: (%.2f, %.2f, %.2f)",
+        mSceneBounds.max.x, mSceneBounds.max.y, mSceneBounds.max.z);
 
     ImGui::End();
+
+
 
     // Render ImGui
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
+void SRender::calculateSceneBounds()
+{
+    auto& registry = mScene->mEnttRegistry;
+    auto view = registry.view<CModel, CTransform>();
+    glm::vec3 min = glm::vec3(std::numeric_limits<float>::max());
+    glm::vec3 max = glm::vec3(std::numeric_limits<float>::lowest());
+
+    bool foundAny = false;
+
+    for (auto entity : view)
+    {
+        auto& modelTransform = view.get<CTransform>(entity);
+        auto& model = GameManager::mGraphicsManager->getModel(view.get<CModel>(entity).name);
+        auto& meshes = model->getMeshes();
+
+        for (const auto& meshInstance : meshes)
+        {
+            auto& mesh = meshInstance.mesh;
+            auto& localTransform = meshInstance.localTransform;
+            auto& vertices = mesh->getVertices();
+
+            // Combined transform: entity transform * mesh local transform
+            glm::mat4 finalTransform = modelTransform.model_matrix * localTransform;
+
+            for (const auto& vertex : vertices)
+            {
+                // Transform vertex to world space
+                glm::vec4 worldPos = finalTransform * glm::vec4(vertex.position, 1.0f);
+                glm::vec3 transformedPos = glm::vec3(worldPos);
+
+                min = glm::min(min, transformedPos);
+                max = glm::max(max, transformedPos);
+                foundAny = true;
+            }
+        }
+    }
+
+    if (!foundAny)
+    {
+        // Default bounds if no vertices found
+        min = glm::vec3(-1.0f);
+        max = glm::vec3(1.0f);
+    }
+
+    // Update scene bounds
+    mSceneBounds.min = min;
+    mSceneBounds.max = max;
+    mSceneBounds.center = (max + min) * 0.5f;
+    mSceneBounds.radius = glm::length(max - mSceneBounds.center);
+
+    // Add some padding
+    float padding = mSceneBounds.radius * 0.1f; // 10% padding
+    mSceneBounds.min -= glm::vec3(padding);
+    mSceneBounds.max += glm::vec3(padding);
+    mSceneBounds.radius *= 1.1f;
+}
+
+
 
 
 

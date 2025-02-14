@@ -19,8 +19,10 @@ public:
 	void drawShadow(std::shared_ptr<Shader>& shadowShader, glm::mat4 model) const override;
 
 	void setMaterial(const std::shared_ptr<Material>& material) override;
+	std::vector<Vertex>& getVertices() override;
 
 private:
+	std::vector<Vertex> mVertices;
 	std::shared_ptr<VertexArray> mVertexArray;
 	std::shared_ptr<Material> mMaterial;
 };

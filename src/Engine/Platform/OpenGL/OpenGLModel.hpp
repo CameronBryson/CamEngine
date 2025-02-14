@@ -15,6 +15,7 @@ public:
 	void drawShadow(std::shared_ptr<Shader>& shadowShader, glm::mat4 model) const override;
 
 	void addMesh(const MeshInstance& mesh) override;
+	std::vector<MeshInstance> getMeshes() override;
 
 private:
 	std::vector<MeshInstance> mMeshes;

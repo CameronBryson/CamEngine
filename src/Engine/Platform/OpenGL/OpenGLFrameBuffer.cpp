@@ -98,7 +98,10 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(
     m_ViewportY = 0;
     m_ViewportW = width;
     m_ViewportH = height;
-
+    if (width <= 0 || height <= 0)
+        throw std::runtime_error("Invalid framebuffer dimensions");
+    if (samples < 1)
+        throw std::runtime_error("Invalid sample count");
     createFramebuffer();
 }
 
@@ -114,6 +117,7 @@ OpenGLFrameBuffer::~OpenGLFrameBuffer()
 void OpenGLFrameBuffer::bind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+	glViewport(m_ViewportX, m_ViewportY, m_ViewportW, m_ViewportH);
 }
 
 void OpenGLFrameBuffer::unbind()
@@ -219,9 +223,16 @@ void OpenGLFrameBuffer::setSamples(int samples)
 
 bool OpenGLFrameBuffer::isComplete() const
 {
+    GLint prevFBO;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+
     glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-    return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+    bool complete = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
+    return complete;
 }
+
 
 std::shared_ptr<Texture2D> OpenGLFrameBuffer::getColorAttachment(int index) const
 {

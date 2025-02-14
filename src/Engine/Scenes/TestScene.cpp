@@ -40,10 +40,10 @@ void TestScene::init()
 	//mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
 
 	auto testModel2 = mEnttRegistry.create();
-	mEnttRegistry.emplace<CModel>(testModel2, "Chess");
+	mEnttRegistry.emplace<CModel>(testModel2, "Scene");
 	glm::vec3 rotationEulerAngles2 = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
 	glm::quat rotationQuat2 = glm::quat(rotationEulerAngles2);
-	mEnttRegistry.emplace<CTransform>(testModel2, glm::vec3{ 0, -50, -75 }, rotationQuat2, glm::vec3{ 80, 80, 80 });
+	mEnttRegistry.emplace<CTransform>(testModel2, glm::vec3{ 0, -15, -15 }, rotationQuat2, glm::vec3{ 0.01, 0.01, 0.01 });
 	mEnttRegistry.emplace<CParent>(testModel2, testParent);
 	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel2);
 
@@ -57,20 +57,36 @@ void TestScene::init()
 	//rigidBody.gravity = edyn::vector3{ 0, 0, 0 };
 	//edyn::make_rigidbody(testModel, mEnttRegistry,  rigidBody);
 
+// In TestScene::init()
 	auto pointLight = mEnttRegistry.create();
-	glm::vec3 ambient = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
-	float constant = 1.0f;
-	float linear = 0.09f;
-	float quadratic = 0.032f;
-	//mEnttRegistry.emplace<CPointLight>(pointLight, glm::vec3(0, 0, 0), ambient, diffuse, specular, constant, linear, quadratic);
+	// Add some ambient light and tone down the intensity
+	glm::vec3 ambient = glm::vec3(0.1f, 0.1f, 0.1f);    // Soft ambient light
+	glm::vec3 diffuse = glm::vec3(0.8f, 0.8f, 0.8f);    // Strong but not max diffuse
+	glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);   // Full specular
 
+	// Adjust attenuation for your scene scale (your chess piece is at -75 units)
+	float constant = 1.0f;
+	float linear = 0.0014f;      // Reduced for larger scenes
+	float quadratic = 0.000007f; // Reduced for larger scenes
+
+	// Position the light higher and further back to better illuminate the chess piece
+	//mEnttRegistry.emplace<CPointLight>(pointLight,
+	//	glm::vec3(0.0f, 10.0f, -50.0f), // Positioned above and closer to the chess piece
+	//	ambient, diffuse, specular,
+	//	constant, linear, quadratic);
+
+	// For the spot light, adjust similarly
 	auto spotLight = mEnttRegistry.create();
-	glm::vec3 direction = glm::vec3(0, -1, 0);
-	float innerCutoff = glm::radians(12.5f);
-	float outerCutoff = glm::radians(17.5f);
-	//mEnttRegistry.emplace<CSpotLight>(spotLight, glm::vec3(0, 1, 0), direction, ambient, diffuse, specular, constant, linear, quadratic, innerCutoff, outerCutoff);
+	glm::vec3 direction = glm::normalize(glm::vec3(0.0f, -1.0f, -0.5f)); // Angle it slightly
+	float innerCutoff = glm::cos(glm::radians(12.5f));  // Use cos for better precision
+	float outerCutoff = glm::cos(glm::radians(17.5f));  // Use cos for better precision
+
+	//mEnttRegistry.emplace<CSpotLight>(spotLight,
+	//	glm::vec3(0.0f, 20.0f, -50.0f), // Position it above the chess piece
+	//	direction, ambient, diffuse, specular,
+	//	constant, linear, quadratic,
+	//	innerCutoff, outerCutoff);
+
 
 	auto directionalLight = mEnttRegistry.create();
 	mEnttRegistry.emplace<CDirectionalLight>(directionalLight, direction, ambient, diffuse, specular);

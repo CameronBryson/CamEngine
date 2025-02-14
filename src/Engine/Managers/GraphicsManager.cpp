@@ -22,6 +22,7 @@ void GraphicsManager::loadResources()
 	//Used to render environment maps
 	loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
 	loadShader("src/Shaders/shadowmap.vert", "src/Shaders/shadowmap.frag", "ShadowMap");
+    loadShader("src/shaders/debug.vert", "src/Shaders/debug.frag", "Debug");
     //This is needed to create a cubemap texture from an hdr
 	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps
@@ -31,9 +32,10 @@ void GraphicsManager::loadResources()
 	//Used to create environment maps
 	auto brdfShader = loadShader("src/Shaders/brdf.vert", "src/Shaders/brdf.frag", "brdf");
 
-    loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
+    //loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
 	//loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");
-	loadModel(engine_util::buildPath("assets/ABeautifulGame.gltf"), "Chess");
+	//loadModel(engine_util::buildPath("assets/ABeautifulGame.gltf"), "Chess");
+	loadModel(engine_util::buildPath("assets/scene.gltf"), "Scene");
 
     loadEnvironmentMap("default", engine_util::buildPath("assets/newport_loft.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
     

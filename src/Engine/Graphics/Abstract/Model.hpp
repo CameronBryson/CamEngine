@@ -15,6 +15,7 @@ public:
 	virtual void drawShadow(std::shared_ptr<Shader>& shadowShader, glm::mat4 model) const = 0;
 
 	virtual void addMesh(const MeshInstance& mesh) = 0;
+	virtual std::vector<MeshInstance> getMeshes() = 0;
 
 	static std::shared_ptr<Model> createModel(const std::vector<MeshInstance>& meshes);
 };

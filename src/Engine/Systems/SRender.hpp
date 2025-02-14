@@ -10,7 +10,13 @@ template<typename T>
 class SparseSet;
 class BaseScene;
 class Shader;
-
+struct SceneBounds
+{
+    glm::vec3 center;
+    float radius;
+    glm::vec3 min;
+	glm::vec3 max;
+};
 class SRender
 {
 public:
@@ -23,19 +29,20 @@ public:
     void buildPointLights(LightData& lightData);
 	void buildSpotLights(LightData& lightData);
     void drawModels() const;
-	void drawModelsShadow(std::shared_ptr<Shader>& shader) const;
-	void drawImGui() const;
+	void drawModelsShader(std::shared_ptr<Shader>& shader) const;
+    void drawImGui();
 
 private:
     BaseScene* mScene;
+	SceneBounds mSceneBounds;
     std::shared_ptr<UniformBuffer> mCameraUBO;
 	std::shared_ptr<UniformBuffer> mLightUBO;
 
-    std::vector<std::shared_ptr<FrameBuffer>> mDirectionalShadowFramebuffers;
-
-    // Shadow map resolution and texture unit base.
+    std::shared_ptr<FrameBuffer> mShadowMapBuffer;
+    bool mShowShadowMap = true;
     const int mShadowMapWidth = 1024;
     const int mShadowMapHeight = 1024;
-    std::shared_ptr<FrameBuffer> mHDRFramebuffer;
-
+    void calculateSceneBounds();
+    GLuint mDebugQuadVAO = 0;
+    GLuint mDebugQuadVBO = 0;
 };
