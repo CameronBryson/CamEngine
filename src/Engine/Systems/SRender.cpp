@@ -123,16 +123,24 @@ void SRender::render()
     glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
     glViewport(0, 0, width, height);
 
-	if (mShowShadowMap)
-	{
+    if (mShowShadowMap)
+    {
+
         auto debugShader = GameManager::mGraphicsManager->getShader("Debug");
-		mShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_SHADOW);
-		debugShader->use();
-		debugShader->setInt("depthMap", TEXTURE_UNIT_SHADOW);
-		drawModelsShader(debugShader);
+        debugShader->use();
+
+        const auto& lightSpaceMatrix = lightData.directionalLights[0].lightSpaceMatrix;
+        debugShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+        debugShader->setInt("depthMap", TEXTURE_UNIT_SHADOW);
+
+        mShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_SHADOW);
+
+        drawModelsShader(debugShader);
+
         drawImGui();
         return;
-	}
+    }
+
 
     auto pbrShader = GameManager::mGraphicsManager->getShader("PBR");
 
