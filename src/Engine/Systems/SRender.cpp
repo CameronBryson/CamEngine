@@ -25,6 +25,8 @@
 #include <GameSettings.hpp>
 #include <TextureSlots.hpp>
 #include "UniformStructs.hpp"
+#include <iostream>
+#include "Texture2D.hpp"
 
 SRender::SRender(BaseScene* scene) : mScene(scene)
 {
@@ -73,6 +75,13 @@ void SRender::init()
 	mCameraUBO = UniformBuffer::createUniformBuffer(sizeof(CameraData), CAMERA_BINDING);
 	mLightUBO = UniformBuffer::createUniformBuffer(sizeof(LightData), LIGHT_BINDING);
 
+    mDirectionalShadowFramebuffers.resize(MAX_DIRECTIONAL_LIGHTS);
+    for (int i = 0; i < MAX_DIRECTIONAL_LIGHTS; i++) {
+        mDirectionalShadowFramebuffers[i] = FrameBuffer::createFrameBuffer(
+            mShadowMapWidth, mShadowMapHeight,
+            { { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth24 } }
+        );
+    }
 
 }
 
@@ -85,7 +94,16 @@ void SRender::render()
 
     OpenGlUtil::clearBackground();
 
+
     auto& registry = mScene->mEnttRegistry;
+    LightData lightData;
+    buildDirectionalLights(lightData);
+    buildPointLights(lightData);
+    buildSpotLights(lightData);
+
+    mLightUBO->setData(&lightData, sizeof(LightData));
+
+
 
     const auto& view_matrix = mScene->mCurrentCamera.GetViewMatrix();
     const auto& proj_matrix = mScene->mCurrentCamera.GetProjectionMatrix();
@@ -97,21 +115,54 @@ void SRender::render()
 
 	mCameraUBO->setData(&cameraData, sizeof(CameraData));
 
-	LightData lightData;
-	buildDirectionalLights(lightData);
-	buildPointLights(lightData);
-	buildSpotLights(lightData);
-	mLightUBO->setData(&lightData, sizeof(LightData));
+	auto shadowShader = GameManager::mGraphicsManager->getShader("ShadowMap");
+
+    //Shadow pass for each directional light
+    for (int i = 0; i < lightData.counts.z; ++i)
+    {
+		mDirectionalShadowFramebuffers[i]->bind();
+		mDirectionalShadowFramebuffers[i]->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
+		mDirectionalShadowFramebuffers[i]->clear(GL_DEPTH_BUFFER_BIT);
+
+        shadowShader->use();
+		shadowShader->setMat4("lightSpaceMatrix", lightData.directionalLights[i].lightSpaceMatrix);
+
+        //Anything else we need to do here with the framebuffer?
+        //Set bindings or indexes?
+
+        drawModelsShadow(shadowShader);
+
+		mDirectionalShadowFramebuffers[i]->unbind();
+        
+    }
+
+
+
+    auto pbrShader = GameManager::mGraphicsManager->getShader("PBR");
+    pbrShader->use();
 
     auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
     skybox->bindIrradiance(TEXTURE_UNIT_IRRADIANCE);
     skybox->bindPrefilter(TEXTURE_UNIT_PREFILTER);
     skybox->bindBRDFLUT(TEXTURE_UNIT_BRDFLUT);
-    auto shader = GameManager::mGraphicsManager->getShader("PBR");
-    shader->use();
-	shader->setInt("irradianceMap", TEXTURE_UNIT_IRRADIANCE);
-	shader->setInt("prefilterMap", TEXTURE_UNIT_PREFILTER);
-	shader->setInt("brdfLUT", TEXTURE_UNIT_BRDFLUT);
+    
+	pbrShader->setInt("irradianceMap", TEXTURE_UNIT_IRRADIANCE);
+	pbrShader->setInt("prefilterMap", TEXTURE_UNIT_PREFILTER);
+	pbrShader->setInt("brdfLUT", TEXTURE_UNIT_BRDFLUT);
+
+    // Bind shadow maps
+    for (int i = 0; i < lightData.counts.z; ++i)
+    {
+        // Define a unique texture unit for each shadow map
+        const unsigned int shadowMapUnit = TEXTURE_UNIT_SHADOW + i;
+
+        // Bind the shadow map's depth texture to the texture unit
+        mDirectionalShadowFramebuffers[i]->getDepthAttachment()->bind(shadowMapUnit);
+
+        // Set the sampler uniform in the PBR shader to use the correct texture unit
+        pbrShader->setInt("shadowMaps[" + std::to_string(i) + "]", shadowMapUnit);
+
+    }
 
     
 
@@ -119,7 +170,7 @@ void SRender::render()
 	
 
     // Draw models
-    drawModels(*shader);
+    drawModels();
 
     auto skyboxShader = GameManager::mGraphicsManager->getShader("Skybox");
 
@@ -150,20 +201,43 @@ void SRender::buildDirectionalLights(LightData& lightData)
     {
         if (numDirLights >= MAX_DIRECTIONAL_LIGHTS)
             break;
-
         auto& light = dirLightView.get<CDirectionalLight>(entity);
 
-        // Populate directional light data
-        DirectionalLightData& dirLightData = lightData.directionalLights[numDirLights];
-        dirLightData.direction = glm::vec4(light.direction, 0.0f);
-        dirLightData.ambient = glm::vec4(light.ambient, 0.0f);
-        dirLightData.diffuse = glm::vec4(light.diffuse, 0.0f);
-        dirLightData.specular = glm::vec4(light.specular, 0.0f);
+        DirectionalLightData& data = lightData.directionalLights[numDirLights];
+        data.direction = glm::vec4(light.direction, 0.0f);
+        data.ambient = glm::vec4(light.ambient, 0.0f);
+        data.diffuse = glm::vec4(light.diffuse, 0.0f);
+        data.specular = glm::vec4(light.specular, 0.0f);
+
+        // Compute the light-space matrix for shadow mapping.
+        // 1. Choose parameters for an orthographic projection.
+        float orthoSize = 20.0f;     // Adjust based on your scene's scale.
+        float nearPlane = 1.0f;
+        float farPlane = 100.0f;
+        glm::mat4 lightProj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, nearPlane, farPlane);
+
+        // 2. Compute the light's direction (we assume light.direction is defined as the direction FROM the light)
+        // So the light "rays" travel in that same direction.
+        glm::vec3 lightDir = glm::normalize(-glm::vec3(light.direction));
+        // 3. Pick a scene center (for example, the origin) and place the light a fixed distance away.
+        glm::vec3 sceneCenter = glm::vec3(0.0f);
+        float distance = 10.0f; // This value may be adjusted to cover your scene.
+        glm::vec3 lightPos = sceneCenter - lightDir * distance;
+        // 4. Compute the view matrix from the light's perspective.
+        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+        // If lightDir is nearly parallel to up, choose an alternative up vector.
+        if (fabs(glm::dot(lightDir, up)) > 0.99f)
+            up = glm::vec3(1.0f, 0.0f, 0.0f);
+        glm::mat4 lightView = glm::lookAt(lightPos, sceneCenter, up);
+
+        // 5. The light-space matrix:
+        data.lightSpaceMatrix = lightProj * lightView;
 
         numDirLights++;
     }
-    lightData.counts.z = numDirLights; // counts.z stores the number of directional lights
+    lightData.counts.z = numDirLights;
 }
+
 
 void SRender::buildPointLights(LightData& lightData)
 {
@@ -208,13 +282,13 @@ void SRender::buildSpotLights(LightData& lightData)
 		spotLightData.attenuation = glm::vec4(light.constant, light.linear, light.quadratic, 0.0f);
 		spotLightData.cutoffs = glm::vec4(light.innerCutoff, light.outerCutoff, 0.0f, 0.0f);
 		numSpotLights++;
+
 	}
 	lightData.counts.y = numSpotLights; // counts.y stores the number of spot lights
 }
 
 
-
-void SRender::drawModels(const Shader& shader) const
+void SRender::drawModels() const
 {
     auto& registry = mScene->mEnttRegistry;
 
@@ -231,6 +305,21 @@ void SRender::drawModels(const Shader& shader) const
         GameManager::mGraphicsManager->getModel(modelComp.name)->draw(model_matrix);
     }
 }
+
+void SRender::drawModelsShadow(std::shared_ptr<Shader>& shader) const
+{
+	auto& registry = mScene->mEnttRegistry;
+	// View for entities with CModel and CTransform components
+	auto modelView = registry.view<CModel, CTransform>();
+	for (auto entity : modelView)
+	{
+		auto& modelComp = modelView.get<CModel>(entity);
+		const auto& transform = modelView.get<CTransform>(entity);
+		glm::mat4 model_matrix = transform.model_matrix;
+		GameManager::mGraphicsManager->getModel(modelComp.name)->drawShadow(shader, model_matrix);
+	}
+}
+
 
 
 #include <glm/gtc/type_ptr.hpp> // Add this include at the top of the file

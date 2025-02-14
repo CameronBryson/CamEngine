@@ -53,7 +53,6 @@ public:
     std::shared_ptr<Mesh> getMesh(const std::string& name);
 
     // Model and Scene management
-    std::shared_ptr<Model> createModel(const std::vector<std::shared_ptr<Mesh>>& meshes, const std::string& name);
     std::shared_ptr<Model> getModel(const std::string& name);
     std::shared_ptr<Model> loadModel(const std::string& path, const std::string& name);
 
@@ -83,4 +82,6 @@ private:
     std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory);
     std::shared_ptr<Material> loadMaterial(aiMaterial* mat, const std::string& directory, const aiScene* scene);
     std::vector<std::shared_ptr<Texture>> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& directory, const aiScene* scene);
+    void processNode(aiNode* node, const aiScene* scene, const std::string& directory, const glm::mat4& parentTransform, std::vector<MeshInstance>& meshInstances);
+    glm::mat4 aiMatrixToGlm(const aiMatrix4x4& aiMat);
 };

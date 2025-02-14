@@ -10,3 +10,4 @@ constexpr unsigned int TEXTURE_UNIT_ROUGHNESS = 7;
 constexpr unsigned int TEXTURE_UNIT_AO = 8;
 constexpr unsigned int TEXTURE_UNIT_EMISSIVE = 9;
 constexpr unsigned int TEXTURE_UNIT_METALROUGH = 10;
+constexpr unsigned int TEXTURE_UNIT_SHADOW = 11;

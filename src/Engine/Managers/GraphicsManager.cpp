@@ -21,6 +21,7 @@ void GraphicsManager::loadResources()
     //Probably not nessesary since we are using opengl to render it behind everything
 	//Used to render environment maps
 	loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
+	loadShader("src/Shaders/shadowmap.vert", "src/Shaders/shadowmap.frag", "ShadowMap");
     //This is needed to create a cubemap texture from an hdr
 	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps
@@ -31,9 +32,10 @@ void GraphicsManager::loadResources()
 	auto brdfShader = loadShader("src/Shaders/brdf.vert", "src/Shaders/brdf.frag", "brdf");
 
     loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
-	loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");
+	//loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");
+	loadModel(engine_util::buildPath("assets/ABeautifulGame.gltf"), "Chess");
 
-    loadEnvironmentMap("default", engine_util::buildPath("assets/puresky.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    loadEnvironmentMap("default", engine_util::buildPath("assets/newport_loft.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
     
 
 
@@ -272,21 +274,6 @@ std::shared_ptr<Mesh> GraphicsManager::getMesh(const std::string& name)
 
 // Model and Scene management
 
-std::shared_ptr<Model> GraphicsManager::createModel(const std::vector<std::shared_ptr<Mesh>>& meshes, const std::string& name)
-{
-    // Check if model already exists
-    auto it = model_map_.find(name);
-    if (it != model_map_.end())
-    {
-        return it->second;
-    }
-
-    // Create new model
-    auto model = Model::createModel(meshes);
-    model_map_.emplace(name, model);
-
-    return model;
-}
 
 std::shared_ptr<Model> GraphicsManager::getModel(const std::string& name)
 {
@@ -330,20 +317,13 @@ std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& path, const
 
     std::string directory = std::filesystem::path(path).parent_path().string();
 
-    // Process all meshes
-    std::vector<std::shared_ptr<Mesh>> meshes;
-    for (unsigned int i = 0; i < scene->mNumMeshes; i++)
-    {
-        aiMesh* ai_mesh = scene->mMeshes[i];
-        auto mesh = processMesh(ai_mesh, scene, directory);
-        if (mesh)
-        {
-            meshes.emplace_back(mesh);
-        }
-    }
+    // Process the root node recursively
+    std::vector<MeshInstance> meshInstances;
+    processNode(scene->mRootNode, scene, directory, glm::mat4(1.0f), meshInstances);
 
-    // Create the model
-    auto model = createModel(meshes, name);
+    // Create the model with mesh instances
+    auto model = Model::createModel(meshInstances);
+    model_map_.emplace(name, model);
 
     return model;
 }
@@ -616,3 +596,38 @@ std::shared_ptr<EnvironmentMap> GraphicsManager::getEnvironmentMap(const std::st
     }
 }
 
+void GraphicsManager::processNode(aiNode* node, const aiScene* scene, const std::string& directory, const glm::mat4& parentTransform, std::vector<MeshInstance>& meshInstances)
+{
+    // Convert aiMatrix4x4 to glm::mat4 and combine with parent transform
+    glm::mat4 nodeTransform = parentTransform * aiMatrixToGlm(node->mTransformation);
+
+    // Process all the node's meshes
+    for (unsigned int i = 0; i < node->mNumMeshes; i++)
+    {
+        aiMesh* ai_mesh = scene->mMeshes[node->mMeshes[i]];
+        auto mesh = processMesh(ai_mesh, scene, directory);
+        if (mesh)
+        {
+            MeshInstance meshInstance;
+            meshInstance.mesh = mesh;
+            meshInstance.localTransform = nodeTransform;
+            meshInstances.push_back(meshInstance);
+        }
+    }
+
+    // Recursively process each child node
+    for (unsigned int i = 0; i < node->mNumChildren; i++)
+    {
+        processNode(node->mChildren[i], scene, directory, nodeTransform, meshInstances);
+    }
+}
+
+glm::mat4 GraphicsManager::aiMatrixToGlm(const aiMatrix4x4& aiMat)
+{
+    glm::mat4 mat;
+    mat[0][0] = aiMat.a1; mat[0][1] = aiMat.b1; mat[0][2] = aiMat.c1; mat[0][3] = aiMat.d1;
+    mat[1][0] = aiMat.a2; mat[1][1] = aiMat.b2; mat[1][2] = aiMat.c2; mat[1][3] = aiMat.d2;
+    mat[2][0] = aiMat.a3; mat[2][1] = aiMat.b3; mat[2][2] = aiMat.c3; mat[2][3] = aiMat.d3;
+    mat[3][0] = aiMat.a4; mat[3][1] = aiMat.b4; mat[3][2] = aiMat.c4; mat[3][3] = aiMat.d4;
+    return mat;
+}

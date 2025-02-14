@@ -10,7 +10,6 @@ class OpenGLEnvironmentMap : public EnvironmentMap
 {
 public:
 	OpenGLEnvironmentMap(const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
-    void createSkyboxCubemapFromHDR(const std::string& hdrPath);
 	~OpenGLEnvironmentMap() override = default;
 
     void generateIrradianceMap();

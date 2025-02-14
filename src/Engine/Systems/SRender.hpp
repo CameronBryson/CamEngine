@@ -22,7 +22,8 @@ public:
     void buildDirectionalLights(LightData& lightData);
     void buildPointLights(LightData& lightData);
 	void buildSpotLights(LightData& lightData);
-    void drawModels(const Shader& shader) const;
+    void drawModels() const;
+	void drawModelsShadow(std::shared_ptr<Shader>& shader) const;
 	void drawImGui() const;
 
 private:
@@ -30,7 +31,11 @@ private:
     std::shared_ptr<UniformBuffer> mCameraUBO;
 	std::shared_ptr<UniformBuffer> mLightUBO;
 
+    std::vector<std::shared_ptr<FrameBuffer>> mDirectionalShadowFramebuffers;
+
+    // Shadow map resolution and texture unit base.
+    const int mShadowMapWidth = 1024;
+    const int mShadowMapHeight = 1024;
     std::shared_ptr<FrameBuffer> mHDRFramebuffer;
-    std::shared_ptr<FrameBuffer> mShadowFramebuffer;
 
 };

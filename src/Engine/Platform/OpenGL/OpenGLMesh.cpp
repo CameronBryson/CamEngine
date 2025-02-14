@@ -41,6 +41,15 @@ void OpenGLMesh::draw(glm::mat4 model) const
     mMaterial->unbind();
 }
 
+void OpenGLMesh::drawShadow(std::shared_ptr<Shader>& shadowShader, glm::mat4 model) const
+{
+	shadowShader->use();
+	shadowShader->setMat4("model", model);
+	mVertexArray->bind();
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mVertexArray->getIndexBuffer()->getCount()), GL_UNSIGNED_INT, nullptr);
+	mVertexArray->unbind();
+}
+
 
 
 void OpenGLMesh::setMaterial(const std::shared_ptr<Material>& material)

@@ -213,7 +213,7 @@ void OpenGLEnvironmentMap::generateBRDFLUT()
     auto fbo = FrameBuffer::createFrameBuffer(
         brdfLUTSize,
         brdfLUTSize,
-        { /* no built-in color attachments, so we rely on external for color. */ }
+        { {FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RG16F} }
     );
     fbo->bind();
     glViewport(0, 0, brdfLUTSize, brdfLUTSize);

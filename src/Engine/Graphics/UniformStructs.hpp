@@ -48,6 +48,7 @@ struct DirectionalLightData
     glm::vec4 ambient;     // (rgb ambient, w unused)
     glm::vec4 diffuse;     // (rgb diffuse, w unused)
     glm::vec4 specular;    // (rgb specular, w unused)
+    glm::mat4 lightSpaceMatrix;
 };
 
 struct LightData
