@@ -38,11 +38,12 @@ private:
     std::shared_ptr<UniformBuffer> mCameraUBO;
 	std::shared_ptr<UniformBuffer> mLightUBO;
 
-    std::shared_ptr<FrameBuffer> mShadowMapBuffer;
+    std::shared_ptr<FrameBuffer> mDirectionalShadowMapBuffer;
+	std::shared_ptr<FrameBuffer> mSpotShadowMapBuffer;
+	std::shared_ptr<FrameBuffer> mToneMapBuffer;
     bool mShowShadowMap = true;
-    const int mShadowMapWidth = 1024;
-    const int mShadowMapHeight = 1024;
+    bool mToneMap = true;
+    const int mShadowMapWidth = 2048;
+    const int mShadowMapHeight = 2048;
     void calculateSceneBounds();
-    GLuint mDebugQuadVAO = 0;
-    GLuint mDebugQuadVBO = 0;
 };

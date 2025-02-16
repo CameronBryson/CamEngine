@@ -40,10 +40,10 @@ void TestScene::init()
 	//mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
 
 	auto testModel2 = mEnttRegistry.create();
-	mEnttRegistry.emplace<CModel>(testModel2, "Scene");
+	mEnttRegistry.emplace<CModel>(testModel2, "Sponza");
 	glm::vec3 rotationEulerAngles2 = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
 	glm::quat rotationQuat2 = glm::quat(rotationEulerAngles2);
-	mEnttRegistry.emplace<CTransform>(testModel2, glm::vec3{ 0, -15, -15 }, rotationQuat2, glm::vec3{ 0.01, 0.01, 0.01 });
+	mEnttRegistry.emplace<CTransform>(testModel2, glm::vec3{ 0, -5, 0 }, rotationQuat2, glm::vec3(1.0f));
 	mEnttRegistry.emplace<CParent>(testModel2, testParent);
 	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel2);
 
@@ -81,11 +81,11 @@ void TestScene::init()
 	float innerCutoff = glm::cos(glm::radians(12.5f));  // Use cos for better precision
 	float outerCutoff = glm::cos(glm::radians(17.5f));  // Use cos for better precision
 
-	//mEnttRegistry.emplace<CSpotLight>(spotLight,
-	//	glm::vec3(0.0f, 20.0f, -50.0f), // Position it above the chess piece
-	//	direction, ambient, diffuse, specular,
-	//	constant, linear, quadratic,
-	//	innerCutoff, outerCutoff);
+	mEnttRegistry.emplace<CSpotLight>(spotLight,
+		glm::vec3(0.0f, 5.0f, 0.0f), // Position it above the chess piece
+		direction, ambient, diffuse, specular,
+		constant, linear, quadratic,
+		innerCutoff, outerCutoff);
 
 
 	auto directionalLight = mEnttRegistry.create();

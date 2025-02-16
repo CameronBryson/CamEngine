@@ -27,7 +27,7 @@
 #include "UniformStructs.hpp"
 #include <iostream>
 #include "Texture2D.hpp"
-
+#include <glm/gtc/type_ptr.hpp> 
 SRender::SRender(BaseScene* scene) : mScene(scene)
 {
 }
@@ -65,17 +65,25 @@ void SRender::init()
 
 	mCameraUBO = UniformBuffer::createUniformBuffer(sizeof(CameraData), CAMERA_BINDING);
 	mLightUBO = UniformBuffer::createUniformBuffer(sizeof(LightData), LIGHT_BINDING);
-	mShadowMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, { { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth32F } });
-    if (!mShadowMapBuffer->isComplete())
+	mDirectionalShadowMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, { { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth32F } });
+    if (!mDirectionalShadowMapBuffer->isComplete())
     {
         throw std::runtime_error("Shadow map framebuffer incomplete!");
     }
-
     // Verify the depth texture was created
-    if (!mShadowMapBuffer->getDepthAttachment())
+    if (!mDirectionalShadowMapBuffer->getDepthAttachment())
     {
         throw std::runtime_error("Shadow map depth attachment missing!");
     }
+	mSpotShadowMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, { { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth32F } });
+	if (!mSpotShadowMapBuffer->isComplete())
+	{
+		throw std::runtime_error("Shadow map framebuffer incomplete!");
+	}
+	if (!mSpotShadowMapBuffer->getDepthAttachment())
+	{
+		throw std::runtime_error("Shadow map depth attachment missing!");
+	}
     calculateSceneBounds();
 
 }
@@ -113,11 +121,20 @@ void SRender::render()
 	auto shadowShader = GameManager::mGraphicsManager->getShader("ShadowMap");
     shadowShader->use();
     shadowShader->setMat4("lightSpaceMatrix", lightData.directionalLights[0].lightSpaceMatrix );
-	mShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
-	mShadowMapBuffer->bind();
-	mShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
+	mDirectionalShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
+	mDirectionalShadowMapBuffer->bind();
+	mDirectionalShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
 	drawModelsShader(shadowShader);
-	mShadowMapBuffer->unbind();
+	mDirectionalShadowMapBuffer->unbind();
+
+    shadowShader->use();
+	shadowShader->setMat4("lightSpaceMatrix", lightData.spotLights[0].lightSpaceMatrix);
+	mSpotShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
+	mSpotShadowMapBuffer->bind();
+	mSpotShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
+	drawModelsShader(shadowShader);
+	mSpotShadowMapBuffer->unbind();
+
 
     int width, height;
     glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
@@ -131,16 +148,15 @@ void SRender::render()
 
         const auto& lightSpaceMatrix = lightData.directionalLights[0].lightSpaceMatrix;
         debugShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
-        debugShader->setInt("depthMap", TEXTURE_UNIT_SHADOW);
+        debugShader->setInt("depthMap", TEXTURE_UNIT_DIRECTIONAL_SHADOW);
 
-        mShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_SHADOW);
+        mDirectionalShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_DIRECTIONAL_SHADOW);
 
         drawModelsShader(debugShader);
 
         drawImGui();
         return;
     }
-
 
     auto pbrShader = GameManager::mGraphicsManager->getShader("PBR");
 
@@ -156,8 +172,11 @@ void SRender::render()
 	pbrShader->setInt("prefilterMap", TEXTURE_UNIT_PREFILTER);
 	pbrShader->setInt("brdfLUT", TEXTURE_UNIT_BRDFLUT);
 
-	mShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_SHADOW);
-	pbrShader->setInt("directionalShadowMap", TEXTURE_UNIT_SHADOW);
+	mDirectionalShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_DIRECTIONAL_SHADOW);
+	pbrShader->setInt("directionalShadowMap", TEXTURE_UNIT_DIRECTIONAL_SHADOW);
+
+	mSpotShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_SPOT_SHADOW);
+	pbrShader->setInt("spotShadowMap", TEXTURE_UNIT_SPOT_SHADOW);
 
 
     // Draw models
@@ -284,27 +303,93 @@ void SRender::buildPointLights(LightData& lightData)
 
 void SRender::buildSpotLights(LightData& lightData)
 {
-	auto spotLightView = mScene->mEnttRegistry.view<CSpotLight>();
-	int numSpotLights = 0;
-	for (auto entity : spotLightView)
-	{
-		if (numSpotLights >= MAX_SPOT_LIGHTS)
-			break;
-		auto& light = spotLightView.get<CSpotLight>(entity);
-		// Populate spot light data
-		SpotLightData& spotLightData = lightData.spotLights[numSpotLights];
-		spotLightData.position = glm::vec4(light.position, 0.0f);
-		spotLightData.direction = glm::vec4(light.direction, 0.0f);
-		spotLightData.ambient = glm::vec4(light.ambient, 0.0f);
-		spotLightData.diffuse = glm::vec4(light.diffuse, 0.0f);
-		spotLightData.specular = glm::vec4(light.specular, 0.0f);
-		spotLightData.attenuation = glm::vec4(light.constant, light.linear, light.quadratic, 0.0f);
-		spotLightData.cutoffs = glm::vec4(light.innerCutoff, light.outerCutoff, 0.0f, 0.0f);
-		numSpotLights++;
+    auto spotLightView = mScene->mEnttRegistry.view<CSpotLight>();
+    int numSpotLights = 0;
+    for (auto entity : spotLightView)
+    {
+        if (numSpotLights >= MAX_SPOT_LIGHTS)
+            break;
+        auto& light = spotLightView.get<CSpotLight>(entity);
 
-	}
-	lightData.counts.y = numSpotLights; // counts.y stores the number of spot lights
+        // Populate basic spot light data
+        SpotLightData& spotLightData = lightData.spotLights[numSpotLights];
+        spotLightData.position = glm::vec4(light.position, 0.0f);
+        spotLightData.direction = glm::vec4(light.direction, 0.0f);
+        spotLightData.ambient = glm::vec4(light.ambient, 0.0f);
+        spotLightData.diffuse = glm::vec4(light.diffuse, 0.0f);
+        spotLightData.specular = glm::vec4(light.specular, 0.0f);
+        spotLightData.attenuation = glm::vec4(light.constant, light.linear, light.quadratic, 0.0f);
+        spotLightData.cutoffs = glm::vec4(light.innerCutoff, light.outerCutoff, 0.0f, 0.0f);
+
+        // 1. Calculate the light's view matrix
+        glm::vec3 lightDir = glm::normalize(light.direction);
+
+        // Handle up vector similar to directional light
+        glm::vec3 up = fabs(glm::dot(lightDir, glm::vec3(0, 1, 0))) > 0.99f
+            ? glm::vec3(1, 0, 0)
+            : glm::vec3(0, 1, 0);
+
+        glm::mat4 lightView = glm::lookAt(
+            light.position,                // Eye position (light position)
+            light.position + lightDir,     // Look target
+            up                            // Up vector
+        );
+
+        // 2. Transform scene bounds to light space to find depth range
+        glm::vec3 boxCorners[8] = {
+            glm::vec3(mSceneBounds.min.x, mSceneBounds.min.y, mSceneBounds.min.z),
+            glm::vec3(mSceneBounds.max.x, mSceneBounds.min.y, mSceneBounds.min.z),
+            glm::vec3(mSceneBounds.min.x, mSceneBounds.max.y, mSceneBounds.min.z),
+            glm::vec3(mSceneBounds.max.x, mSceneBounds.max.y, mSceneBounds.min.z),
+            glm::vec3(mSceneBounds.min.x, mSceneBounds.min.y, mSceneBounds.max.z),
+            glm::vec3(mSceneBounds.max.x, mSceneBounds.min.y, mSceneBounds.max.z),
+            glm::vec3(mSceneBounds.min.x, mSceneBounds.max.y, mSceneBounds.max.z),
+            glm::vec3(mSceneBounds.max.x, mSceneBounds.max.y, mSceneBounds.max.z)
+        };
+
+        // 3. Find min/max depth in light space
+        float minDepth = std::numeric_limits<float>::max();
+        float maxDepth = std::numeric_limits<float>::lowest();
+
+        for (const auto& corner : boxCorners)
+        {
+            // Transform to light space
+            glm::vec4 lightSpacePos = lightView * glm::vec4(corner, 1.0f);
+
+            // Get the distance from light to corner
+            float depth = -lightSpacePos.z; // Negative because OpenGL looks down -Z
+            minDepth = std::min(minDepth, depth);
+            maxDepth = std::max(maxDepth, depth);
+        }
+
+        // 4. Add padding to avoid clipping
+        float depthPadding = (maxDepth - minDepth) * 0.05f;
+        float nearPlane = std::max(0.1f, minDepth - depthPadding);
+        float farPlane = maxDepth + depthPadding;
+
+        // 5. Calculate FOV from outer cutoff (which is stored as cos(angle))
+        float spotAngle = glm::acos(light.outerCutoff);
+
+        // 6. Create perspective projection
+        // Note: We use spotAngle * 2 because the cutoff is half the total FOV
+        glm::mat4 lightProjection = glm::perspective(
+            spotAngle * 2.0f,    // Full FOV
+            1.0f,                // Aspect ratio (1.0 for square shadow map)
+            nearPlane,           // Near plane based on scene bounds
+            farPlane            // Far plane based on scene bounds
+        );
+
+        // 7. Combine view and projection
+        spotLightData.lightSpaceMatrix = lightProjection * lightView;
+
+        numSpotLights++;
+    }
+    lightData.counts.y = numSpotLights;
 }
+
+
+
+
 
 
 void SRender::drawModels() const
@@ -341,7 +426,7 @@ void SRender::drawModelsShader(std::shared_ptr<Shader>& shader) const
 
 
 
-#include <glm/gtc/type_ptr.hpp> // Add this include at the top of the file
+
 
 void SRender::drawImGui()
 {
@@ -351,7 +436,7 @@ void SRender::drawImGui()
     // Existing Camera Controls
     ImGui::Begin("Camera Controls");
     ImGui::Text("Adjust the camera parameters:");
-    ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -1000.0f, 1000.0f);
+    ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -100.0f, 100.0f);
     ImGui::SliderFloat("Yaw", &camera.Yaw, -180.0f, 180.0f);
     ImGui::SliderFloat("Pitch", &camera.Pitch, -89.0f, 89.0f);
     ImGui::SliderFloat("FOV", &camera.FOV, 1.0f, 120.0f);
@@ -392,7 +477,7 @@ void SRender::drawImGui()
         ImGui::PushID(pointLightIndex);
         if (ImGui::TreeNode("Point Light"))
         {
-            ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -1000.0f, 1000.0f);
+            ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -10.0f, 10.0f);
             ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
             ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
             ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
@@ -414,7 +499,7 @@ void SRender::drawImGui()
         ImGui::PushID(spotLightIndex);
         if (ImGui::TreeNode("Spot Light"))
         {
-            ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -1000.0f, 1000.0f);
+            ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -10.0f, 10.0f);
             ImGui::SliderFloat3("Direction", glm::value_ptr(light.direction), -1.0f, 1.0f);
             ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
             ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
@@ -463,7 +548,7 @@ void SRender::drawImGui()
         ImGui::Text("Transform Controls:");
 
         // Position Control
-        ImGui::SliderFloat3("Position", glm::value_ptr(transform.position), -1000.0f, 1000.0f);
+        ImGui::SliderFloat3("Position", glm::value_ptr(transform.position), -10.0f, 10.0f);
 
         // Rotation Control (Euler angles)
         glm::vec3 eulerDegrees = glm::degrees(glm::eulerAngles(transform.rotation));
@@ -539,6 +624,13 @@ void SRender::drawImGui()
         mSceneBounds.max += glm::vec3(padding);
         mSceneBounds.radius *= 1.1f;
     }
+	if (ImGui::Button("Remove 10% Padding"))
+	{
+		float padding = mSceneBounds.radius * 0.1f;
+		mSceneBounds.min += glm::vec3(padding);
+		mSceneBounds.max -= glm::vec3(padding);
+		mSceneBounds.radius /= 1.1f;
+	}
 
     // Display current values
     ImGui::Separator();

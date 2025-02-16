@@ -40,6 +40,7 @@ struct SpotLightData
     glm::vec4 attenuation;
     // Cutoffs: x = inner cutoff, y = outer cutoff, z/w = padding.
     glm::vec4 cutoffs;
+	glm::mat4 lightSpaceMatrix;
 };
 
 struct DirectionalLightData

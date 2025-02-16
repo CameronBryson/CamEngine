@@ -48,6 +48,7 @@ struct SpotLightData {
     vec4 specular;    // rgb = specular color, w unused
     vec4 attenuation; // x = constant, y = linear, z = quadratic, w unused
     vec4 cutoffs;     // x = inner cutoff (cos), y = outer cutoff (cos), z/w unused
+    mat4 lightSpaceMatrix; // Used for shadow mapping.
 };
 
 struct DirectionalLightData {
@@ -107,6 +108,7 @@ uniform sampler2D  brdfLUT;          // 2D LUT for split–sum IBL
 // Shadow Mapping for Directional Lights
 // ------------------------------------------------------------------------------------
 uniform sampler2D directionalShadowMap;
+uniform sampler2D spotShadowMap;
 
 // ------------------------------------------------------------------------------------
 // Function Prototypes
@@ -118,31 +120,35 @@ vec3  fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
 vec3  getNormalFromMap();
 
 void mainPBR(out vec3 outColor);
-
-// ------------------------------------------------------------------------------------
-// Utility: Simple Directional Shadow Calculation
-// ------------------------------------------------------------------------------------
-float calculateShadow(vec3 worldPos, vec3 normal, vec3 lightDir)
+// Replace both calculateDirectionalShadow and calculateSpotShadow with this single function:
+float calculateShadow(vec3 worldPos, vec3 normal, vec3 lightDir, mat4 lightSpaceMatrix, sampler2D shadowMap)
 {
-    // Transform the world position to light space.
-    vec4 lightSpacePos = directionalLights[0].lightSpaceMatrix * vec4(worldPos, 1.0);
+    // Transform the world position into light space and normalize coordinates to [0,1]
+    vec4 lightSpacePos = lightSpaceMatrix * vec4(worldPos, 1.0);
     vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
     projCoords = projCoords * 0.5 + 0.5;
-
-    // If outside the light's frustum, assume fully lit.
+    
+    // If outside the light's frustum, consider it fully lit
     if(projCoords.z > 1.0)
         return 1.0;
-
-    // Retrieve the depth from the shadow map.
-    float closestDepth = texture(directionalShadowMap, projCoords.xy).r;
-    float currentDepth = projCoords.z;
-
-    // Apply a constant bias to help with shadow acne.
-    float bias = 0.005;
-
-    // If the current depth (minus bias) is greater than the stored depth,
-    // the fragment is in shadow (return 0), otherwise it's lit (return 1).
-    float shadow = (currentDepth - bias) > closestDepth ? 0.0 : 1.0;
+    
+    // Compute dynamic bias based on angle between normal and light direction
+    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
+    
+    // Percentage-Closer Filtering (PCF)
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
+    
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += (projCoords.z - bias) > pcfDepth ? 0.0 : 1.0;
+        }
+    }
+    shadow /= 9.0;
+    
     return shadow;
 }
 
@@ -278,6 +284,7 @@ void mainPBR(out vec3 outColor)
         float NdotL = max(dot(N, L), 0.0);
         if(NdotL > 0.0 && intensity > 0.0)
         {
+            float shadowFactor = calculateShadow(FragPos, N, L, sl.lightSpaceMatrix, spotShadowMap);
             vec3 H = normalize(V + L);
             float D = DistributionGGX(N, H, roughnessValue);
             float G = GeometrySmith(N, V, L, roughnessValue);
@@ -300,7 +307,7 @@ void mainPBR(out vec3 outColor)
             vec3 radiance = sl.diffuse.rgb;
 
             // Final contribution
-            vec3 lightContrib = (diffuse + specular) * radiance * NdotL * attenuation * intensity;
+            vec3 lightContrib = (diffuse + specular) * radiance * NdotL * attenuation * intensity * shadowFactor;
             Lo += lightContrib;
         }
     }
@@ -317,7 +324,7 @@ void mainPBR(out vec3 outColor)
         if (NdotL > 0.0)
         {
             // Shadow factor (1.0 = lit, 0.0 = fully in shadow)
-            float shadowFactor = calculateShadow(FragPos, N, lightDir);
+            float shadowFactor = calculateShadow(FragPos, N, lightDir, directionalLights[i].lightSpaceMatrix, directionalShadowMap);
 
             // PBR lighting
             vec3 H = normalize(V + lightDir);
@@ -368,7 +375,8 @@ void mainPBR(out vec3 outColor)
 
     // Combine with AO
     vec3 ambientIBL = (kD * diffuseIBL + specularIBL) * aoValue;
-    ambientIBL = vec3(0.0); // Disable IBL for now
+    ambientIBL *= 0.1f;
+    //ambientIBL = vec3(0.0);
 
     // ------------------------------------------------------------------------
     // Final Composition
