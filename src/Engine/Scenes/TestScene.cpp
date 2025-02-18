@@ -89,7 +89,7 @@ void TestScene::init()
 
 
 	auto directionalLight = mEnttRegistry.create();
-	//mEnttRegistry.emplace<CDirectionalLight>(directionalLight, direction, ambient, diffuse, specular);
+	mEnttRegistry.emplace<CDirectionalLight>(directionalLight, direction, ambient, diffuse, specular);
 
 
 

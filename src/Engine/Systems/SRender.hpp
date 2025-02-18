@@ -41,7 +41,12 @@ private:
     std::shared_ptr<FrameBuffer> mDirectionalShadowMapBuffer;
 	std::shared_ptr<FrameBuffer> mSpotShadowMapBuffer;
 	std::shared_ptr<FrameBuffer> mPointShadwMapBuffer;
-    bool mShowShadowMap = true;
+
+	std::shared_ptr<FrameBuffer> mHDRFrameBuffer;
+	float mExposure = 1.0f;
+    bool mHDR = true;
+
+    bool mShowShadowMap = false;
     bool mEnableShadows = true;
     float nearPlane = 1.0f;
     float farPlane = 25.0f;

@@ -85,6 +85,11 @@ void SRender::init()
 	{
 		throw std::runtime_error("Shadow map framebuffer incomplete!");
 	}
+	mHDRFrameBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, { { FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F }, { FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F }, { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth32F } });
+    if (!mHDRFrameBuffer->isComplete())
+    {
+		throw std::runtime_error("HDR framebuffer incomplete!");
+    }
     calculateSceneBounds();
 
 }
@@ -159,26 +164,10 @@ void SRender::render()
     int width, height;
     glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
     glViewport(0, 0, width, height);
+    mHDRFrameBuffer->bind();
+    mHDRFrameBuffer->setViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (mShowShadowMap)
-    {
-        if (mShowShadowMap)
-        {
-            auto debugShader = GameManager::mGraphicsManager->getShader("Debug");
-            debugShader->use();
-
-            const auto& lightSpaceMatrix = lightData.directionalLights[0].lightSpaceMatrix;
-            debugShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
-            debugShader->setInt("depthMap", TEXTURE_UNIT_DIRECTIONAL_SHADOW);
-
-            mDirectionalShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_DIRECTIONAL_SHADOW);
-
-            drawModelsShader(debugShader);
-        }
-
-        drawImGui();
-        return;
-    }
 
     auto pbrShader = GameManager::mGraphicsManager->getShader("PBR");
 
@@ -219,6 +208,18 @@ void SRender::render()
     skyboxShader->setMat4("projection", proj_matrix);
 
 	skybox->drawSkybox(skyboxShader);
+	mHDRFrameBuffer->unbind();
+
+    glViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	auto HDRShader = GameManager::mGraphicsManager->getShader("HDR");
+	HDRShader->use();
+	HDRShader->setFloat("exposure", mExposure);
+	HDRShader->setBool("hdr", mHDR);
+	mHDRFrameBuffer->getColorAttachment(0)->bind(TEXTURE_UNIT_HDR);
+	HDRShader->setInt("hdrBuffer", TEXTURE_UNIT_HDR);
+    OpenGlUtil::drawQuad();
 
     drawImGui();
     
@@ -674,6 +675,13 @@ void SRender::drawImGui()
         mSceneBounds.max.x, mSceneBounds.max.y, mSceneBounds.max.z);
 
     ImGui::End();
+
+    // Add to drawImGui()
+    ImGui::Begin("HDR Settings");
+    ImGui::Checkbox("Enable HDR", &mHDR);
+    ImGui::SliderFloat("Exposure", &mExposure, 0.0f, 5.0f);
+    ImGui::End();
+
 
 
 

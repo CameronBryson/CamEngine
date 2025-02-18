@@ -13,3 +13,4 @@ constexpr unsigned int TEXTURE_UNIT_METALROUGH = 10;
 constexpr unsigned int TEXTURE_UNIT_DIRECTIONAL_SHADOW = 11;
 constexpr unsigned int TEXTURE_UNIT_SPOT_SHADOW = 12;
 constexpr unsigned int TEXTURE_UNIT_POINT_SHADOW = 13;
+constexpr unsigned int TEXTURE_UNIT_HDR = 14;

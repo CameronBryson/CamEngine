@@ -212,11 +212,6 @@ void main()
 
     // Normal rendering path
     mainPBR(color);
-
-    // Reinhard tone mapping.
-    color = color / (color + vec3(1.0));
-    // Gamma correction (linear to sRGB).
-    color = pow(color, vec3(1.0 / 2.2));
     FragColor = vec4(color, 1.0);
 }
 
