@@ -34,10 +34,6 @@ SRender::SRender(BaseScene* scene) : mScene(scene)
 
 void SRender::init()
 {
-    glClearColor(0, 0, 0, 0);
-
-
-    glEnable(GL_DEPTH_TEST);
 
 
 
@@ -166,17 +162,19 @@ void SRender::render()
 
     if (mShowShadowMap)
     {
+        if (mShowShadowMap)
+        {
+            auto debugShader = GameManager::mGraphicsManager->getShader("Debug");
+            debugShader->use();
 
-        auto debugShader = GameManager::mGraphicsManager->getShader("Debug");
-        debugShader->use();
+            const auto& lightSpaceMatrix = lightData.directionalLights[0].lightSpaceMatrix;
+            debugShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+            debugShader->setInt("depthMap", TEXTURE_UNIT_DIRECTIONAL_SHADOW);
 
-        const auto& lightSpaceMatrix = lightData.directionalLights[0].lightSpaceMatrix;
-        debugShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
-        debugShader->setInt("depthMap", TEXTURE_UNIT_DIRECTIONAL_SHADOW);
+            mDirectionalShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_DIRECTIONAL_SHADOW);
 
-        mDirectionalShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_DIRECTIONAL_SHADOW);
-
-        drawModelsShader(debugShader);
+            drawModelsShader(debugShader);
+        }
 
         drawImGui();
         return;
@@ -195,6 +193,7 @@ void SRender::render()
 	pbrShader->setInt("irradianceMap", TEXTURE_UNIT_IRRADIANCE);
 	pbrShader->setInt("prefilterMap", TEXTURE_UNIT_PREFILTER);
 	pbrShader->setInt("brdfLUT", TEXTURE_UNIT_BRDFLUT);
+    
 
 	mDirectionalShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_DIRECTIONAL_SHADOW);
 	pbrShader->setInt("directionalShadowMap", TEXTURE_UNIT_DIRECTIONAL_SHADOW);
@@ -204,7 +203,7 @@ void SRender::render()
 
 	mPointShadwMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_POINT_SHADOW);
 	pbrShader->setInt("pointShadowMap", TEXTURE_UNIT_POINT_SHADOW);
-
+    pbrShader->setFloat("farPlane", farPlane);
 	pbrShader->setBool("enableShadows", mEnableShadows);
 
 
@@ -465,7 +464,7 @@ void SRender::drawImGui()
     // Existing Camera Controls
     ImGui::Begin("Camera Controls");
     ImGui::Text("Adjust the camera parameters:");
-    ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -100.0f, 100.0f);
+    ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -25.0f, 25.0f);
     ImGui::SliderFloat("Yaw", &camera.Yaw, -180.0f, 180.0f);
     ImGui::SliderFloat("Pitch", &camera.Pitch, -89.0f, 89.0f);
     ImGui::SliderFloat("FOV", &camera.FOV, 1.0f, 120.0f);
@@ -592,11 +591,12 @@ void SRender::drawImGui()
     }
     ImGui::End();
 
-    // Add Debug Controls
+    // In SRender::drawImGui()
     ImGui::Begin("Debug Controls");
-    ImGui::Checkbox("Show Shadow Debug View", &mShowShadowMap);
+    ImGui::Checkbox("Show Directional Shadow Debug", &mShowShadowMap);
     ImGui::Checkbox("Show Shadows", &mEnableShadows);
     ImGui::End();
+
 
     // Add Scene Bounds Controls
     ImGui::Begin("Scene Bounds Controls");

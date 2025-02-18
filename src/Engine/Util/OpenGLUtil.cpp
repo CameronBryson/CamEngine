@@ -44,7 +44,11 @@ void OpenGlUtil::init()
 	}
 
 
-	glClearColor(1, 1, 1, 1);
+    glClearColor(0, 0, 0, 0);
+
+
+    glEnable(GL_DEPTH_TEST);
+
 
 	GameManager::set_glfw_window(game_window);
 }

@@ -333,16 +333,16 @@ void OpenGLFrameBuffer::createFramebuffer()
         // Decide how to bind texture based on type/samples
         GLenum bindTarget = (m_Samples > 1) ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 
-        // ---------------------------------------------
-        // Handle the special case: DepthCubemap
-        // ---------------------------------------------
+        // ---------------------------------------------------------
+        // Handle the special case: DepthCubemap (Point Shadows)
+        // ---------------------------------------------------------
         if (spec.Type == FrameBufferAttachmentType::DepthCubemap && m_Samples <= 1)
         {
-            // We only support non-multisampled cubemaps in this example.
+            // We only support non-multisampled cubemaps in this example:
             bindTarget = GL_TEXTURE_CUBE_MAP;
             glBindTexture(bindTarget, texID);
 
-            // Allocate each face
+            // Allocate each of the six faces
             for (int face = 0; face < 6; ++face)
             {
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
@@ -363,24 +363,27 @@ void OpenGLFrameBuffer::createFramebuffer()
             glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
+            // Enable depth comparison for shadow sampling
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
             // Attach as depth-only
             glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texID, 0);
 
-            // Store in m_DepthAttachment
-            // Use your constructor for an OpenGLTextureCubemap wrapping an existing texture
-			auto attachmentTexture = TextureCubemap::createTextureCubemap(texID, m_Width, m_Height);
+            // Wrap the cubemap texture in a TextureCubemap
+            auto attachmentTexture = TextureCubemap::createTextureCubemap(texID, m_Width, m_Height);
             m_DepthAttachment = attachmentTexture;
 
-            // Typically skip color output if it's purely a depth cubemap
+            // Disable color buffer for a pure depth pass
             glDrawBuffer(GL_NONE);
             glReadBuffer(GL_NONE);
 
             continue; // Done handling this attachment
         }
 
-        // ---------------------------------------------
+        // ---------------------------------------------------------
         // Fallback: 2D texture or 2D multisampled
-        // ---------------------------------------------
+        // ---------------------------------------------------------
         glBindTexture(bindTarget, texID);
 
         if (m_Samples > 1)
@@ -414,7 +417,7 @@ void OpenGLFrameBuffer::createFramebuffer()
             glTexParameteri(bindTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         }
 
-        // Wrap as a Texture2D (by default)
+        // Wrap as a Texture2D by default
         auto attachmentTexture = Texture2D::createTexture2D(texID, m_Width, m_Height);
 
         if (spec.Type == FrameBufferAttachmentType::Color)
@@ -463,7 +466,7 @@ void OpenGLFrameBuffer::createFramebuffer()
         }
     }
 
-    // If there are color attachments, set them all, otherwise disable them
+    // If we have color attachments, set them all; otherwise disable drawing & reading
     if (!m_ColorAttachments.empty())
     {
         std::vector<GLenum> drawBuffers;
@@ -479,7 +482,7 @@ void OpenGLFrameBuffer::createFramebuffer()
         glReadBuffer(GL_NONE);
     }
 
-    // Validate completion
+    // Validate completeness
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
@@ -489,4 +492,5 @@ void OpenGLFrameBuffer::createFramebuffer()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
 

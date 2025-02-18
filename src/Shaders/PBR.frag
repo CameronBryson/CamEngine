@@ -16,9 +16,9 @@ in mat3 TBN;        // Tangent, Bitangent, Normal (for normal mapping)
 // Constants
 // ------------------------------------------------------------------------------------
 const float PI = 3.14159265359;
-const int MAX_POINT_LIGHTS       = 25;
-const int MAX_SPOT_LIGHTS        = 25;
-const int MAX_DIRECTIONAL_LIGHTS = 25;
+const int MAX_POINT_LIGHTS       = 10;
+const int MAX_SPOT_LIGHTS        = 10;
+const int MAX_DIRECTIONAL_LIGHTS = 10;
 
 // ------------------------------------------------------------------------------------
 // Uniform Blocks (std140 layout)
@@ -98,6 +98,7 @@ struct Material {
 
 uniform Material material;
 uniform bool enableShadows;
+uniform float farPlane;
 
 // ------------------------------------------------------------------------------------
 // IBL Samplers
@@ -127,21 +128,47 @@ void mainPBR(out vec3 outColor);
 // ------------------------------------------------------------------------------------
 // Calculates shadow from a point light's depth cubemap
 // ------------------------------------------------------------------------------------
-float calculatePointShadow(vec3 fragPos, vec3 lightPos, samplerCube depthMap, float farPlane)
+float calculatePointShadow(vec3 lightPos)
 {
-    // Distance from fragment to light
-    float currentDist = length(fragPos - lightPos);
-
-    // Sample depth from cubemap (which stores [0..1], mapped from [0..farPlane])
-    float storedDepth = texture(depthMap, fragPos - lightPos).r;
-    storedDepth *= farPlane; // Map back to [0..farPlane]
-
-    // Simple bias
-    float bias = 0.05;
-
-    // If the distance is greater than the stored depth + bias, we’re in shadow
-    return (currentDist - bias) > storedDepth ? 1.0 : 0.0;
+    // Get vector between fragment position and light position
+    vec3 fragToLight = FragPos - lightPos;
+    
+    // Get current depth as the length of this vector
+    float currentDepth = length(fragToLight);
+    
+    // Scale depth to [0,1] range
+    currentDepth = currentDepth / farPlane;
+    
+    // Use dynamic bias based on distance
+    float bias = 0.05 * (currentDepth); // Bias increases with distance
+    
+    // Perform PCF sampling for softer shadows
+    float shadow = 0.0;
+    float samples = 4.0;
+    float offset = 0.1;
+    
+    // PCF sampling
+    for(float x = -offset; x < offset; x += offset / (samples * 0.5))
+    {
+        for(float y = -offset; y < offset; y += offset / (samples * 0.5))
+        {
+            for(float z = -offset; z < offset; z += offset / (samples * 0.5))
+            {
+                // Add offset to sample position
+                vec3 sampleVec = fragToLight + vec3(x, y, z);
+                float closestDepth = texture(pointShadowMap, normalize(sampleVec)).r;
+                
+                // FIXED: Changed comparison operator
+                shadow += currentDepth - bias < closestDepth ? 1.0 : 0.0;
+            }
+        }
+    }
+    
+    shadow /= (samples * samples * samples);
+    return shadow;
 }
+
+
 
 float calculateShadow(vec3 worldPos, vec3 normal, vec3 lightDir, mat4 lightSpaceMatrix, sampler2D shadowMap)
 {
@@ -282,7 +309,7 @@ void mainPBR(out vec3 outColor)
             vec3 lightContrib = (diffuse + specular) * radiance * NdotL * attenuation;
             if(enableShadows)
             {
-                float shadowFactor = calculatePointShadow(FragPos, pl.position.xyz, pointShadowMap, 25.0);
+                float shadowFactor = calculatePointShadow(pl.position.xyz);
                 lightContrib *= shadowFactor;
             }
 
