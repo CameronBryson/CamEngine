@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <array>
 
 const unsigned int MAX_POINT_LIGHTS = 25;
 const unsigned int MAX_SPOT_LIGHTS = 25;
@@ -26,6 +27,7 @@ struct PointLightData
     // Pack attenuation factors into one vec4:
     // x = constant, y = linear, z = quadratic, w = padding.
     glm::vec4 attenuation;
+    std::array<glm::mat4, 6> shadowMatrices;
 };
 
 

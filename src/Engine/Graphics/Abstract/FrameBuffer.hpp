@@ -3,14 +3,15 @@
 #include <memory>
 #include <vector>
 
-class Texture2D;
+class Texture;
 
 enum class FrameBufferAttachmentType
 {
     Color,
     Depth,
     Stencil,
-    DepthStencil
+    DepthStencil,
+    DepthCubemap
 };
 
 enum class FrameBufferTextureFormat
@@ -80,8 +81,8 @@ public:
 
     virtual bool isComplete() const = 0;
 
-    virtual std::shared_ptr<Texture2D> getColorAttachment(int index = 0) const = 0;
-    virtual std::shared_ptr<Texture2D> getDepthAttachment() const = 0;
+    virtual std::shared_ptr<Texture> getColorAttachment(int index = 0) const = 0;
+    virtual std::shared_ptr<Texture> getDepthAttachment() const = 0;
 
     virtual void setDrawBuffers(const std::vector<unsigned int>& attachments) = 0;
 

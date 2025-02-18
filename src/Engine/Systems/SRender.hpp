@@ -40,9 +40,11 @@ private:
 
     std::shared_ptr<FrameBuffer> mDirectionalShadowMapBuffer;
 	std::shared_ptr<FrameBuffer> mSpotShadowMapBuffer;
-	std::shared_ptr<FrameBuffer> mToneMapBuffer;
+	std::shared_ptr<FrameBuffer> mPointShadwMapBuffer;
     bool mShowShadowMap = true;
-    bool mToneMap = true;
+    bool mEnableShadows = true;
+    float nearPlane = 1.0f;
+    float farPlane = 25.0f;
     const int mShadowMapWidth = 2048;
     const int mShadowMapHeight = 2048;
     void calculateSceneBounds();

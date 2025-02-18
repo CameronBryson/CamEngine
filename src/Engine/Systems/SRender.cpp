@@ -26,7 +26,7 @@
 #include <TextureSlots.hpp>
 #include "UniformStructs.hpp"
 #include <iostream>
-#include "Texture2D.hpp"
+#include "Texture.hpp"
 #include <glm/gtc/type_ptr.hpp> 
 SRender::SRender(BaseScene* scene) : mScene(scene)
 {
@@ -84,6 +84,11 @@ void SRender::init()
 	{
 		throw std::runtime_error("Shadow map depth attachment missing!");
 	}
+	mPointShadwMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, { { FrameBufferAttachmentType::DepthCubemap, FrameBufferTextureFormat::Depth32F } });
+	if (!mPointShadwMapBuffer->isComplete())
+	{
+		throw std::runtime_error("Shadow map framebuffer incomplete!");
+	}
     calculateSceneBounds();
 
 }
@@ -105,7 +110,7 @@ void SRender::render()
     buildSpotLights(lightData);
 
     mLightUBO->setData(&lightData, sizeof(LightData));
-
+    
 
 
     const auto& view_matrix = mScene->mCurrentCamera.GetViewMatrix();
@@ -118,22 +123,41 @@ void SRender::render()
 
 	mCameraUBO->setData(&cameraData, sizeof(CameraData));
 
-	auto shadowShader = GameManager::mGraphicsManager->getShader("ShadowMap");
-    shadowShader->use();
-    shadowShader->setMat4("lightSpaceMatrix", lightData.directionalLights[0].lightSpaceMatrix );
+	auto shadowMapShader = GameManager::mGraphicsManager->getShader("ShadowMap");
+	auto pointShadowMapShader = GameManager::mGraphicsManager->getShader("PointShadowMap");
+
+    shadowMapShader->use();
+    shadowMapShader->setMat4("lightSpaceMatrix", lightData.directionalLights[0].lightSpaceMatrix );
 	mDirectionalShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
 	mDirectionalShadowMapBuffer->bind();
 	mDirectionalShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
-	drawModelsShader(shadowShader);
+	drawModelsShader(shadowMapShader);
 	mDirectionalShadowMapBuffer->unbind();
 
-    shadowShader->use();
-	shadowShader->setMat4("lightSpaceMatrix", lightData.spotLights[0].lightSpaceMatrix);
+    shadowMapShader->use();
+	shadowMapShader->setMat4("lightSpaceMatrix", lightData.spotLights[0].lightSpaceMatrix);
 	mSpotShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
 	mSpotShadowMapBuffer->bind();
 	mSpotShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
-	drawModelsShader(shadowShader);
+	drawModelsShader(shadowMapShader);
 	mSpotShadowMapBuffer->unbind();
+
+	pointShadowMapShader->use();
+	pointShadowMapShader->setVec3("lightPos", lightData.pointLights[0].position);
+	pointShadowMapShader->setFloat("far_plane", farPlane);
+    for (int i = 0; i < 6; i++)
+    {
+
+		pointShadowMapShader->setMat4("shadowMatrices[" + std::to_string(i) + "]", lightData.pointLights[0].shadowMatrices[i]);
+    }
+	mPointShadwMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
+	mPointShadwMapBuffer->bind();
+	mPointShadwMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
+	drawModelsShader(pointShadowMapShader);
+	mPointShadwMapBuffer->unbind();
+
+
+
 
 
     int width, height;
@@ -177,6 +201,11 @@ void SRender::render()
 
 	mSpotShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_SPOT_SHADOW);
 	pbrShader->setInt("spotShadowMap", TEXTURE_UNIT_SPOT_SHADOW);
+
+	mPointShadwMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_POINT_SHADOW);
+	pbrShader->setInt("pointShadowMap", TEXTURE_UNIT_POINT_SHADOW);
+
+	pbrShader->setBool("enableShadows", mEnableShadows);
 
 
     // Draw models
@@ -271,16 +300,11 @@ void SRender::buildDirectionalLights(LightData& lightData)
 }
 
 
-
-
-
-
-
-
 void SRender::buildPointLights(LightData& lightData)
 {
     auto pointLightView = mScene->mEnttRegistry.view<CPointLight>();
     int numPointLights = 0;
+    glm::mat4 shadowProjection = glm::perspective(glm::radians(90.0f), 1.0f, nearPlane, farPlane);
     for (auto entity : pointLightView)
     {
         if (numPointLights >= MAX_POINT_LIGHTS)
@@ -295,7 +319,12 @@ void SRender::buildPointLights(LightData& lightData)
         pointLightData.diffuse = glm::vec4(light.diffuse, 0.0f);
         pointLightData.specular = glm::vec4(light.specular, 0.0f);
         pointLightData.attenuation = glm::vec4(light.constant, light.linear, light.quadratic, 0.0f);
-
+		pointLightData.shadowMatrices[0] = shadowProjection * glm::lookAt(light.position, light.position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+		pointLightData.shadowMatrices[1] = shadowProjection * glm::lookAt(light.position, light.position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+		pointLightData.shadowMatrices[2] = shadowProjection * glm::lookAt(light.position, light.position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		pointLightData.shadowMatrices[3] = shadowProjection * glm::lookAt(light.position, light.position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+		pointLightData.shadowMatrices[4] = shadowProjection * glm::lookAt(light.position, light.position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+		pointLightData.shadowMatrices[5] = shadowProjection * glm::lookAt(light.position, light.position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
         numPointLights++;
     }
     lightData.counts.x = numPointLights; // counts.x stores the number of point lights
@@ -566,6 +595,7 @@ void SRender::drawImGui()
     // Add Debug Controls
     ImGui::Begin("Debug Controls");
     ImGui::Checkbox("Show Shadow Debug View", &mShowShadowMap);
+    ImGui::Checkbox("Show Shadows", &mEnableShadows);
     ImGui::End();
 
     // Add Scene Bounds Controls

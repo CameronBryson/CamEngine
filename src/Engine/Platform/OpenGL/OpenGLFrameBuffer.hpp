@@ -57,8 +57,8 @@ public:
     bool isComplete() const override;
 
     // Getting attachments (as Texture2D)
-    std::shared_ptr<Texture2D> getColorAttachment(int index = 0) const override;
-    std::shared_ptr<Texture2D> getDepthAttachment() const override;
+    std::shared_ptr<Texture> getColorAttachment(int index = 0) const override;
+    std::shared_ptr<Texture> getDepthAttachment() const override;
 
     // Draw / Read buffers
     void setDrawBuffers(const std::vector<unsigned int>& attachments) override;
@@ -102,6 +102,6 @@ private:
 
     // Storing references to actual textures (color / depth)
     // You could store them in arrays or vectors depending on your needs.
-    std::vector<std::shared_ptr<Texture2D>> m_ColorAttachments;
-    std::shared_ptr<Texture2D> m_DepthAttachment; // if you want a single depth
+    std::vector<std::shared_ptr<Texture>> m_ColorAttachments;
+    std::shared_ptr<Texture> m_DepthAttachment; // if you want a single depth
 };

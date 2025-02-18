@@ -23,6 +23,7 @@ void GraphicsManager::loadResources()
 	loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
 	loadShader("src/Shaders/shadowmap.vert", "src/Shaders/shadowmap.frag", "ShadowMap");
     loadShader("src/shaders/debug.vert", "src/Shaders/debug.frag", "Debug");
+	loadShader("src/Shaders/pointshadow.vert", "src/Shaders/pointshadow.frag", "src/Shaders/pointshadow.geom", "PointShadowMap");
     //This is needed to create a cubemap texture from an hdr
 	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps
@@ -71,6 +72,28 @@ std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPat
 
     // Load and compile shader
     auto shader = Shader::createShader(vertexPath, fragmentPath);
+    if (shader)
+    {
+        shader_map_.emplace(name, shader);
+    }
+    else
+    {
+        std::cerr << "Failed to load shader: " << name << std::endl;
+    }
+    return shader;
+}
+
+std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath, const std::string& name)
+{
+    // Check if shader already loaded
+    auto it = shader_map_.find(name);
+    if (it != shader_map_.end())
+    {
+        return it->second;
+    }
+
+    // Load and compile shader
+    auto shader = Shader::createShader(vertexPath, fragmentPath, geometryPath);
     if (shader)
     {
         shader_map_.emplace(name, shader);

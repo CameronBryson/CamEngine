@@ -7,3 +7,8 @@ std::shared_ptr<Shader> Shader::createShader(const std::string& vertexPath, cons
 {
 	return std::make_shared<OpenGLShader>(vertexPath, fragmentPath);
 }
+
+std::shared_ptr<Shader> Shader::createShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
+{
+	return std::make_shared<OpenGLShader>(vertexPath, fragmentPath, geometryPath);
+}

@@ -69,11 +69,11 @@ void TestScene::init()
 	float linear = 0.0014f;      // Reduced for larger scenes
 	float quadratic = 0.000007f; // Reduced for larger scenes
 
-	// Position the light higher and further back to better illuminate the chess piece
-	//mEnttRegistry.emplace<CPointLight>(pointLight,
-	//	glm::vec3(0.0f, 10.0f, -50.0f), // Positioned above and closer to the chess piece
-	//	ambient, diffuse, specular,
-	//	constant, linear, quadratic);
+	 //Position the light higher and further back to better illuminate the chess piece
+	mEnttRegistry.emplace<CPointLight>(pointLight,
+		glm::vec3(0.0f, 5.0f, 0.0f), // Positioned above and closer to the chess piece
+		ambient, diffuse, specular,
+		constant, linear, quadratic);
 
 	// For the spot light, adjust similarly
 	auto spotLight = mEnttRegistry.create();
@@ -81,15 +81,15 @@ void TestScene::init()
 	float innerCutoff = glm::cos(glm::radians(12.5f));  // Use cos for better precision
 	float outerCutoff = glm::cos(glm::radians(17.5f));  // Use cos for better precision
 
-	mEnttRegistry.emplace<CSpotLight>(spotLight,
-		glm::vec3(0.0f, 5.0f, 0.0f), // Position it above the chess piece
-		direction, ambient, diffuse, specular,
-		constant, linear, quadratic,
-		innerCutoff, outerCutoff);
+	//mEnttRegistry.emplace<CSpotLight>(spotLight,
+	//	glm::vec3(0.0f, 5.0f, 0.0f), // Position it above the chess piece
+	//	direction, ambient, diffuse, specular,
+	//	constant, linear, quadratic,
+	//	innerCutoff, outerCutoff);
 
 
 	auto directionalLight = mEnttRegistry.create();
-	mEnttRegistry.emplace<CDirectionalLight>(directionalLight, direction, ambient, diffuse, specular);
+	//mEnttRegistry.emplace<CDirectionalLight>(directionalLight, direction, ambient, diffuse, specular);
 
 
 

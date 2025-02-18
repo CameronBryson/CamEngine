@@ -32,4 +32,5 @@ public:
 
 
 	static std::shared_ptr<Shader> createShader(const std::string& vertexPath, const std::string& fragmentPath);
+	static std::shared_ptr<Shader> createShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
 };

@@ -4,6 +4,7 @@
 #include <cassert>
 #include <glad/glad.h>
 #include "Texture2D.hpp"
+#include <TextureCubemap.hpp>
 
 static GLenum toGLInternalFormat(FrameBufferTextureFormat format)
 {
@@ -234,7 +235,7 @@ bool OpenGLFrameBuffer::isComplete() const
 }
 
 
-std::shared_ptr<Texture2D> OpenGLFrameBuffer::getColorAttachment(int index) const
+std::shared_ptr<Texture> OpenGLFrameBuffer::getColorAttachment(int index) const
 {
     if (index < 0 || index >= static_cast<int>(m_ColorAttachments.size()))
     {
@@ -243,7 +244,7 @@ std::shared_ptr<Texture2D> OpenGLFrameBuffer::getColorAttachment(int index) cons
     return m_ColorAttachments[index];
 }
 
-std::shared_ptr<Texture2D> OpenGLFrameBuffer::getDepthAttachment() const
+std::shared_ptr<Texture> OpenGLFrameBuffer::getDepthAttachment() const
 {
     return m_DepthAttachment;
 }
@@ -294,8 +295,16 @@ void OpenGLFrameBuffer::attachExternalTexture(
     int mipLevel)
 {
     bind();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, textureID, mipLevel);
+    if (target == GL_TEXTURE_CUBE_MAP)
+    {
+        glFramebufferTexture(GL_FRAMEBUFFER, attachment, textureID, mipLevel);
+    }
+    else
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, textureID, mipLevel);
+    }
 }
+
 
 void OpenGLFrameBuffer::createFramebuffer()
 {
@@ -317,10 +326,61 @@ void OpenGLFrameBuffer::createFramebuffer()
             continue;
         }
 
+        // Create a texture ID
         GLuint texID = 0;
         glGenTextures(1, &texID);
 
+        // Decide how to bind texture based on type/samples
         GLenum bindTarget = (m_Samples > 1) ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+
+        // ---------------------------------------------
+        // Handle the special case: DepthCubemap
+        // ---------------------------------------------
+        if (spec.Type == FrameBufferAttachmentType::DepthCubemap && m_Samples <= 1)
+        {
+            // We only support non-multisampled cubemaps in this example.
+            bindTarget = GL_TEXTURE_CUBE_MAP;
+            glBindTexture(bindTarget, texID);
+
+            // Allocate each face
+            for (int face = 0; face < 6; ++face)
+            {
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                    0,
+                    glInternalFormat,
+                    m_Width,
+                    m_Height,
+                    0,
+                    glFormat,
+                    glType,
+                    nullptr);
+            }
+
+            // Setup basic cubemap parameters
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+            // Attach as depth-only
+            glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texID, 0);
+
+            // Store in m_DepthAttachment
+            // Use your constructor for an OpenGLTextureCubemap wrapping an existing texture
+			auto attachmentTexture = TextureCubemap::createTextureCubemap(texID, m_Width, m_Height);
+            m_DepthAttachment = attachmentTexture;
+
+            // Typically skip color output if it's purely a depth cubemap
+            glDrawBuffer(GL_NONE);
+            glReadBuffer(GL_NONE);
+
+            continue; // Done handling this attachment
+        }
+
+        // ---------------------------------------------
+        // Fallback: 2D texture or 2D multisampled
+        // ---------------------------------------------
         glBindTexture(bindTarget, texID);
 
         if (m_Samples > 1)
@@ -348,12 +408,13 @@ void OpenGLFrameBuffer::createFramebuffer()
                 nullptr
             );
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(bindTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(bindTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(bindTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(bindTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         }
 
+        // Wrap as a Texture2D (by default)
         auto attachmentTexture = Texture2D::createTexture2D(texID, m_Width, m_Height);
 
         if (spec.Type == FrameBufferAttachmentType::Color)
@@ -402,6 +463,7 @@ void OpenGLFrameBuffer::createFramebuffer()
         }
     }
 
+    // If there are color attachments, set them all, otherwise disable them
     if (!m_ColorAttachments.empty())
     {
         std::vector<GLenum> drawBuffers;
@@ -417,6 +479,7 @@ void OpenGLFrameBuffer::createFramebuffer()
         glReadBuffer(GL_NONE);
     }
 
+    // Validate completion
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
@@ -426,3 +489,4 @@ void OpenGLFrameBuffer::createFramebuffer()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+

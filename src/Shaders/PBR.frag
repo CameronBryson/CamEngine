@@ -38,6 +38,7 @@ struct PointLightData {
     vec4 diffuse;      // rgb = diffuse color, w unused
     vec4 specular;     // rgb = specular color, w unused
     vec4 attenuation;  // x = constant, y = linear, z = quadratic, w unused
+    mat4 shadowMatrices[6]; // Used for shadow mapping.
 };
 
 struct SpotLightData {
@@ -96,6 +97,7 @@ struct Material {
 };
 
 uniform Material material;
+uniform bool enableShadows;
 
 // ------------------------------------------------------------------------------------
 // IBL Samplers
@@ -109,6 +111,7 @@ uniform sampler2D  brdfLUT;          // 2D LUT for split–sum IBL
 // ------------------------------------------------------------------------------------
 uniform sampler2D directionalShadowMap;
 uniform sampler2D spotShadowMap;
+uniform samplerCube pointShadowMap;
 
 // ------------------------------------------------------------------------------------
 // Function Prototypes
@@ -121,6 +124,25 @@ vec3  getNormalFromMap();
 
 void mainPBR(out vec3 outColor);
 // Replace both calculateDirectionalShadow and calculateSpotShadow with this single function:
+// ------------------------------------------------------------------------------------
+// Calculates shadow from a point light's depth cubemap
+// ------------------------------------------------------------------------------------
+float calculatePointShadow(vec3 fragPos, vec3 lightPos, samplerCube depthMap, float farPlane)
+{
+    // Distance from fragment to light
+    float currentDist = length(fragPos - lightPos);
+
+    // Sample depth from cubemap (which stores [0..1], mapped from [0..farPlane])
+    float storedDepth = texture(depthMap, fragPos - lightPos).r;
+    storedDepth *= farPlane; // Map back to [0..farPlane]
+
+    // Simple bias
+    float bias = 0.05;
+
+    // If the distance is greater than the stored depth + bias, we’re in shadow
+    return (currentDist - bias) > storedDepth ? 1.0 : 0.0;
+}
+
 float calculateShadow(vec3 worldPos, vec3 normal, vec3 lightDir, mat4 lightSpaceMatrix, sampler2D shadowMap)
 {
     // Transform the world position into light space and normalize coordinates to [0,1]
@@ -258,6 +280,11 @@ void mainPBR(out vec3 outColor)
             // Final contribution
             vec3 radiance = pl.diffuse.rgb; // you could multiply by intensity or other factor if you wish
             vec3 lightContrib = (diffuse + specular) * radiance * NdotL * attenuation;
+            if(enableShadows)
+            {
+                float shadowFactor = calculatePointShadow(FragPos, pl.position.xyz, pointShadowMap, 25.0);
+                lightContrib *= shadowFactor;
+            }
 
             Lo += lightContrib;
         }
@@ -284,7 +311,7 @@ void mainPBR(out vec3 outColor)
         float NdotL = max(dot(N, L), 0.0);
         if(NdotL > 0.0 && intensity > 0.0)
         {
-            float shadowFactor = calculateShadow(FragPos, N, L, sl.lightSpaceMatrix, spotShadowMap);
+            
             vec3 H = normalize(V + L);
             float D = DistributionGGX(N, H, roughnessValue);
             float G = GeometrySmith(N, V, L, roughnessValue);
@@ -307,7 +334,12 @@ void mainPBR(out vec3 outColor)
             vec3 radiance = sl.diffuse.rgb;
 
             // Final contribution
-            vec3 lightContrib = (diffuse + specular) * radiance * NdotL * attenuation * intensity * shadowFactor;
+            vec3 lightContrib = (diffuse + specular) * radiance * NdotL * attenuation * intensity;
+            if(enableShadows)
+            {
+                float shadowFactor = calculateShadow(FragPos, N, L, sl.lightSpaceMatrix, spotShadowMap);
+                lightContrib *= shadowFactor;
+            }
             Lo += lightContrib;
         }
     }
@@ -324,7 +356,7 @@ void mainPBR(out vec3 outColor)
         if (NdotL > 0.0)
         {
             // Shadow factor (1.0 = lit, 0.0 = fully in shadow)
-            float shadowFactor = calculateShadow(FragPos, N, lightDir, directionalLights[i].lightSpaceMatrix, directionalShadowMap);
+
 
             // PBR lighting
             vec3 H = normalize(V + lightDir);
@@ -345,7 +377,13 @@ void mainPBR(out vec3 outColor)
             vec3 radiance = directionalLights[i].diffuse.rgb;
 
             // Combine
-            vec3 lightContrib = (diffuse + specular) * radiance * NdotL * shadowFactor;
+            vec3 lightContrib = (diffuse + specular) * radiance * NdotL;
+            if(enableShadows)
+            {
+                float shadowFactor = calculateShadow(FragPos, N, lightDir, directionalLights[i].lightSpaceMatrix, directionalShadowMap);
+               lightContrib *= shadowFactor;
+            }
+
             Lo += lightContrib;
         }
     }
@@ -376,7 +414,7 @@ void mainPBR(out vec3 outColor)
     // Combine with AO
     vec3 ambientIBL = (kD * diffuseIBL + specularIBL) * aoValue;
     ambientIBL *= 0.1f;
-    //ambientIBL = vec3(0.0);
+    ambientIBL = vec3(0.0);
 
     // ------------------------------------------------------------------------
     // Final Composition

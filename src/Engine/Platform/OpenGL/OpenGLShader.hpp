@@ -7,6 +7,7 @@ class OpenGLShader : public Shader
 {
 public:
     explicit OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath);
+	OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
 
     ~OpenGLShader();
 
