@@ -90,6 +90,19 @@ void SRender::init()
     {
 		throw std::runtime_error("HDR framebuffer incomplete!");
     }
+    for (int i = 0; i < 2; i++)
+    {
+        mPingPongFBO[i] = FrameBuffer::createFrameBuffer(
+            settings::window_width,
+            settings::window_height,
+            { { FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F } }
+        );
+        if (!mPingPongFBO[i]->isComplete())
+        {
+            throw std::runtime_error("Ping-pong framebuffer incomplete!");
+        }
+    }
+
     calculateSceneBounds();
 
 }
@@ -166,6 +179,7 @@ void SRender::render()
     glViewport(0, 0, width, height);
     mHDRFrameBuffer->bind();
     mHDRFrameBuffer->setViewport(0, 0, width, height);
+	mHDRFrameBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 });
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -194,6 +208,7 @@ void SRender::render()
 	pbrShader->setInt("pointShadowMap", TEXTURE_UNIT_POINT_SHADOW);
     pbrShader->setFloat("farPlane", farPlane);
 	pbrShader->setBool("enableShadows", mEnableShadows);
+	pbrShader->setFloat("bloomThreshold", bloomThreshold);
 
 
     // Draw models
@@ -209,6 +224,34 @@ void SRender::render()
 
 	skybox->drawSkybox(skyboxShader);
 	mHDRFrameBuffer->unbind();
+    bool horizontal = true;
+	bool first_iteration = true;
+	auto blurShader = GameManager::mGraphicsManager->getShader("Blur");
+    blurShader->use();
+    for (unsigned int i = 0; i < blurPasses; i++)
+    {
+        mPingPongFBO[horizontal]->bind();
+        mPingPongFBO[horizontal]->setViewport(0, 0, width, height);
+        blurShader->setBool("horizontal", horizontal);
+
+        if (first_iteration)
+        {
+            // On first iteration, use the bright parts from HDR buffer
+            mHDRFrameBuffer->getColorAttachment(1)->bind(TEXTURE_UNIT_BLOOM);
+            blurShader->setInt("image", TEXTURE_UNIT_BLOOM);
+            first_iteration = false;
+        }
+        else
+        {
+            // Use the result from previous iteration
+            mPingPongFBO[!horizontal]->getColorAttachment(0)->bind(TEXTURE_UNIT_BLOOM);
+            blurShader->setInt("image", TEXTURE_UNIT_BLOOM);
+        }
+
+        OpenGlUtil::drawQuad();
+        horizontal = !horizontal;
+    }
+    mPingPongFBO[!horizontal]->unbind();
 
     glViewport(0, 0, width, height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -217,8 +260,14 @@ void SRender::render()
 	HDRShader->use();
 	HDRShader->setFloat("exposure", mExposure);
 	HDRShader->setBool("hdr", mHDR);
+	HDRShader->setBool("bloom", bloomEnabled);
+	HDRShader->setFloat("bloomStrength", bloomStrength);
+
 	mHDRFrameBuffer->getColorAttachment(0)->bind(TEXTURE_UNIT_HDR);
 	HDRShader->setInt("hdrBuffer", TEXTURE_UNIT_HDR);
+
+	mPingPongFBO[!horizontal]->getColorAttachment(0)->bind(TEXTURE_UNIT_BLOOM);
+	HDRShader->setInt("bloomBuffer", TEXTURE_UNIT_BLOOM);
     OpenGlUtil::drawQuad();
 
     drawImGui();
@@ -594,7 +643,6 @@ void SRender::drawImGui()
 
     // In SRender::drawImGui()
     ImGui::Begin("Debug Controls");
-    ImGui::Checkbox("Show Directional Shadow Debug", &mShowShadowMap);
     ImGui::Checkbox("Show Shadows", &mEnableShadows);
     ImGui::End();
 
@@ -676,11 +724,17 @@ void SRender::drawImGui()
 
     ImGui::End();
 
-    // Add to drawImGui()
-    ImGui::Begin("HDR Settings");
+    // In drawImGui()
+    ImGui::Begin("Post-Processing");
     ImGui::Checkbox("Enable HDR", &mHDR);
     ImGui::SliderFloat("Exposure", &mExposure, 0.0f, 5.0f);
+    ImGui::Separator();
+    ImGui::Checkbox("Enable Bloom", &bloomEnabled);
+	ImGui::SliderFloat("Bloom Threshold", &bloomThreshold, 0.0f, 1.0f);
+    ImGui::SliderFloat("Bloom Strength", &bloomStrength, 0.0f, 2.0f);
+    ImGui::SliderInt("Blur Passes", &blurPasses, 1, 20);
     ImGui::End();
+
 
 
 

@@ -45,11 +45,14 @@ private:
 	std::shared_ptr<FrameBuffer> mHDRFrameBuffer;
 	float mExposure = 1.0f;
     bool mHDR = true;
-
-    bool mShowShadowMap = false;
     bool mEnableShadows = true;
     float nearPlane = 1.0f;
     float farPlane = 25.0f;
+    std::shared_ptr<FrameBuffer> mPingPongFBO[2];
+    bool bloomEnabled = true;
+	float bloomThreshold = 1.0f;
+	float bloomStrength = 1.0f;
+    int blurPasses = 10;
     const int mShadowMapWidth = 2048;
     const int mShadowMapHeight = 2048;
     void calculateSceneBounds();

@@ -3,7 +3,9 @@
 // ------------------------------------------------------------------------------------
 // Output
 // ------------------------------------------------------------------------------------
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;    // Main HDR color
+layout (location = 1) out vec4 BrightColor;  // Bright parts for bloom
+
 
 // ------------------------------------------------------------------------------------
 // Inputs from Vertex Shader
@@ -99,6 +101,7 @@ struct Material {
 uniform Material material;
 uniform bool enableShadows;
 uniform float farPlane;
+uniform float bloomThreshold;
 
 // ------------------------------------------------------------------------------------
 // IBL Samplers
@@ -213,6 +216,13 @@ void main()
     // Normal rendering path
     mainPBR(color);
     FragColor = vec4(color, 1.0);
+
+    // Calculate brightness using luminance
+    float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+    if(brightness > bloomThreshold)
+        BrightColor = vec4(color, 1.0);
+    else
+        BrightColor = vec4(0.0, 0.0, 0.0, 1.0); 
 }
 
 // ------------------------------------------------------------------------------------
@@ -435,8 +445,8 @@ void mainPBR(out vec3 outColor)
 
     // Combine with AO
     vec3 ambientIBL = (kD * diffuseIBL + specularIBL) * aoValue;
-    ambientIBL *= 0.1f;
-    ambientIBL = vec3(0.0);
+    ambientIBL *= 0.4f;
+    //ambientIBL = vec3(0.0);
 
     // ------------------------------------------------------------------------
     // Final Composition
