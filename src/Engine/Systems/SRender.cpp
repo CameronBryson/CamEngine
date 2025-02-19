@@ -173,7 +173,6 @@ void SRender::render()
 
 
 
-
     int width, height;
     glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
     glViewport(0, 0, width, height);
@@ -189,23 +188,23 @@ void SRender::render()
     pbrShader->use();
 
     auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
-    skybox->bindIrradiance(TEXTURE_UNIT_IRRADIANCE);
-    skybox->bindPrefilter(TEXTURE_UNIT_PREFILTER);
-    skybox->bindBRDFLUT(TEXTURE_UNIT_BRDFLUT);
+    skybox->bindIrradiance(IBLSlots::IRRADIANCE);
+    skybox->bindPrefilter(IBLSlots::PREFILTER);
+    skybox->bindBRDFLUT(IBLSlots::BRDFLUT);
     
-	pbrShader->setInt("irradianceMap", TEXTURE_UNIT_IRRADIANCE);
-	pbrShader->setInt("prefilterMap", TEXTURE_UNIT_PREFILTER);
-	pbrShader->setInt("brdfLUT", TEXTURE_UNIT_BRDFLUT);
+	pbrShader->setInt("irradianceMap", IBLSlots::IRRADIANCE);
+	pbrShader->setInt("prefilterMap", IBLSlots::PREFILTER);
+	pbrShader->setInt("brdfLUT", IBLSlots::BRDFLUT);
     
 
-	mDirectionalShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_DIRECTIONAL_SHADOW);
-	pbrShader->setInt("directionalShadowMap", TEXTURE_UNIT_DIRECTIONAL_SHADOW);
+	mDirectionalShadowMapBuffer->getDepthAttachment()->bind(ShadowSlots::DIRECTIONAL);
+	pbrShader->setInt("directionalShadowMap", ShadowSlots::DIRECTIONAL);
 
-	mSpotShadowMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_SPOT_SHADOW);
-	pbrShader->setInt("spotShadowMap", TEXTURE_UNIT_SPOT_SHADOW);
+	mSpotShadowMapBuffer->getDepthAttachment()->bind(ShadowSlots::SPOT);
+	pbrShader->setInt("spotShadowMap", ShadowSlots::SPOT);
 
-	mPointShadwMapBuffer->getDepthAttachment()->bind(TEXTURE_UNIT_POINT_SHADOW);
-	pbrShader->setInt("pointShadowMap", TEXTURE_UNIT_POINT_SHADOW);
+	mPointShadwMapBuffer->getDepthAttachment()->bind(ShadowSlots::POINT);
+	pbrShader->setInt("pointShadowMap", ShadowSlots::POINT);
     pbrShader->setFloat("farPlane", farPlane);
 	pbrShader->setBool("enableShadows", mEnableShadows);
 	pbrShader->setFloat("bloomThreshold", bloomThreshold);
@@ -237,15 +236,15 @@ void SRender::render()
         if (first_iteration)
         {
             // On first iteration, use the bright parts from HDR buffer
-            mHDRFrameBuffer->getColorAttachment(1)->bind(TEXTURE_UNIT_BLOOM);
-            blurShader->setInt("image", TEXTURE_UNIT_BLOOM);
+            mHDRFrameBuffer->getColorAttachment(1)->bind(PostProcessSlots::BLOOM);
+            blurShader->setInt("image", PostProcessSlots::BLOOM);
             first_iteration = false;
         }
         else
         {
             // Use the result from previous iteration
-            mPingPongFBO[!horizontal]->getColorAttachment(0)->bind(TEXTURE_UNIT_BLOOM);
-            blurShader->setInt("image", TEXTURE_UNIT_BLOOM);
+            mPingPongFBO[!horizontal]->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
+            blurShader->setInt("image", PostProcessSlots::BLOOM);
         }
 
         OpenGlUtil::drawQuad();
@@ -263,15 +262,13 @@ void SRender::render()
 	HDRShader->setBool("bloom", bloomEnabled);
 	HDRShader->setFloat("bloomStrength", bloomStrength);
 
-	mHDRFrameBuffer->getColorAttachment(0)->bind(TEXTURE_UNIT_HDR);
-	HDRShader->setInt("hdrBuffer", TEXTURE_UNIT_HDR);
+	mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+	HDRShader->setInt("hdrBuffer", PostProcessSlots::HDR);
 
-	mPingPongFBO[!horizontal]->getColorAttachment(0)->bind(TEXTURE_UNIT_BLOOM);
-	HDRShader->setInt("bloomBuffer", TEXTURE_UNIT_BLOOM);
+	mPingPongFBO[!horizontal]->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
+	HDRShader->setInt("bloomBuffer", PostProcessSlots::BLOOM);
     OpenGlUtil::drawQuad();
-
     drawImGui();
-    
 }
 
 void SRender::shutdown()

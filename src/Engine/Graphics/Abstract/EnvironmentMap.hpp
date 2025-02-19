@@ -10,9 +10,9 @@ public:
 
 
     // Bind each resource so PBR shaders can sample them
-    virtual void bindIrradiance(int slot = TEXTURE_UNIT_IRRADIANCE) = 0;
-    virtual void bindPrefilter(int slot = TEXTURE_UNIT_PREFILTER) = 0;
-    virtual void bindBRDFLUT(int slot = TEXTURE_UNIT_BRDFLUT) = 0;
+    virtual void bindIrradiance(int slot = IBLSlots::IRRADIANCE) = 0;
+    virtual void bindPrefilter(int slot = IBLSlots::PREFILTER) = 0;
+    virtual void bindBRDFLUT(int slot = IBLSlots::BRDFLUT) = 0;
 
     // Draw a skybox using the environment map
     virtual void drawSkybox(std::shared_ptr<Shader>& skyboxShader) = 0;

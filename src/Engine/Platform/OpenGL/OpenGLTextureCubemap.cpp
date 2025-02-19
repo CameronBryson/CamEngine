@@ -115,8 +115,9 @@ OpenGLTextureCubemap::~OpenGLTextureCubemap()
     glDeleteTextures(1, &textureID);
 }
 
-void OpenGLTextureCubemap::bind(unsigned int slot) const
+void OpenGLTextureCubemap::bind(unsigned int slot)
 {
+	unbind(slot);
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 }
@@ -125,6 +126,7 @@ void OpenGLTextureCubemap::unbind(unsigned int slot)
 {
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 int OpenGLTextureCubemap::getWidth() const { return width; }

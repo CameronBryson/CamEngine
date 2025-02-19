@@ -234,19 +234,20 @@ OpenGLTexture2D::~OpenGLTexture2D()
 }
 
 // Bind the texture to a specified texture slot
-void OpenGLTexture2D::bind(unsigned int slot) const
+void OpenGLTexture2D::bind(unsigned int slot)
 {
     if (slot >= 32) // OpenGL guarantees at least 32 texture units
     {
         std::cerr << "Texture slot " << slot << " is out of range (0-31)." << std::endl;
         return;
     }
+    unbind(slot);
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
 // Unbind the texture from a specified texture slot
-void OpenGLTexture2D::unbind(unsigned int slot)
+void OpenGLTexture2D::unbind(unsigned int slot) 
 {
     if (slot >= 32) // OpenGL guarantees at least 32 texture units
     {
@@ -255,6 +256,7 @@ void OpenGLTexture2D::unbind(unsigned int slot)
     }
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 

@@ -96,7 +96,8 @@ void OpenGLEnvironmentMap::generateIrradianceMap()
     // Setup the shader
     mIrradianceShader->use();
     mIrradianceShader->setMat4("projection", captureProjection);
-    mSkyboxCubemap->bind(0);
+	mIrradianceShader->setInt("environmentMap", IBLSlots::IRRADIANCE);
+    mSkyboxCubemap->bind(IBLSlots::IRRADIANCE);
 
     glViewport(0, 0, irradianceSize, irradianceSize);
 
@@ -119,8 +120,6 @@ void OpenGLEnvironmentMap::generateIrradianceMap()
     }
 
     fbo->unbind();
-    // Instead of glDeleteFramebuffers(...) & glDeleteRenderbuffers(...),
-    // the FrameBuffer destructor will clean up.
 }
 
 void OpenGLEnvironmentMap::generatePrefilterMap()
@@ -154,7 +153,8 @@ void OpenGLEnvironmentMap::generatePrefilterMap()
 
     mPrefilterShader->use();
     mPrefilterShader->setMat4("projection", captureProjection);
-	mSkyboxCubemap->bind(0);
+	mPrefilterShader->setInt("environmentMap", IBLSlots::PREFILTER);
+	mSkyboxCubemap->bind(IBLSlots::PREFILTER);
 
     const unsigned int maxMipLevels = 5;
 
@@ -236,6 +236,7 @@ void OpenGLEnvironmentMap::bindIrradiance(int slot)
 
 void OpenGLEnvironmentMap::bindPrefilter(int slot)
 {
+
     mPrefilterCubemap->bind(slot);
 }
 
@@ -248,7 +249,8 @@ void OpenGLEnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
 {
     glDepthFunc(GL_LEQUAL);
     skyboxShader->use();
-    mSkyboxCubemap->bind(TEXTURE_UNIT_SKYBOX);
+	skyboxShader->setInt("skybox", IBLSlots::SKYBOX);
+    mSkyboxCubemap->bind(IBLSlots::SKYBOX);
     OpenGlUtil::drawCube();
     glDepthFunc(GL_LESS);
 }

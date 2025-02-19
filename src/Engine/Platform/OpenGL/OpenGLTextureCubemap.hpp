@@ -19,7 +19,7 @@ public:
 
     unsigned int  getTextureID() const  override { return textureID; }
 
-    void bind(unsigned int slot) const override;
+    void bind(unsigned int slot)override;
     void unbind(unsigned int slot) override;
     int  getWidth()  const override;
     int  getHeight() const override;

@@ -1,17 +1,29 @@
-#pragma once
-constexpr unsigned int TEXTURE_UNIT_SKYBOX = 0;
-constexpr unsigned int TEXTURE_UNIT_IRRADIANCE = 1;
-constexpr unsigned int TEXTURE_UNIT_PREFILTER = 2;
-constexpr unsigned int TEXTURE_UNIT_BRDFLUT = 3;
-constexpr unsigned int TEXTURE_UNIT_ALBEDO = 4;
-constexpr unsigned int TEXTURE_UNIT_NORMAL = 5;
-constexpr unsigned int TEXTURE_UNIT_METALLIC = 6;
-constexpr unsigned int TEXTURE_UNIT_ROUGHNESS = 7;
-constexpr unsigned int TEXTURE_UNIT_AO = 8;
-constexpr unsigned int TEXTURE_UNIT_EMISSIVE = 9;
-constexpr unsigned int TEXTURE_UNIT_METALROUGH = 10;
-constexpr unsigned int TEXTURE_UNIT_DIRECTIONAL_SHADOW = 11;
-constexpr unsigned int TEXTURE_UNIT_SPOT_SHADOW = 12;
-constexpr unsigned int TEXTURE_UNIT_POINT_SHADOW = 13;
-constexpr unsigned int TEXTURE_UNIT_HDR = 14;
-constexpr unsigned int TEXTURE_UNIT_BLOOM = 15;
+// TextureSlots.hpp  
+#pragma once  
+
+namespace MaterialSlots {  
+    constexpr unsigned int ALBEDO = 0;  
+    constexpr unsigned int NORMAL = 1;  
+    constexpr unsigned int METALLIC = 2;  
+    constexpr unsigned int ROUGHNESS = 3;  
+    constexpr unsigned int AO = 4;  
+    constexpr unsigned int EMISSIVE = 5;  
+    constexpr unsigned int METALROUGH = 6;  
+  
+}  
+namespace ShadowSlots {
+    constexpr unsigned int DIRECTIONAL = 7;
+    constexpr unsigned int SPOT = 8;
+    constexpr unsigned int POINT = 9;
+}
+namespace IBLSlots {  
+    constexpr unsigned int IRRADIANCE = 10;  
+    constexpr unsigned int PREFILTER = 11;  
+    constexpr unsigned int BRDFLUT =12;  
+    constexpr unsigned int SKYBOX = 0;  
+}  
+
+namespace PostProcessSlots {  
+    constexpr unsigned int HDR = 0;  
+    constexpr unsigned int BLOOM = 1;  
+}

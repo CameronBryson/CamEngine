@@ -31,19 +31,19 @@ void TestScene::init()
 	mEnttRegistry.emplace<CChildren>(testParent);
 	mEnttRegistry.get<CChildren>(sceneRoot).children.push_back(testParent);
 
-	//auto testModel = mEnttRegistry.create();
-	//mEnttRegistry.emplace<CModel>(testModel, "MetalTests");
-	//glm::vec3 rotationEulerAngles = glm::radians(glm::vec3(-90.0f, 0.0f, 0.0f)); // Adjust angles as needed
-	//glm::quat rotationQuat = glm::quat(rotationEulerAngles);
-	//mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -25 }, rotationQuat, glm::vec3{1, 1, 1});
-	//mEnttRegistry.emplace<CParent>(testModel, testParent);
-	//mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
+	auto testModel = mEnttRegistry.create();
+	mEnttRegistry.emplace<CModel>(testModel, "MetalTests");
+	glm::vec3 rotationEulerAngles = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
+	glm::quat rotationQuat = glm::quat(rotationEulerAngles);
+	mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -2.5}, rotationQuat, glm::vec3{1, 1, 1});
+	mEnttRegistry.emplace<CParent>(testModel, testParent);
+	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
 
 	auto testModel2 = mEnttRegistry.create();
 	mEnttRegistry.emplace<CModel>(testModel2, "Sponza");
 	glm::vec3 rotationEulerAngles2 = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
 	glm::quat rotationQuat2 = glm::quat(rotationEulerAngles2);
-	mEnttRegistry.emplace<CTransform>(testModel2, glm::vec3{ 0, -5, 0 }, rotationQuat2, glm::vec3(1.0f));
+	mEnttRegistry.emplace<CTransform>(testModel2, glm::vec3{ 0, -5, -1 }, rotationQuat2, glm::vec3(1.0f));
 	mEnttRegistry.emplace<CParent>(testModel2, testParent);
 	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel2);
 

@@ -37,13 +37,14 @@ OpenGLMaterial::OpenGLMaterial(const glm::vec4& albedo,
 void OpenGLMaterial::bind()
 {
 	shader->use();
+	unbind();
 
 	// Activate and bind Albedo Texture if available
 	if (albedoTexture)
 	{
-		shader->setInt("material.albedoMap", TEXTURE_UNIT_ALBEDO);
+		shader->setInt("material.albedoMap", MaterialSlots::ALBEDO);
 		shader->setBool("material.hasAlbedoMap", true);
-		albedoTexture->bind(TEXTURE_UNIT_ALBEDO);
+		albedoTexture->bind(MaterialSlots::ALBEDO);
 	}
 	else
 	{
@@ -53,9 +54,9 @@ void OpenGLMaterial::bind()
 	// Activate and bind Normal Map if available
 	if (normalTexture)
 	{
-		shader->setInt("material.normalMap", TEXTURE_UNIT_NORMAL);
+		shader->setInt("material.normalMap", MaterialSlots::NORMAL);
 		shader->setBool("material.hasNormalMap", true);
-		normalTexture->bind(TEXTURE_UNIT_NORMAL);
+		normalTexture->bind(MaterialSlots::NORMAL);
 	}
 	else
 	{
@@ -65,9 +66,9 @@ void OpenGLMaterial::bind()
 	// Activate and bind Metallic Map if available
 	if (metallicTexture)
 	{
-		shader->setInt("material.metallicMap", TEXTURE_UNIT_METALLIC);
+		shader->setInt("material.metallicMap", MaterialSlots::METALLIC);
 		shader->setBool("material.hasMetallicMap", true);
-		metallicTexture->bind(TEXTURE_UNIT_METALLIC);
+		metallicTexture->bind(MaterialSlots::METALLIC);
 	}
 	else
 	{
@@ -77,9 +78,9 @@ void OpenGLMaterial::bind()
 	// Activate and bind Roughness Map if available
 	if (roughnessTexture)
 	{
-		shader->setInt("material.roughnessMap", TEXTURE_UNIT_ROUGHNESS);
+		shader->setInt("material.roughnessMap", MaterialSlots::ROUGHNESS);
 		shader->setBool("material.hasRoughnessMap", true);
-		roughnessTexture->bind(TEXTURE_UNIT_ROUGHNESS);
+		roughnessTexture->bind(MaterialSlots::ROUGHNESS);
 	}
 	else
 	{
@@ -89,9 +90,9 @@ void OpenGLMaterial::bind()
 	// Activate and bind Ambient Occlusion Map if available
 	if (AOTexture)
 	{
-		shader->setInt("material.AOMap", TEXTURE_UNIT_AO);
+		shader->setInt("material.AOMap", MaterialSlots::AO);
 		shader->setBool("material.hasAOMap", true);
-		AOTexture->bind(TEXTURE_UNIT_AO);
+		AOTexture->bind(MaterialSlots::AO);
 	}
 	else
 	{
@@ -101,9 +102,9 @@ void OpenGLMaterial::bind()
 	// Activate and bind Emissive Map if available
 	if (emissiveTexture)
 	{
-		shader->setInt("material.emissiveMap", TEXTURE_UNIT_EMISSIVE);
+		shader->setInt("material.emissiveMap", MaterialSlots::EMISSIVE);
 		shader->setBool("material.hasEmissiveMap", true);
-		emissiveTexture->bind(TEXTURE_UNIT_EMISSIVE);
+		emissiveTexture->bind(MaterialSlots::EMISSIVE);
 	}
 	else
 	{
@@ -113,8 +114,8 @@ void OpenGLMaterial::bind()
 	if (metalRoughTexture)
 	{
 		shader->setBool("material.hasMetalRoughMap", true);
-		shader->setInt("material.metalRoughMap", TEXTURE_UNIT_METALROUGH);
-		metalRoughTexture->bind(TEXTURE_UNIT_METALROUGH);
+		shader->setInt("material.metalRoughMap", MaterialSlots::METALROUGH);
+		metalRoughTexture->bind(MaterialSlots::METALROUGH);
 	}
 	else
 	{
@@ -131,13 +132,13 @@ void OpenGLMaterial::bind()
 
 void OpenGLMaterial::unbind()
 {
-	if (albedoTexture)      albedoTexture->unbind(TEXTURE_UNIT_ALBEDO);
-	if (normalTexture)      normalTexture->unbind(TEXTURE_UNIT_NORMAL);
-	if (metallicTexture)    metallicTexture->unbind(TEXTURE_UNIT_METALLIC);
-	if (roughnessTexture)   roughnessTexture->unbind(TEXTURE_UNIT_ROUGHNESS);
-	if (AOTexture)          AOTexture->unbind(TEXTURE_UNIT_AO);
-	if (emissiveTexture)    emissiveTexture->unbind(TEXTURE_UNIT_EMISSIVE);
-	if (metalRoughTexture)  metalRoughTexture->unbind(TEXTURE_UNIT_METALROUGH);
+	if (albedoTexture)      albedoTexture->unbind(MaterialSlots::ALBEDO);
+	if (normalTexture)      normalTexture->unbind(MaterialSlots::NORMAL);
+	if (metallicTexture)    metallicTexture->unbind(MaterialSlots::METALLIC);
+	if (roughnessTexture)   roughnessTexture->unbind(MaterialSlots::ROUGHNESS);
+	if (AOTexture)          AOTexture->unbind(MaterialSlots::AO);
+	if (emissiveTexture)    emissiveTexture->unbind(MaterialSlots::EMISSIVE);
+	if (metalRoughTexture)  metalRoughTexture->unbind(MaterialSlots::METALROUGH);
 
 	// reset
 	glActiveTexture(GL_TEXTURE0);
