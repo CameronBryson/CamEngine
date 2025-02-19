@@ -15,4 +15,8 @@ public:
 	void shutdown() override;
 	void lateShutdown() override;
 private:
+	float mMoveSpeed = 5.0f;          // Units per second
+	float mMouseSensitivity = 0.1f;   // Degrees per pixel
+	bool mIsRightMousePressed = false;
+	double mLastMouseX = 0.0, mLastMouseY = 0.0;
 };

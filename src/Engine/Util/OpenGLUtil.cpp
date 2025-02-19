@@ -34,7 +34,9 @@ void OpenGlUtil::init()
 	}
 	glfwMakeContextCurrent(game_window);
 	glfwSetKeyCallback(game_window, engine_util::keyCallback);
+    glfwSetCursorPosCallback(game_window, engine_util::cursorPosCallback); // Add this line
 	glfwSetMouseButtonCallback(game_window, engine_util::mouseKeyCallback);
+
 	glfwSetFramebufferSizeCallback(game_window, OpenGlUtil::framebufferSizeCallback);
 	glfwSwapInterval(0);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

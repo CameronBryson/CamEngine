@@ -39,7 +39,7 @@ void GraphicsManager::loadResources()
 	//loadModel(engine_util::buildPath("assets/ABeautifulGame.gltf"), "Chess");
 	//loadModel(engine_util::buildPath("assets/scene.gltf"), "Scene");
 
-    loadEnvironmentMap("default", engine_util::buildPath("assets/newport_loft.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    loadEnvironmentMap("default", engine_util::buildPath("assets/puresky.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
     
 
 

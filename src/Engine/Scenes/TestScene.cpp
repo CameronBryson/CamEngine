@@ -9,6 +9,8 @@
 #include <edyn/util/rigidbody.hpp>
 #include <entt/entity/registry.hpp>
 #include <glm/ext/vector_float3.hpp>
+#include "EngineUtil.hpp"
+#include <GameManager.hpp>
 TestScene::TestScene() : BaseScene() {}
 TestScene::~TestScene() {}
 void TestScene::init()
@@ -90,12 +92,93 @@ void TestScene::init()
 
 	auto directionalLight = mEnttRegistry.create();
 	mEnttRegistry.emplace<CDirectionalLight>(directionalLight, direction, ambient, diffuse, specular);
-
-
+	double mouseX, mouseY;
+	glfwGetCursorPos(GameManager::get_glfw_window(), &mouseX, &mouseY);
+	mLastMouseX = mouseX;
+	mLastMouseY = mouseY;
+	glfwSetInputMode(GameManager::get_glfw_window(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 }
 void TestScene::lateInit() { BaseScene::lateInit(); }
-void TestScene::update(float dt) { BaseScene::update(dt); }
+void TestScene::update(float dt) {
+	BaseScene::update(dt);
+
+	// Handle camera movement
+	float finalSpeed = mMoveSpeed;
+	if (engine_util::isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+		finalSpeed *= 2.0f; // Unity-like fast movement with shift
+	}
+
+	// WASD movement (horizontal and forward/backward)
+	if (engine_util::isKeyPressed(GLFW_KEY_W)) {
+		mCurrentCamera.Position += mCurrentCamera.Front * finalSpeed * dt;
+	}
+	if (engine_util::isKeyPressed(GLFW_KEY_S)) {
+		mCurrentCamera.Position -= mCurrentCamera.Front * finalSpeed * dt;
+	}
+	if (engine_util::isKeyPressed(GLFW_KEY_A)) {
+		mCurrentCamera.Position -= mCurrentCamera.Right * finalSpeed * dt;
+	}
+	if (engine_util::isKeyPressed(GLFW_KEY_D)) {
+		mCurrentCamera.Position += mCurrentCamera.Right * finalSpeed * dt;
+	}
+
+	// Q/E for vertical movement (Unity-like)
+	if (engine_util::isKeyPressed(GLFW_KEY_E)) {
+		mCurrentCamera.Position += mCurrentCamera.WorldUp * finalSpeed * dt;
+	}
+	if (engine_util::isKeyPressed(GLFW_KEY_Q)) {
+		mCurrentCamera.Position -= mCurrentCamera.WorldUp * finalSpeed * dt;
+	}
+
+	// Handle camera rotation with right mouse button
+	if (engine_util::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+		// Hide cursor when right mouse is pressed
+		glfwSetInputMode(GameManager::get_glfw_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+		double mouseX, mouseY;
+		glfwGetCursorPos(GameManager::get_glfw_window(), &mouseX, &mouseY);
+
+		if (!mIsRightMousePressed) {
+			// First frame of right click, just update last position
+			mIsRightMousePressed = true;
+			mLastMouseX = mouseX;
+			mLastMouseY = mouseY;
+		}
+		else {
+			// Calculate mouse movement
+			float xoffset = static_cast<float>(mouseX - mLastMouseX);
+			float yoffset = static_cast<float>(mLastMouseY - mouseY); // Reversed: y coordinates are bottom-to-top
+
+			mLastMouseX = mouseX;
+			mLastMouseY = mouseY;
+
+			// Apply sensitivity
+			xoffset *= mMouseSensitivity;
+			yoffset *= mMouseSensitivity;
+
+			// Update camera angles
+			mCurrentCamera.Yaw += xoffset;
+			mCurrentCamera.Pitch += yoffset;
+
+			// Constrain pitch to prevent camera flipping
+			if (mCurrentCamera.Pitch > 89.0f)
+				mCurrentCamera.Pitch = 89.0f;
+			if (mCurrentCamera.Pitch < -89.0f)
+				mCurrentCamera.Pitch = -89.0f;
+
+			// Update camera vectors based on new angles
+			mCurrentCamera.updateCameraVectors();
+		}
+	}
+	else {
+		// Show cursor when right mouse is released
+		if (mIsRightMousePressed) {
+			glfwSetInputMode(GameManager::get_glfw_window(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			mIsRightMousePressed = false;
+		}
+	}
+}
 void TestScene::lateUpdate(float dt) { BaseScene::lateUpdate(dt); }
 void TestScene::render() { BaseScene::render(); }
 void TestScene::lateRender()

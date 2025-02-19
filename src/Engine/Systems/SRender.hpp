@@ -37,7 +37,7 @@ private:
 	SceneBounds mSceneBounds;
     std::shared_ptr<UniformBuffer> mCameraUBO;
 	std::shared_ptr<UniformBuffer> mLightUBO;
-
+	std::shared_ptr<FrameBuffer> mGBuffer;
     std::shared_ptr<FrameBuffer> mDirectionalShadowMapBuffer;
 	std::shared_ptr<FrameBuffer> mSpotShadowMapBuffer;
 	std::shared_ptr<FrameBuffer> mPointShadwMapBuffer;

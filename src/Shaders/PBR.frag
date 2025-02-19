@@ -235,7 +235,7 @@ void mainPBR(out vec3 outColor)
     if (material.hasAlbedoMap) {
         albedoColor = texture(material.albedoMap, TexCoord).rgb;
         // Make sure to remove sRGB if the texture is in sRGB space
-        albedoColor = pow(albedoColor, vec3(2.2));
+        //albedoColor = pow(albedoColor, vec3(2.2));
     }
 
     // 2) Normal Mapping.
