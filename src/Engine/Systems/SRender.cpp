@@ -141,7 +141,7 @@ void SRender::render()
 	cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.Position, 0.0f);
 
 	mCameraUBO->setData(&cameraData, sizeof(CameraData));
-    glCullFace(GL_FRONT);
+    GL_CHECK(glCullFace(GL_FRONT));
 	auto shadowMapShader = GameManager::mGraphicsManager->getShader("ShadowMap");
 	auto pointShadowMapShader = GameManager::mGraphicsManager->getShader("PointShadowMap");
 
@@ -174,17 +174,17 @@ void SRender::render()
 	mPointShadwMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
 	drawModelsShader(pointShadowMapShader);
 	mPointShadwMapBuffer->unbind();
-	glCullFace(GL_BACK);
+	GL_CHECK(glCullFace(GL_BACK));
 
 
 
     int width, height;
     glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
-    glViewport(0, 0, width, height);
+    GL_CHECK(glViewport(0, 0, width, height));
     mHDRFrameBuffer->bind();
     mHDRFrameBuffer->setViewport(0, 0, width, height);
 	mHDRFrameBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 });
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 
     auto pbrShader = GameManager::mGraphicsManager->getShader("PBR");
@@ -258,8 +258,8 @@ void SRender::render()
 	
     mPingPongFBO[!horizontal]->unbind();
 
-    glViewport(0, 0, width, height);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GL_CHECK(glViewport(0, 0, width, height));
+    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 	auto HDRShader = GameManager::mGraphicsManager->getShader("HDR");
 	HDRShader->use();

@@ -48,7 +48,7 @@ OpenGLEnvironmentMap::OpenGLEnvironmentMap(const std::string& hdrPath,
 {
     // Save the current viewport
     GLint oldViewport[4];
-    glGetIntegerv(GL_VIEWPORT, oldViewport);
+    GL_CHECK(glGetIntegerv(GL_VIEWPORT, oldViewport));
 
     // Create the main skybox cubemap from the HDR path
     mSkyboxCubemap = TextureCubemap::createTextureCubemap(hdrPath, equirectangularToCubemapShader);
@@ -59,7 +59,11 @@ OpenGLEnvironmentMap::OpenGLEnvironmentMap(const std::string& hdrPath,
     generateBRDFLUT();
 
     // Restore old viewport
-    glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
+    GL_CHECK(glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]));
+}
+
+OpenGLEnvironmentMap::~OpenGLEnvironmentMap()
+{
 }
 
 
@@ -68,18 +72,18 @@ void OpenGLEnvironmentMap::generateIrradianceMap()
     const unsigned int irradianceSize = 32;
 
     GLuint irradianceCubemapID;
-    glGenTextures(1, &irradianceCubemapID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceCubemapID);
+    GL_CHECK(glGenTextures(1, &irradianceCubemapID));
+    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceCubemapID));
     for (unsigned int i = 0; i < 6; ++i)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-            irradianceSize, irradianceSize, 0, GL_RGB, GL_FLOAT, nullptr);
+        GL_CHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
+            irradianceSize, irradianceSize, 0, GL_RGB, GL_FLOAT, nullptr));
     }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
     mIrradianceCubemap = TextureCubemap::createTextureCubemap(irradianceCubemapID, irradianceSize, irradianceSize);
 
@@ -99,7 +103,7 @@ void OpenGLEnvironmentMap::generateIrradianceMap()
 	mIrradianceShader->setInt("environmentMap", IBLSlots::IRRADIANCE);
     mSkyboxCubemap->bind(IBLSlots::IRRADIANCE);
 
-    glViewport(0, 0, irradianceSize, irradianceSize);
+    GL_CHECK(glViewport(0, 0, irradianceSize, irradianceSize));
 
     // For each face, attach that face as color 0 and draw
     for (unsigned int i = 0; i < 6; ++i)
@@ -127,19 +131,19 @@ void OpenGLEnvironmentMap::generatePrefilterMap()
     const unsigned int prefilterSize = 128;
 
     GLuint prefilterCubemapID;
-    glGenTextures(1, &prefilterCubemapID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterCubemapID);
+    GL_CHECK(glGenTextures(1, &prefilterCubemapID));
+    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterCubemapID));
     for (unsigned int i = 0; i < 6; ++i)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-            prefilterSize, prefilterSize, 0, GL_RGB, GL_FLOAT, nullptr);
+        GL_CHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
+            prefilterSize, prefilterSize, 0, GL_RGB, GL_FLOAT, nullptr));
     }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GL_CHECK(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
 
     mPrefilterCubemap = TextureCubemap::createTextureCubemap(prefilterCubemapID, prefilterSize, prefilterSize);
 
@@ -153,8 +157,8 @@ void OpenGLEnvironmentMap::generatePrefilterMap()
 
     mPrefilterShader->use();
     mPrefilterShader->setMat4("projection", captureProjection);
-	mPrefilterShader->setInt("environmentMap", IBLSlots::PREFILTER);
-	mSkyboxCubemap->bind(IBLSlots::PREFILTER);
+    mPrefilterShader->setInt("environmentMap", IBLSlots::PREFILTER);
+    mSkyboxCubemap->bind(IBLSlots::PREFILTER);
 
     const unsigned int maxMipLevels = 5;
 
@@ -165,7 +169,7 @@ void OpenGLEnvironmentMap::generatePrefilterMap()
         unsigned int mipHeight = mipWidth;
         fbo->resize(mipWidth, mipHeight);
 
-        glViewport(0, 0, mipWidth, mipHeight);
+        GL_CHECK(glViewport(0, 0, mipWidth, mipHeight));
         fbo->bind();
 
         float roughness = (float)mip / (float)(maxMipLevels - 1);
@@ -198,15 +202,15 @@ void OpenGLEnvironmentMap::generateBRDFLUT()
 
     // Create the 2D LUT texture
     GLuint brdfLUTID;
-    glGenTextures(1, &brdfLUTID);
-    glBindTexture(GL_TEXTURE_2D, brdfLUTID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F,
+    GL_CHECK(glGenTextures(1, &brdfLUTID));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, brdfLUTID));
+    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F,
         brdfLUTSize, brdfLUTSize, 0,
-        GL_RG, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL_RG, GL_FLOAT, nullptr));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
     mBRDFLUT = Texture2D::createTexture2D(brdfLUTID, brdfLUTSize, brdfLUTSize);
 
@@ -216,7 +220,7 @@ void OpenGLEnvironmentMap::generateBRDFLUT()
         { {FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RG16F} }
     );
     fbo->bind();
-    glViewport(0, 0, brdfLUTSize, brdfLUTSize);
+    GL_CHECK(glViewport(0, 0, brdfLUTSize, brdfLUTSize));
 
     fbo->attachExternalTexture(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTID, 0);
     fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });

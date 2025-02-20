@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include "Texture2D.hpp"
 #include <TextureCubemap.hpp>
+#include <OpenGLUtil.hpp>
 
 static GLenum toGLInternalFormat(FrameBufferTextureFormat format)
 {
@@ -110,30 +111,30 @@ OpenGLFrameBuffer::~OpenGLFrameBuffer()
 {
     if (m_RendererID != 0)
     {
-        glDeleteFramebuffers(1, &m_RendererID);
+        GL_CHECK(glDeleteFramebuffers(1, &m_RendererID));
         m_RendererID = 0;
     }
 }
 
 void OpenGLFrameBuffer::bind()
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-	glViewport(m_ViewportX, m_ViewportY, m_ViewportW, m_ViewportH);
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID));
+    GL_CHECK(glViewport(m_ViewportX, m_ViewportY, m_ViewportW, m_ViewportH));
 }
 
 void OpenGLFrameBuffer::unbind()
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 void OpenGLFrameBuffer::bindRead()
 {
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
+    GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID));
 }
 
 void OpenGLFrameBuffer::bindDraw()
 {
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_RendererID);
+    GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_RendererID));
 }
 
 void OpenGLFrameBuffer::resize(int width, int height)
@@ -174,13 +175,13 @@ void OpenGLFrameBuffer::getViewport(int& x, int& y, int& width, int& height) con
 void OpenGLFrameBuffer::clear(unsigned int mask)
 {
     bind();
-    glClear(mask);
+    GL_CHECK(glClear(mask));
 }
 
 void OpenGLFrameBuffer::readPixels(int x, int y, int width, int height, void* data)
 {
     bindRead();
-    glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    GL_CHECK(glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data));
 }
 
 void OpenGLFrameBuffer::addAttachment(const FrameBufferAttachmentSpecification& spec)
@@ -206,7 +207,7 @@ void OpenGLFrameBuffer::invalidate()
 {
     if (m_RendererID != 0)
     {
-        glDeleteFramebuffers(1, &m_RendererID);
+        GL_CHECK(glDeleteFramebuffers(1, &m_RendererID));
         m_RendererID = 0;
     }
 
@@ -225,12 +226,12 @@ void OpenGLFrameBuffer::setSamples(int samples)
 bool OpenGLFrameBuffer::isComplete() const
 {
     GLint prevFBO;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+    GL_CHECK(glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO));
 
-    glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID));
     bool complete = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 
-    glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, prevFBO));
     return complete;
 }
 
@@ -252,13 +253,13 @@ std::shared_ptr<Texture> OpenGLFrameBuffer::getDepthAttachment() const
 void OpenGLFrameBuffer::setDrawBuffers(const std::vector<unsigned int>& attachments)
 {
     bindDraw();
-    glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
+    GL_CHECK(glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data()));
 }
 
 void OpenGLFrameBuffer::setReadBuffer(unsigned int attachment)
 {
     bindRead();
-    glReadBuffer(attachment);
+    GL_CHECK(glReadBuffer(attachment));
 }
 
 void OpenGLFrameBuffer::blitTo(
@@ -275,17 +276,17 @@ void OpenGLFrameBuffer::blitTo(
         return;
     }
 
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, glDst->m_RendererID);
+    GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID));
+    GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, glDst->m_RendererID));
 
-    glBlitFramebuffer(
+    GL_CHECK(glBlitFramebuffer(
         srcX0, srcY0, srcX1, srcY1,
         dstX0, dstY0, dstX1, dstY1,
         mask,
         filter
-    );
+    ));
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 void OpenGLFrameBuffer::attachExternalTexture(
@@ -297,19 +298,19 @@ void OpenGLFrameBuffer::attachExternalTexture(
     bind();
     if (target == GL_TEXTURE_CUBE_MAP)
     {
-        glFramebufferTexture(GL_FRAMEBUFFER, attachment, textureID, mipLevel);
+        GL_CHECK(glFramebufferTexture(GL_FRAMEBUFFER, attachment, textureID, mipLevel));
     }
     else
     {
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, textureID, mipLevel);
+        GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, textureID, mipLevel));
     }
 }
 
 
 void OpenGLFrameBuffer::createFramebuffer()
 {
-    glGenFramebuffers(1, &m_RendererID);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+    GL_CHECK(glGenFramebuffers(1, &m_RendererID));
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID));
 
     GLuint colorIndex = 0;
 
@@ -328,7 +329,7 @@ void OpenGLFrameBuffer::createFramebuffer()
 
         // Create a texture ID
         GLuint texID = 0;
-        glGenTextures(1, &texID);
+        GL_CHECK(glGenTextures(1, &texID));
 
         // Decide how to bind texture based on type/samples
         GLenum bindTarget = (m_Samples > 1) ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
@@ -340,12 +341,12 @@ void OpenGLFrameBuffer::createFramebuffer()
         {
             // We only support non-multisampled cubemaps in this example:
             bindTarget = GL_TEXTURE_CUBE_MAP;
-            glBindTexture(bindTarget, texID);
+            GL_CHECK(glBindTexture(bindTarget, texID));
 
             // Allocate each of the six faces
             for (int face = 0; face < 6; ++face)
             {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                GL_CHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
                     0,
                     glInternalFormat,
                     m_Width,
@@ -353,30 +354,28 @@ void OpenGLFrameBuffer::createFramebuffer()
                     0,
                     glFormat,
                     glType,
-                    nullptr);
+                    nullptr));
             }
 
             // Setup basic cubemap parameters
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
+            GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+            GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+            GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+            GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+            GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
             // Enable depth comparison for shadow sampling
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-
+            GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE));
+            GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
             // Attach as depth-only
-            glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texID, 0);
+            GL_CHECK(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texID, 0));
 
             // Wrap the cubemap texture in a TextureCubemap
             auto attachmentTexture = TextureCubemap::createTextureCubemap(texID, m_Width, m_Height);
             m_DepthAttachment = attachmentTexture;
 
             // Disable color buffer for a pure depth pass
-            glDrawBuffer(GL_NONE);
-            glReadBuffer(GL_NONE);
+            GL_CHECK(glDrawBuffer(GL_NONE));
+            GL_CHECK(glReadBuffer(GL_NONE));
 
             continue; // Done handling this attachment
         }
@@ -384,22 +383,22 @@ void OpenGLFrameBuffer::createFramebuffer()
         // ---------------------------------------------------------
         // Fallback: 2D texture or 2D multisampled
         // ---------------------------------------------------------
-        glBindTexture(bindTarget, texID);
+        GL_CHECK(glBindTexture(bindTarget, texID));
 
         if (m_Samples > 1)
         {
-            glTexImage2DMultisample(
+            GL_CHECK(glTexImage2DMultisample(
                 GL_TEXTURE_2D_MULTISAMPLE,
                 m_Samples,
                 glInternalFormat,
                 m_Width,
                 m_Height,
                 GL_FALSE
-            );
+            ));
         }
         else
         {
-            glTexImage2D(
+            GL_CHECK(glTexImage2D(
                 GL_TEXTURE_2D,
                 0,
                 glInternalFormat,
@@ -409,12 +408,12 @@ void OpenGLFrameBuffer::createFramebuffer()
                 glFormat,
                 glType,
                 nullptr
-            );
+            ));
 
-            glTexParameteri(bindTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(bindTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(bindTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(bindTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            GL_CHECK(glTexParameteri(bindTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+            GL_CHECK(glTexParameteri(bindTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+            GL_CHECK(glTexParameteri(bindTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+            GL_CHECK(glTexParameteri(bindTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         }
 
         // Wrap as a Texture2D by default
@@ -422,46 +421,46 @@ void OpenGLFrameBuffer::createFramebuffer()
 
         if (spec.Type == FrameBufferAttachmentType::Color)
         {
-            glFramebufferTexture2D(
+            GL_CHECK(glFramebufferTexture2D(
                 GL_FRAMEBUFFER,
                 GL_COLOR_ATTACHMENT0 + colorIndex,
                 bindTarget,
                 texID,
                 0
-            );
+            ));
             m_ColorAttachments.push_back(attachmentTexture);
             colorIndex++;
         }
         else if (spec.Type == FrameBufferAttachmentType::Depth)
         {
-            glFramebufferTexture2D(
+            GL_CHECK(glFramebufferTexture2D(
                 GL_FRAMEBUFFER,
                 GL_DEPTH_ATTACHMENT,
                 bindTarget,
                 texID,
                 0
-            );
+            ));
             m_DepthAttachment = attachmentTexture;
         }
         else if (spec.Type == FrameBufferAttachmentType::Stencil)
         {
-            glFramebufferTexture2D(
+            GL_CHECK(glFramebufferTexture2D(
                 GL_FRAMEBUFFER,
                 GL_STENCIL_ATTACHMENT,
                 bindTarget,
                 texID,
                 0
-            );
+            ));
         }
         else if (spec.Type == FrameBufferAttachmentType::DepthStencil)
         {
-            glFramebufferTexture2D(
+            GL_CHECK(glFramebufferTexture2D(
                 GL_FRAMEBUFFER,
                 GL_DEPTH_STENCIL_ATTACHMENT,
                 bindTarget,
                 texID,
                 0
-            );
+            ));
             m_DepthAttachment = attachmentTexture;
         }
     }
@@ -474,12 +473,12 @@ void OpenGLFrameBuffer::createFramebuffer()
         {
             drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + i);
         }
-        glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
+        GL_CHECK(glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data()));
     }
     else
     {
-        glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
+        GL_CHECK(glDrawBuffer(GL_NONE));
+        GL_CHECK(glReadBuffer(GL_NONE));
     }
 
     // Validate completeness
@@ -490,7 +489,7 @@ void OpenGLFrameBuffer::createFramebuffer()
             << std::hex << status << std::dec << std::endl;
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 

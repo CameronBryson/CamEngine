@@ -47,28 +47,28 @@ OpenGLTextureCubemap::OpenGLTextureCubemap(const std::string& hdrPath,
     }
 
     GLuint hdrTexID;
-    glGenTextures(1, &hdrTexID);
-    glBindTexture(GL_TEXTURE_2D, hdrTexID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, w, h, 0, GL_RGB, GL_FLOAT, hdrData);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GL_CHECK(glGenTextures(1, &hdrTexID));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, hdrTexID));
+    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, w, h, 0, GL_RGB, GL_FLOAT, hdrData));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
     stbi_image_free(hdrData);
 
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    GL_CHECK(glGenTextures(1, &textureID));
+    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, textureID));
     for (unsigned int i = 0; i < 6; ++i)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-            ENV_MAP_SIZE, ENV_MAP_SIZE, 0, GL_RGB, GL_FLOAT, nullptr);
+        GL_CHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
+            ENV_MAP_SIZE, ENV_MAP_SIZE, 0, GL_RGB, GL_FLOAT, nullptr));
     }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
     width = ENV_MAP_SIZE;
     height = ENV_MAP_SIZE;
@@ -82,10 +82,10 @@ OpenGLTextureCubemap::OpenGLTextureCubemap(const std::string& hdrPath,
     equirectShader->use();
     equirectShader->setMat4("projection", captureProjection);
     equirectShader->setInt("equirectangularMap", 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, hdrTexID);
+    GL_CHECK(glActiveTexture(GL_TEXTURE0));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, hdrTexID));
 
-    glViewport(0, 0, ENV_MAP_SIZE, ENV_MAP_SIZE);
+    GL_CHECK(glViewport(0, 0, ENV_MAP_SIZE, ENV_MAP_SIZE));
     fbo->bind();
     for (unsigned int i = 0; i < 6; ++i)
     {
@@ -102,7 +102,7 @@ OpenGLTextureCubemap::OpenGLTextureCubemap(const std::string& hdrPath,
     }
     fbo->unbind();
 
-    glDeleteTextures(1, &hdrTexID);
+    GL_CHECK(glDeleteTextures(1, &hdrTexID));
 }
 
 OpenGLTextureCubemap::OpenGLTextureCubemap(GLuint id, int w, int h)
@@ -112,21 +112,21 @@ OpenGLTextureCubemap::OpenGLTextureCubemap(GLuint id, int w, int h)
 
 OpenGLTextureCubemap::~OpenGLTextureCubemap()
 {
-    glDeleteTextures(1, &textureID);
+    GL_CHECK(glDeleteTextures(1, &textureID));
 }
 
 void OpenGLTextureCubemap::bind(unsigned int slot)
 {
 	unbind(slot);
-    glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    GL_CHECK(glActiveTexture(GL_TEXTURE0 + slot));
+    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, textureID));
 }
 
 void OpenGLTextureCubemap::unbind(unsigned int slot)
 {
-    glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+    GL_CHECK(glActiveTexture(GL_TEXTURE0 + slot));
+    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 int OpenGLTextureCubemap::getWidth() const { return width; }

@@ -5,6 +5,7 @@
 #include "OpenGLShader.hpp"
 #include "OpenGLTexture2D.hpp"
 #include "TextureSlots.hpp"
+#include <OpenGLUtil.hpp>
 
 // Define texture unit offsets for clarity and maintainability
 
@@ -138,7 +139,7 @@ void OpenGLMaterial::unbind()
     if (albedoTexture)       albedoTexture->unbind(MaterialSlots::ALBEDO);
 
     // Reset active texture unit
-    glActiveTexture(GL_TEXTURE0);
+    GL_CHECK(glActiveTexture(GL_TEXTURE0));
 }
 
 
