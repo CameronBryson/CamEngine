@@ -34,7 +34,7 @@ void GraphicsManager::loadResources()
 	//Used to create environment maps
 	auto brdfShader = loadShader("src/Shaders/brdf.vert", "src/Shaders/brdf.frag", "brdf");
 
-    loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
+    //loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
 	loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");
 	//loadModel(engine_util::buildPath("assets/ABeautifulGame.gltf"), "Chess");
 	//loadModel(engine_util::buildPath("assets/scene.gltf"), "Scene");
@@ -217,37 +217,7 @@ std::shared_ptr<Texture> GraphicsManager::getTexture(const std::string& path)
     }
 }
 
-// Material management
 
-std::shared_ptr<Material> GraphicsManager::createMaterial(const std::string& name,
-    const glm::vec4& albedo,
-    float metallic,
-    float roughness,
-    float AO,
-    const std::shared_ptr<Texture>& albedoTexture,
-    const std::shared_ptr<Texture>& normalTexture,
-    const std::shared_ptr<Texture>& metallicTexture,
-    const std::shared_ptr<Texture>& roughnessTexture,
-    const std::shared_ptr<Texture>& AOTexture,
-    const std::shared_ptr<Texture>& emissiveTexture,
-    const std::shared_ptr<Texture>& metalRoughTexture)
-{
-    // Check if material already exists
-    auto it = material_map_.find(name);
-    if (it != material_map_.end())
-    {
-        return it->second;
-    }
-
-    // Create new material
-    auto material = Material::createMaterial(albedo, metallic, roughness, AO,
-        albedoTexture, normalTexture, metallicTexture,
-        roughnessTexture, AOTexture, emissiveTexture, metalRoughTexture);
-	material->setShader(getShader("PBR"));
-    material_map_.emplace(name, material);
-
-    return material;
-}
 
 std::shared_ptr<Material> GraphicsManager::getMaterial(const std::string& name)
 {
@@ -456,72 +426,84 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
         return it->second;
     }
 
-    // Material properties
-    glm::vec4 albedo(1.0f);
+    // Create new material
+    auto material = Material::createMaterial();
+    material->setShader(getShader("PBR"));
+
+    // Base color/albedo
+    aiColor4D albedoColor;
+    if (AI_SUCCESS == mat->Get(AI_MATKEY_BASE_COLOR, albedoColor)) {
+        material->setAlbedo(glm::vec4(albedoColor.r, albedoColor.g, albedoColor.b, albedoColor.a));
+    }
+
+    // Metallic factor
     float metallic = 0.0f;
-    float roughness = 1.0f;
-    float AO = 1.0f;
-
-    // Retrieve Metallic Factor
     if (AI_SUCCESS == mat->Get(AI_MATKEY_METALLIC_FACTOR, metallic)) {
-        // Successfully retrieved metallic factor
-    }
-    else {
-        std::cerr << "Metallic factor not found for material: " << material_name << ". Using default: " << metallic << std::endl;
+        material->setMetallic(metallic);
     }
 
-    // Retrieve Roughness Factor
+    // Roughness factor
+    float roughness = 0.5f;
     if (AI_SUCCESS == mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness)) {
-        // Successfully retrieved roughness factor
+        material->setRoughness(roughness);
     }
-    else {
-        std::cerr << "Roughness factor not found for material: " << material_name << ". Using default: " << roughness << std::endl;
+
+
+    // Opacity
+    float opacity = 1.0f;
+    if (AI_SUCCESS == mat->Get(AI_MATKEY_OPACITY, opacity)) {
+        material->setOpacity(opacity);
+    }
+
+    // Emissive properties
+    aiColor3D emissiveColor;
+    if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_EMISSIVE, emissiveColor)) {
+        material->setEmissiveColor(glm::vec3(emissiveColor.r, emissiveColor.g, emissiveColor.b));
+    }
+
+    float emissiveIntensity = 0.0f;
+    if (AI_SUCCESS == mat->Get(AI_MATKEY_EMISSIVE_INTENSITY, emissiveIntensity)) {
+        material->setEmissiveIntensity(emissiveIntensity);
+    }
+
+    // Displacement
+    float displacementScale = 0.1f;
+    if (AI_SUCCESS == mat->Get(AI_MATKEY_BUMPSCALING, displacementScale)) {
+        material->setDisplacementScale(displacementScale);
     }
 
     // Load textures
-    std::shared_ptr<Texture> albedoTexture;
-    std::shared_ptr<Texture> normalTexture;
-    std::shared_ptr<Texture> metallicTexture;
-    std::shared_ptr<Texture> roughnessTexture;
-    std::shared_ptr<Texture> AOTexture;
-    std::shared_ptr<Texture> emissiveTexture;
-	std::shared_ptr<Texture> metalRoughTexture;
-
-    // Load the textures based on aiTextureType
     auto albedoTextures = loadMaterialTextures(mat, aiTextureType_BASE_COLOR, directory, scene);
-    if (!albedoTextures.empty()) albedoTexture = albedoTextures[0];
+    if (!albedoTextures.empty()) material->setAlbedoTexture(albedoTextures[0]);
 
     auto normalTextures = loadMaterialTextures(mat, aiTextureType_NORMAL_CAMERA, directory, scene);
-    if (!normalTextures.empty()) normalTexture = normalTextures[0];
+    if (!normalTextures.empty()) material->setNormalTexture(normalTextures[0]);
 
     auto metallicTextures = loadMaterialTextures(mat, aiTextureType_METALNESS, directory, scene);
-    if (!metallicTextures.empty()) metallicTexture = metallicTextures[0];
+    if (!metallicTextures.empty()) material->setMetallicTexture(metallicTextures[0]);
 
     auto roughnessTextures = loadMaterialTextures(mat, aiTextureType_DIFFUSE_ROUGHNESS, directory, scene);
-    if (!roughnessTextures.empty()) roughnessTexture = roughnessTextures[0];
+    if (!roughnessTextures.empty()) material->setRoughnessTexture(roughnessTextures[0]);
 
-    auto AOTextures = loadMaterialTextures(mat, aiTextureType_AMBIENT_OCCLUSION, directory, scene);
-    if (!AOTextures.empty()) AOTexture = AOTextures[0];
+    auto aoTextures = loadMaterialTextures(mat, aiTextureType_AMBIENT_OCCLUSION, directory, scene);
+    if (!aoTextures.empty()) material->setAOTexture(aoTextures[0]);
 
     auto emissiveTextures = loadMaterialTextures(mat, aiTextureType_EMISSION_COLOR, directory, scene);
-    if (!emissiveTextures.empty()) emissiveTexture = emissiveTextures[0];
+    if (!emissiveTextures.empty()) material->setEmissiveTexture(emissiveTextures[0]);
 
-	auto metalRoughTextures = loadMaterialTextures(mat, aiTextureType_UNKNOWN, directory, scene);
-	if (!metalRoughTextures.empty()) metalRoughTexture = metalRoughTextures[0];
+    auto displacementTextures = loadMaterialTextures(mat, aiTextureType_DISPLACEMENT, directory, scene);
+    if (!displacementTextures.empty()) material->setDisplacementTexture(displacementTextures[0]);
 
-    if (metalRoughTextures.size() > 1) {
-        printf("Brub");
-    }
+    // Handle combined metallic-roughness texture (common in glTF)
+    auto metalRoughTextures = loadMaterialTextures(mat, aiTextureType_UNKNOWN, directory, scene);
+    if (!metalRoughTextures.empty()) material->setMetalRoughTexture(metalRoughTextures[0]);
 
-
-
-    // Create the material with updated metallic and roughness
-    auto material = createMaterial(material_name, albedo, metallic, roughness, AO,
-        albedoTexture, normalTexture, metallicTexture,
-        roughnessTexture, AOTexture, emissiveTexture, metalRoughTexture);
+    // Store in material map
+    material_map_.emplace(material_name, material);
 
     return material;
 }
+
 
 
 std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(

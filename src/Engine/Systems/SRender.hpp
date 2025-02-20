@@ -22,6 +22,7 @@ class SRender
 public:
     SRender(BaseScene* scene);
     void init();
+    void lateInit();
     void render();
     void shutdown();
 

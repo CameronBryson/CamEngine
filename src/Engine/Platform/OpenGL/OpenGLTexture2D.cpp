@@ -11,6 +11,7 @@
 #include <assimp/texture.h>
 
 // Constructor for loading textures from a file
+// Constructor for loading textures from a file
 OpenGLTexture2D::OpenGLTexture2D(const std::string& file)
     : textureID(0), width(0), height(0)
 {
@@ -21,12 +22,6 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& file)
         throw std::runtime_error("Failed to generate texture ID.");
     }
     glBindTexture(GL_TEXTURE_2D, textureID);
-
-    // Set texture wrapping and filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // You can change to GL_CLAMP_TO_EDGE if needed
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // You can change to GL_CLAMP_TO_EDGE if needed
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // For PBR, trilinear filtering is preferred
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Load the texture data using stb_image
     int nrChannels;
@@ -66,6 +61,12 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& file)
         internalFormat = GL_RGB8;
     }
 
+    // Set texture wrapping based on format
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     // Upload the texture data to the GPU
     glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
@@ -100,12 +101,6 @@ OpenGLTexture2D::OpenGLTexture2D(const aiTexture* aiTex)
     }
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    // Set texture wrapping and filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // You can change to GL_CLAMP_TO_EDGE if needed
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // You can change to GL_CLAMP_TO_EDGE if needed
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // For PBR, trilinear filtering is preferred
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
     unsigned char* data = nullptr;
     GLenum format = GL_RGB;
     GLenum internalFormat = GL_RGB8;
@@ -127,21 +122,31 @@ OpenGLTexture2D::OpenGLTexture2D(const aiTexture* aiTex)
         if (data)
         {
             if (nrChannels == 1)
+            {
                 format = GL_RED;
+                internalFormat = GL_RED;
+            }
             else if (nrChannels == 3)
+            {
                 format = GL_RGB;
-            else if (nrChannels == 4)
-                format = GL_RGBA;
-            else
-                format = GL_RGB; // Fallback
-
-            // Set internal format based on number of channels
-            if (nrChannels == 3)
                 internalFormat = GL_SRGB;
+            }
             else if (nrChannels == 4)
+            {
+                format = GL_RGBA;
                 internalFormat = GL_SRGB_ALPHA;
+            }
             else
+            {
+                format = GL_RGB; // Fallback
                 internalFormat = GL_RGB8;
+            }
+
+            // Set texture wrapping based on format
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             // Upload the texture data to the GPU
             glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
@@ -179,9 +184,15 @@ OpenGLTexture2D::OpenGLTexture2D(const aiTexture* aiTex)
             }
         }
 
-        // Set format
+        // Set format for RGBA
         format = GL_RGBA;
-        internalFormat = GL_SRGB_ALPHA; // Assume diffuse textures are sRGB
+        internalFormat = GL_SRGB_ALPHA;
+
+        // Set texture wrapping for RGBA (always use CLAMP_TO_EDGE for RGBA)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         // Upload texture data to GPU
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);

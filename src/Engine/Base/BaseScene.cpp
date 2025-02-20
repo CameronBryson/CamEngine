@@ -15,6 +15,7 @@ void BaseScene::init()
 }
 void BaseScene::lateInit()
 {
+	mRenderSystem.lateInit();
 }
 void BaseScene::update(float dt)
 {

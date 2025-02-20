@@ -22,7 +22,7 @@ void OpenGlUtil::init()
 		exit(EXIT_FAILURE);
 	}
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -50,6 +50,13 @@ void OpenGlUtil::init()
 
 
     glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+    glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);
+
+
 
 
 	GameManager::set_glfw_window(game_window);

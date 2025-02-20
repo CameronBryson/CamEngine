@@ -57,7 +57,7 @@ void SRender::init()
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 450");
+    ImGui_ImplOpenGL3_Init("#version 460");
 
 	mCameraUBO = UniformBuffer::createUniformBuffer(sizeof(CameraData), CAMERA_BINDING);
 	mLightUBO = UniformBuffer::createUniformBuffer(sizeof(LightData), LIGHT_BINDING);
@@ -107,13 +107,18 @@ void SRender::init()
 
 }
 
+void SRender::lateInit()
+{
+    calculateSceneBounds();
+}
+
 void SRender::render()
 
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-
+    
     OpenGlUtil::clearBackground();
 
 
@@ -136,7 +141,7 @@ void SRender::render()
 	cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.Position, 0.0f);
 
 	mCameraUBO->setData(&cameraData, sizeof(CameraData));
-
+    glCullFace(GL_FRONT);
 	auto shadowMapShader = GameManager::mGraphicsManager->getShader("ShadowMap");
 	auto pointShadowMapShader = GameManager::mGraphicsManager->getShader("PointShadowMap");
 
@@ -169,7 +174,7 @@ void SRender::render()
 	mPointShadwMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
 	drawModelsShader(pointShadowMapShader);
 	mPointShadwMapBuffer->unbind();
-
+	glCullFace(GL_BACK);
 
 
 
@@ -250,6 +255,7 @@ void SRender::render()
         OpenGlUtil::drawQuad();
         horizontal = !horizontal;
     }
+	
     mPingPongFBO[!horizontal]->unbind();
 
     glViewport(0, 0, width, height);
@@ -267,6 +273,7 @@ void SRender::render()
 
 	mPingPongFBO[!horizontal]->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
 	HDRShader->setInt("bloomBuffer", PostProcessSlots::BLOOM);
+
     OpenGlUtil::drawQuad();
     drawImGui();
 }

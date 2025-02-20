@@ -33,13 +33,13 @@ void TestScene::init()
 	mEnttRegistry.emplace<CChildren>(testParent);
 	mEnttRegistry.get<CChildren>(sceneRoot).children.push_back(testParent);
 
-	auto testModel = mEnttRegistry.create();
-	mEnttRegistry.emplace<CModel>(testModel, "MetalTests");
-	glm::vec3 rotationEulerAngles = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
-	glm::quat rotationQuat = glm::quat(rotationEulerAngles);
-	mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -2.5}, rotationQuat, glm::vec3{1, 1, 1});
-	mEnttRegistry.emplace<CParent>(testModel, testParent);
-	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
+	//auto testModel = mEnttRegistry.create();
+	//mEnttRegistry.emplace<CModel>(testModel, "MetalTests");
+	//glm::vec3 rotationEulerAngles = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
+	//glm::quat rotationQuat = glm::quat(rotationEulerAngles);
+	//mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -2.5}, rotationQuat, glm::vec3{1, 1, 1});
+	//mEnttRegistry.emplace<CParent>(testModel, testParent);
+	//mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
 
 	auto testModel2 = mEnttRegistry.create();
 	mEnttRegistry.emplace<CModel>(testModel2, "Sponza");
@@ -63,8 +63,8 @@ void TestScene::init()
 	auto pointLight = mEnttRegistry.create();
 	// Add some ambient light and tone down the intensity
 	glm::vec3 ambient = glm::vec3(0.1f, 0.1f, 0.1f);    // Soft ambient light
-	glm::vec3 diffuse = glm::vec3(0.8f, 0.8f, 0.8f);    // Strong but not max diffuse
-	glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);   // Full specular
+	glm::vec3 diffuse = glm::vec3(1.8f, 1.8f, 1.8f);    // Strong but not max diffuse
+	glm::vec3 specular = glm::vec3(2.0f, 2.0f, 2.0f);   // Full specular
 
 	// Adjust attenuation for your scene scale (your chess piece is at -75 units)
 	float constant = 1.0f;

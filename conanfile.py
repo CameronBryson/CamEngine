@@ -17,5 +17,20 @@ class ConanRecipe(ConanFile):
         self.requires("freetype/2.11.1")
         self.requires("stb/cci.20230920")
         self.requires("eastl/3.21.12")
+
     def configure(self):
-        self.options['glad'].gl_version = '4.5'
+        self.options['glad'].gl_version = '4.6'
+        self.options['glad'].extensions = [
+            "GL_ARB_ES2_compatibility",
+            "GL_ARB_direct_state_access",
+            "GL_ARB_compute_shader",
+            "GL_ARB_shader_image_load_store",
+            "GL_ARB_shader_storage_buffer_object",
+            "GL_ARB_copy_image",
+            "GL_ARB_texture_storage",
+            "GL_ARB_texture_multisample",
+            "GL_ARB_invalidate_subdata",
+            "GL_ARB_multi_bind",
+            "GL_ARB_multi_draw_indirect"
+            # Add additional extensions as needed
+        ]

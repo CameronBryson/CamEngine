@@ -43,7 +43,6 @@ public:
     std::shared_ptr<Texture> getTexture(const std::string& path);
 
     // Material management
-    std::shared_ptr<Material> createMaterial(const std::string& name, const glm::vec4& albedo, float metallic, float roughness, float AO, const std::shared_ptr<Texture>& albedoTexture, const std::shared_ptr<Texture>& normalTexture, const std::shared_ptr<Texture>& metallicTexture, const std::shared_ptr<Texture>& roughnessTexture, const std::shared_ptr<Texture>& AOTexture, const std::shared_ptr<Texture>& emissiveTexture, const std::shared_ptr<Texture>& metalRoughTexture);
     std::shared_ptr<Material> getMaterial(const std::string& name);
 
     // Mesh management

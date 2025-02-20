@@ -26,7 +26,7 @@ std::unique_ptr<GraphicsManager> GameManager::mGraphicsManager = nullptr;
 void GameManager::firstInit()
 {
 	OpenGlUtil::init();
-	OpenALUtil::init();
+	//OpenALUtil::init();
 	mAudioManager = std::make_unique<AudioManager>();
 	mGraphicsManager = std::make_unique<GraphicsManager>();
 	mGraphicsManager->loadResources();
@@ -62,7 +62,7 @@ void GameManager::finalShutdown()
 {
 	mAudioManager->unloadResources();
 	mGraphicsManager->unloadResources();
-	OpenALUtil::shutdown();
+	//OpenALUtil::shutdown();
 	OpenGlUtil::shutdown();
 }
 
