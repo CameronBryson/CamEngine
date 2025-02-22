@@ -17,44 +17,81 @@ struct SceneBounds
     glm::vec3 min;
 	glm::vec3 max;
 };
-class SRender
-{
+class SRender {
 public:
-    SRender(BaseScene* scene);
+    explicit SRender(BaseScene* scene);
+
+    // Core system functions
     void init();
     void lateInit();
     void render();
     void shutdown();
 
+private:
+    // Initialization helpers
+    void initImGui();
+    void initFramebuffers();
+    void calculateSceneBounds();
+
+    // Light data building
+    void buildLightData(LightData& lightData);
     void buildDirectionalLights(LightData& lightData);
     void buildPointLights(LightData& lightData);
-	void buildSpotLights(LightData& lightData);
+    void buildSpotLights(LightData& lightData);
+
+    // Render passes
+    void updateCameraUniforms();
+    void shadowPass(const LightData& lightData);
+    void geometryPass();
+    void lightingPass();
+    void postProcessPass();
+
+    // Shadow mapping
+    void renderDirectionalShadows(const LightData& lightData);
+    void renderSpotShadows(const LightData& lightData);
+    void renderPointShadows(const LightData& lightData);
+
+    // Post-processing
+    void bloomPass();
+    void hdrPass();
+
+    // Resource binding
+    void bindSkyboxResources(std::shared_ptr<Shader>& shader);
+    void bindShadowMaps(std::shared_ptr<Shader>& shader);
+
+    // Drawing helpers
     void drawModels() const;
-	void drawModelsShader(std::shared_ptr<Shader>& shader) const;
+    void drawModelsShader(std::shared_ptr<Shader>& shader) const;
     void drawImGui();
 
-private:
+    // Scene data
     BaseScene* mScene;
-	SceneBounds mSceneBounds;
-    std::shared_ptr<UniformBuffer> mCameraUBO;
-	std::shared_ptr<UniformBuffer> mLightUBO;
-	std::shared_ptr<FrameBuffer> mGBuffer;
-    std::shared_ptr<FrameBuffer> mDirectionalShadowMapBuffer;
-	std::shared_ptr<FrameBuffer> mSpotShadowMapBuffer;
-	std::shared_ptr<FrameBuffer> mPointShadwMapBuffer;
+    SceneBounds mSceneBounds;
 
-	std::shared_ptr<FrameBuffer> mHDRFrameBuffer;
-	float mExposure = 1.0f;
-    bool mHDR = true;
+    // Uniform buffers
+    std::shared_ptr<UniformBuffer> mCameraUBO;
+    std::shared_ptr<UniformBuffer> mLightUBO;
+
+    // Framebuffers
+    std::shared_ptr<FrameBuffer> mGBuffer;
+    std::shared_ptr<FrameBuffer> mDirectionalShadowMapBuffer;
+    std::shared_ptr<FrameBuffer> mSpotShadowMapBuffer;
+    std::shared_ptr<FrameBuffer> mPointShadwMapBuffer;
+    std::shared_ptr<FrameBuffer> mHDRFrameBuffer;
+    std::shared_ptr<FrameBuffer> mPingPongFBO[2];
+
+    // Shadow mapping settings
+    const int mShadowMapWidth = 2048;
+    const int mShadowMapHeight = 2048;
     bool mEnableShadows = true;
     float nearPlane = 1.0f;
     float farPlane = 25.0f;
-    std::shared_ptr<FrameBuffer> mPingPongFBO[2];
+
+    // Post-processing settings
+    float mExposure = 1.0f;
+    bool mHDR = true;
     bool bloomEnabled = true;
-	float bloomThreshold = 1.0f;
-	float bloomStrength = 1.0f;
+    float bloomThreshold = 1.0f;
+    float bloomStrength = 1.0f;
     int blurPasses = 10;
-    const int mShadowMapWidth = 2048;
-    const int mShadowMapHeight = 2048;
-    void calculateSceneBounds();
 };

@@ -144,7 +144,10 @@ OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fra
    shaderID = ID;  
 }  
 
-OpenGLShader::~OpenGLShader() { deleteShader(); }  
+OpenGLShader::~OpenGLShader() 
+{
+    deleteShader();
+}  
 
 void OpenGLShader::use() const { GL_CHECK(glUseProgram(shaderID)); }  
 

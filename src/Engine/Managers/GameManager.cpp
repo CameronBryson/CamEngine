@@ -27,10 +27,10 @@ void GameManager::firstInit()
 {
 	OpenGlUtil::init();
 	//OpenALUtil::init();
-	mAudioManager = std::make_unique<AudioManager>();
+	//mAudioManager = std::make_unique<AudioManager>();
 	mGraphicsManager = std::make_unique<GraphicsManager>();
 	mGraphicsManager->loadResources();
-	mAudioManager->loadResources();
+	//mAudioManager->loadResources();
 }
 void GameManager::init()
 {
@@ -60,7 +60,7 @@ void GameManager::shutdown()
 
 void GameManager::finalShutdown() 
 {
-	mAudioManager->unloadResources();
+	//mAudioManager->unloadResources();
 	mGraphicsManager->unloadResources();
 	//OpenALUtil::shutdown();
 	OpenGlUtil::shutdown();

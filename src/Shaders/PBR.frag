@@ -1,17 +1,21 @@
 #version 460 core
-
+precision mediump float;
+precision mediump sampler2DShadow;
+precision mediump samplerCubeShadow;
 // ------------------------------------------------------------------------------------
 // Outputs
 // ------------------------------------------------------------------------------------
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
 
+
 // ------------------------------------------------------------------------------------
 // Vertex Inputs
 // ------------------------------------------------------------------------------------
-in vec2 TexCoord;
-in vec3 FragPos;
-in mat3 TBN;
+layout(location = 0) in vec2 TexCoord;
+layout(location = 1) in vec3 FragPos;
+layout(location = 2) in mat3 TBN;
+layout (early_fragment_tests) in;
 
 // ------------------------------------------------------------------------------------
 // Constants & Limits
@@ -106,15 +110,15 @@ uniform samplerCube prefilterMap;
 uniform sampler2D  brdfLUT;
 
 // Shadow Maps
-uniform sampler2D  directionalShadowMap;
-uniform sampler2D  spotShadowMap;
-uniform samplerCube pointShadowMap;
+uniform sampler2DShadow  directionalShadowMap;
+uniform sampler2DShadow  spotShadowMap;
+uniform samplerCubeShadow pointShadowMap;
 
 // ------------------------------------------------------------------------------------
 // Function Prototypes
 // ------------------------------------------------------------------------------------
 float  calculatePointShadow(vec3 lightPos);
-float  calculateShadow(vec3 worldPos, vec3 normal, vec3 lightDir, mat4 lightSpaceMatrix, sampler2D shadowMap);
+float  calculateShadow(vec3 worldPos, vec3 normal, vec3 lightDir, mat4 lightSpaceMatrix, sampler2DShadow shadowMap);
 vec3   getNormalFromMap();
 vec3   perturbNormal(vec3 N, vec3 viewDir, float height);
 
@@ -306,6 +310,7 @@ vec3 computeDirectLighting(vec3 N, vec3 V, vec3 F0, vec3 albedoColor, float meta
 // 6) Image-Based Lighting (IBL) with diffuse irradiance & specular pre-filtering.
 vec3 computeIBL(vec3 N, vec3 R, vec3 V, vec3 F0, vec3 albedoColor, float metallicValue, float roughnessValue, float aoValue)
 {
+    const float MAX_REFLECTION_LOD = 4.0;
     float NdotV = max(dot(N, V), 0.0);
 
     // Fresnel factor for IBL
@@ -320,7 +325,6 @@ vec3 computeIBL(vec3 N, vec3 R, vec3 V, vec3 F0, vec3 albedoColor, float metalli
     vec3 diffuseIBL  = irradiance * albedoColor;
 
     // Specular IBL
-    const float MAX_REFLECTION_LOD = 4.0;
     vec3 prefilteredColor = textureLod(prefilterMap, R, roughnessValue * MAX_REFLECTION_LOD).rgb;
     vec2 brdf = texture(brdfLUT, vec2(NdotV, roughnessValue)).rg;
     vec3 specularIBL = prefilteredColor * (F_IBL * brdf.x + brdf.y);
@@ -413,51 +417,69 @@ void main()
 // ------------------------------------------------------------------------------------
 float calculatePointShadow(vec3 lightPos)
 {
-    vec3 fragToLight  = FragPos - lightPos;
-    float currentDepth= length(fragToLight) / farPlane;
-    float bias        = 0.05 * currentDepth;
-
-    float shadow  = 0.0;
+    // Get vector from fragment to light
+    vec3 fragToLight = FragPos - lightPos;
+    
+    // Current depth
+    float currentDepth = length(fragToLight) / farPlane;
+    
+    // Bias based on depth
+    float bias = 0.05 * currentDepth;
+    
+    // Hardware PCF sampling
+    float shadow = 0.0;
     float samples = 4.0;
-    float offset  = 0.1;
-
-    for (float x = -offset; x < offset; x += offset / (samples * 0.5))
+    float offset = 0.1;
+    
+    // Sample multiple times for soft shadows
+    for(float x = -offset; x < offset; x += offset / (samples * 0.5))
     {
-        for (float y = -offset; y < offset; y += offset / (samples * 0.5))
+        for(float y = -offset; y < offset; y += offset / (samples * 0.5))
         {
-            for (float z = -offset; z < offset; z += offset / (samples * 0.5))
+            for(float z = -offset; z < offset; z += offset / (samples * 0.5))
             {
-                vec3 sampleVec   = fragToLight + vec3(x, y, z);
-                float closestDepth = texture(pointShadowMap, normalize(sampleVec)).r;
-                shadow += (currentDepth - bias < closestDepth) ? 1.0 : 0.0;
+                vec3 sampleVec = fragToLight + vec3(x, y, z);
+                // Hardware comparison happens here - returns filtered 0 to 1
+                shadow += texture(pointShadowMap, vec4(normalize(sampleVec), currentDepth - bias));
             }
         }
     }
+    
     shadow /= (samples * samples * samples);
     return shadow;
 }
 
-float calculateShadow(vec3 worldPos, vec3 normal, vec3 lightDir, mat4 lightSpaceMatrix, sampler2D shadowMap)
+float calculateShadow(vec3 worldPos, vec3 normal, vec3 lightDir, mat4 lightSpaceMatrix, sampler2DShadow shadowMap)
 {
+    // Transform to light space
     vec4 lightSpacePos = lightSpaceMatrix * vec4(worldPos, 1.0);
-    vec3 projCoords    = lightSpacePos.xyz / lightSpacePos.w;
-    projCoords         = projCoords * 0.5 + 0.5;
-
+    vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
+    
+    // Transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    
+    // Get depth bias
+    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
+    
+    // Early out if beyond far plane
     if(projCoords.z > 1.0)
         return 1.0;
-
-    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
+        
+    // PCF sampling
     float shadow = 0.0;
     vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
-
+    
     for(int x = -1; x <= 1; ++x)
     {
         for(int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += (projCoords.z - bias) > pcfDepth ? 0.0 : 1.0;
+            // Hardware PCF - returns filtered 0 to 1
+            shadow += texture(shadowMap, 
+                vec3(projCoords.xy + vec2(x, y) * texelSize, 
+                     projCoords.z - bias));
         }
     }
+    
     shadow /= 9.0;
     return shadow;
 }

@@ -279,3 +279,27 @@ int OpenGLTexture2D::getHeight() const
 {
     return height;
 }
+
+void OpenGLTexture2D::setShadowSamplerParameters()
+{
+    bind(0);  // This could be the issue - binding to unit 0
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    unbind(0);
+    isShadowSampler = true;
+}
+
+
+
+void OpenGLTexture2D::setNormalSamplerParameters()
+{
+    bind(0);
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    unbind(0);
+    isShadowSampler = false;
+}
+

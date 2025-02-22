@@ -24,7 +24,7 @@ public:
     float Yaw;
     float Pitch;
     // camera options
-    float FOV;
+    float Fov;
     glm::mat4 projection_matrix;
     glm::mat4 view_matrix;
 

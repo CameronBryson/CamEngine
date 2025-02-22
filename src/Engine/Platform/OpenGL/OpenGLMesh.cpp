@@ -47,6 +47,7 @@ void OpenGLMesh::drawShadow(std::shared_ptr<Shader>& shadowShader, glm::mat4 mod
 	shadowShader->use();
 	shadowShader->setMat4("model", model);
 	mVertexArray->bind();
+
 	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mVertexArray->getIndexBuffer()->getCount()), GL_UNSIGNED_INT, nullptr));
 	mVertexArray->unbind();
 }

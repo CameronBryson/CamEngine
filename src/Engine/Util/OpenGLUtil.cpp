@@ -134,27 +134,95 @@ void OpenGlUtil::drawCube()
 {
     static unsigned int cubeVAO = 0;
     static unsigned int cubeVBO = 0;
+
+    // Save GL state
+    GLint last_array_buffer, last_vertex_array;
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
     if (cubeVAO == 0)
     {
         float vertices[] = {
-            // positions
-            -1.0f,  1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             // ... rest of your existing cube data ...
+            // positions          // texture coords
+            // Back face
+           -1.0f,  1.0f, -1.0f,  0.0f, 1.0f,
+           -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,
+            1.0f, -1.0f, -1.0f,  1.0f, 0.0f,
+            1.0f, -1.0f, -1.0f,  1.0f, 0.0f,
+            1.0f,  1.0f, -1.0f,  1.0f, 1.0f,
+           -1.0f,  1.0f, -1.0f,  0.0f, 1.0f,
+
+           // Left face
+          -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,
+          -1.0f, -1.0f, -1.0f,  1.0f, 0.0f,
+          -1.0f,  1.0f, -1.0f,  1.0f, 1.0f,
+          -1.0f,  1.0f, -1.0f,  1.0f, 1.0f,
+          -1.0f,  1.0f,  1.0f,  0.0f, 1.0f,
+          -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,
+
+          // Right face
+          1.0f, -1.0f, -1.0f,  0.0f, 0.0f,
+          1.0f, -1.0f,  1.0f,  1.0f, 0.0f,
+          1.0f,  1.0f,  1.0f,  1.0f, 1.0f,
+          1.0f,  1.0f,  1.0f,  1.0f, 1.0f,
+          1.0f,  1.0f, -1.0f,  0.0f, 1.0f,
+          1.0f, -1.0f, -1.0f,  0.0f, 0.0f,
+
+          // Front face
+         -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,
+         -1.0f,  1.0f,  1.0f,  0.0f, 1.0f,
+          1.0f,  1.0f,  1.0f,  1.0f, 1.0f,
+          1.0f,  1.0f,  1.0f,  1.0f, 1.0f,
+          1.0f, -1.0f,  1.0f,  1.0f, 0.0f,
+         -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,
+
+         // Top face
+        -1.0f,  1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f,  1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f,  1.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,  1.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f,  1.0f, -1.0f,  0.0f, 0.0f,
+
+        // Bottom face
+       -1.0f, -1.0f, -1.0f,  0.0f, 1.0f,
+       -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,
+        1.0f, -1.0f, -1.0f,  1.0f, 1.0f,
+        1.0f, -1.0f, -1.0f,  1.0f, 1.0f,
+       -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,
+        1.0f, -1.0f,  1.0f,  1.0f, 0.0f
         };
         GL_CHECK(glGenVertexArrays(1, &cubeVAO));
         GL_CHECK(glGenBuffers(1, &cubeVBO));
+
         GL_CHECK(glBindVertexArray(cubeVAO));
         GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, cubeVBO));
         GL_CHECK(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
             vertices, GL_STATIC_DRAW));
-        // Configure vertex attributes as needed
+
+        // Position attribute
+        GL_CHECK(glEnableVertexAttribArray(0));
+        GL_CHECK(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+            5 * sizeof(float), (void*)0));
+
+        // Texture coord attribute
+        GL_CHECK(glEnableVertexAttribArray(1));
+        GL_CHECK(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+            5 * sizeof(float), (void*)(3 * sizeof(float))));
+
+        // Unbind VAO first, then VBO
+        GL_CHECK(glBindVertexArray(0));
+        GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
     }
+
+    // Draw
     GL_CHECK(glBindVertexArray(cubeVAO));
-    GL_CHECK(glDrawArrays(GL_TRIANGLES, 0, 36)); // Example: 36 vertices
-    GL_CHECK(glBindVertexArray(0));
+    GL_CHECK(glDrawArrays(GL_TRIANGLES, 0, 36));
+
+    // Restore state
+    GL_CHECK(glBindVertexArray(last_vertex_array));
+    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer));
 }
+
 
 
 void OpenGlUtil::framebufferSizeCallback(GLFWwindow* window, int width, int height)

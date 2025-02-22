@@ -23,10 +23,13 @@ public:
     void unbind(unsigned int slot) override;
     int  getWidth()  const override;
     int  getHeight() const override;
+	void setShadowSamplerParameters() override;
+	void setNormalSamplerParameters() override;
 
 private:
     GLuint textureID = 0;
     int    width = 0;
     int    height = 0;
+	bool  isShadowSampler = false;
 
 };

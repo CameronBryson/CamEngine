@@ -17,10 +17,13 @@ public:
 	int getWidth() const override;
 	int getHeight() const override;
 	unsigned int getTextureID() const override { return textureID; }
+	void setShadowSamplerParameters() override;
+	void setNormalSamplerParameters() override;
 
 private:
 	GLuint textureID = 0;
 	unsigned char* data = nullptr;
 	int width = 0;
 	int height = 0;
+	bool isShadowSampler = false;
 };

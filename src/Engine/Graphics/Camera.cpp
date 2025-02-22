@@ -12,9 +12,9 @@ Camera::Camera(glm::vec3 position, glm::vec3 up,
 	       WorldUp = up;
 	       Yaw = yaw;
 	       Pitch = pitch;
-		   FOV = FOV;
+		   Fov = FOV;
 	       updateCameraVectors();
-	       projection_matrix = glm::perspective(glm::radians(FOV), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
+	       projection_matrix = glm::perspective(glm::radians(Fov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
 	       view_matrix = glm::lookAt(Position, Position + Front, Up);
 	   }
 	   glm::mat4& Camera::GetViewMatrix()
@@ -42,5 +42,5 @@ Camera::Camera(glm::vec3 position, glm::vec3 up,
 
 	   void Camera::updateProjectionMatrix()
 	   {
-		   projection_matrix = glm::perspective(glm::radians(FOV), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
+		   projection_matrix = glm::perspective(glm::radians(Fov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
 	   }
