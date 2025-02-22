@@ -24,17 +24,17 @@ out mat3 TBN;
 void main()
 {
     // Compute world-space position of this vertex
-    FragPos = vec3(model * vec4(aPos, 1.0));
-
-    // Just pass the UV coords through
     TexCoord = aTexCoords;
-
-    // Construct TBN from model transform:
-    vec3 T = normalize(mat3(model) * aTangent);
-    vec3 B = normalize(mat3(model) * aBitangent);
-    vec3 N = normalize(mat3(model) * aNormal);
+    FragPos = vec3(model * vec4(aPos, 1.0));
+    
+    // Calculate TBN matrix for normal mapping
+    mat3 normalMatrix = transpose(inverse(mat3(model)));
+    vec3 T = normalize(normalMatrix * aTangent);
+    vec3 N = normalize(normalMatrix * aNormal);
+    // Re-orthogonalize T with respect to N
+    T = normalize(T - dot(T, N) * N);
+    vec3 B = cross(N, T);
     TBN = mat3(T, B, N);
 
-    // Final position uses the camera UBO data
-    gl_Position = uProjection * uView * model * vec4(aPos, 1.0);
+    gl_Position = uProjection * uView * vec4(FragPos, 1.0);
 }

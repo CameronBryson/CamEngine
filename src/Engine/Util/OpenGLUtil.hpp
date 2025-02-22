@@ -48,6 +48,8 @@ public:
 	static void clearBackground();
 	static void drawQuad();
 	static void drawCube();
+    static void checkGLState();
+    static void chechTextureState(unsigned int unit);
 
 
 	static void framebufferSizeCallback(GLFWwindow* window, int width, int height);

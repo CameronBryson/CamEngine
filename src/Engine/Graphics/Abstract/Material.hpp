@@ -7,7 +7,7 @@ class Material
 {
 public:
     virtual ~Material() = default;
-    virtual void bind() = 0;
+    virtual void bind(std::shared_ptr<Shader> shader) = 0;
     virtual void unbind() = 0;
 
     // Shader

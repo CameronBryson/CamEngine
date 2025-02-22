@@ -25,6 +25,9 @@ void GraphicsManager::loadResources()
 	loadShader("src/Shaders/pointshadow.vert", "src/Shaders/pointshadow.frag", "src/Shaders/pointshadow.geom", "PointShadowMap");
 	loadShader("src/Shaders/hdr.vert", "src/Shaders/hdr.frag", "HDR");
 	loadShader("src/Shaders/blur.vert", "src/Shaders/blur.frag", "Blur");
+	loadShader("src/Shaders/vertex.vert", "src/Shaders/gbuffer.frag", "GBuffer");
+	loadShader("src/Shaders/depth.vert", "src/Shaders/depth.frag", "Depth");
+	loadShader("src/Shaders/deferred.vert", "src/Shaders/deferred.frag", "Deferred");
     //This is needed to create a cubemap texture from an hdr
 	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps

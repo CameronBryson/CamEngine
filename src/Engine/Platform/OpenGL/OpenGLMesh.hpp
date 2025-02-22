@@ -16,7 +16,7 @@ public:
 	~OpenGLMesh() override;
 
 	void draw(glm::mat4 model) const override;
-	void drawShadow(std::shared_ptr<Shader>& shadowShader, glm::mat4 model) const override;
+	void draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bindMaterial = false) const override;
 
 	void setMaterial(const std::shared_ptr<Material>& material) override;
 	std::vector<Vertex>& getVertices() override;

@@ -10,7 +10,7 @@ class OpenGLMaterial : public Material
 {
 public:
     OpenGLMaterial();
-    void bind() override;
+    void bind(std::shared_ptr<Shader> shader) override;
     void unbind() override;
 
     // Implement all getters and setters

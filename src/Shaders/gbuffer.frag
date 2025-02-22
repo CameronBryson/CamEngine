@@ -1,1 +1,109 @@
 #version 460 core
+precision mediump float;
+
+// G-Buffer outputs
+layout (location = 0) out vec4 gAlbedoAO;      // RGB: Albedo, A: Ambient Occlusion
+layout (location = 1) out vec4 gNormalMetallic; // RGB: World space normal, A: Metallic
+layout (location = 2) out vec4 gRoughEmissive;  // R: Roughness, GBA: Emissive
+
+// Inputs from vertex shader
+layout (location = 0) in vec2 TexCoord;
+layout (location = 1) in vec3 FragPos;
+layout (location = 2) in mat3 TBN;
+
+// Material struct (same as your PBR shader)
+struct Material {
+    bool hasAlbedoMap;
+    bool hasNormalMap;
+    bool hasMetallicMap;
+    bool hasRoughnessMap;
+    bool hasMetalRoughMap;
+    bool hasAOMap;
+    bool hasEmissiveMap;
+    bool hasOpacityMap;
+    bool hasDisplacementMap;
+
+    sampler2D albedoMap;
+    sampler2D normalMap;
+    sampler2D metallicMap;
+    sampler2D roughnessMap;
+    sampler2D metalRoughMap;
+    sampler2D AOMap;
+    sampler2D emissiveMap;
+    sampler2D opacityMap;
+    sampler2D displacementMap;
+
+    vec4  albedo;
+    float metallic;
+    float roughness;
+    float opacity;
+    vec3  emissiveColor;
+    float emissiveIntensity;
+    float displacementScale;
+};
+
+uniform Material material;
+
+// Helper functions from your PBR shader
+vec3 getNormalFromMap()
+{
+    if(material.hasNormalMap) {
+        vec3 tNormal = texture(material.normalMap, TexCoord).rgb;
+        tNormal = tNormal * 2.0 - 1.0;
+        return normalize(TBN * tNormal);
+    }
+    return normalize(TBN[2]);
+}
+
+void main()
+{
+    
+    // Early discard for transparent pixels
+    float alpha = material.opacity;
+    if (material.hasOpacityMap) {
+        alpha *= texture(material.opacityMap, TexCoord).r;
+    }
+    else if (material.hasAlbedoMap) {
+        alpha *= texture(material.albedoMap, TexCoord).a;
+    }
+    else {
+        alpha *= material.albedo.a;
+    }
+    
+    if (alpha < 0.1) {
+        discard;
+    }
+
+    // 1. Albedo and AO
+    vec3 albedo = material.hasAlbedoMap ? texture(material.albedoMap, TexCoord).rgb : material.albedo.rgb;
+    float ao = material.hasAOMap ? texture(material.AOMap, TexCoord).r : 1.0;
+    gAlbedoAO = vec4(albedo, ao);
+
+    // 2. Normal and Metallic
+    vec3 normal = getNormalFromMap();
+    float metallic = material.metallic;
+    if (material.hasMetalRoughMap) {
+        metallic = texture(material.metalRoughMap, TexCoord).b;
+    }
+    else if (material.hasMetallicMap) {
+        metallic = texture(material.metallicMap, TexCoord).r;
+    }
+    gNormalMetallic = vec4(normal * 0.5 + 0.5, metallic);
+
+    // 3. Roughness and Emissive
+    float roughness = material.roughness;
+    if (material.hasMetalRoughMap) {
+        roughness = texture(material.metalRoughMap, TexCoord).g;
+    }
+    else if (material.hasRoughnessMap) {
+        roughness = texture(material.roughnessMap, TexCoord).r;
+    }
+    roughness = clamp(roughness, 0.05, 1.0);
+
+    vec3 emissive = material.emissiveColor * material.emissiveIntensity;
+    if (material.hasEmissiveMap) {
+        emissive *= texture(material.emissiveMap, TexCoord).rgb;
+    }
+
+    gRoughEmissive = vec4(roughness, emissive);
+}

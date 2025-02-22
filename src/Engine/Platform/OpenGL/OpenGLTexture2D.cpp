@@ -253,6 +253,7 @@ void OpenGLTexture2D::bind(unsigned int slot)
     unbind(slot);
     GL_CHECK(glActiveTexture(GL_TEXTURE0 + slot));
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, textureID));
+
 }
 
 // Unbind the texture from a specified texture slot
@@ -282,12 +283,16 @@ int OpenGLTexture2D::getHeight() const
 
 void OpenGLTexture2D::setShadowSamplerParameters()
 {
-    bind(0);  // This could be the issue - binding to unit 0
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
+    bind(31);  // This could be the issue - binding to unit 0
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    unbind(0);
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    GL_CHECK(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor));
+    unbind(31);
     isShadowSampler = true;
 }
 
@@ -295,11 +300,21 @@ void OpenGLTexture2D::setShadowSamplerParameters()
 
 void OpenGLTexture2D::setNormalSamplerParameters()
 {
-    bind(0);
+	bind(31);
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, textureID));
+
+    // Disable depth comparison mode
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+
+    // Set normal texture parameters
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    unbind(0);
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+
+	unbind(31);
     isShadowSampler = false;
 }
+
+
 

@@ -223,6 +223,68 @@ void OpenGlUtil::drawCube()
     GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer));
 }
 
+void OpenGlUtil::checkGLState()
+{
+    GLint maxTextureUnits;
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+
+    GLint activeProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &activeProgram);
+    std::cout << "Active Shader Program: " << activeProgram << "\n";
+
+    GLint activeTexture;
+    glGetIntegerv(GL_ACTIVE_TEXTURE, &activeTexture);
+    std::cout << "Active Texture Unit: " << (activeTexture - GL_TEXTURE0) << "\n";
+
+    GLboolean blendEnabled;
+    glGetBooleanv(GL_BLEND, &blendEnabled);
+    std::cout << "Blend Enabled: " << (blendEnabled ? "true" : "false") << "\n";
+
+    GLboolean depthTestEnabled;
+    glGetBooleanv(GL_DEPTH_TEST, &depthTestEnabled);
+    std::cout << "Depth Test Enabled: " << (depthTestEnabled ? "true" : "false") << "\n";
+
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    std::cout << "Viewport: [" << viewport[0] << ", " << viewport[1] << ", " 
+        << viewport[2] << ", " << viewport[3] << "]\n";
+
+    // Check all texture units
+    std::cout << "\nTexture Units State:\n";
+    for(int i = 0; i < maxTextureUnits; i++) {
+        chechTextureState(i);
+    }
+
+    GLint boundFBO;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &boundFBO);
+    std::cout << "\nBound Framebuffer: " << boundFBO << "\n";
+}
+
+void OpenGlUtil::chechTextureState(unsigned int unit)
+{
+    GLint activeUnit;
+    glGetIntegerv(GL_ACTIVE_TEXTURE, &activeUnit);
+    activeUnit -= GL_TEXTURE0;
+
+    GLint boundTexture;
+    glActiveTexture(GL_TEXTURE0 + unit);
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &boundTexture);
+
+    GLint compareMode;
+    glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, &compareMode);
+
+    GLint compareFunc;
+    glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, &compareFunc);
+
+    std::cout << "Texture Unit " << unit << " State:\n"
+        << "  Bound Texture: " << boundTexture << "\n"
+        << "  Compare Mode: " << (compareMode == GL_COMPARE_REF_TO_TEXTURE ? "GL_COMPARE_REF_TO_TEXTURE" : "GL_NONE") << "\n"
+        << "  Compare Func: " << compareFunc << "\n";
+
+    // Restore original active texture unit
+    glActiveTexture(GL_TEXTURE0 + activeUnit);
+}
+
 
 
 void OpenGlUtil::framebufferSizeCallback(GLFWwindow* window, int width, int height)

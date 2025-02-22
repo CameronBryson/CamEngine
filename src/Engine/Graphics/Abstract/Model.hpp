@@ -12,7 +12,7 @@ class Model
 public:
 
 	virtual void draw(glm::mat4 model) const = 0;
-	virtual void drawShadow(std::shared_ptr<Shader>& shadowShader, glm::mat4 model) const = 0;
+	virtual void draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bindMatieral = false) const = 0;
 
 	virtual void addMesh(const MeshInstance& mesh) = 0;
 	virtual std::vector<MeshInstance> getMeshes() = 0;

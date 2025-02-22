@@ -14,114 +14,114 @@ OpenGLMaterial::OpenGLMaterial()
 {
 }
 
-void OpenGLMaterial::bind()
+void OpenGLMaterial::bind(std::shared_ptr<Shader> bindShader)
 {
-    shader->use();
+    bindShader->use();
     unbind(); // Clear previous bindings
 
     // Base Properties
-    shader->setVec4("material.albedo", albedo);
-    shader->setFloat("material.opacity", opacity);
+    bindShader->setVec4("material.albedo", albedo);
+    bindShader->setFloat("material.opacity", opacity);
 
     // PBR Properties
-    shader->setFloat("material.metallic", metallic);
-    shader->setFloat("material.roughness", roughness);
+    bindShader->setFloat("material.metallic", metallic);
+    bindShader->setFloat("material.roughness", roughness);
 
     // Emission Properties
-    shader->setVec3("material.emissiveColor", emissiveColor);
-    shader->setFloat("material.emissiveIntensity", emissiveIntensity);
+    bindShader->setVec3("material.emissiveColor", emissiveColor);
+    bindShader->setFloat("material.emissiveIntensity", emissiveIntensity);
 
     // Displacement Properties
-    shader->setFloat("material.displacementScale", displacementScale);
+    bindShader->setFloat("material.displacementScale", displacementScale);
 
     // Albedo Texture
     if (albedoTexture) {
-        shader->setInt("material.albedoMap", MaterialSlots::ALBEDO);
-        shader->setBool("material.hasAlbedoMap", true);
+        bindShader->setInt("material.albedoMap", MaterialSlots::ALBEDO);
+        bindShader->setBool("material.hasAlbedoMap", true);
         albedoTexture->bind(MaterialSlots::ALBEDO);
     }
     else {
-        shader->setBool("material.hasAlbedoMap", false);
+        bindShader->setBool("material.hasAlbedoMap", false);
     }
 
     // Normal Map
     if (normalTexture) {
-        shader->setInt("material.normalMap", MaterialSlots::NORMAL);
-        shader->setBool("material.hasNormalMap", true);
+        bindShader->setInt("material.normalMap", MaterialSlots::NORMAL);
+        bindShader->setBool("material.hasNormalMap", true);
         normalTexture->bind(MaterialSlots::NORMAL);
     }
     else {
-        shader->setBool("material.hasNormalMap", false);
+        bindShader->setBool("material.hasNormalMap", false);
     }
 
     // Metallic Map
     if (metallicTexture) {
-        shader->setInt("material.metallicMap", MaterialSlots::METALLIC);
-        shader->setBool("material.hasMetallicMap", true);
+        bindShader->setInt("material.metallicMap", MaterialSlots::METALLIC);
+        bindShader->setBool("material.hasMetallicMap", true);
         metallicTexture->bind(MaterialSlots::METALLIC);
     }
     else {
-        shader->setBool("material.hasMetallicMap", false);
+        bindShader->setBool("material.hasMetallicMap", false);
     }
 
     // Roughness Map
     if (roughnessTexture) {
-        shader->setInt("material.roughnessMap", MaterialSlots::ROUGHNESS);
-        shader->setBool("material.hasRoughnessMap", true);
+        bindShader->setInt("material.roughnessMap", MaterialSlots::ROUGHNESS);
+        bindShader->setBool("material.hasRoughnessMap", true);
         roughnessTexture->bind(MaterialSlots::ROUGHNESS);
     }
     else {
-        shader->setBool("material.hasRoughnessMap", false);
+        bindShader->setBool("material.hasRoughnessMap", false);
     }
 
     // AO Map
     if (AOTexture) {
-        shader->setInt("material.aoMap", MaterialSlots::AO);
-        shader->setBool("material.hasAOMap", true);
+        bindShader->setInt("material.aoMap", MaterialSlots::AO);
+        bindShader->setBool("material.hasAOMap", true);
         AOTexture->bind(MaterialSlots::AO);
     }
     else {
-        shader->setBool("material.hasAOMap", false);
+        bindShader->setBool("material.hasAOMap", false);
     }
 
     // Emissive Map
     if (emissiveTexture) {
-        shader->setInt("material.emissiveMap", MaterialSlots::EMISSIVE);
-        shader->setBool("material.hasEmissiveMap", true);
+        bindShader->setInt("material.emissiveMap", MaterialSlots::EMISSIVE);
+        bindShader->setBool("material.hasEmissiveMap", true);
         emissiveTexture->bind(MaterialSlots::EMISSIVE);
     }
     else {
-        shader->setBool("material.hasEmissiveMap", false);
+        bindShader->setBool("material.hasEmissiveMap", false);
     }
 
     // Combined Metal-Rough Map
     if (metalRoughTexture) {
-        shader->setInt("material.metalRoughMap", MaterialSlots::METALROUGH);
-        shader->setBool("material.hasMetalRoughMap", true);
+        bindShader->setInt("material.metalRoughMap", MaterialSlots::METALROUGH);
+        bindShader->setBool("material.hasMetalRoughMap", true);
         metalRoughTexture->bind(MaterialSlots::METALROUGH);
     }
     else {
-        shader->setBool("material.hasMetalRoughMap", false);
+        bindShader->setBool("material.hasMetalRoughMap", false);
     }
 
     // Opacity Map
     if (opacityTexture) {
-        shader->setInt("material.opacityMap", MaterialSlots::OPACITY);
-        shader->setBool("material.hasOpacityMap", true);
+        bindShader->setInt("material.opacityMap", MaterialSlots::OPACITY);
+        bindShader->setBool("material.hasOpacityMap", true);
         opacityTexture->bind(MaterialSlots::OPACITY);
     }
     else {
-        shader->setBool("material.hasOpacityMap", false);
+        bindShader->setBool("material.hasOpacityMap", false);
     }
 
     // Displacement Map
     if (displacementTexture) {
-        shader->setInt("material.displacementMap", MaterialSlots::DISPLACEMENT);
-        shader->setBool("material.hasDisplacementMap", true);
+        bindShader->setInt("material.displacementMap", MaterialSlots::DISPLACEMENT);
+        bindShader->setBool("material.hasDisplacementMap", true);
         displacementTexture->bind(MaterialSlots::DISPLACEMENT);
     }
     else {
-        shader->setBool("material.hasDisplacementMap", false);
+        bindShader->setBool("material.hasDisplacementMap", false);
     }
 }
 

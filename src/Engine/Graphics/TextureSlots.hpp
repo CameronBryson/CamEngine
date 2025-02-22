@@ -30,3 +30,10 @@ namespace PostProcessSlots {
     constexpr unsigned int BLOOM = 1;
     constexpr unsigned int DEPTH = 2;
 }
+namespace GBufferSlots {
+    constexpr unsigned int ALBEDO_AO = 15;    // After IBL slots
+    constexpr unsigned int NORMAL_METALLIC = 16;
+    constexpr unsigned int ROUGH_EMISSIVE = 17;
+    constexpr unsigned int DEPTH = 18;
+}
+

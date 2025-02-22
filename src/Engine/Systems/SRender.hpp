@@ -42,6 +42,7 @@ private:
     // Render passes
     void updateCameraUniforms();
     void shadowPass(const LightData& lightData);
+    void depthPass();
     void geometryPass();
     void lightingPass();
     void postProcessPass();
@@ -61,7 +62,7 @@ private:
 
     // Drawing helpers
     void drawModels() const;
-    void drawModelsShader(std::shared_ptr<Shader>& shader) const;
+    void drawModels(std::shared_ptr<Shader>& shader, bool bindMatieral = false) const;
     void drawImGui();
 
     // Scene data

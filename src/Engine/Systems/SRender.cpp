@@ -56,7 +56,9 @@ void SRender::render()
 
     // Execute the main render pipeline
     shadowPass(lightData);
+    depthPass();
     geometryPass();
+    mLightUBO->setData(&lightData, sizeof(LightData));
     lightingPass();
     postProcessPass();
 
@@ -121,6 +123,19 @@ void SRender::initFramebuffers()
     mPointShadwMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
     if (!mPointShadwMapBuffer->isComplete())
         throw std::runtime_error("Point shadow map framebuffer setup failed!");
+
+	// G-Buffer FBO
+	std::vector<FrameBufferAttachmentSpecification> gBufferAttachments = {
+		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
+		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
+		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
+		{ FrameBufferAttachmentType::Depth,  FrameBufferTextureFormat::Depth32F }
+	};
+	mGBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, gBufferAttachments);
+    if (!mGBuffer->isComplete())
+    {
+		throw std::runtime_error("GBuffer framebuffer setup failed!");
+    }
 
     // HDR FBO
     std::vector<FrameBufferAttachmentSpecification> hdrAttachments = {
@@ -394,56 +409,110 @@ void SRender::shadowPass(const LightData& lightData)
 {
     // Front-face culling for shadow rendering
     GL_CHECK(glCullFace(GL_FRONT));
-
+    
     // Render directional, spot, and point shadows
     renderDirectionalShadows(lightData);
     renderSpotShadows(lightData);
     renderPointShadows(lightData);
-
+    
     // Restore back-face culling
     GL_CHECK(glCullFace(GL_BACK));
+    
 
-    // Update light UBO after shadow pass
-    mLightUBO->setData(&lightData, sizeof(LightData));
+}
+
+void SRender::depthPass()
+{
+    auto depthShader = GameManager::mGraphicsManager->getShader("Depth");
+    depthShader->use();
+    // Only write to depth buffer
+	mGBuffer->bind();
+	mGBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+    GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
+    // Clear depth
+    GL_CHECK(glClear(GL_DEPTH_BUFFER_BIT));
+
+    // Draw all opaque geometry
+    drawModels(depthShader);
+
+    // Re-enable color writes for subsequent passes
+    GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
+    mGBuffer->unbind();
 }
 
 void SRender::geometryPass()
 {
-    int width, height;
-    glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
+	auto gBufferShader = GameManager::mGraphicsManager->getShader("GBuffer");
+	gBufferShader->use();
+	mGBuffer->bind();
+	mGBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+	mGBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 });
+    GL_CHECK(glEnable(GL_DEPTH_TEST));
+    GL_CHECK(glDepthFunc(GL_LEQUAL));  // Use LEQUAL to render fragments at same depth
+    GL_CHECK(glDepthMask(GL_FALSE));
+	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
+    //We dont want to clear depth pass
+    GL_CHECK(glDisable(GL_BLEND)); // Disable blending for G-Buffer pass
+    drawModels(gBufferShader, true);
 
-    GL_CHECK(glViewport(0, 0, width, height));
-    mHDRFrameBuffer->bind();
-    mHDRFrameBuffer->setViewport(0, 0, width, height);
-    mHDRFrameBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 });
-    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+    GL_CHECK(glEnable(GL_BLEND));
+    GL_CHECK(glDepthMask(GL_TRUE));
+    GL_CHECK(glDepthFunc(GL_LESS));
+	mGBuffer->unbind();
 
-    auto pbrShader = GameManager::mGraphicsManager->getShader("PBR");
-    pbrShader->use();
-
-    bindSkyboxResources(pbrShader);  // Also binds shadow maps
-    drawModels();                    // Draw opaque geometry
-    // (If there’s additional translucent geometry, it could be handled separately.)
 }
 
 void SRender::lightingPass()
 {
-    // Renders the skybox (and any additional lighting passes if needed)
-    auto skyboxShader = GameManager::mGraphicsManager->getShader("Skybox");
-    skyboxShader->use();
+    int width, height;
+    glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
+	GL_CHECK(glViewport(0, 0, width, height));
+    // 1. Deferred Lighting Pass
+    mHDRFrameBuffer->bind();
+    mHDRFrameBuffer->setViewport(0, 0, width, height);
+    mHDRFrameBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 });
+    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
 
-    const auto& viewMatrix = mScene->mCurrentCamera.GetViewMatrix();
-    glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(viewMatrix));
+    // Use deferred lighting shader
+    auto deferredShader = GameManager::mGraphicsManager->getShader("Deferred");
+    deferredShader->use();
 
-    skyboxShader->setMat4("view", viewNoTranslation);
-    skyboxShader->setMat4("projection", mScene->mCurrentCamera.GetProjectionMatrix());
+	bindSkyboxResources(deferredShader);
 
-    auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
-    skybox->drawSkybox(skyboxShader);
+    // Bind G-Buffer textures
+    mGBuffer->getColorAttachment(0)->bind(GBufferSlots::ALBEDO_AO);
+    mGBuffer->getColorAttachment(1)->bind(GBufferSlots::NORMAL_METALLIC);
+    mGBuffer->getColorAttachment(2)->bind(GBufferSlots::ROUGH_EMISSIVE);
+    mGBuffer->getDepthAttachment()->bind(GBufferSlots::DEPTH);
 
-    // Unbind HDR FBO so we can do post-processing
+    // Set sampler uniforms
+    deferredShader->setInt("gAlbedoAO", GBufferSlots::ALBEDO_AO);
+    deferredShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
+    deferredShader->setInt("gRoughEmissive", GBufferSlots::ROUGH_EMISSIVE);
+    deferredShader->setInt("gDepth", GBufferSlots::DEPTH);
+
+
+
+    // Draw full-screen quad to apply lighting
+    OpenGlUtil::drawQuad();
+
+    //// 2. Skybox Pass (after deferred lighting)
+    //auto skyboxShader = GameManager::mGraphicsManager->getShader("Skybox");
+    //skyboxShader->use();
+
+    //const auto& viewMatrix = mScene->mCurrentCamera.GetViewMatrix();
+    //glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(viewMatrix));
+
+    //skyboxShader->setMat4("view", viewNoTranslation);
+    //skyboxShader->setMat4("projection", mScene->mCurrentCamera.GetProjectionMatrix());
+
+    //auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
+    //skybox->drawSkybox(skyboxShader);
+
     mHDRFrameBuffer->unbind();
 }
+
+
 
 void SRender::postProcessPass()
 {
@@ -467,9 +536,9 @@ void SRender::renderDirectionalShadows(const LightData& lightData)
         mDirectionalShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
         mDirectionalShadowMapBuffer->bind();
         mDirectionalShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
-
-        drawModelsShader(shadowMapShader);
-
+        GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
+        drawModels(shadowMapShader);
+        GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
         mDirectionalShadowMapBuffer->unbind();
     }
 }
@@ -486,9 +555,9 @@ void SRender::renderSpotShadows(const LightData& lightData)
         mSpotShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
         mSpotShadowMapBuffer->bind();
         mSpotShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
-
-        drawModelsShader(shadowMapShader);
-
+        GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
+        drawModels(shadowMapShader);
+        GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
         mSpotShadowMapBuffer->unbind();
     }
 }
@@ -514,9 +583,9 @@ void SRender::renderPointShadows(const LightData& lightData)
         mPointShadwMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
         mPointShadwMapBuffer->bind();
         mPointShadwMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
-
-        drawModelsShader(pointShadowMapShader);
-
+        GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
+        drawModels(pointShadowMapShader);
+        GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
         mPointShadwMapBuffer->unbind();
     }
 }
@@ -646,7 +715,7 @@ void SRender::drawModels() const
     }
 }
 
-void SRender::drawModelsShader(std::shared_ptr<Shader>& shader) const
+void SRender::drawModels(std::shared_ptr<Shader>& shader, bool bindMaterial) const
 {
     // Draw geometry with a specific shader (e.g. shadow pass)
     auto& registry = mScene->mEnttRegistry;
@@ -658,7 +727,7 @@ void SRender::drawModelsShader(std::shared_ptr<Shader>& shader) const
         const auto& transform = modelView.get<CTransform>(entity);
 
         glm::mat4 modelMatrix = transform.model_matrix;
-        GameManager::mGraphicsManager->getModel(modelComp.name)->drawShadow(shader, modelMatrix);
+        GameManager::mGraphicsManager->getModel(modelComp.name)->draw(shader, modelMatrix,bindMaterial);
     }
 }
 

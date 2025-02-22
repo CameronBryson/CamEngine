@@ -20,12 +20,12 @@ void OpenGLModel::draw(glm::mat4 model) const
 	}
 }
 
-void OpenGLModel::drawShadow(std::shared_ptr<Shader>& shadowShader, glm::mat4 model) const
+void OpenGLModel::draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bindMaterial) const
 {
 	for (const auto& mesh : mMeshes)
 	{
 		glm::mat4 finalModelMatrix = model * mesh.localTransform;
-		mesh.mesh->drawShadow(shadowShader, finalModelMatrix);
+		mesh.mesh->draw(shadowShader, finalModelMatrix,bindMaterial);
 	}
 }
 
