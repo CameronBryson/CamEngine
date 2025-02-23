@@ -6,6 +6,7 @@
 #include <UniformBuffer.hpp>
 #include "UniformStructs.hpp"
 #include <FrameBuffer.hpp>
+#include <Texture2D.hpp>
 template<typename T>
 class SparseSet;
 class BaseScene;
@@ -44,6 +45,7 @@ private:
     void shadowPass(const LightData& lightData);
     void depthPass();
     void geometryPass();
+    void ssaoPass();
     void lightingPass();
     void postProcessPass();
 
@@ -64,6 +66,9 @@ private:
     void drawModels() const;
     void drawModels(std::shared_ptr<Shader>& shader, bool bindMatieral = false) const;
     void drawImGui();
+
+    void generateSSAOKernel();
+	void generateSSAONoise();
 
     // Scene data
     BaseScene* mScene;
@@ -92,7 +97,21 @@ private:
     float mExposure = 1.0f;
     bool mHDR = true;
     bool bloomEnabled = true;
+	bool ssaoEnabled = true;
     float bloomThreshold = 1.0f;
     float bloomStrength = 1.0f;
     int blurPasses = 10;
+
+    // SSAO data
+    std::shared_ptr<FrameBuffer> mSSAOBuffer;
+    std::shared_ptr<FrameBuffer> mSSAOBlurBuffer;
+    std::vector<glm::vec3> mSSAOKernel;
+    std::shared_ptr<Texture2D> mSSAONoise;
+
+    // SSAO settings
+    static const int SSAO_KERNEL_SIZE = 64;
+    static const int SSAO_NOISE_SIZE = 4;
+    float mSSAORadius = 0.5f;
+    float mSSAOBias = 0.025f;
+    float mSSAOPower = 1.0f;
 };

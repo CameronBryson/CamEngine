@@ -28,6 +28,7 @@
 #include <iostream>
 #include "Texture.hpp"
 #include <glm/gtc/type_ptr.hpp> 
+#include <random>
 SRender::SRender(BaseScene* scene) : mScene(scene)
 {
 }
@@ -36,6 +37,8 @@ void SRender::init()
 {
     initImGui();
     initFramebuffers();
+    generateSSAOKernel();
+    generateSSAONoise();
 }
 
 void SRender::lateInit()
@@ -58,6 +61,7 @@ void SRender::render()
     shadowPass(lightData);
     depthPass();
     geometryPass();
+	ssaoPass();
     mLightUBO->setData(&lightData, sizeof(LightData));
     lightingPass();
     postProcessPass();
@@ -160,6 +164,21 @@ void SRender::initFramebuffers()
         if (!mPingPongFBO[i]->isComplete())
             throw std::runtime_error("Ping-pong framebuffer setup failed!");
     }
+    std::vector<FrameBufferAttachmentSpecification> ssaoAttachments = {
+        { FrameBufferAttachmentType::Color, FrameBufferTextureFormat::R16F }
+    };
+    mSSAOBuffer = FrameBuffer::createFrameBuffer(
+        settings::window_width, 
+        settings::window_height, 
+        ssaoAttachments
+    );
+
+    // SSAO Blur buffer
+    mSSAOBlurBuffer = FrameBuffer::createFrameBuffer(
+        settings::window_width, 
+        settings::window_height, 
+        ssaoAttachments
+    );
 }
 
 void SRender::calculateSceneBounds()
@@ -460,6 +479,55 @@ void SRender::geometryPass()
 
 }
 
+void SRender::ssaoPass()
+{
+    if (!ssaoEnabled) return;
+
+    auto ssaoShader = GameManager::mGraphicsManager->getShader("SSAO");
+    ssaoShader->use();
+
+    // Set view and projection matrices
+    ssaoShader->setMat4("projection", mScene->mCurrentCamera.GetProjectionMatrix());
+    ssaoShader->setMat4("view", mScene->mCurrentCamera.GetViewMatrix());
+
+    // Send kernel and settings
+    for (unsigned int i = 0; i < SSAO_KERNEL_SIZE; ++i)
+        ssaoShader->setVec3("samples[" + std::to_string(i) + "]", mSSAOKernel[i]);
+
+    ssaoShader->setFloat("radius", mSSAORadius);
+    ssaoShader->setFloat("bias", mSSAOBias);
+    ssaoShader->setFloat("power", mSSAOPower);
+
+    // Bind G-Buffer textures using proper slots
+    mGBuffer->getColorAttachment(0)->bind(SSAOSlots::POSITION);
+    mGBuffer->getColorAttachment(1)->bind(SSAOSlots::NORMAL);
+    mSSAONoise->bind(SSAOSlots::NOISE);
+
+    ssaoShader->setInt("gPosition", SSAOSlots::POSITION);
+    ssaoShader->setInt("gNormal", SSAOSlots::NORMAL);
+    ssaoShader->setInt("texNoise", SSAOSlots::NOISE);
+
+    // Render SSAO texture
+    mSSAOBuffer->bind();
+    mSSAOBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+    OpenGlUtil::drawQuad();
+    mSSAOBuffer->unbind();
+
+    // Blur SSAO texture
+    auto blurShader = GameManager::mGraphicsManager->getShader("SSAOBlur");
+    blurShader->use();
+
+    mSSAOBlurBuffer->bind();
+    mSSAOBlurBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+    mSSAOBuffer->getColorAttachment(0)->bind(SSAOSlots::SSAO);
+    blurShader->setInt("ssaoInput", SSAOSlots::SSAO);
+
+    OpenGlUtil::drawQuad();
+    mSSAOBlurBuffer->unbind();
+}
+
+
+
 void SRender::lightingPass()
 {
     int width, height;
@@ -503,7 +571,9 @@ void SRender::lightingPass()
     deferredShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
     deferredShader->setInt("gRoughEmissive", GBufferSlots::ROUGH_EMISSIVE);
     deferredShader->setInt("gDepth", GBufferSlots::DEPTH);
-
+    mSSAOBlurBuffer->getColorAttachment(0)->bind(SSAOSlots::SSAO_BLUR);
+    deferredShader->setInt("ssaoTexture", SSAOSlots::SSAO_BLUR);
+    deferredShader->setBool("ssaoEnabled", ssaoEnabled);
     // 6. Draw full-screen quad
     OpenGlUtil::drawQuad();
 
@@ -889,6 +959,7 @@ void SRender::drawImGui()
     // In SRender::drawImGui()
     ImGui::Begin("Debug Controls");
     ImGui::Checkbox("Show Shadows", &mEnableShadows);
+    ImGui::Checkbox("Enable SSAO", &ssaoEnabled);
     ImGui::End();
 
 
@@ -988,6 +1059,74 @@ void SRender::drawImGui()
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
+void SRender::generateSSAOKernel()
+{
+    mSSAOKernel.resize(SSAO_KERNEL_SIZE);
+
+    std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
+    std::default_random_engine generator;
+
+    for (unsigned int i = 0; i < SSAO_KERNEL_SIZE; ++i)
+    {
+        // Generate sample point in hemisphere
+        glm::vec3 sample;
+        do {
+            sample = glm::vec3(
+                randomFloats(generator) * 2.0f - 1.0f,
+                randomFloats(generator) * 2.0f - 1.0f,
+                randomFloats(generator)  // Only positive z for hemisphere
+            );
+        } while (glm::length(sample) > 1.0f);  // Reject points outside unit sphere
+
+        sample = glm::normalize(sample);
+
+        // Scale samples s.t. they're more aligned to center of kernel
+        float scale = (float)i / SSAO_KERNEL_SIZE;
+        scale = glm::lerp(0.1f, 1.0f, scale * scale);
+        sample *= scale;
+
+        mSSAOKernel[i] = sample;
+    }
+}
+
+void SRender::generateSSAONoise()
+{
+    // Create array of random rotation vectors in tangent space
+    std::vector<glm::vec3> ssaoNoise;
+    ssaoNoise.reserve(SSAO_NOISE_SIZE * SSAO_NOISE_SIZE);
+
+    std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
+    std::default_random_engine generator;
+
+    // Generate random rotation vectors around z-axis (since we're working in tangent space)
+    for (unsigned int i = 0; i < SSAO_NOISE_SIZE * SSAO_NOISE_SIZE; i++)
+    {
+        // Generate random rotation vectors in tangent space (only rotating around z-axis)
+        glm::vec3 noise(
+            randomFloats(generator) * 2.0f - 1.0f,  // Random between -1 and 1
+            randomFloats(generator) * 2.0f - 1.0f,  // Random between -1 and 1
+            0.0f                                     // We'll rotate around z-axis
+        );
+        ssaoNoise.push_back(noise);
+    }
+
+    // Create OpenGL texture for noise
+    GLuint noiseTexture;
+    GL_CHECK(glGenTextures(1, &noiseTexture));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, noiseTexture));
+    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SSAO_NOISE_SIZE, SSAO_NOISE_SIZE, 0, GL_RGB, GL_FLOAT, ssaoNoise.data()));
+
+    // Set texture parameters - we want to repeat the noise texture
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+
+    // Create and store the texture object
+    mSSAONoise = Texture2D::createTexture2D(noiseTexture, SSAO_NOISE_SIZE, SSAO_NOISE_SIZE);
+}
+
 
 
 

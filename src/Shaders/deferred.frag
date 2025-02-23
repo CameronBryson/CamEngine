@@ -91,7 +91,8 @@ uniform samplerCubeShadow pointShadowMap;
 uniform bool   enableShadows;
 uniform float  farPlane;
 uniform float  bloomThreshold;
-
+uniform sampler2D ssaoTexture;
+uniform bool ssaoEnabled;
 // ------------------------------------------------------------------------------------
 // Function Prototypes
 // ------------------------------------------------------------------------------------
@@ -242,6 +243,10 @@ vec3 computeIBL(vec3 N, vec3 V, vec3 R, vec3 F0, vec3 albedo, float metallic, fl
     vec3 kS = F;
     vec3 kD = (vec3(1.0) - kS) * (1.0 - metallic);
     
+    // Get SSAO value and combine with material AO
+    float ssaoValue = ssaoEnabled ? texture(ssaoTexture, TexCoord).r : 1.0;
+    float finalAO = min(ao, ssaoValue); // Use the more occluded value
+    
     // Diffuse IBL
     vec3 irradiance = texture(irradianceMap, N).rgb;
     vec3 diffuse = irradiance * albedo;
@@ -252,9 +257,11 @@ vec3 computeIBL(vec3 N, vec3 V, vec3 R, vec3 F0, vec3 albedo, float metallic, fl
     vec2 brdf = texture(brdfLUT, vec2(NdotV, roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
     
-    vec3 ambient = (kD * diffuse + specular) * ao;
-    return ambient * 0.1; // Match forward renderer IBL intensity
+    // Apply combined AO to both diffuse and specular IBL
+    vec3 ambient = (kD * diffuse + specular) * finalAO;
+    return ambient * 0.15; // Match forward renderer IBL intensity
 }
+
 
 
 // ------------------------------------------------------------------------------------
@@ -268,23 +275,18 @@ void main()
     vec4 roughEmissive  = texture(gRoughEmissive, TexCoord);
     float fragDepth     = texture(gDepth, TexCoord).r;
     
-    // DEBUG: Visualize G-Buffer contents
-    // FragColor = albedoAO; return;                  // Debug Albedo
-    // FragColor = vec4(normalMetallic.rgb, 1); return; // Debug Normal
-    // FragColor = vec4(roughEmissive.rgb, 1); return;  // Debug Rough/Emissive
-    // FragColor = vec4(vec3(fragDepth), 1); return;    // Debug Depth
-    
     // 2) Unpack data from G-Buffer
     vec3 albedo = albedoAO.rgb;
     float ao = albedoAO.a;
-    vec3 N = normalize(normalMetallic.rgb * 2.0 - 1.0); // Make sure to normalize
+    vec3 N = normalize(normalMetallic.rgb * 2.0 - 1.0);
     float metallic = normalMetallic.a;
     float roughness = roughEmissive.r;
     vec3 emissive = roughEmissive.gba;
     
-    // Debug reconstructed position
-    vec3 FragPos = reconstructWorldPos(fragDepth, TexCoord);
-    // FragColor = vec4(fract(FragPos * 0.1), 1.0); return; // Debug Position
+    // Get SSAO value early
+    float ssaoValue = ssaoEnabled ? texture(ssaoTexture, TexCoord).r : 1.0;
+    // Combine material AO with SSAO
+    ao = min(ao, ssaoValue);
     
     // Early exit if background/sky
     if (fragDepth >= 1.0) {
@@ -292,6 +294,9 @@ void main()
         BrightColor = vec4(0.0);
         return;
     }
+    
+    // 3) Reconstruct position
+    vec3 FragPos = reconstructWorldPos(fragDepth, TexCoord);
     
     // 4) Compute view vector and reflection vector
     vec3 V = normalize(cameraPos.xyz - FragPos);
@@ -302,26 +307,29 @@ void main()
     
     // 6) Compute lighting
     vec3 direct = computeDirectLighting(FragPos, N, V, F0, albedo, metallic, roughness);
-    vec3 ibl = computeIBL(N, V, R, F0, albedo, metallic, roughness, ao) * 0.1; // Reduced IBL intensity
+    vec3 ibl = computeIBL(N, V, R, F0, albedo, metallic, roughness, ao);
     
-    // Debug light contributions
-    // FragColor = vec4(direct, 1.0); return;      // Debug direct lighting
-    // FragColor = vec4(ibl, 1.0); return;         // Debug IBL lighting
-    // FragColor = vec4(emissive, 1.0); return;    // Debug emissive
-    
-    // 8) Combine lighting
+    // 7) Combine all lighting contributions
     vec3 color = direct + ibl + emissive;
     
-    // Add ambient term to prevent pure black
-    color += albedo * 0.01; // Small ambient term
+    // 8) Add ambient term with SSAO
+    color += albedo * 0.01 * ao; // Small ambient term affected by SSAO
     
-    // 9) Output
+    // Debug views
+    // FragColor = vec4(vec3(ssaoValue), 1.0); return;    // Debug SSAO
+    // FragColor = vec4(vec3(ao), 1.0); return;           // Debug combined AO
+    // FragColor = vec4(direct, 1.0); return;             // Debug direct lighting
+    // FragColor = vec4(ibl, 1.0); return;                // Debug IBL lighting
+    // FragColor = vec4(emissive, 1.0); return;           // Debug emissive
+    
+    // 9) Output final color
     FragColor = vec4(color, 1.0);
     
-    // 10) Bloom
+    // 10) Compute bloom contribution
     float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
     BrightColor = (brightness > bloomThreshold) ? vec4(color, 1.0) : vec4(0.0);
 }
+
 
 
 // ------------------------------------------------------------------------------------

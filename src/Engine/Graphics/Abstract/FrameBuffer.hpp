@@ -17,7 +17,7 @@ enum class FrameBufferAttachmentType
 enum class FrameBufferTextureFormat
 {
     None = 0,
-
+    R16F,
     RG16F,
     RGBA8,
     RGBA16F,

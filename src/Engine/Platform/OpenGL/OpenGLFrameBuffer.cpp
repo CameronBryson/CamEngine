@@ -11,6 +11,7 @@ static GLenum toGLInternalFormat(FrameBufferTextureFormat format)
 {
     switch (format)
     {
+	case FrameBufferTextureFormat::R16F:            return GL_R16F;
     case FrameBufferTextureFormat::RG16F:           return GL_RG16F;
     case FrameBufferTextureFormat::RGBA8:           return GL_RGBA8;
     case FrameBufferTextureFormat::RGBA16F:         return GL_RGBA16F;
@@ -32,6 +33,8 @@ static GLenum toGLFormat(FrameBufferTextureFormat format)
 {
     switch (format)
     {
+	case FrameBufferTextureFormat::R16F:
+		return GL_RED;
     case FrameBufferTextureFormat::RG16F:
         return GL_RG;
     case FrameBufferTextureFormat::RGBA8:
@@ -60,6 +63,7 @@ static GLenum toGLType(FrameBufferTextureFormat format)
 {
     switch (format)
     {
+	case FrameBufferTextureFormat::R16F:
     case FrameBufferTextureFormat::RG16F:
     case FrameBufferTextureFormat::RGBA16F:
     case FrameBufferTextureFormat::Depth32F:
