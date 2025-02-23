@@ -499,12 +499,12 @@ void SRender::ssaoPass()
     ssaoShader->setFloat("power", mSSAOPower);
 
     // Bind G-Buffer textures using proper slots
-    mGBuffer->getColorAttachment(0)->bind(SSAOSlots::POSITION);
-    mGBuffer->getColorAttachment(1)->bind(SSAOSlots::NORMAL);
+    mGBuffer->getColorAttachment(1)->bind(SSAOSlots::NORMAL_METALLIC);
+    mGBuffer->getDepthAttachment()->bind(SSAOSlots::DEPTH);
     mSSAONoise->bind(SSAOSlots::NOISE);
 
-    ssaoShader->setInt("gPosition", SSAOSlots::POSITION);
-    ssaoShader->setInt("gNormal", SSAOSlots::NORMAL);
+    ssaoShader->setInt("gDepth", SSAOSlots::DEPTH);
+    ssaoShader->setInt("gNormalMetallic", SSAOSlots::NORMAL_METALLIC);
     ssaoShader->setInt("texNoise", SSAOSlots::NOISE);
 
     // Render SSAO texture
@@ -1027,7 +1027,7 @@ void SRender::generateSSAOKernel()
 {
     mSSAOKernel.resize(SSAO_KERNEL_SIZE);
 
-    std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
+    std::uniform_real_distribution<float> randomFloats(-1.0f, 1.0f);
     std::default_random_engine generator;
 
     for (unsigned int i = 0; i < SSAO_KERNEL_SIZE; ++i)
@@ -1059,7 +1059,7 @@ void SRender::generateSSAONoise()
     std::vector<glm::vec3> ssaoNoise;
     ssaoNoise.reserve(SSAO_NOISE_SIZE * SSAO_NOISE_SIZE);
 
-    std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
+    std::uniform_real_distribution<float> randomFloats(-1.0f, 1.0f);
     std::default_random_engine generator;
 
     // Generate random rotation vectors around z-axis (since we're working in tangent space)

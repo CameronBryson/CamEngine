@@ -38,8 +38,8 @@ namespace GBufferSlots {
 }
 
 namespace SSAOSlots {
-    constexpr unsigned int POSITION = 19;      // Position from G-buffer
-    constexpr unsigned int NORMAL = 20;        // Normal from G-buffer
+	constexpr unsigned int DEPTH = 19;         // Depth texture
+	constexpr unsigned int NORMAL_METALLIC = 20;         // Random rotation vectors texture
     constexpr unsigned int NOISE = 21;         // Random rotation vectors texture
     constexpr unsigned int SSAO = 22;          // Raw SSAO result
     constexpr unsigned int SSAO_BLUR = 23;     // Blurred SSAO result
