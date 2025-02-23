@@ -109,6 +109,9 @@ vec3  fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
 // ------------------------------------------------------------------------------------
 vec3 reconstructWorldPos(float depth, vec2 texCoords) 
 {
+    // Early exit if depth is 1.0 (far plane/background)
+    if (depth >= 1.0) return vec3(0.0);
+    
     float z = depth * 2.0 - 1.0;
     vec4 clipSpacePos = vec4(texCoords * 2.0 - 1.0, z, 1.0);
     
@@ -118,6 +121,7 @@ vec3 reconstructWorldPos(float depth, vec2 texCoords)
     vec4 worldSpacePos = inverse(view) * viewSpacePos;
     return worldSpacePos.xyz;
 }
+
 
 // ------------------------------------------------------------------------------------
 // Direct Lighting (Cook-Torrance) Adaptation
@@ -249,8 +253,9 @@ vec3 computeIBL(vec3 N, vec3 V, vec3 R, vec3 F0, vec3 albedo, float metallic, fl
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
     
     vec3 ambient = (kD * diffuse + specular) * ao;
-    return ambient;
+    return ambient * 0.1; // Match forward renderer IBL intensity
 }
+
 
 // ------------------------------------------------------------------------------------
 // Main Fragment
@@ -262,40 +267,62 @@ void main()
     vec4 normalMetallic = texture(gNormalMetallic, TexCoord);
     vec4 roughEmissive  = texture(gRoughEmissive, TexCoord);
     float fragDepth     = texture(gDepth, TexCoord).r;
+    
+    // DEBUG: Visualize G-Buffer contents
+    // FragColor = albedoAO; return;                  // Debug Albedo
+    // FragColor = vec4(normalMetallic.rgb, 1); return; // Debug Normal
+    // FragColor = vec4(roughEmissive.rgb, 1); return;  // Debug Rough/Emissive
+    // FragColor = vec4(vec3(fragDepth), 1); return;    // Debug Depth
+    
     // 2) Unpack data from G-Buffer
     vec3 albedo = albedoAO.rgb;
     float ao = albedoAO.a;
-    vec3 N = normalMetallic.rgb * 2.0 - 1.0;
+    vec3 N = normalize(normalMetallic.rgb * 2.0 - 1.0); // Make sure to normalize
     float metallic = normalMetallic.a;
     float roughness = roughEmissive.r;
     vec3 emissive = roughEmissive.gba;
     
-    // 3) Reconstruct world-space position
+    // Debug reconstructed position
     vec3 FragPos = reconstructWorldPos(fragDepth, TexCoord);
+    // FragColor = vec4(fract(FragPos * 0.1), 1.0); return; // Debug Position
+    
+    // Early exit if background/sky
+    if (fragDepth >= 1.0) {
+        FragColor = vec4(0.0);
+        BrightColor = vec4(0.0);
+        return;
+    }
     
     // 4) Compute view vector and reflection vector
     vec3 V = normalize(cameraPos.xyz - FragPos);
     vec3 R = reflect(-V, N);
     
-    // 5) Base reflectivity at normal incidence
+    // 5) Base reflectivity
     vec3 F0 = mix(vec3(0.04), albedo, metallic);
     
-    // 6) Compute direct lighting (Cook-Torrance) from all light types
+    // 6) Compute lighting
     vec3 direct = computeDirectLighting(FragPos, N, V, F0, albedo, metallic, roughness);
+    vec3 ibl = computeIBL(N, V, R, F0, albedo, metallic, roughness, ao) * 0.1; // Reduced IBL intensity
     
-    // 7) Compute image-based lighting (IBL)
-    vec3 ibl = computeIBL(N, V, R, F0, albedo, metallic, roughness, ao);
+    // Debug light contributions
+    // FragColor = vec4(direct, 1.0); return;      // Debug direct lighting
+    // FragColor = vec4(ibl, 1.0); return;         // Debug IBL lighting
+    // FragColor = vec4(emissive, 1.0); return;    // Debug emissive
     
-    // 8) Combine lighting with any emissive term
+    // 8) Combine lighting
     vec3 color = direct + ibl + emissive;
     
-    // 9) Write out final color
+    // Add ambient term to prevent pure black
+    color += albedo * 0.01; // Small ambient term
+    
+    // 9) Output
     FragColor = vec4(color, 1.0);
     
-    // 10) Extract brightness for bloom; note the luminance coefficients
+    // 10) Bloom
     float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
     BrightColor = (brightness > bloomThreshold) ? vec4(color, 1.0) : vec4(0.0);
 }
+
 
 // ------------------------------------------------------------------------------------
 // Shadow Functions and BRDF Helpers

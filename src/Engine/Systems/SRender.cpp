@@ -426,15 +426,15 @@ void SRender::depthPass()
     auto depthShader = GameManager::mGraphicsManager->getShader("Depth");
     depthShader->use();
     // Only write to depth buffer
-	mGBuffer->bind();
 	mGBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+	mGBuffer->bind();
     GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
     // Clear depth
     GL_CHECK(glClear(GL_DEPTH_BUFFER_BIT));
-
+    GL_CHECK(glDepthMask(GL_TRUE));
     // Draw all opaque geometry
     drawModels(depthShader);
-
+	GL_CHECK(glDepthMask(GL_FALSE));
     // Re-enable color writes for subsequent passes
     GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
     mGBuffer->unbind();
@@ -444,19 +444,17 @@ void SRender::geometryPass()
 {
 	auto gBufferShader = GameManager::mGraphicsManager->getShader("GBuffer");
 	gBufferShader->use();
-	mGBuffer->bind();
 	mGBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
 	mGBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 });
+	mGBuffer->bind();
     GL_CHECK(glEnable(GL_DEPTH_TEST));
     GL_CHECK(glDepthFunc(GL_LEQUAL));  // Use LEQUAL to render fragments at same depth
-    GL_CHECK(glDepthMask(GL_FALSE));
 	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
     //We dont want to clear depth pass
     GL_CHECK(glDisable(GL_BLEND)); // Disable blending for G-Buffer pass
     drawModels(gBufferShader, true);
 
-    GL_CHECK(glEnable(GL_BLEND));
-    GL_CHECK(glDepthMask(GL_TRUE));
+    //GL_CHECK(glDepthMask(GL_TRUE));
     GL_CHECK(glDepthFunc(GL_LESS));
 	mGBuffer->unbind();
 
@@ -466,51 +464,73 @@ void SRender::lightingPass()
 {
     int width, height;
     glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
-	GL_CHECK(glViewport(0, 0, width, height));
-    // 1. Deferred Lighting Pass
-    mHDRFrameBuffer->bind();
+    GL_CHECK(glViewport(0, 0, width, height));
+
+    // 1. Setup OpenGL state for deferred lighting pass
+    mGBuffer->bindRead();
+    mHDRFrameBuffer->bindDraw();
+    GL_CHECK(glBlitFramebuffer(
+        0, 0, width, height,
+        0, 0, width, height,
+        GL_DEPTH_BUFFER_BIT,
+        GL_NEAREST
+    ));
+
+    // 2. Bind HDR framebuffer and clear
     mHDRFrameBuffer->setViewport(0, 0, width, height);
     mHDRFrameBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 });
-    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
+    mHDRFrameBuffer->bind();
 
-    // Use deferred lighting shader
+    
+    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
+    GL_CHECK(glDisable(GL_DEPTH_TEST));      // We don't need depth testing for full-screen quad
+    GL_CHECK(glDisable(GL_CULL_FACE));       // We want to render both sides of the quad
+    GL_CHECK(glDisable(GL_BLEND));           // No blending needed for initial lighting pass
+    // 3. Setup deferred shader and bind resources
     auto deferredShader = GameManager::mGraphicsManager->getShader("Deferred");
     deferredShader->use();
 
-	bindSkyboxResources(deferredShader);
+    bindSkyboxResources(deferredShader);
 
-    // Bind G-Buffer textures
+    // 4. Bind G-Buffer textures
     mGBuffer->getColorAttachment(0)->bind(GBufferSlots::ALBEDO_AO);
     mGBuffer->getColorAttachment(1)->bind(GBufferSlots::NORMAL_METALLIC);
     mGBuffer->getColorAttachment(2)->bind(GBufferSlots::ROUGH_EMISSIVE);
     mGBuffer->getDepthAttachment()->bind(GBufferSlots::DEPTH);
 
-    // Set sampler uniforms
+    // 5. Set sampler uniforms
     deferredShader->setInt("gAlbedoAO", GBufferSlots::ALBEDO_AO);
     deferredShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
     deferredShader->setInt("gRoughEmissive", GBufferSlots::ROUGH_EMISSIVE);
     deferredShader->setInt("gDepth", GBufferSlots::DEPTH);
 
-
-
-    // Draw full-screen quad to apply lighting
+    // 6. Draw full-screen quad
     OpenGlUtil::drawQuad();
 
-    //// 2. Skybox Pass (after deferred lighting)
-    //auto skyboxShader = GameManager::mGraphicsManager->getShader("Skybox");
-    //skyboxShader->use();
+    // 7. Restore OpenGL state for skybox
+    GL_CHECK(glEnable(GL_DEPTH_TEST));
+    GL_CHECK(glEnable(GL_CULL_FACE));
 
-    //const auto& viewMatrix = mScene->mCurrentCamera.GetViewMatrix();
-    //glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(viewMatrix));
+    //// 8. Draw skybox...
+    auto skyboxShader = GameManager::mGraphicsManager->getShader("Skybox");
+    skyboxShader->use();
 
-    //skyboxShader->setMat4("view", viewNoTranslation);
-    //skyboxShader->setMat4("projection", mScene->mCurrentCamera.GetProjectionMatrix());
+    const auto& viewMatrix = mScene->mCurrentCamera.GetViewMatrix();
+    glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(viewMatrix));
 
-    //auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
-    //skybox->drawSkybox(skyboxShader);
+    skyboxShader->setMat4("view", viewNoTranslation);
+    skyboxShader->setMat4("projection", mScene->mCurrentCamera.GetProjectionMatrix());
+
+    auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
+    skybox->drawSkybox(skyboxShader);
+
 
     mHDRFrameBuffer->unbind();
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
+
 }
+
 
 
 
