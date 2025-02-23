@@ -823,242 +823,205 @@ void SRender::drawModels(std::shared_ptr<Shader>& shader, bool bindMaterial) con
 
 void SRender::drawImGui()
 {
-    auto& camera = mScene->mCurrentCamera;
-    auto& registry = mScene->mEnttRegistry;
+    // Main Rendering Settings Window
+    ImGui::Begin("Rendering Settings");
+    if (ImGui::CollapsingHeader("Camera"))
+    {
+        auto& camera = mScene->mCurrentCamera;
+        ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -25.0f, 25.0f);
+        ImGui::SliderFloat("Yaw", &camera.Yaw, -180.0f, 180.0f);
+        ImGui::SliderFloat("Pitch", &camera.Pitch, -89.0f, 89.0f);
+        ImGui::SliderFloat("FOV", &camera.Fov, 1.0f, 120.0f);
+        camera.updateCameraVectors();
+        camera.updateProjectionMatrix();
+    }
 
-    // Existing Camera Controls
-    ImGui::Begin("Camera Controls");
-    ImGui::Text("Adjust the camera parameters:");
-    ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -25.0f, 25.0f);
-    ImGui::SliderFloat("Yaw", &camera.Yaw, -180.0f, 180.0f);
-    ImGui::SliderFloat("Pitch", &camera.Pitch, -89.0f, 89.0f);
-    ImGui::SliderFloat("FOV", &camera.Fov, 1.0f, 120.0f);
-    camera.updateCameraVectors();
-    camera.updateProjectionMatrix();
+    if (ImGui::CollapsingHeader("Post-Processing"))
+    {
+        // HDR Settings
+        ImGui::Checkbox("Enable HDR", &mHDR);
+        ImGui::SliderFloat("Exposure", &mExposure, 0.0f, 5.0f);
+
+        // Bloom Settings
+        ImGui::Separator();
+        ImGui::Checkbox("Enable Bloom", &bloomEnabled);
+        if (bloomEnabled)
+        {
+            ImGui::SliderFloat("Bloom Threshold", &bloomThreshold, 0.0f, 1.0f);
+            ImGui::SliderFloat("Bloom Strength", &bloomStrength, 0.0f, 2.0f);
+            ImGui::SliderInt("Blur Passes", &blurPasses, 1, 20);
+        }
+
+        // SSAO Settings
+        ImGui::Separator();
+        ImGui::Checkbox("Enable SSAO", &ssaoEnabled);
+        if (ssaoEnabled)
+        {
+            ImGui::SliderFloat("SSAO Radius", &mSSAORadius, 0.1f, 2.0f);
+            ImGui::SliderFloat("SSAO Bias", &mSSAOBias, 0.0f, 0.1f);
+            ImGui::SliderFloat("SSAO Power", &mSSAOPower, 1.0f, 5.0f);
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Lighting"))
+    {
+        ImGui::Checkbox("Enable Shadows", &mEnableShadows);
+
+        auto& registry = mScene->mEnttRegistry;
+
+        // Directional Lights
+        if (ImGui::TreeNode("Directional Lights"))
+        {
+            auto dirLightView = registry.view<CDirectionalLight>();
+            int dirLightIndex = 0;
+            for (auto entity : dirLightView)
+            {
+                auto& light = dirLightView.get<CDirectionalLight>(entity);
+                ImGui::PushID(dirLightIndex);
+                if (ImGui::TreeNode(("Light " + std::to_string(dirLightIndex)).c_str()))
+                {
+                    ImGui::SliderFloat3("Direction", glm::value_ptr(light.direction), -1.0f, 1.0f);
+                    ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
+                    ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
+                    ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
+                dirLightIndex++;
+            }
+            ImGui::TreePop();
+        }
+
+        // Point Lights
+        if (ImGui::TreeNode("Point Lights"))
+        {
+            auto pointLightView = registry.view<CPointLight>();
+            int pointLightIndex = 0;
+            for (auto entity : pointLightView)
+            {
+                auto& light = pointLightView.get<CPointLight>(entity);
+                ImGui::PushID(pointLightIndex);
+                if (ImGui::TreeNode(("Light " + std::to_string(pointLightIndex)).c_str()))
+                {
+                    ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -10.0f, 10.0f);
+                    ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
+                    ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
+                    ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
+                    ImGui::SliderFloat("Constant", &light.constant, 0.0f, 1.0f);
+                    ImGui::SliderFloat("Linear", &light.linear, 0.0f, 1.0f);
+                    ImGui::SliderFloat("Quadratic", &light.quadratic, 0.0f, 1.0f);
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
+                pointLightIndex++;
+            }
+            ImGui::TreePop();
+        }
+
+        // Spot Lights
+        if (ImGui::TreeNode("Spot Lights"))
+        {
+            auto spotLightView = registry.view<CSpotLight>();
+            int spotLightIndex = 0;
+            for (auto entity : spotLightView)
+            {
+                auto& light = spotLightView.get<CSpotLight>(entity);
+                ImGui::PushID(spotLightIndex);
+                if (ImGui::TreeNode(("Light " + std::to_string(spotLightIndex)).c_str()))
+                {
+                    ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -10.0f, 10.0f);
+                    ImGui::SliderFloat3("Direction", glm::value_ptr(light.direction), -1.0f, 1.0f);
+                    ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
+                    ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
+                    ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
+                    ImGui::SliderFloat("Inner Cutoff", &light.innerCutoff, 0.0f, glm::pi<float>());
+                    ImGui::SliderFloat("Outer Cutoff", &light.outerCutoff, 0.0f, glm::pi<float>());
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
+                spotLightIndex++;
+            }
+            ImGui::TreePop();
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Scene Objects"))
+    {
+        auto& registry = mScene->mEnttRegistry;
+        static int selectedEntityIndex = -1;
+        std::vector<entt::entity> entities;
+        std::vector<std::string> entityLabels;
+
+        auto view = registry.view<CModel, CTransform>();
+        for (auto entity : view)
+        {
+            entities.push_back(entity);
+            auto& modelComp = view.get<CModel>(entity);
+            entityLabels.push_back(modelComp.name + " (" + std::to_string(static_cast<uint32_t>(entity)) + ")");
+        }
+
+        std::vector<const char*> labelPointers;
+        for (const auto& label : entityLabels)
+        {
+            labelPointers.push_back(label.c_str());
+        }
+
+        ImGui::ListBox("Select Object", &selectedEntityIndex, labelPointers.data(), static_cast<int>(labelPointers.size()), 4);
+
+        if (selectedEntityIndex >= 0 && selectedEntityIndex < entities.size())
+        {
+            auto entity = entities[selectedEntityIndex];
+            auto& transform = view.get<CTransform>(entity);
+
+            ImGui::Separator();
+
+            // Position Control
+            ImGui::SliderFloat3("Position", glm::value_ptr(transform.position), -10.0f, 10.0f);
+
+            // Rotation Control (Euler angles)
+            glm::vec3 eulerDegrees = glm::degrees(glm::eulerAngles(transform.rotation));
+            ImGui::SliderFloat3("Rotation", glm::value_ptr(eulerDegrees), -180.0f, 180.0f);
+            transform.rotation = glm::quat(glm::radians(eulerDegrees));
+
+            // Scale Control
+            ImGui::SliderFloat3("Scale", glm::value_ptr(transform.scale), 0.0f, 10.0f);
+
+            transform.dirty = true;
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Scene Bounds"))
+    {
+        ImGui::SliderFloat3("Center", glm::value_ptr(mSceneBounds.center), -1000.0f, 1000.0f);
+        ImGui::SliderFloat("Radius", &mSceneBounds.radius, 0.1f, 1000.0f);
+
+        if (ImGui::TreeNode("Advanced"))
+        {
+            ImGui::SliderFloat3("Min", glm::value_ptr(mSceneBounds.min), -1000.0f, 1000.0f);
+            ImGui::SliderFloat3("Max", glm::value_ptr(mSceneBounds.max), -1000.0f, 1000.0f);
+            ImGui::TreePop();
+        }
+
+        if (ImGui::Button("Recalculate"))
+            calculateSceneBounds();
+
+        ImGui::SameLine();
+        if (ImGui::Button("+10% Padding"))
+        {
+            float padding = mSceneBounds.radius * 0.1f;
+            mSceneBounds.min -= glm::vec3(padding);
+            mSceneBounds.max += glm::vec3(padding);
+            mSceneBounds.radius *= 1.1f;
+        }
+    }
+
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
     ImGui::End();
 
-    // New window for light controls
-    ImGui::Begin("Light Controls");
-    ImGui::Text("Adjust the lighting parameters:");
-
-    // Directional Lights
-    auto dirLightView = registry.view<CDirectionalLight>();
-    int dirLightIndex = 0;
-    for (auto entity : dirLightView)
-    {
-        auto& light = dirLightView.get<CDirectionalLight>(entity);
-        ImGui::PushID(dirLightIndex);
-        if (ImGui::TreeNode("Directional Light"))
-        {
-            ImGui::SliderFloat3("Direction", glm::value_ptr(light.direction), -1.0f, 1.0f);
-            ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
-            ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
-            ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
-            ImGui::TreePop();
-        }
-        ImGui::PopID();
-        dirLightIndex++;
-    }
-
-    // Point Lights
-    auto pointLightView = registry.view<CPointLight>();
-    int pointLightIndex = 0;
-    for (auto entity : pointLightView)
-    {
-        auto& light = pointLightView.get<CPointLight>(entity);
-        ImGui::PushID(pointLightIndex);
-        if (ImGui::TreeNode("Point Light"))
-        {
-            ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -10.0f, 10.0f);
-            ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
-            ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
-            ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
-            ImGui::SliderFloat("Constant", &light.constant, 0.0f, 1.0f);
-            ImGui::SliderFloat("Linear", &light.linear, 0.0f, 1.0f);
-            ImGui::SliderFloat("Quadratic", &light.quadratic, 0.0f, 1.0f);
-            ImGui::TreePop();
-        }
-        ImGui::PopID();
-        pointLightIndex++;
-    }
-
-    // Spot Lights
-    auto spotLightView = registry.view<CSpotLight>();
-    int spotLightIndex = 0;
-    for (auto entity : spotLightView)
-    {
-        auto& light = spotLightView.get<CSpotLight>(entity);
-        ImGui::PushID(spotLightIndex);
-        if (ImGui::TreeNode("Spot Light"))
-        {
-            ImGui::SliderFloat3("Position", glm::value_ptr(light.position), -10.0f, 10.0f);
-            ImGui::SliderFloat3("Direction", glm::value_ptr(light.direction), -1.0f, 1.0f);
-            ImGui::ColorEdit3("Ambient", glm::value_ptr(light.ambient));
-            ImGui::ColorEdit3("Diffuse", glm::value_ptr(light.diffuse));
-            ImGui::ColorEdit3("Specular", glm::value_ptr(light.specular));
-            ImGui::SliderFloat("Inner Cutoff", &light.innerCutoff, 0.0f, glm::pi<float>());
-            ImGui::SliderFloat("Outer Cutoff", &light.outerCutoff, 0.0f, glm::pi<float>());
-            ImGui::TreePop();
-        }
-        ImGui::PopID();
-        spotLightIndex++;
-    }
-
-    ImGui::End();
-    ImGui::Begin("Object Controls");
-    ImGui::Text("Select an object to manipulate:");
-
-    // Create a list of entities with CModel and CTransform components
-    static int selectedEntityIndex = -1;
-    std::vector<entt::entity> entities;
-    std::vector<std::string> entityLabels;
-
-    auto view = registry.view<CModel, CTransform>();
-    for (auto entity : view)
-    {
-        entities.push_back(entity);
-        auto& modelComp = view.get<CModel>(entity);
-        entityLabels.push_back(modelComp.name + " (" + std::to_string(static_cast<uint32_t>(entity)) + ")");
-    }
-
-    // Convert labels to const char* array for ImGui
-    std::vector<const char*> labelPointers;
-    for (const auto& label : entityLabels)
-    {
-        labelPointers.push_back(label.c_str());
-    }
-
-    // Entity selection dropdown
-    ImGui::ListBox("Entities", &selectedEntityIndex, labelPointers.data(), static_cast<int>(labelPointers.size()), 5);
-
-    if (selectedEntityIndex >= 0 && selectedEntityIndex < entities.size())
-    {
-        auto entity = entities[selectedEntityIndex];
-        auto& transform = view.get<CTransform>(entity);
-
-        ImGui::Separator();
-        ImGui::Text("Transform Controls:");
-
-        // Position Control
-        ImGui::SliderFloat3("Position", glm::value_ptr(transform.position), -10.0f, 10.0f);
-
-        // Rotation Control (Euler angles)
-        glm::vec3 eulerDegrees = glm::degrees(glm::eulerAngles(transform.rotation));
-        ImGui::SliderFloat3("Rotation (Degrees)", glm::value_ptr(eulerDegrees), -180.0f, 180.0f);
-        transform.rotation = glm::quat(glm::radians(eulerDegrees));
-
-        // Scale Control
-        ImGui::SliderFloat3("Scale", glm::value_ptr(transform.scale), 0.0f, 10.0f);
-
-        // Mark transform as dirty to update model matrix
-        transform.dirty = true;
-    }
-    ImGui::End();
-
-    // In SRender::drawImGui()
-    ImGui::Begin("Debug Controls");
-    ImGui::Checkbox("Show Shadows", &mEnableShadows);
-    ImGui::Checkbox("Enable SSAO", &ssaoEnabled);
-    ImGui::End();
-
-
-    // Add Scene Bounds Controls
-    ImGui::Begin("Scene Bounds Controls");
-    ImGui::Text("Scene Bounds Parameters:");
-
-    // Center control
-    ImGui::Text("Center:");
-    if (ImGui::SliderFloat3("##Center", glm::value_ptr(mSceneBounds.center), -1000.0f, 1000.0f))
-    {
-        // Recalculate bounds when center changes
-        glm::vec3 extents = (mSceneBounds.max - mSceneBounds.min) * 0.5f;
-        mSceneBounds.min = mSceneBounds.center - extents;
-        mSceneBounds.max = mSceneBounds.center + extents;
-    }
-
-    // Radius control
-    if (ImGui::SliderFloat("Radius", &mSceneBounds.radius, 0.1f, 1000.0f))
-    {
-        // Update min/max based on radius change
-        glm::vec3 extents = glm::vec3(mSceneBounds.radius);
-        mSceneBounds.min = mSceneBounds.center - extents;
-        mSceneBounds.max = mSceneBounds.center + extents;
-    }
-
-    // Min/Max bounds
-    if (ImGui::TreeNode("Advanced"))
-    {
-        ImGui::Text("Min/Max Bounds:");
-        bool boundsChanged = false;
-        boundsChanged |= ImGui::SliderFloat3("Min", glm::value_ptr(mSceneBounds.min), -1000.0f, 1000.0f);
-        boundsChanged |= ImGui::SliderFloat3("Max", glm::value_ptr(mSceneBounds.max), -1000.0f, 1000.0f);
-
-        if (boundsChanged)
-        {
-            // Update center and radius when min/max change
-            mSceneBounds.center = (mSceneBounds.max + mSceneBounds.min) * 0.5f;
-            mSceneBounds.radius = glm::length(mSceneBounds.max - mSceneBounds.center);
-        }
-
-        ImGui::TreePop();
-    }
-
-    // Add buttons for common operations
-    if (ImGui::Button("Recalculate Bounds"))
-    {
-        calculateSceneBounds();
-    }
-
-    ImGui::SameLine();
-
-    if (ImGui::Button("Add 10% Padding"))
-    {
-        float padding = mSceneBounds.radius * 0.1f;
-        mSceneBounds.min -= glm::vec3(padding);
-        mSceneBounds.max += glm::vec3(padding);
-        mSceneBounds.radius *= 1.1f;
-    }
-    if (ImGui::Button("Remove 10% Padding"))
-    {
-        float padding = mSceneBounds.radius * 0.1f;
-        mSceneBounds.min += glm::vec3(padding);
-        mSceneBounds.max -= glm::vec3(padding);
-        mSceneBounds.radius /= 1.1f;
-    }
-
-    // Display current values
-    ImGui::Separator();
-    ImGui::Text("Current Values:");
-    ImGui::Text("Center: (%.2f, %.2f, %.2f)",
-        mSceneBounds.center.x, mSceneBounds.center.y, mSceneBounds.center.z);
-    ImGui::Text("Radius: %.2f", mSceneBounds.radius);
-    ImGui::Text("Min: (%.2f, %.2f, %.2f)",
-        mSceneBounds.min.x, mSceneBounds.min.y, mSceneBounds.min.z);
-    ImGui::Text("Max: (%.2f, %.2f, %.2f)",
-        mSceneBounds.max.x, mSceneBounds.max.y, mSceneBounds.max.z);
-
-    ImGui::End();
-
-    // In drawImGui()
-    ImGui::Begin("Post-Processing");
-    ImGui::Checkbox("Enable HDR", &mHDR);
-    ImGui::SliderFloat("Exposure", &mExposure, 0.0f, 5.0f);
-    ImGui::Separator();
-    ImGui::Checkbox("Enable Bloom", &bloomEnabled);
-    ImGui::SliderFloat("Bloom Threshold", &bloomThreshold, 0.0f, 1.0f);
-    ImGui::SliderFloat("Bloom Strength", &bloomStrength, 0.0f, 2.0f);
-    ImGui::SliderInt("Blur Passes", &blurPasses, 1, 20);
-    ImGui::End();
-
-
-
-
-
-    // Render ImGui
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
 
 void SRender::generateSSAOKernel()
 {
