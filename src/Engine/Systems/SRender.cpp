@@ -48,24 +48,59 @@ void SRender::lateInit()
 
 void SRender::render()
 {
+    GL_SCOPED_MARKER("Frame");
+    OpenGlUtil::beginFrame(); // Reset GPU timers
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // Build and upload light data
     LightData lightData;
-    buildLightData(lightData);
-    updateCameraUniforms();
+    // Build and upload light data
+    {
+        GL_SCOPED_MARKER("Light Data Update");
+        GL_SCOPED_TIMER("Light Data");
+        buildLightData(lightData);
+        updateCameraUniforms();
+    }
 
     // Execute the main render pipeline
-    shadowPass(lightData);
-    depthPass();
-    geometryPass();
-	ssaoPass();
-    mLightUBO->setData(&lightData, sizeof(LightData));
-    lightingPass();
-    postProcessPass();
+    {
+        GL_SCOPED_MARKER("Shadow Pass");
+        GL_SCOPED_TIMER("Shadow Pass");
+        shadowPass(lightData);
+    }
 
+    {
+        GL_SCOPED_MARKER("Depth Pass");
+        GL_SCOPED_TIMER("Depth Pass");
+        depthPass();
+    }
+
+    {
+        GL_SCOPED_MARKER("Geometry Pass");
+        GL_SCOPED_TIMER("G-Buffer");
+        geometryPass();
+    }
+
+    {
+        GL_SCOPED_MARKER("SSAO Pass");
+        GL_SCOPED_TIMER("SSAO");
+        ssaoPass();
+    }
+
+    {
+        GL_SCOPED_MARKER("Lighting Pass");
+        GL_SCOPED_TIMER("Deferred Lighting");
+        mLightUBO->setData(&lightData, sizeof(LightData));
+        lightingPass();
+    }
+
+    {
+        GL_SCOPED_MARKER("Post Process");
+        GL_SCOPED_TIMER("Post Processing");
+        postProcessPass();
+    }
     drawImGui();
 }
 
@@ -99,7 +134,9 @@ void SRender::initFramebuffers()
 {
     // Create uniform buffers
     mCameraUBO = UniformBuffer::createUniformBuffer(sizeof(CameraData), CAMERA_BINDING);
+    GL_LABEL_OBJECT(GL_BUFFER, mCameraUBO->getID(), "Camera UBO");
     mLightUBO = UniformBuffer::createUniformBuffer(sizeof(LightData), LIGHT_BINDING);
+    GL_LABEL_OBJECT(GL_BUFFER, mLightUBO->getID(), "Light UBO");
 
     // Directional & Spot shadow map FBO
     auto depthAttachment =
@@ -108,11 +145,13 @@ void SRender::initFramebuffers()
     };
 
     mDirectionalShadowMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, depthAttachment);
+    GL_LABEL_OBJECT(GL_FRAMEBUFFER, mDirectionalShadowMapBuffer->getRendererID(), "Directional Shadow FBO");
     mDirectionalShadowMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
     if (!mDirectionalShadowMapBuffer->isComplete() || !mDirectionalShadowMapBuffer->getDepthAttachment())
         throw std::runtime_error("Directional shadow map framebuffer setup failed!");
 
     mSpotShadowMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, depthAttachment);
+    GL_LABEL_OBJECT(GL_FRAMEBUFFER, mSpotShadowMapBuffer->getRendererID(), "Spot Shadow FBO");
     mSpotShadowMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
     if (!mSpotShadowMapBuffer->isComplete() || !mSpotShadowMapBuffer->getDepthAttachment())
         throw std::runtime_error("Spot shadow map framebuffer setup failed!");
@@ -124,6 +163,7 @@ void SRender::initFramebuffers()
     };
 
     mPointShadwMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, depthCubemapAttachment);
+    GL_LABEL_OBJECT(GL_FRAMEBUFFER, mPointShadwMapBuffer->getRendererID(), "Point Shadow FBO");
     mPointShadwMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
     if (!mPointShadwMapBuffer->isComplete())
         throw std::runtime_error("Point shadow map framebuffer setup failed!");
@@ -136,6 +176,7 @@ void SRender::initFramebuffers()
 		{ FrameBufferAttachmentType::Depth,  FrameBufferTextureFormat::Depth32F }
 	};
 	mGBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, gBufferAttachments);
+    GL_LABEL_OBJECT(GL_FRAMEBUFFER, mGBuffer->getRendererID(), "G-Buffer FBO");
     if (!mGBuffer->isComplete())
     {
 		throw std::runtime_error("GBuffer framebuffer setup failed!");
@@ -149,6 +190,7 @@ void SRender::initFramebuffers()
     };
 
     mHDRFrameBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, hdrAttachments);
+    GL_LABEL_OBJECT(GL_FRAMEBUFFER, mHDRFrameBuffer->getRendererID(), "HDR FBO");
     if (!mHDRFrameBuffer->isComplete())
         throw std::runtime_error("HDR framebuffer setup failed!");
 
@@ -426,13 +468,29 @@ void SRender::updateCameraUniforms()
 
 void SRender::shadowPass(const LightData& lightData)
 {
+    GL_VALIDATE_STATE();
+    GL_SCOPED_MARKER("Shadow Maps");
+    GL_SCOPED_TIMER("Shadow Pass");
     // Front-face culling for shadow rendering
     GL_CHECK(glCullFace(GL_FRONT));
     
     // Render directional, spot, and point shadows
-    renderDirectionalShadows(lightData);
-    renderSpotShadows(lightData);
-    renderPointShadows(lightData);
+    {
+        GL_SCOPED_MARKER("Directional Shadows");
+        GL_SCOPED_TIMER("Directional Shadows");
+        renderDirectionalShadows(lightData);
+    }
+	{
+		GL_SCOPED_MARKER("Spot Shadows");
+		GL_SCOPED_TIMER("Spot Shadows");
+		renderSpotShadows(lightData);
+	}
+	{
+		GL_SCOPED_MARKER("Point Shadows");
+		GL_SCOPED_TIMER("Point Shadows");
+		renderPointShadows(lightData);
+	}
+
     
     // Restore back-face culling
     GL_CHECK(glCullFace(GL_BACK));
@@ -530,6 +588,9 @@ void SRender::ssaoPass()
 
 void SRender::lightingPass()
 {
+    GL_VALIDATE_STATE();
+    GL_SCOPED_MARKER("Lighting");
+    GL_SCOPED_TIMER("Deferred Lighting");
     int width, height;
     glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
     GL_CHECK(glViewport(0, 0, width, height));
@@ -606,8 +667,16 @@ void SRender::lightingPass()
 
 void SRender::postProcessPass()
 {
-    bloomPass();
-    hdrPass();
+    {
+		GL_SCOPED_MARKER("Bloom Process");
+		GL_SCOPED_TIMER("Bloom Process");
+		bloomPass();
+    }
+    {
+		GL_SCOPED_MARKER("HDR Process");
+		GL_SCOPED_TIMER("HDR Process");
+		hdrPass();
+    }
 }
 
 // ------------------------------------------------------
@@ -857,9 +926,9 @@ void SRender::drawImGui()
         ImGui::Checkbox("Enable SSAO", &ssaoEnabled);
         if (ssaoEnabled)
         {
-            ImGui::SliderFloat("SSAO Radius", &mSSAORadius, 0.1f, 2.0f);
-            ImGui::SliderFloat("SSAO Bias", &mSSAOBias, 0.0f, 0.1f);
-            ImGui::SliderFloat("SSAO Power", &mSSAOPower, 1.0f, 5.0f);
+            ImGui::SliderFloat("SSAO Radius", &mSSAORadius, 0.0f, 5.0f);
+            ImGui::SliderFloat("SSAO Bias", &mSSAOBias, 0.0f, 0.5f);
+            ImGui::SliderFloat("SSAO Power", &mSSAOPower, 0.0f, 5.0f);
         }
     }
 
@@ -942,6 +1011,26 @@ void SRender::drawImGui()
                 spotLightIndex++;
             }
             ImGui::TreePop();
+        }
+        if (ImGui::CollapsingHeader("Debug Settings"))
+        {
+            bool debugOutput = OpenGlUtil::isDebugOutputEnabled();
+            if (ImGui::Checkbox("Debug Output", &debugOutput))
+            {
+                OpenGlUtil::enableDebugOutput(debugOutput);
+            }
+
+            bool profiling = OpenGlUtil::GPUTimer::isProfilingEnabled();
+            if (ImGui::Checkbox("GPU Profiling", &profiling))
+            {
+                OpenGlUtil::GPUTimer::enableProfiling(profiling);
+            }
+
+            static bool breakOnError = true;
+            if (ImGui::Checkbox("Break On Error", &breakOnError))
+            {
+                OpenGlUtil::setBreakOnError(breakOnError);
+            }
         }
     }
 

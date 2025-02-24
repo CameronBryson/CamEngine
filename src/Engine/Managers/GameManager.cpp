@@ -78,6 +78,7 @@ void GameManager::gameLoop()
 
     while( ! glfwWindowShouldClose(mGameWindow) )
     {
+        OpenGlUtil::beginFrame();
         const double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -95,6 +96,7 @@ void GameManager::gameLoop()
         glfwPollEvents();
         update(static_cast<float>(deltaTime));
         render();
+        OpenGlUtil::endFrame();
         glfwSwapBuffers(mGameWindow);
 
         // Limit FPS

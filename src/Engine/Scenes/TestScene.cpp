@@ -45,7 +45,7 @@ void TestScene::init()
 	mEnttRegistry.emplace<CModel>(testModel2, "Sponza");
 	glm::vec3 rotationEulerAngles2 = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
 	glm::quat rotationQuat2 = glm::quat(rotationEulerAngles2);
-	mEnttRegistry.emplace<CTransform>(testModel2, glm::vec3{ 0, -5, -1 }, rotationQuat2, glm::vec3(1.0f));
+	mEnttRegistry.emplace<CTransform>(testModel2, glm::vec3{ 0, -5, 0 }, rotationQuat2, glm::vec3(1.0f));
 	mEnttRegistry.emplace<CParent>(testModel2, testParent);
 	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel2);
 
@@ -124,7 +124,7 @@ void TestScene::update(float dt) {
 	}
 
 	// Q/E for vertical movement (Unity-like)
-	if (engine_util::isKeyPressed(GLFW_KEY_E)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_E) || engine_util::isKeyPressed(GLFW_KEY_SPACE)) {
 		mCurrentCamera.Position += mCurrentCamera.WorldUp * finalSpeed * dt;
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_Q)) {
