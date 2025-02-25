@@ -51,29 +51,35 @@ void main()
     mat3 TBN = mat3(tangent, bitangent, normal);
     
     // Calculate occlusion
+        // Calculate occlusion
     float occlusion = 0.0;
-    for(int i = 0; i < kernelSize; ++i) // SSAO_KERNEL_SIZE
+    for (int i = 0; i < kernelSize; ++i) // SSAO_KERNEL_SIZE
     {
         // Get sample position in view space
-        vec3 samplePos = TBN * samples[i]; 
+        vec3 samplePos = TBN * samples[i];
         samplePos = fragPos + samplePos * radius;
         
         // Project sample position
         vec4 offset = projection * vec4(samplePos, 1.0);
-        offset.xyz /= offset.w;             
+        offset.xyz /= offset.w;
         offset.xyz = offset.xyz * 0.5 + 0.5;
         
-        // Get sample depth
+        // Get sample depth and reconstruct view position
         float sampleDepth = texture(gDepth, offset.xy).r;
         vec3 sampleViewPos = reconstructViewPosition(sampleDepth, offset.xy);
         
-        // Range check in view space
-        float rangeCheck = smoothstep(0.0, 1.0, radius / length(fragPos - sampleViewPos));
+        // Compute the distance from the fragment to the sample, in view space
+        float distance = length(fragPos - sampleViewPos);
+        // Improve the range check by using the absolute depth difference as well
+        float depthDiff = abs(sampleViewPos.z - samplePos.z);
+        float rangeCheck = smoothstep(0.0, 1.0, radius / distance);
         
-        // Occlusion test in view space (note: view space Z is negative as it points into the screen)
-        occlusion += (sampleViewPos.z >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;
+        // Use the bias to determine occlusion and modulate it with rangeCheck and depthDiff
+        if (depthDiff >= bias)
+            occlusion += rangeCheck;
     }
     
-    occlusion = 1.0 - (occlusion / 64.0);
+    occlusion = 1.0 - (occlusion / float(kernelSize)); // Assume 64 samples
     FragColor = pow(occlusion, power);
+
 }
