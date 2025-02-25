@@ -114,4 +114,8 @@ private:
     float mSSAORadius = 0.5f;
     float mSSAOBias = 0.025f;
     float mSSAOPower = 1.0f;
+
+	float mSSAOBlurRadius = 2.0f;
+	float mSSAOBlurDepthThreshold = 0.1f;
+	float mSSAOBlurNormalThreshold = 0.1f;
 };

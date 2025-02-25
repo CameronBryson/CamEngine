@@ -27,6 +27,7 @@ public:
     float Fov;
     glm::mat4 projection_matrix;
     glm::mat4 view_matrix;
+    glm::mat4 inverse_projection_matrix;
 
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
@@ -36,6 +37,8 @@ public:
     [[nodiscard]] glm::mat4& GetViewMatrix();
 
     [[nodiscard]] glm::mat4& GetProjectionMatrix();
+
+	[[nodiscard]] glm::mat4& GetInverseProjectionMatrix();
 
 
     // calculates the front vector from the Camera's (updated) Euler Angles

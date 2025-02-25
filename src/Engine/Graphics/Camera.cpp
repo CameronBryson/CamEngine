@@ -16,6 +16,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up,
 	       updateCameraVectors();
 	       projection_matrix = glm::perspective(glm::radians(Fov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
 	       view_matrix = glm::lookAt(Position, Position + Front, Up);
+		   inverse_projection_matrix = glm::inverse(projection_matrix);
 	   }
 	   glm::mat4& Camera::GetViewMatrix()
 	   {
@@ -25,6 +26,10 @@ Camera::Camera(glm::vec3 position, glm::vec3 up,
 	   glm::mat4& Camera::GetProjectionMatrix()
 	   {
 	       return projection_matrix;
+	   }
+	   glm::mat4& Camera::GetInverseProjectionMatrix()
+	   {
+		   return inverse_projection_matrix;
 	   }
 	   void Camera::updateCameraVectors()
 	   {
@@ -43,4 +48,5 @@ Camera::Camera(glm::vec3 position, glm::vec3 up,
 	   void Camera::updateProjectionMatrix()
 	   {
 		   projection_matrix = glm::perspective(glm::radians(Fov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
+		   inverse_projection_matrix = glm::inverse(projection_matrix);
 	   }

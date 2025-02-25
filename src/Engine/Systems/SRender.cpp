@@ -125,6 +125,10 @@ void SRender::initImGui()
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(dpi_scale);
 
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+
+
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
@@ -547,6 +551,7 @@ void SRender::ssaoPass()
     // Set view and projection matrices
     ssaoShader->setMat4("projection", mScene->mCurrentCamera.GetProjectionMatrix());
     ssaoShader->setMat4("view", mScene->mCurrentCamera.GetViewMatrix());
+    ssaoShader->setMat4("inverseProjection", mScene->mCurrentCamera.GetInverseProjectionMatrix());
 
     // Send kernel and settings
     for (unsigned int i = 0; i < SSAO_KERNEL_SIZE; ++i)
@@ -555,6 +560,7 @@ void SRender::ssaoPass()
     ssaoShader->setFloat("radius", mSSAORadius);
     ssaoShader->setFloat("bias", mSSAOBias);
     ssaoShader->setFloat("power", mSSAOPower);
+	ssaoShader->setVec2("resolution", glm::vec2(settings::window_width, settings::window_height));
 
     // Bind G-Buffer textures using proper slots
     mGBuffer->getColorAttachment(1)->bind(SSAOSlots::NORMAL_METALLIC);
@@ -579,6 +585,15 @@ void SRender::ssaoPass()
     mSSAOBlurBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
     mSSAOBuffer->getColorAttachment(0)->bind(SSAOSlots::SSAO);
     blurShader->setInt("ssaoInput", SSAOSlots::SSAO);
+
+    mGBuffer->getColorAttachment(1)->bind(SSAOSlots::NORMAL_METALLIC);
+	blurShader->setInt("gNormalMetallic", SSAOSlots::NORMAL_METALLIC);
+    mGBuffer->getDepthAttachment()->bind(SSAOSlots::DEPTH);
+	blurShader->setInt("gDepth", SSAOSlots::DEPTH);
+
+	blurShader->setFloat("blurRadius", mSSAOBlurRadius);
+	blurShader->setFloat("depthThereshold", mSSAOBlurDepthThreshold);
+    blurShader->setFloat("normalThreshold", mSSAOBlurNormalThreshold);
 
     OpenGlUtil::drawQuad();
     mSSAOBlurBuffer->unbind();
@@ -755,8 +770,6 @@ void SRender::renderPointShadows(const LightData& lightData)
 
 void SRender::bloomPass()
 {
-    int width, height;
-    glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
 
     auto blurShader = GameManager::mGraphicsManager->getShader("Blur");
     blurShader->use();
@@ -768,7 +781,7 @@ void SRender::bloomPass()
     for (int i = 0; i < blurPasses; i++)
     {
         mPingPongFBO[horizontal]->bind();
-        mPingPongFBO[horizontal]->setViewport(0, 0, width, height);
+        mPingPongFBO[horizontal]->setViewport(0, 0, settings::window_width, settings::window_height);
         blurShader->setBool("horizontal", horizontal);
 
         if (firstIteration)
@@ -929,6 +942,9 @@ void SRender::drawImGui()
             ImGui::SliderFloat("SSAO Radius", &mSSAORadius, 0.0f, 5.0f);
             ImGui::SliderFloat("SSAO Bias", &mSSAOBias, 0.0f, 0.5f);
             ImGui::SliderFloat("SSAO Power", &mSSAOPower, 0.0f, 5.0f);
+			ImGui::SliderFloat("SSAO Blur Radius", &mSSAOBlurRadius, 0.0f, 5.0f);
+			ImGui::SliderFloat("SSAO Blur Depth Threshold", &mSSAOBlurDepthThreshold, 0.0f, 1.0f);
+			ImGui::SliderFloat("SSAO Blur Normal Threshold", &mSSAOBlurNormalThreshold, 0.0f, 1.0f);
         }
     }
 
