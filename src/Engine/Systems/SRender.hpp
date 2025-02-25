@@ -111,9 +111,9 @@ private:
     // SSAO settings
     static const int SSAO_KERNEL_SIZE = 16;
     static const int SSAO_NOISE_SIZE = 4;
-    float mSSAORadius = 0.5f;
+    float mSSAORadius = 0.2f;
     float mSSAOBias = 0.05f;
-    float mSSAOPower = 1.5f;
+    float mSSAOPower = 0.75f;
 
 	float mSSAOBlurRadius = 2.0f;
 	float mSSAOBlurDepthThreshold = 0.1f;
