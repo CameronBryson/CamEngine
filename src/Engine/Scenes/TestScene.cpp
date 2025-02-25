@@ -130,7 +130,30 @@ void TestScene::update(float dt) {
 	if (engine_util::isKeyPressed(GLFW_KEY_Q)) {
 		mCurrentCamera.Position -= mCurrentCamera.WorldUp * finalSpeed * dt;
 	}
-
+	// Arrow key camera rotation
+	float rotationSpeed = 100.0f * dt; // Adjust this value to change rotation speed
+	if (engine_util::isKeyPressed(GLFW_KEY_LEFT)) {
+		mCurrentCamera.Yaw -= rotationSpeed;
+		mCurrentCamera.updateCameraVectors();
+	}
+	if (engine_util::isKeyPressed(GLFW_KEY_RIGHT)) {
+		mCurrentCamera.Yaw += rotationSpeed;
+		mCurrentCamera.updateCameraVectors();
+	}
+	if (engine_util::isKeyPressed(GLFW_KEY_UP)) {
+		mCurrentCamera.Pitch += rotationSpeed;
+		// Constrain pitch to prevent camera flipping
+		if (mCurrentCamera.Pitch > 89.0f)
+			mCurrentCamera.Pitch = 89.0f;
+		mCurrentCamera.updateCameraVectors();
+	}
+	if (engine_util::isKeyPressed(GLFW_KEY_DOWN)) {
+		mCurrentCamera.Pitch -= rotationSpeed;
+		// Constrain pitch to prevent camera flipping
+		if (mCurrentCamera.Pitch < -89.0f)
+			mCurrentCamera.Pitch = -89.0f;
+		mCurrentCamera.updateCameraVectors();
+	}
 	// Handle camera rotation with right mouse button
 	if (engine_util::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
 		// Hide cursor when right mouse is pressed

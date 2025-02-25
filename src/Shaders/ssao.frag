@@ -16,9 +16,11 @@ uniform float radius;               // Maps to mSSAORadius
 uniform float bias;                 // Maps to mSSAOBias
 uniform float power;                // Maps to mSSAOPower
 uniform vec2 resolution;
+uniform int noiseSize;
+uniform int kernelSize;
 
 // Screen-space noise tiling (SSAO_NOISE_SIZE is 4x4)
-const vec2 noiseScale = vec2(resolution.x/4.0, resolution.y/4.0); 
+const vec2 noiseScale = vec2(resolution.x/noiseSize, resolution.y/noiseSize); 
 
 // Optimized function using inverseProjection uniform directly
 vec3 reconstructViewPosition(float depth, vec2 texCoords) {
@@ -50,7 +52,7 @@ void main()
     
     // Calculate occlusion
     float occlusion = 0.0;
-    for(int i = 0; i < 64; ++i) // SSAO_KERNEL_SIZE
+    for(int i = 0; i < kernelSize; ++i) // SSAO_KERNEL_SIZE
     {
         // Get sample position in view space
         vec3 samplePos = TBN * samples[i]; 

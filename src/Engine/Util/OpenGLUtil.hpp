@@ -44,6 +44,17 @@ public:
         static void printResults();
         static void enableProfiling(bool enable) { sProfilingEnabled = enable; }
         static bool isProfilingEnabled() { return sProfilingEnabled; }
+        static float getLastDuration(const char* name) {
+#ifdef _DEBUG
+            if (!sProfilingEnabled) return 0.0f;
+            auto it = mTimerQueries.find(name);
+            if (it != mTimerQueries.end()) {
+                return it->second.lastDuration;
+            }
+#endif
+            return 0.0f;
+        }
+
 
     private:
         struct TimerQuery {

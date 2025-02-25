@@ -87,8 +87,8 @@ private:
     std::shared_ptr<FrameBuffer> mPingPongFBO[2];
 
     // Shadow mapping settings
-    const int mShadowMapWidth = 2048;
-    const int mShadowMapHeight = 2048;
+    const int mShadowMapWidth = 512;
+    const int mShadowMapHeight = 512;
     bool mEnableShadows = true;
     float nearPlane = 1.0f;
     float farPlane = 25.0f;
@@ -100,7 +100,7 @@ private:
 	bool ssaoEnabled = true;
     float bloomThreshold = 1.0f;
     float bloomStrength = 1.0f;
-    int blurPasses = 10;
+    int blurPasses = 6;
 
     // SSAO data
     std::shared_ptr<FrameBuffer> mSSAOBuffer;
@@ -109,11 +109,11 @@ private:
     std::shared_ptr<Texture2D> mSSAONoise;
 
     // SSAO settings
-    static const int SSAO_KERNEL_SIZE = 64;
+    static const int SSAO_KERNEL_SIZE = 16;
     static const int SSAO_NOISE_SIZE = 4;
     float mSSAORadius = 0.5f;
-    float mSSAOBias = 0.025f;
-    float mSSAOPower = 1.0f;
+    float mSSAOBias = 0.05f;
+    float mSSAOPower = 1.5f;
 
 	float mSSAOBlurRadius = 2.0f;
 	float mSSAOBlurDepthThreshold = 0.1f;

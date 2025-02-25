@@ -68,52 +68,88 @@ void GameManager::finalShutdown()
 
 
 // Update the game_loop function to limit FPS
+//void GameManager::gameLoop()
+//{
+//    constexpr double fpsLimit = 1.0 / settings::max_fps;
+//    double deltaTime = 0.0f;
+//    double lastFrame = 0.0f;
+//    double elapsedTime = 0.0f;
+//    int frameCount = 0;
+//
+//    while (!glfwWindowShouldClose(mGameWindow))
+//    {
+//        OpenGlUtil::beginFrame();
+//        const double currentFrame = glfwGetTime();
+//        deltaTime = currentFrame - lastFrame;
+//        lastFrame = currentFrame;
+//        elapsedTime += deltaTime;
+//        frameCount++;
+//
+//        if (elapsedTime >= 1.0)
+//        {
+//            int fps = frameCount;
+//            //std::cout << "FPS: " << fps << '\n';
+//            frameCount = 0;
+//            elapsedTime = 0.0;
+//        }
+//
+//        glfwPollEvents();
+//        update(static_cast<float>(deltaTime));
+//        render();
+//        OpenGlUtil::endFrame();
+//        glfwSwapBuffers(mGameWindow);
+//
+//        // Limit FPS
+//        const double frameTime = glfwGetTime() - currentFrame;
+//        if (frameTime < fpsLimit)
+//        {
+//            std::this_thread::sleep_for(std::chrono::duration<double>(fpsLimit - frameTime));
+//        }
+//        if (mPendingScene)
+//        {
+//            shutdown();
+//            mCurrentScene = std::move(mPendingScene);
+//            init();
+//
+//        }
+//    }
+//}
+
 void GameManager::gameLoop()
 {
-	constexpr double fpsLimit = 1.0 / settings::max_fps;
-    double deltaTime = 0.0f;
-    double lastFrame = 0.0f;
-    double elapsedTime = 0.0f;
-    int frameCount = 0;
+    const double targetFrameTime = 1.0 / settings::max_fps;
+    auto previousTime = std::chrono::high_resolution_clock::now();
 
-    while( ! glfwWindowShouldClose(mGameWindow) )
+    while (!glfwWindowShouldClose(mGameWindow))
     {
         OpenGlUtil::beginFrame();
-        const double currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-        elapsedTime += deltaTime;
-        frameCount++;
-
-        if( elapsedTime >= 1.0 )
-        {
-            int fps = frameCount;
-            //std::cout << "FPS: " << fps << '\n';
-            frameCount = 0;
-            elapsedTime = 0.0;
-        }
+        auto loopStart = std::chrono::high_resolution_clock::now();
+        double deltaTime = std::chrono::duration<double>(loopStart - previousTime).count();
+        previousTime = loopStart;
 
         glfwPollEvents();
         update(static_cast<float>(deltaTime));
         render();
         OpenGlUtil::endFrame();
+        // End frame
         glfwSwapBuffers(mGameWindow);
 
-        // Limit FPS
-        const double frameTime = glfwGetTime() - currentFrame;
-        if( frameTime < fpsLimit )
-        {
-            std::this_thread::sleep_for(std::chrono::duration<double>(fpsLimit - frameTime));
-        }
+        // Measure loop time once, right after swap
+        auto loopEnd = std::chrono::high_resolution_clock::now();
+        double frameDuration = std::chrono::duration<double>(loopEnd - loopStart).count();
+        double sleepTime = targetFrameTime - frameDuration;
+        if (sleepTime > 0.0)
+            std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
+
         if (mPendingScene)
         {
-			shutdown();
-		    mCurrentScene = std::move(mPendingScene);
-		    init();
-
+            shutdown();
+            mCurrentScene = std::move(mPendingScene);
+            init();
         }
     }
 }
+
 
 GLFWwindow * GameManager::get_glfw_window()
 {

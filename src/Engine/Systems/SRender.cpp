@@ -560,6 +560,8 @@ void SRender::ssaoPass()
     ssaoShader->setFloat("radius", mSSAORadius);
     ssaoShader->setFloat("bias", mSSAOBias);
     ssaoShader->setFloat("power", mSSAOPower);
+    ssaoShader->setInt("noiseSize", SSAO_NOISE_SIZE);
+    ssaoShader->setInt("kernelSize", SSAO_KERNEL_SIZE);
 	ssaoShader->setVec2("resolution", glm::vec2(settings::window_width, settings::window_height));
 
     // Bind G-Buffer textures using proper slots
@@ -1120,7 +1122,62 @@ void SRender::drawImGui()
         }
     }
 
-    ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+    ImGui::End();
+    // Performance Statistics Window
+    ImGui::Begin("Performance Statistics");
+    {
+        ImGuiIO& io = ImGui::GetIO();
+
+        // FPS and frame timing
+        ImGui::Text("FPS: %.1f (%.2f ms/frame)", io.Framerate, 1000.0f / io.Framerate);
+
+        // GPU Timings for each render pass
+        if (OpenGlUtil::GPUTimer::isProfilingEnabled())
+        {
+            ImGui::Separator();
+            ImGui::Text("GPU Timings (ms):");
+
+            const float columnWidth = ImGui::GetWindowWidth() * 0.65f;
+            ImGui::Columns(2, "TimingColumns", true);
+            ImGui::SetColumnWidth(0, columnWidth);
+
+            // Header
+            ImGui::Text("Pass"); ImGui::NextColumn();
+            ImGui::Text("Time (ms)"); ImGui::NextColumn();
+            ImGui::Separator();
+
+            // Common helper for displaying timing row
+            auto displayTiming = [](const char* label, float time) {
+                ImGui::Text("%s", label); ImGui::NextColumn();
+                ImGui::Text("%.2f", time); ImGui::NextColumn();
+                };
+
+            // Display timings for main passes
+            displayTiming("Light Data", OpenGlUtil::GPUTimer::getLastDuration("Light Data"));
+            displayTiming("Shadow Pass", OpenGlUtil::GPUTimer::getLastDuration("Shadow Pass"));
+            displayTiming("Depth Pass", OpenGlUtil::GPUTimer::getLastDuration("Depth Pass"));
+            displayTiming("G-Buffer", OpenGlUtil::GPUTimer::getLastDuration("G-Buffer"));
+            displayTiming("SSAO", OpenGlUtil::GPUTimer::getLastDuration("SSAO"));
+            displayTiming("Deferred Lighting", OpenGlUtil::GPUTimer::getLastDuration("Deferred Lighting"));
+            displayTiming("Post Processing", OpenGlUtil::GPUTimer::getLastDuration("Post Processing"));
+
+            // Shadow sub-passes
+            ImGui::Separator();
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Shadow Sub-passes:"); ImGui::NextColumn();
+            ImGui::NextColumn();
+            displayTiming("  Directional Shadows", OpenGlUtil::GPUTimer::getLastDuration("Directional Shadows"));
+            displayTiming("  Spot Shadows", OpenGlUtil::GPUTimer::getLastDuration("Spot Shadows"));
+            displayTiming("  Point Shadows", OpenGlUtil::GPUTimer::getLastDuration("Point Shadows"));
+
+
+            
+        }
+        else
+        {
+            ImGui::TextColored(ImVec4(1.0f, 0.7f, 0.7f, 1.0f), 
+                               "Enable GPU Profiling in Debug Settings to see detailed timings");
+        }
+    }
     ImGui::End();
 
     ImGui::Render();
