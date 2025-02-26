@@ -54,6 +54,7 @@ void SRender::render()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    buildRenderLists();
 
     LightData lightData;
     // Build and upload light data
@@ -102,6 +103,7 @@ void SRender::render()
         postProcessPass();
     }
     drawImGui();
+
 }
 
 void SRender::shutdown()
@@ -470,6 +472,96 @@ void SRender::updateCameraUniforms()
     mCameraUBO->setData(&cameraData, sizeof(CameraData));
 }
 
+//void SRender::buildRenderLists()
+//{
+//	//Collect models to render
+//    //Collect transforms
+//    //collect and organize meshes and materials and textures
+//	//Find transparancy and sort
+//    //Frustum culling
+//    auto& registry = mScene->mEnttRegistry;
+//    auto modelView = registry.view<CModel, CTransform>();
+//
+//}
+void SRender::buildRenderLists()
+{
+    mOpaqueRenderList.clear();
+    mTransparentRenderList.clear();
+    mCulledMeshes = 0;
+
+    glm::vec3 camPos = mScene->mCurrentCamera.Position;
+    auto& registry = mScene->mEnttRegistry;
+    auto modelView = registry.view<CModel, CTransform>();
+
+
+    for (auto entity : modelView)
+    {
+        const auto& modelComp = modelView.get<CModel>(entity);
+        const auto& transformComp = modelView.get<CTransform>(entity);
+        auto model = GameManager::mGraphicsManager->getModel(modelComp.name);
+        auto meshes = model->getMeshes();
+
+        for (const auto& meshInstance : meshes)
+        {
+            // Get local bounding sphere
+            glm::vec3 localCenter = meshInstance.mesh->getBoundingSphereCenter();
+            float localRadius = meshInstance.mesh->getBoundingSphereRadius();
+
+            // Calculate world transform
+            glm::mat4 finalTransform = transformComp.model_matrix * meshInstance.localTransform;
+
+
+            // Extract scale without decomposing full matrix
+            glm::vec3 scale(
+                glm::length(glm::vec3(finalTransform[0])),
+                glm::length(glm::vec3(finalTransform[1])),
+                glm::length(glm::vec3(finalTransform[2]))
+            );
+
+            // Use maximum scale for radius
+            float maxScale = std::max({scale.x, scale.y, scale.z});
+            float worldRadius = localRadius * maxScale;
+
+            // Transform center directly
+            glm::vec3 worldCenter = glm::vec3(finalTransform * glm::vec4(localCenter, 1.0f));
+
+            
+
+            // Perform frustum test
+            if (!mScene->mCurrentCamera.isSphereInFrustum(worldCenter, worldRadius))
+            {
+                mCulledMeshes++;
+                continue;
+            }
+
+            // Process visible meshes...
+            float distanceToCamera = glm::length(worldCenter - camPos);
+            auto material = meshInstance.mesh->getMaterial();
+            bool isTransparent = false;
+            float opacity = material ? material->getOpacity() : 1.0f;
+
+            if (opacity < 1.0f || (material && material->getOpacityTexture() != nullptr))
+                isTransparent = true;
+
+            RenderItem item{meshInstance.mesh, finalTransform, distanceToCamera};
+
+            if (isTransparent)
+                mTransparentRenderList.emplace_back(item);
+            else
+                mOpaqueRenderList.emplace_back(item);
+        }
+    }
+
+    // Sort transparent objects back-to-front
+    std::sort(mTransparentRenderList.begin(), mTransparentRenderList.end(),
+              [](const RenderItem& a, const RenderItem& b) {
+                  return a.distance > b.distance;
+              });
+}
+
+
+
+
 void SRender::shadowPass(const LightData& lightData)
 {
     GL_VALIDATE_STATE();
@@ -514,7 +606,7 @@ void SRender::depthPass()
     GL_CHECK(glClear(GL_DEPTH_BUFFER_BIT));
     GL_CHECK(glDepthMask(GL_TRUE));
     // Draw all opaque geometry
-    drawModels(depthShader);
+	drawRenderList(mOpaqueRenderList, depthShader);
 	GL_CHECK(glDepthMask(GL_FALSE));
     // Re-enable color writes for subsequent passes
     GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
@@ -533,7 +625,7 @@ void SRender::geometryPass()
 	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
     //We dont want to clear depth pass
     GL_CHECK(glDisable(GL_BLEND)); // Disable blending for G-Buffer pass
-    drawModels(gBufferShader, true);
+	drawRenderList(mOpaqueRenderList, gBufferShader, true);
 
     //GL_CHECK(glDepthMask(GL_TRUE));
     GL_CHECK(glDepthFunc(GL_LESS));
@@ -713,7 +805,7 @@ void SRender::renderDirectionalShadows(const LightData& lightData)
         mDirectionalShadowMapBuffer->bind();
         mDirectionalShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
         GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
-        drawModels(shadowMapShader);
+		drawRenderList(mOpaqueRenderList, shadowMapShader);
         GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
         mDirectionalShadowMapBuffer->unbind();
     }
@@ -732,7 +824,7 @@ void SRender::renderSpotShadows(const LightData& lightData)
         mSpotShadowMapBuffer->bind();
         mSpotShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
         GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
-        drawModels(shadowMapShader);
+		drawRenderList(mOpaqueRenderList, shadowMapShader);
         GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
         mSpotShadowMapBuffer->unbind();
     }
@@ -760,7 +852,7 @@ void SRender::renderPointShadows(const LightData& lightData)
         mPointShadwMapBuffer->bind();
         mPointShadwMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
         GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
-        drawModels(pointShadowMapShader);
+		drawRenderList(mOpaqueRenderList, pointShadowMapShader);
         GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
         mPointShadwMapBuffer->unbind();
     }
@@ -873,36 +965,15 @@ void SRender::bindShadowMaps(std::shared_ptr<Shader>& shader)
 // Drawing Helpers
 // ------------------------------------------------------
 
-void SRender::drawModels() const
+
+
+void SRender::drawRenderList(const std::vector<RenderItem>& renderList, std::shared_ptr<Shader>& shader, bool bindMaterial) const
 {
-    // Draw each entity's model
-    auto& registry = mScene->mEnttRegistry;
-    auto modelView = registry.view<CModel, CTransform>();
-
-    for (auto entity : modelView)
-    {
-        const auto& modelComp = modelView.get<CModel>(entity);
-        const auto& transform = modelView.get<CTransform>(entity);
-
-        glm::mat4 modelMatrix = transform.model_matrix;
-        GameManager::mGraphicsManager->getModel(modelComp.name)->draw(modelMatrix);
-    }
-}
-
-void SRender::drawModels(std::shared_ptr<Shader>& shader, bool bindMaterial) const
-{
-    // Draw geometry with a specific shader (e.g. shadow pass)
-    auto& registry = mScene->mEnttRegistry;
-    auto modelView = registry.view<CModel, CTransform>();
-
-    for (auto entity : modelView)
-    {
-        const auto& modelComp = modelView.get<CModel>(entity);
-        const auto& transform = modelView.get<CTransform>(entity);
-
-        glm::mat4 modelMatrix = transform.model_matrix;
-        GameManager::mGraphicsManager->getModel(modelComp.name)->draw(shader, modelMatrix,bindMaterial);
-    }
+	for (const auto& item : renderList)
+	{
+		glm::mat4 modelMatrix = item.transform;
+		item.mesh->draw(shader, modelMatrix, bindMaterial);
+	}
 }
 
 void SRender::drawImGui()
@@ -1130,6 +1201,14 @@ void SRender::drawImGui()
 
         // FPS and frame timing
         ImGui::Text("FPS: %.1f (%.2f ms/frame)", io.Framerate, 1000.0f / io.Framerate);
+        ImGui::Separator();
+        ImGui::Text("Culling Statistics:");
+        int totalMeshes = mOpaqueRenderList.size() + mTransparentRenderList.size() + mCulledMeshes;
+        ImGui::Text("Total Meshes: %d", totalMeshes);
+        ImGui::Text("Visible Meshes: %d", mOpaqueRenderList.size() + mTransparentRenderList.size());
+        ImGui::Text("Culled Meshes: %d", mCulledMeshes);
+        float cullPercentage = (totalMeshes > 0) ? (float)mCulledMeshes / totalMeshes * 100.0f : 0.0f;
+        ImGui::Text("Culling Percentage: %.1f%%", cullPercentage);
 
         // GPU Timings for each render pass
         if (OpenGlUtil::GPUTimer::isProfilingEnabled())

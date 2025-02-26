@@ -1,8 +1,9 @@
 #pragma once
 #include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
 #include "glm/mat4x4.hpp"
 #include "Engine/Components.hpp"
-
+#include <array>
 
 // Default camera values
 constexpr float YAW = -90.0f;
@@ -40,8 +41,12 @@ public:
 
 	[[nodiscard]] glm::mat4& GetInverseProjectionMatrix();
 
+	[[nodiscard]] std::array<glm::vec4, 6> GetFrustumPlanes();
+
 
     // calculates the front vector from the Camera's (updated) Euler Angles
 	void updateCameraVectors();
 	void updateProjectionMatrix();
+
+	bool isSphereInFrustum(const glm::vec3& center, float radius);
 };

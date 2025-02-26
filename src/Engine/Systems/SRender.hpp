@@ -7,10 +7,17 @@
 #include "UniformStructs.hpp"
 #include <FrameBuffer.hpp>
 #include <Texture2D.hpp>
+#include "Mesh.hpp"
 template<typename T>
 class SparseSet;
 class BaseScene;
 class Shader;
+struct RenderItem {
+    std::shared_ptr<Mesh> mesh;
+    glm::mat4 transform;
+    // Distance from camera (used to sort transparent objects)
+    float distance;
+};
 struct SceneBounds
 {
     glm::vec3 center;
@@ -42,6 +49,7 @@ private:
 
     // Render passes
     void updateCameraUniforms();
+    void buildRenderLists();
     void shadowPass(const LightData& lightData);
     void depthPass();
     void geometryPass();
@@ -63,8 +71,7 @@ private:
     void bindShadowMaps(std::shared_ptr<Shader>& shader);
 
     // Drawing helpers
-    void drawModels() const;
-    void drawModels(std::shared_ptr<Shader>& shader, bool bindMatieral = false) const;
+	void drawRenderList(const std::vector<RenderItem>& renderList, std::shared_ptr<Shader>& shader, bool bindMaterial = false) const;
     void drawImGui();
 
     void generateSSAOKernel();
@@ -118,4 +125,10 @@ private:
 	float mSSAOBlurRadius = 2.0f;
 	float mSSAOBlurDepthThreshold = 0.1f;
 	float mSSAOBlurNormalThreshold = 0.1f;
+
+
+    //Frustum culling
+	int mCulledMeshes = 0;
+    std::vector<RenderItem> mOpaqueRenderList;
+    std::vector<RenderItem> mTransparentRenderList;
 };

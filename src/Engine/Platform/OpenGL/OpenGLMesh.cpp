@@ -15,6 +15,7 @@ OpenGLMesh::OpenGLMesh(const std::vector<Vertex>& vertices, const std::vector<un
 	mVertexArray = VertexArray::create();
 	mVertexArray->addVertexBuffer(VertexBuffer::create(vertices));
 	mVertexArray->setIndexBuffer(IndexBuffer::create(indices));
+	calculateBoundingSphere();
 }
 
 OpenGLMesh::~OpenGLMesh()
@@ -71,8 +72,59 @@ void OpenGLMesh::setMaterial(const std::shared_ptr<Material>& material)
 	mMaterial = material;
 }
 
+std::shared_ptr<Material> OpenGLMesh::getMaterial()
+{
+	return mMaterial;
+}
+
 std::vector<Vertex>& OpenGLMesh::getVertices()
 {
 	return mVertices;
 }
+
+glm::vec3 OpenGLMesh::getBoundingSphereCenter() const
+{
+	return mBoundingSphereCenter;
+}
+
+float OpenGLMesh::getBoundingSphereRadius() const
+{
+	return mBoundingSphereRadius;
+}
+
+void OpenGLMesh::calculateBoundingSphere()
+{
+    if (mVertices.empty())
+    {
+        mBoundingSphereCenter = glm::vec3(0.0f);
+        mBoundingSphereRadius = 0.0f;
+        return;
+    }
+
+    // Find AABB first for better initial center
+    glm::vec3 minPos = mVertices[0].position;
+    glm::vec3 maxPos = mVertices[0].position;
+
+    for (const auto& vertex : mVertices)
+    {
+        minPos = glm::min(minPos, vertex.position);
+        maxPos = glm::max(maxPos, vertex.position);
+    }
+
+    // Use AABB center as initial sphere center
+    mBoundingSphereCenter = (minPos + maxPos) * 0.5f;
+
+    // Find the vertex furthest from center
+    mBoundingSphereRadius = 0.0f;
+    for (const auto& vertex : mVertices)
+    {
+        float distance = glm::length(vertex.position - mBoundingSphereCenter);
+        mBoundingSphereRadius = std::max(mBoundingSphereRadius, distance);
+    }
+
+    // Add small padding to ensure complete coverage
+    mBoundingSphereRadius *= 1.01f; // Adjust this value through ImGui
+}
+
+
 
