@@ -35,7 +35,7 @@ void OpenGLModel::addMesh(const MeshInstance& mesh)
 	mMeshes.emplace_back(mesh);
 }
 
-std::vector<MeshInstance> OpenGLModel::getMeshes()
+std::vector<MeshInstance>& OpenGLModel::getMeshes()
 {
 	return mMeshes;
 }

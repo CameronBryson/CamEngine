@@ -256,6 +256,7 @@ std::shared_ptr<Mesh> GraphicsManager::createMesh(const std::string& name,
 
     // Create new mesh
     auto mesh = Mesh::createMesh(vertices, indices, material);
+	mesh->setName(name);
     mesh_map_.emplace(name, mesh);
 
     return mesh;
@@ -326,6 +327,7 @@ std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& path, const
 
     // Create the model with mesh instances
     auto model = Model::createModel(meshInstances);
+	model->setName(name);
     model_map_.emplace(name, model);
 
     return model;
@@ -506,6 +508,7 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
     if (!metalRoughTextures.empty()) material->setMetalRoughTexture(metalRoughTextures[0]);
 
     // Store in material map
+	material->setName(material_name);
     material_map_.emplace(material_name, material);
 
     return material;

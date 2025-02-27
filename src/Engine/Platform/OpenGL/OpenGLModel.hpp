@@ -15,8 +15,12 @@ public:
 	void draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bindMatieral = false) const override;
 
 	void addMesh(const MeshInstance& mesh) override;
-	std::vector<MeshInstance> getMeshes() override;
+	std::vector<MeshInstance>& getMeshes() override;
+
+	void setName(const std::string& name) override { mName = name; }
+	const std::string& getName() const override { return mName; }
 
 private:
 	std::vector<MeshInstance> mMeshes;
+	std::string mName;
 };

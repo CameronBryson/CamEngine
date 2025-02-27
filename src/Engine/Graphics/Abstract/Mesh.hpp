@@ -23,6 +23,8 @@ public:
 	virtual glm::vec3 getBoundingSphereCenter() const = 0;
 	virtual float getBoundingSphereRadius() const = 0;
 	virtual void calculateBoundingSphere() = 0;
+	virtual void setName(const std::string& name) = 0;
+	virtual const std::string& getName() const = 0;
 	static std::shared_ptr<Mesh> createMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::shared_ptr<Material>& material);
 };
 struct MeshInstance

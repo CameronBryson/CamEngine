@@ -25,10 +25,14 @@ public:
 	float getBoundingSphereRadius() const override;
 	void calculateBoundingSphere() override;
 
+	void setName(const std::string& name) override { mName = name; }
+	const std::string& getName() const override { return mName; }
+
 private:
 	std::vector<Vertex> mVertices;
 	std::shared_ptr<VertexArray> mVertexArray;
 	std::shared_ptr<Material> mMaterial;
 	glm::vec3 mBoundingSphereCenter;
 	float mBoundingSphereRadius;
+	std::string mName;
 };

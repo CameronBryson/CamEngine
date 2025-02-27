@@ -22,6 +22,7 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtx/euler_angles.hpp"
+#include "glm/gtx/matrix_decompose.hpp"
 #include <GameSettings.hpp>
 #include <TextureSlots.hpp>
 #include "UniformStructs.hpp"
@@ -1292,23 +1293,144 @@ void SRender::drawImGui()
         {
             auto entity = entities[selectedEntityIndex];
             auto& transform = view.get<CTransform>(entity);
+            auto& modelComp = view.get<CModel>(entity);
+            auto model = GameManager::mGraphicsManager->getModel(modelComp.name);
 
             ImGui::Separator();
 
-            // Position Control
-            ImGui::SliderFloat3("Position", glm::value_ptr(transform.position), -10.0f, 10.0f);
+            // Entity transform controls
+            if (ImGui::TreeNode("Entity Transform"))
+            {
+                // Position Control
+                ImGui::SliderFloat3("Position", glm::value_ptr(transform.position), -10.0f, 10.0f);
 
-            // Rotation Control (Euler angles)
-            glm::vec3 eulerDegrees = glm::degrees(glm::eulerAngles(transform.rotation));
-            ImGui::SliderFloat3("Rotation", glm::value_ptr(eulerDegrees), -180.0f, 180.0f);
-            transform.rotation = glm::quat(glm::radians(eulerDegrees));
+                // Rotation Control (Euler angles)
+                glm::vec3 eulerDegrees = glm::degrees(glm::eulerAngles(transform.rotation));
+                ImGui::SliderFloat3("Rotation", glm::value_ptr(eulerDegrees), -180.0f, 180.0f);
+                transform.rotation = glm::quat(glm::radians(eulerDegrees));
 
-            // Scale Control
-            ImGui::SliderFloat3("Scale", glm::value_ptr(transform.scale), 0.0f, 10.0f);
+                // Scale Control
+                ImGui::SliderFloat3("Scale", glm::value_ptr(transform.scale), 0.0f, 10.0f);
 
-            transform.dirty = true;
+                transform.dirty = true;
+                ImGui::TreePop();
+            }
+
+            // Mesh instances editor
+            if (ImGui::TreeNode("Mesh Instances"))
+            {
+                // Get reference to the actual meshes in the model
+                auto& meshes = model->getMeshes();
+
+                for (size_t i = 0; i < meshes.size(); i++)
+                {
+                    auto& meshInstance = meshes[i];
+
+                    // Extract mesh name or use index if no name
+                    std::string meshName = meshInstance.mesh->getName();
+                    if (meshName.empty()) {
+                        meshName = "Mesh " + std::to_string(i);
+                    }
+
+                    if (ImGui::TreeNode(meshName.c_str()))
+                    {
+                        // Extract transform components
+                        glm::vec3 position, scale;
+                        glm::quat rotation;
+                        glm::vec3 skew;
+                        glm::vec4 perspective;
+
+                        // Decompose the local transform matrix
+                        glm::decompose(meshInstance.localTransform, scale, rotation, position, skew, perspective);
+
+                        // Position Control
+                        if (ImGui::SliderFloat3("Position", glm::value_ptr(position), -5.0f, 5.0f))
+                        {
+                            // Reconstruct the matrix - this now directly updates the reference
+                            glm::mat4 posMatrix = glm::translate(glm::mat4(1.0f), position);
+                            glm::mat4 rotMatrix = glm::mat4_cast(rotation);
+                            glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
+                            meshInstance.localTransform = posMatrix * rotMatrix * scaleMatrix;
+                        }
+
+                        // Rotation Control (Euler angles)
+                        glm::vec3 eulerDegrees = glm::degrees(glm::eulerAngles(rotation));
+                        if (ImGui::SliderFloat3("Rotation", glm::value_ptr(eulerDegrees), -180.0f, 180.0f))
+                        {
+                            rotation = glm::quat(glm::radians(eulerDegrees));
+
+                            // Reconstruct the matrix
+                            glm::mat4 posMatrix = glm::translate(glm::mat4(1.0f), position);
+                            glm::mat4 rotMatrix = glm::mat4_cast(rotation);
+                            glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
+                            meshInstance.localTransform = posMatrix * rotMatrix * scaleMatrix;
+                        }
+
+                        // Scale Control
+                        if (ImGui::SliderFloat3("Scale", glm::value_ptr(scale), 0.1f, 5.0f))
+                        {
+                            // Reconstruct the matrix
+                            glm::mat4 posMatrix = glm::translate(glm::mat4(1.0f), position);
+                            glm::mat4 rotMatrix = glm::mat4_cast(rotation);
+                            glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
+                            meshInstance.localTransform = posMatrix * rotMatrix * scaleMatrix;
+                        }
+
+                        // Material editor
+                        auto material = meshInstance.mesh->getMaterial();
+                        if (material && ImGui::TreeNode("Material"))
+                        {
+                            ImGui::Text("Material: %s", material->getName().c_str());
+
+                            glm::vec4 albedo = material->getAlbedo();
+                            if (ImGui::ColorEdit4("Albedo", glm::value_ptr(albedo)))
+                            {
+                                material->setAlbedo(albedo);
+                            }
+
+                            float opacity = material->getOpacity();
+                            if (ImGui::SliderFloat("Opacity", &opacity, 0.0f, 1.0f))
+                            {
+                                material->setOpacity(opacity);
+                            }
+
+                            float metallic = material->getMetallic();
+                            if (ImGui::SliderFloat("Metallic", &metallic, 0.0f, 1.0f))
+                            {
+                                material->setMetallic(metallic);
+                            }
+
+                            float roughness = material->getRoughness();
+                            if (ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f))
+                            {
+                                material->setRoughness(roughness);
+                            }
+
+                            glm::vec3 emissiveColor = material->getEmissiveColor();
+                            if (ImGui::ColorEdit3("Emissive Color", glm::value_ptr(emissiveColor)))
+                            {
+                                material->setEmissiveColor(emissiveColor);
+                            }
+
+                            float emissiveIntensity = material->getEmissiveIntensity();
+                            if (ImGui::SliderFloat("Emissive Intensity", &emissiveIntensity, 0.0f, 10.0f))
+                            {
+                                material->setEmissiveIntensity(emissiveIntensity);
+                            }
+
+                            ImGui::TreePop();
+                        }
+
+                        ImGui::TreePop();
+                    }
+                }
+
+                ImGui::TreePop();
+            }
         }
     }
+
+
 
     if (ImGui::CollapsingHeader("Scene Bounds"))
     {

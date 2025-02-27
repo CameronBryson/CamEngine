@@ -17,6 +17,9 @@ public:
     void setShader(std::shared_ptr<Shader> shader) override { this->shader = shader; }
     std::shared_ptr<Shader> getShader() override { return shader; }
 
+    void setName(const std::string& name) override { mName = name; }
+    const std::string& getName() const override { return mName; }
+
     // Base material properties
     void setAlbedo(const glm::vec4& color) override { albedo = color; }
     glm::vec4 getAlbedo() const override { return albedo; }
@@ -68,6 +71,7 @@ private:
     glm::vec3 emissiveColor = glm::vec3(0.0f);
     float emissiveIntensity = 0.0f;
     float displacementScale = 0.1f;
+    std::string mName;
 
     std::shared_ptr<Texture> albedoTexture = nullptr;
     std::shared_ptr<Texture> normalTexture = nullptr;
