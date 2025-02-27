@@ -15,6 +15,8 @@ struct CameraData
     glm::mat4 view;        // View matrix
     glm::mat4 projection;  // Projection matrix
     glm::vec4 cameraPos;   // Camera position (xyz used, w is padding)
+    glm::mat4 previousView;
+	glm::mat4 previousProjection;
 };
 
 

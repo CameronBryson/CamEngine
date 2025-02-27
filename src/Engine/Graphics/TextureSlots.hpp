@@ -35,6 +35,7 @@ namespace GBufferSlots {
     constexpr unsigned int NORMAL_METALLIC = 16;
     constexpr unsigned int ROUGH_EMISSIVE = 17;
     constexpr unsigned int DEPTH = 18;
+	constexpr unsigned int VELOCITY = 24;
 }
 
 namespace SSAOSlots {

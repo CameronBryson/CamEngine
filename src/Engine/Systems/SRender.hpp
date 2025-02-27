@@ -65,7 +65,9 @@ private:
     // Post-processing
     void bloomPass();
     void hdrPass();
-
+    void taaPass();
+	void motionBlurPass();
+	void fxaaPass();
     // Resource binding
     void bindSkyboxResources(std::shared_ptr<Shader>& shader);
     void bindShadowMaps(std::shared_ptr<Shader>& shader);
@@ -92,6 +94,11 @@ private:
     std::shared_ptr<FrameBuffer> mPointShadwMapBuffer;
     std::shared_ptr<FrameBuffer> mHDRFrameBuffer;
     std::shared_ptr<FrameBuffer> mPingPongFBO[2];
+	std::shared_ptr<FrameBuffer> mFXAAFrameBuffer;
+	std::shared_ptr<FrameBuffer> mMotionBlurFrameBuffer;
+	std::shared_ptr<FrameBuffer> mTAACurrentFrameBuffer;
+	std::shared_ptr<FrameBuffer> mTAAPreviousFrameBuffer;
+
 
     // Shadow mapping settings
     const int mShadowMapWidth = 512;
@@ -107,7 +114,18 @@ private:
 	bool ssaoEnabled = true;
     float bloomThreshold = 1.0f;
     float bloomStrength = 1.0f;
-    int blurPasses = 6;
+    int bloomBlurPasses = 6;
+	bool mFXAAEnabled = true;
+    float mFXAAEdgeThreshholdMin = 0.0625f;
+	float mFXAAEdgeThreshholdMax = 0.125f;
+	float mFXAASubPixelQuality = 0.75f;
+	bool mMotionBlurEnabled = true;
+	float mMotionBlurStrength = 1.0f;
+	int mMotionBlurSamples = 8;
+	bool mTAAEnabled = true;
+	float mTAABlendFactor = 0.5f;
+
+    
 
     // SSAO data
     std::shared_ptr<FrameBuffer> mSSAOBuffer;
@@ -121,6 +139,8 @@ private:
     float mSSAORadius = 0.2f;
     float mSSAOBias = 0.05f;
     float mSSAOPower = 0.75f;
+    float mSSAOMinDistance = 0.01f;
+    float mSSAOMaxDistance = 0.5f;
 
 	float mSSAOBlurRadius = 2.0f;
 	float mSSAOBlurDepthThreshold = 0.1f;

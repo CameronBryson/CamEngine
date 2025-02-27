@@ -179,6 +179,7 @@ void SRender::initFramebuffers()
 		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
 		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
 		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
+		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RG16F },
 		{ FrameBufferAttachmentType::Depth,  FrameBufferTextureFormat::Depth32F }
 	};
 	mGBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, gBufferAttachments);
@@ -212,21 +213,40 @@ void SRender::initFramebuffers()
         if (!mPingPongFBO[i]->isComplete())
             throw std::runtime_error("Ping-pong framebuffer setup failed!");
     }
-    std::vector<FrameBufferAttachmentSpecification> ssaoAttachments = {
-        { FrameBufferAttachmentType::Color, FrameBufferTextureFormat::R16F }
-    };
     mSSAOBuffer = FrameBuffer::createFrameBuffer(
         settings::window_width, 
         settings::window_height, 
-        ssaoAttachments
+        colorAttachment
     );
 
     // SSAO Blur buffer
     mSSAOBlurBuffer = FrameBuffer::createFrameBuffer(
         settings::window_width, 
         settings::window_height, 
-        ssaoAttachments
+        colorAttachment
     );
+
+	mFXAAFrameBuffer = FrameBuffer::createFrameBuffer(
+		settings::window_width,
+		settings::window_height,
+        colorAttachment
+	);
+	mMotionBlurFrameBuffer = FrameBuffer::createFrameBuffer(
+		settings::window_width,
+		settings::window_height,
+		colorAttachment
+	);
+	mTAACurrentFrameBuffer = FrameBuffer::createFrameBuffer(
+		settings::window_width,
+		settings::window_height,
+		colorAttachment
+	);
+	mTAAPreviousFrameBuffer = FrameBuffer::createFrameBuffer(
+		settings::window_width,
+		settings::window_height,
+		colorAttachment
+	);
+
 }
 
 void SRender::calculateSceneBounds()
@@ -468,8 +488,12 @@ void SRender::updateCameraUniforms()
     cameraData.view = viewMatrix;
     cameraData.projection = projMatrix;
     cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.Position, 0.0f);
+	cameraData.previousView = mScene->mCurrentCamera.GetPreviousViewMatrix();
+	cameraData.previousProjection = mScene->mCurrentCamera.GetPreviousProjectionMatrix();
 
     mCameraUBO->setData(&cameraData, sizeof(CameraData));
+
+    mScene->mCurrentCamera.storePreviousMatrices();
 }
 
 //void SRender::buildRenderLists()
@@ -618,7 +642,7 @@ void SRender::geometryPass()
 	auto gBufferShader = GameManager::mGraphicsManager->getShader("GBuffer");
 	gBufferShader->use();
 	mGBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
-	mGBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 });
+	mGBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 });
 	mGBuffer->bind();
     GL_CHECK(glEnable(GL_DEPTH_TEST));
     GL_CHECK(glDepthFunc(GL_LEQUAL));  // Use LEQUAL to render fragments at same depth
@@ -655,6 +679,8 @@ void SRender::ssaoPass()
     ssaoShader->setInt("noiseSize", SSAO_NOISE_SIZE);
     ssaoShader->setInt("kernelSize", SSAO_KERNEL_SIZE);
 	ssaoShader->setVec2("resolution", glm::vec2(settings::window_width, settings::window_height));
+    ssaoShader->setFloat("minDistance", mSSAOMinDistance);
+	ssaoShader->setFloat("maxDistance", mSSAOMaxDistance);
 
     // Bind G-Buffer textures using proper slots
     mGBuffer->getColorAttachment(1)->bind(SSAOSlots::NORMAL_METALLIC);
@@ -705,14 +731,14 @@ void SRender::lightingPass()
     GL_CHECK(glViewport(0, 0, width, height));
 
     // 1. Setup OpenGL state for deferred lighting pass
-    mGBuffer->bindRead();
-    mHDRFrameBuffer->bindDraw();
-    GL_CHECK(glBlitFramebuffer(
+
+    mGBuffer->blitTo(
+        mHDRFrameBuffer,
         0, 0, width, height,
         0, 0, width, height,
         GL_DEPTH_BUFFER_BIT,
         GL_NEAREST
-    ));
+    );
 
     // 2. Bind HDR framebuffer and clear
     mHDRFrameBuffer->setViewport(0, 0, width, height);
@@ -782,10 +808,27 @@ void SRender::postProcessPass()
 		bloomPass();
     }
     {
-		GL_SCOPED_MARKER("HDR Process");
-		GL_SCOPED_TIMER("HDR Process");
-		hdrPass();
+        GL_SCOPED_MARKER("HDR Process");
+        GL_SCOPED_TIMER("HDR Process");
+        hdrPass();
     }
+    {
+        GL_SCOPED_MARKER("TAA Process");
+        GL_SCOPED_TIMER("TAA Process");
+        taaPass();
+    }
+    {
+        GL_SCOPED_MARKER("Motion Blur Process");
+        GL_SCOPED_TIMER("Motion Blur");
+        motionBlurPass();
+    }
+    {
+        GL_SCOPED_MARKER("FXAA Process");
+        GL_SCOPED_TIMER("FXAA Process");
+        fxaaPass();
+    }
+
+   
 }
 
 // ------------------------------------------------------
@@ -865,14 +908,14 @@ void SRender::renderPointShadows(const LightData& lightData)
 void SRender::bloomPass()
 {
 
-    auto blurShader = GameManager::mGraphicsManager->getShader("Blur");
+    auto blurShader = GameManager::mGraphicsManager->getShader("BloomBlur");
     blurShader->use();
 
     bool horizontal = true;
     bool firstIteration = true;
 
     // Perform multiple Gaussian blur passes, alternating ping-pong FBO
-    for (int i = 0; i < blurPasses; i++)
+    for (int i = 0; i < bloomBlurPasses; i++)
     {
         mPingPongFBO[horizontal]->bind();
         mPingPongFBO[horizontal]->setViewport(0, 0, settings::window_width, settings::window_height);
@@ -906,7 +949,7 @@ void SRender::hdrPass()
 
     auto hdrShader = GameManager::mGraphicsManager->getShader("HDR");
     hdrShader->use();
-
+    mHDRFrameBuffer->bind();
     hdrShader->setFloat("exposure", mExposure);
     hdrShader->setBool("hdr", mHDR);
     hdrShader->setBool("bloom", bloomEnabled);
@@ -925,7 +968,83 @@ void SRender::hdrPass()
     hdrShader->setInt("bloomBuffer", PostProcessSlots::BLOOM);
 
     OpenGlUtil::drawQuad();
+
+    mHDRFrameBuffer->unbind();
+
 }
+
+void SRender::taaPass()
+{
+	if (!mTAAEnabled) return;
+
+	auto taaShader = GameManager::mGraphicsManager->getShader("TAA");
+	taaShader->use();
+}
+
+void SRender::motionBlurPass()
+{
+    if (!mMotionBlurEnabled) return;
+
+    auto motionBlurShader = GameManager::mGraphicsManager->getShader("MotionBlur");
+    motionBlurShader->use();
+	mMotionBlurFrameBuffer->bind();
+	mMotionBlurFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+
+    // Bind HDR color buffer (contains the current frame)
+    mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+    motionBlurShader->setInt("colorTexture", PostProcessSlots::HDR);
+
+    // Bind velocity buffer from G-Buffer
+    mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY);
+    motionBlurShader->setInt("velocityTexture", GBufferSlots::VELOCITY);
+
+    // Set motion blur parameters
+    motionBlurShader->setFloat("blurStrength", mMotionBlurStrength);
+    motionBlurShader->setInt("numSamples", mMotionBlurSamples);
+
+    OpenGlUtil::drawQuad();
+    mMotionBlurFrameBuffer->unbind();
+
+    // Copy result back to HDR buffer for next pass
+	mMotionBlurFrameBuffer->blitTo(mHDRFrameBuffer,
+								   0, 0, settings::window_width, settings::window_height,
+								   0, 0, settings::window_width, settings::window_height,
+								   GL_COLOR_BUFFER_BIT,
+								   GL_LINEAR
+	);
+}
+
+
+   void SRender::fxaaPass()
+   {
+       auto fxaaShader = GameManager::mGraphicsManager->getShader("FXAA");
+       fxaaShader->use();
+
+       // Set viewport to screen dimensions 
+       int width, height;
+       glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
+       GL_CHECK(glViewport(0, 0, width, height));
+       
+       // Bind the default framebuffer (0) for final output to screen
+       GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+       
+       // Use HDR framebuffer as input (which now contains the tonemapped result)
+       mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+       fxaaShader->setInt("screenTexture", PostProcessSlots::HDR);
+	   fxaaShader->setBool("fxaaEnabled",mFXAAEnabled);
+
+       // Set FXAA parameters
+       fxaaShader->setVec2("inverseScreenSize", 
+                          glm::vec2(1.0f / width, 1.0f / height));
+       fxaaShader->setFloat("EDGE_THRESHOLD_MIN", mFXAAEdgeThreshholdMin);
+       fxaaShader->setFloat("EDGE_THRESHOLD_MAX", mFXAAEdgeThreshholdMax);
+       fxaaShader->setFloat("SUBPIXEL_QUALITY", mFXAASubPixelQuality);
+
+       // Draw fullscreen quad to apply FXAA directly to the screen
+       OpenGlUtil::drawQuad();
+   }
+   
+
 
 // ------------------------------------------------------
 // Resource Binding
@@ -1004,7 +1123,7 @@ void SRender::drawImGui()
         {
             ImGui::SliderFloat("Bloom Threshold", &bloomThreshold, 0.0f, 1.0f);
             ImGui::SliderFloat("Bloom Strength", &bloomStrength, 0.0f, 2.0f);
-            ImGui::SliderInt("Blur Passes", &blurPasses, 1, 20);
+            ImGui::SliderInt("Blur Passes", &bloomBlurPasses, 1, 20);
         }
 
         // SSAO Settings
@@ -1015,9 +1134,32 @@ void SRender::drawImGui()
             ImGui::SliderFloat("SSAO Radius", &mSSAORadius, 0.0f, 5.0f);
             ImGui::SliderFloat("SSAO Bias", &mSSAOBias, 0.0f, 0.5f);
             ImGui::SliderFloat("SSAO Power", &mSSAOPower, 0.0f, 5.0f);
+			ImGui::SliderFloat("SSAO Min Distance", &mSSAOMinDistance, 0.0f, 0.5f);
+			ImGui::SliderFloat("SSAO Max Distance", &mSSAOMaxDistance, 0.0f, 10.0f);
 			ImGui::SliderFloat("SSAO Blur Radius", &mSSAOBlurRadius, 0.0f, 5.0f);
 			ImGui::SliderFloat("SSAO Blur Depth Threshold", &mSSAOBlurDepthThreshold, 0.0f, 1.0f);
 			ImGui::SliderFloat("SSAO Blur Normal Threshold", &mSSAOBlurNormalThreshold, 0.0f, 1.0f);
+        }
+        ImGui::Separator();
+        ImGui::Checkbox("Enable FXAA", &mFXAAEnabled);
+        if (mFXAAEnabled)
+        {
+            ImGui::SliderFloat("FXAA Edge Threshold Min", &mFXAAEdgeThreshholdMin, 0.0f, 0.2f);
+            ImGui::SliderFloat("FXAA Edge Threshold Max", &mFXAAEdgeThreshholdMax, 0.0f, 0.5f);
+            ImGui::SliderFloat("FXAA Subpixel Quality", &mFXAASubPixelQuality, 0.0f, 1.0f);
+        }
+        ImGui::Separator();
+        ImGui::Checkbox("Enable Motion Blur", &mMotionBlurEnabled);
+        if (mMotionBlurEnabled)
+        {
+            ImGui::SliderFloat("Motion Blur Strength", &mMotionBlurStrength, 0.0f, 10.0f);
+            ImGui::SliderInt("Motion Blur Samples", &mMotionBlurSamples, 2, 32);
+        }
+        ImGui::Separator();
+        ImGui::Checkbox("Enable TAA", &mTAAEnabled);
+        if (mTAAEnabled)
+        {
+            ImGui::SliderFloat("TAA Blend Factor", &mTAABlendFactor, 0.0f, 1.0f, "%.3f");
         }
     }
 

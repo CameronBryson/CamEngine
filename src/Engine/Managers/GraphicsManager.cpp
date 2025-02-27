@@ -17,19 +17,21 @@ GraphicsManager::~GraphicsManager()
 
 void GraphicsManager::loadResources()
 {
-    loadShader("src/Shaders/vertex.vert", "src/Shaders/PBR.frag", "PBR");
     //Probably not nessesary since we are using opengl to render it behind everything
 	//Used to render environment maps
 	loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
 	loadShader("src/Shaders/shadowmap.vert", "src/Shaders/shadowmap.frag", "ShadowMap");
 	loadShader("src/Shaders/pointshadow.vert", "src/Shaders/pointshadow.frag", "src/Shaders/pointshadow.geom", "PointShadowMap");
 	loadShader("src/Shaders/hdr.vert", "src/Shaders/hdr.frag", "HDR");
-	loadShader("src/Shaders/blur.vert", "src/Shaders/blur.frag", "Blur");
+	loadShader("src/Shaders/bloomblur.vert", "src/Shaders/bloomblur.frag", "BloomBlur");
 	loadShader("src/Shaders/vertex.vert", "src/Shaders/gbuffer.frag", "GBuffer");
 	loadShader("src/Shaders/depth.vert", "src/Shaders/depth.frag", "Depth");
 	loadShader("src/Shaders/deferred.vert", "src/Shaders/deferred.frag", "Deferred");
 	loadShader("src/Shaders/ssao.vert", "src/Shaders/ssao.frag", "SSAO");
 	loadShader("src/Shaders/ssaoblur.vert", "src/Shaders/ssaoblur.frag", "SSAOBlur");
+	loadShader("src/Shaders/fxaa.vert", "src/Shaders/fxaa.frag", "FXAA");
+	loadShader("src/Shaders/motionblur.vert", "src/Shaders/motionblur.frag", "MotionBlur");
+	loadShader("src/Shaders/taa.vert", "src/Shaders/taa.frag", "TAA");
     //This is needed to create a cubemap texture from an hdr
 	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps
@@ -433,7 +435,7 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
 
     // Create new material
     auto material = Material::createMaterial();
-    material->setShader(getShader("PBR"));
+    //material->setShader(getShader("PBR"));
 
     // Base color/albedo
     aiColor4D albedoColor;

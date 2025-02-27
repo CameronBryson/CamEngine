@@ -7,6 +7,8 @@ layout(std140, binding = 0) uniform CameraUBO
     mat4 uView;
     mat4 uProjection;
     vec4 uCameraPos;
+    mat4 uPrevView;
+    mat4 uPrevProjection;
 };
 
 uniform mat4 model;

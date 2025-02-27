@@ -30,6 +30,9 @@ public:
     glm::mat4 view_matrix;
     glm::mat4 inverse_projection_matrix;
 
+	glm::mat4 previous_view_matrix;
+	glm::mat4 previous_projection_matrix;
+
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
@@ -41,12 +44,17 @@ public:
 
 	[[nodiscard]] glm::mat4& GetInverseProjectionMatrix();
 
+	[[nodiscard]] glm::mat4& GetPreviousViewMatrix();
+
+	[[nodiscord]] glm::mat4& GetPreviousProjectionMatrix();
+
 	[[nodiscard]] std::array<glm::vec4, 6> GetFrustumPlanes();
 
 
     // calculates the front vector from the Camera's (updated) Euler Angles
 	void updateCameraVectors();
 	void updateProjectionMatrix();
+	void storePreviousMatrices();
 
 	bool isSphereInFrustum(const glm::vec3& center, float radius);
 };

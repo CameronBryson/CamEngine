@@ -13,6 +13,8 @@ layout(std140, binding = 0) uniform CameraUBO
     mat4 uView;
     mat4 uProjection;
     vec4 uCameraPos; // .xyz used if you need camera pos here, .w is padding
+    mat4 uPrevView;
+    mat4 uPrevProjection;
 };
 
 uniform mat4 model; // Per-object transform still remains a normal uniform
@@ -20,6 +22,8 @@ uniform mat4 model; // Per-object transform still remains a normal uniform
 out vec2 TexCoord;
 out vec3 FragPos;
 out mat3 TBN;
+out vec4 ClipPos;
+out vec4 PrevClipPos;
 
 void main()
 {
@@ -35,6 +39,7 @@ void main()
     T = normalize(T - dot(T, N) * N);
     vec3 B = cross(N, T);
     TBN = mat3(T, B, N);
-
-    gl_Position = uProjection * uView * vec4(FragPos, 1.0);
+    ClipPos = uProjection * uView * vec4(FragPos, 1.0);
+    PrevClipPos = uPrevProjection * uPrevView * vec4(FragPos, 1.0);
+    gl_Position = ClipPos;
 }

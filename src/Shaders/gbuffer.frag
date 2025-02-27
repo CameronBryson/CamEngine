@@ -5,11 +5,14 @@ precision mediump float;
 layout (location = 0) out vec4 gAlbedoAO;      // RGB: Albedo, A: Ambient Occlusion
 layout (location = 1) out vec4 gNormalMetallic; // RGB: World space normal, A: Metallic
 layout (location = 2) out vec4 gRoughEmissive;  // R: Roughness, GBA: Emissive
+layout (location = 3) out vec2 gVelocity; // RG: Screen-space Velocity
 
 // Inputs from vertex shader
 layout (location = 0) in vec2 TexCoord;
 layout (location = 1) in vec3 FragPos;
-layout (location = 2) in mat3 TBN;
+layout (location = 2) in mat3 TBN; //TBN uses 2,3,4
+layout (location = 5) in vec4 ClipPos;
+layout (location = 6) in vec4 PrevClipPos;
 
 // Material struct (same as your PBR shader)
 struct Material {
@@ -106,4 +109,14 @@ void main()
     }
 
     gRoughEmissive = vec4(roughness, emissive);
+
+    // Calculate velocity
+    vec2 currentPos = (ClipPos.xy / ClipPos.w) * 0.5 + 0.5;
+    vec2 prevPos = (PrevClipPos.xy / PrevClipPos.w) * 0.5 + 0.5;
+    
+    // Velocity is the difference in NDC coordinates
+    vec2 velocity = currentPos - prevPos;
+    
+    // Output to G-Buffer
+    gVelocity = velocity;
 }

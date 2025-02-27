@@ -16,6 +16,8 @@ uniform float radius;               // Maps to mSSAORadius
 uniform float bias;                 // Maps to mSSAOBias
 uniform float power;                // Maps to mSSAOPower
 uniform vec2 resolution;
+uniform float minDistance;
+uniform float maxDistance;
 uniform int noiseSize;
 uniform int kernelSize;
 
@@ -52,32 +54,37 @@ void main()
     
     // Calculate occlusion
         // Calculate occlusion
+    // Calculate occlusion
     float occlusion = 0.0;
-    for (int i = 0; i < kernelSize; ++i) // SSAO_KERNEL_SIZE
+    for (int i = 0; i < kernelSize; ++i)
     {
         // Get sample position in view space
         vec3 samplePos = TBN * samples[i];
         samplePos = fragPos + samplePos * radius;
-        
+    
         // Project sample position
         vec4 offset = projection * vec4(samplePos, 1.0);
         offset.xyz /= offset.w;
         offset.xyz = offset.xyz * 0.5 + 0.5;
-        
+    
         // Get sample depth and reconstruct view position
         float sampleDepth = texture(gDepth, offset.xy).r;
         vec3 sampleViewPos = reconstructViewPosition(sampleDepth, offset.xy);
-        
+    
         // Compute the distance from the fragment to the sample, in view space
         float distance = length(fragPos - sampleViewPos);
+    
         // Improve the range check by using the absolute depth difference as well
         float depthDiff = abs(sampleViewPos.z - samplePos.z);
-        float rangeCheck = smoothstep(0.0, 1.0, radius / distance);
-        
-        // Use the bias to determine occlusion and modulate it with rangeCheck and depthDiff
-        if (depthDiff >= bias)
+    
+        // Use minDistance and maxDistance for more precise distance capping
+        if (depthDiff >= bias && depthDiff > minDistance && depthDiff < maxDistance)
+        {
+            float rangeCheck = smoothstep(0.0, 1.0, radius / distance);
             occlusion += rangeCheck;
+        }
     }
+
     
     occlusion = 1.0 - (occlusion / float(kernelSize)); // Assume 64 samples
     FragColor = pow(occlusion, power);
