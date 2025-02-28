@@ -249,6 +249,21 @@ void OpenGLEnvironmentMap::bindBRDFLUT(int slot)
     mBRDFLUT->bind(slot);
 }
 
+void OpenGLEnvironmentMap::unbindIrradiance(int slot)
+{
+    mIrradianceCubemap->unbind(slot);
+}
+
+void OpenGLEnvironmentMap::unbindPrefilter(int slot)
+{
+	mPrefilterCubemap->unbind(slot);
+}
+
+void OpenGLEnvironmentMap::unbindBRDFLUT(int slot)
+{
+	mBRDFLUT->unbind(slot);
+}
+
 void OpenGLEnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
 {
     glDepthFunc(GL_LEQUAL);

@@ -19,6 +19,9 @@ public:
     void bindIrradiance(int slot) override;
     void bindPrefilter(int slot) override;
     void bindBRDFLUT(int slot) override;
+	void unbindIrradiance(int slot) override;
+	void unbindPrefilter(int slot) override;
+	void unbindBRDFLUT(int slot) override;
 
     // Draw a skybox using the environment map
     void drawSkybox(std::shared_ptr<Shader>& skyboxShader) override;

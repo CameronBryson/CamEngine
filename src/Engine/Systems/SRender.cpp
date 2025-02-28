@@ -713,8 +713,14 @@ void SRender::ssaoPass()
     // Render SSAO texture
     mSSAOBuffer->bind();
     mSSAOBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+    mSSAOBuffer->clear(GL_COLOR_BUFFER_BIT);
     OpenGlUtil::drawQuad();
     mSSAOBuffer->unbind();
+
+    // Unbind textures after use
+    mGBuffer->getColorAttachment(1)->unbind(SSAOSlots::NORMAL_METALLIC);
+    mGBuffer->getDepthAttachment()->unbind(SSAOSlots::DEPTH);
+    mSSAONoise->unbind(SSAOSlots::NOISE);
 
     // Blur SSAO texture
     auto blurShader = GameManager::mGraphicsManager->getShader("SSAOBlur");
@@ -722,20 +728,27 @@ void SRender::ssaoPass()
 
     mSSAOBlurBuffer->bind();
     mSSAOBlurBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+    mSSAOBlurBuffer->clear(GL_COLOR_BUFFER_BIT);
+
+    // Bind textures for blur pass
     mSSAOBuffer->getColorAttachment(0)->bind(SSAOSlots::SSAO);
-    blurShader->setInt("ssaoInput", SSAOSlots::SSAO);
-
     mGBuffer->getColorAttachment(1)->bind(SSAOSlots::NORMAL_METALLIC);
-	blurShader->setInt("gNormalMetallic", SSAOSlots::NORMAL_METALLIC);
     mGBuffer->getDepthAttachment()->bind(SSAOSlots::DEPTH);
-	blurShader->setInt("gDepth", SSAOSlots::DEPTH);
 
-	blurShader->setFloat("blurRadius", mSSAOBlurRadius);
-	blurShader->setFloat("depthThereshold", mSSAOBlurDepthThreshold);
+    blurShader->setInt("ssaoInput", SSAOSlots::SSAO);
+    blurShader->setInt("gNormalMetallic", SSAOSlots::NORMAL_METALLIC);
+    blurShader->setInt("gDepth", SSAOSlots::DEPTH);
+    blurShader->setFloat("blurRadius", mSSAOBlurRadius);
+    blurShader->setFloat("depthThereshold", mSSAOBlurDepthThreshold);
     blurShader->setFloat("normalThreshold", mSSAOBlurNormalThreshold);
 
     OpenGlUtil::drawQuad();
     mSSAOBlurBuffer->unbind();
+
+    // Unbind textures after blur pass
+    mSSAOBuffer->getColorAttachment(0)->unbind(SSAOSlots::SSAO);
+    mGBuffer->getColorAttachment(1)->unbind(SSAOSlots::NORMAL_METALLIC);
+    mGBuffer->getDepthAttachment()->unbind(SSAOSlots::DEPTH);
 }
 
 
@@ -749,8 +762,7 @@ void SRender::lightingPass()
     glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
     GL_CHECK(glViewport(0, 0, width, height));
 
-    // 1. Setup OpenGL state for deferred lighting pass
-
+    // 1. Copy depth buffer from G-Buffer to HDR framebuffer
     mGBuffer->blitTo(
         mHDRFrameBuffer,
         0, 0, width, height,
@@ -763,18 +775,15 @@ void SRender::lightingPass()
     mHDRFrameBuffer->setViewport(0, 0, width, height);
     mHDRFrameBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
     mHDRFrameBuffer->bind();
-	mHDRFrameBuffer->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    mHDRFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
 
-    
-    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
-    GL_CHECK(glDisable(GL_DEPTH_TEST));      // We don't need depth testing for full-screen quad
-    GL_CHECK(glDisable(GL_CULL_FACE));       // We want to render both sides of the quad
-    GL_CHECK(glDisable(GL_BLEND));           // No blending needed for initial lighting pass
-    // 3. Setup deferred shader and bind resources
+    GL_CHECK(glDisable(GL_DEPTH_TEST));
+    GL_CHECK(glDisable(GL_CULL_FACE));
+    GL_CHECK(glDisable(GL_BLEND));
+
+    // 3. Setup deferred shader
     auto deferredShader = GameManager::mGraphicsManager->getShader("Deferred");
     deferredShader->use();
-
-    bindSkyboxResources(deferredShader);
 
     // 4. Bind G-Buffer textures
     mGBuffer->getColorAttachment(0)->bind(GBufferSlots::ALBEDO_AO);
@@ -782,22 +791,43 @@ void SRender::lightingPass()
     mGBuffer->getColorAttachment(2)->bind(GBufferSlots::ROUGH_EMISSIVE);
     mGBuffer->getDepthAttachment()->bind(GBufferSlots::DEPTH);
 
-    // 5. Set sampler uniforms
+    // 5. Bind shadow maps and environment maps
+    bindSkyboxResources(deferredShader);
+
+    // 6. Bind SSAO result if enabled
+    if (ssaoEnabled) {
+        mSSAOBlurBuffer->getColorAttachment(0)->bind(SSAOSlots::SSAO_BLUR);
+        deferredShader->setInt("ssaoTexture", SSAOSlots::SSAO_BLUR);
+    }
+
+    // 7. Set sampler uniforms
     deferredShader->setInt("gAlbedoAO", GBufferSlots::ALBEDO_AO);
     deferredShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
     deferredShader->setInt("gRoughEmissive", GBufferSlots::ROUGH_EMISSIVE);
     deferredShader->setInt("gDepth", GBufferSlots::DEPTH);
-    mSSAOBlurBuffer->getColorAttachment(0)->bind(SSAOSlots::SSAO_BLUR);
-    deferredShader->setInt("ssaoTexture", SSAOSlots::SSAO_BLUR);
     deferredShader->setBool("ssaoEnabled", ssaoEnabled);
-    // 6. Draw full-screen quad
+
+    // 8. Draw full-screen quad
     OpenGlUtil::drawQuad();
 
-    // 7. Restore OpenGL state for skybox
+    // 9. Unbind G-Buffer textures
+    mGBuffer->getColorAttachment(0)->unbind(GBufferSlots::ALBEDO_AO);
+    mGBuffer->getColorAttachment(1)->unbind(GBufferSlots::NORMAL_METALLIC);
+    mGBuffer->getColorAttachment(2)->unbind(GBufferSlots::ROUGH_EMISSIVE);
+    mGBuffer->getDepthAttachment()->unbind(GBufferSlots::DEPTH);
+
+    if (ssaoEnabled) {
+        mSSAOBlurBuffer->getColorAttachment(0)->unbind(SSAOSlots::SSAO_BLUR);
+    }
+
+    // 10. Unbind shadow maps and environment maps
+    unbindSkyboxResources();
+
+    // 11. Restore OpenGL state for skybox
     GL_CHECK(glEnable(GL_DEPTH_TEST));
     GL_CHECK(glEnable(GL_CULL_FACE));
 
-    //// 8. Draw skybox...
+    // 12. Draw skybox
     auto skyboxShader = GameManager::mGraphicsManager->getShader("Skybox");
     skyboxShader->use();
 
@@ -810,11 +840,11 @@ void SRender::lightingPass()
     auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
     skybox->drawSkybox(skyboxShader);
 
-
+    // 13. Unbind HDR framebuffer
     mHDRFrameBuffer->unbind();
+
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
-
 }
 
 
@@ -937,6 +967,7 @@ void SRender::bloomPass()
 	bloomExtractShader->setInt("hdrBuffer", PostProcessSlots::HDR);
 	bloomExtractShader->setFloat("threshold", bloomThreshold);
 	OpenGlUtil::drawQuad();
+    mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
 	mBloomFrameBuffer->unbind();
 
 
@@ -998,7 +1029,8 @@ void SRender::hdrPass()
     hdrShader->setInt("bloomBuffer", PostProcessSlots::BLOOM);
 
     OpenGlUtil::drawQuad();
-
+    mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
+    mPingPongFBO[0]->getColorAttachment(0)->unbind(PostProcessSlots::BLOOM);
     mHDRFrameBuffer->unbind();
 
 }
@@ -1042,7 +1074,8 @@ void SRender::taaPass() {
 
 
     OpenGlUtil::drawQuad();
-
+    mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
+    mBloomFrameBuffer->unbind();
     // Copy to HDR buffer and swap 
     mTAACurrentFrameBuffer->blitTo(mHDRFrameBuffer,
                                    0, 0, settings::window_width, settings::window_height,
@@ -1117,6 +1150,7 @@ void SRender::motionBlurPass()
 
        // Draw fullscreen quad to apply FXAA directly to the screen
        OpenGlUtil::drawQuad();
+       mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
    }
    
 
@@ -1140,6 +1174,19 @@ void SRender::bindSkyboxResources(std::shared_ptr<Shader>& shader)
 
     shader->setFloat("farPlane", farPlane);
     shader->setBool("enableShadows", mEnableShadows);
+}
+void SRender::unbindSkyboxResources()
+{
+    // Unbind environment maps
+    auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
+    skybox->unbindIrradiance(IBLSlots::IRRADIANCE);
+    skybox->unbindPrefilter(IBLSlots::PREFILTER);
+    skybox->unbindBRDFLUT(IBLSlots::BRDFLUT);
+
+    // Unbind shadow maps
+    mDirectionalShadowMapBuffer->getDepthAttachment()->unbind(ShadowSlots::DIRECTIONAL);
+    mSpotShadowMapBuffer->getDepthAttachment()->unbind(ShadowSlots::SPOT);
+    mPointShadwMapBuffer->getDepthAttachment()->unbind(ShadowSlots::POINT);
 }
 
 void SRender::bindShadowMaps(std::shared_ptr<Shader>& shader)

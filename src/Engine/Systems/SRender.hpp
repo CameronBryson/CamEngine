@@ -70,6 +70,7 @@ private:
 	void fxaaPass();
     // Resource binding
     void bindSkyboxResources(std::shared_ptr<Shader>& shader);
+    void unbindSkyboxResources();
     void bindShadowMaps(std::shared_ptr<Shader>& shader);
 
     // Drawing helpers
@@ -118,8 +119,8 @@ private:
     float bloomStrength = 1.0f;
     int bloomBlurPasses = 6;
 	bool mFXAAEnabled = true;
-    float mFXAAEdgeThreshholdMin = 0.0625f;
-	float mFXAAEdgeThreshholdMax = 0.125f;
+    float mFXAAEdgeThreshholdMin = 0.1f;
+	float mFXAAEdgeThreshholdMax = 0.2f;
 	float mFXAASubPixelQuality = 0.75f;
 	bool mMotionBlurEnabled = true;
 	float mMotionBlurStrength = 1.0f;
