@@ -19,7 +19,7 @@ void main()
     
     // Only blur if there is movement
     float velocityLength = length(velocity);
-    if(velocityLength > 0.0) {
+    if(velocityLength > 0.00) {
         for(int i = 1; i < numSamples; i++) {
             // Sample along velocity vector
             vec2 offset = velocity * (float(i) / float(numSamples - 1) - 0.5);

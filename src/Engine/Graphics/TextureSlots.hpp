@@ -29,6 +29,7 @@ namespace PostProcessSlots {
     constexpr unsigned int HDR = 0;  
     constexpr unsigned int BLOOM = 1;
     constexpr unsigned int DEPTH = 2;
+	constexpr unsigned int TAA_HISTORY = 3;
 }
 namespace GBufferSlots {
     constexpr unsigned int ALBEDO_AO = 15;    // After IBL slots

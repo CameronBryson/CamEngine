@@ -1,5 +1,5 @@
 #version 460 core
-precision mediump float;
+precision highp float;
 
 // G-Buffer outputs
 layout (location = 0) out vec4 gAlbedoAO;      // RGB: Albedo, A: Ambient Occlusion
@@ -110,13 +110,17 @@ void main()
 
     gRoughEmissive = vec4(roughness, emissive);
 
-    // Calculate velocity
-    vec2 currentPos = (ClipPos.xy / ClipPos.w) * 0.5 + 0.5;
-    vec2 prevPos = (PrevClipPos.xy / PrevClipPos.w) * 0.5 + 0.5;
+   // Calculate the positions in NDC space
+    vec2 currentPosNDC = (ClipPos.xy / ClipPos.w);
+    vec2 prevPosNDC = (PrevClipPos.xy / PrevClipPos.w);
     
-    // Velocity is the difference in NDC coordinates
-    vec2 velocity = currentPos - prevPos;
-    
-    // Output to G-Buffer
+    vec2 velocity = currentPosNDC - prevPosNDC;
+    float velocityLength = length(velocity);
+    //Account for jittering
+    if(velocityLength < 0.001)
+    {
+        velocity = vec2(0.0);
+    }
     gVelocity = velocity;
+   
 }

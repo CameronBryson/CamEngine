@@ -40,6 +40,7 @@ void SRender::init()
     initFramebuffers();
     generateSSAOKernel();
     generateSSAONoise();
+    generateHaltonSequence();
 }
 
 void SRender::lateInit()
@@ -49,8 +50,10 @@ void SRender::lateInit()
 
 void SRender::render()
 {
+    mPreviousJitter = mCurrentJitter;
+    mCurrentJitter = mHaltonPattern[mJitterIndex] * mJitterScale;
+    mJitterIndex = (mJitterIndex + 1) % HALTON_SAMPLES;
     GL_SCOPED_MARKER("Frame");
-    OpenGlUtil::beginFrame(); // Reset GPU timers
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -193,7 +196,6 @@ void SRender::initFramebuffers()
     // HDR FBO
     std::vector<FrameBufferAttachmentSpecification> hdrAttachments = {
         { FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
-        { FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
         { FrameBufferAttachmentType::Depth,  FrameBufferTextureFormat::Depth32F }
     };
 
@@ -207,7 +209,7 @@ void SRender::initFramebuffers()
         std::vector<FrameBufferAttachmentSpecification>{
             { FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F }
     };
-
+	mBloomFrameBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, colorAttachment);
     for (int i = 0; i < 2; i++)
     {
         mPingPongFBO[i] = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, colorAttachment);
@@ -480,22 +482,37 @@ void SRender::buildSpotLights(LightData& lightData)
 // Render Passes
 // ------------------------------------------------------
 
-void SRender::updateCameraUniforms()
+void SRender::updateCameraUniforms() 
 {
-    const auto& viewMatrix = mScene->mCurrentCamera.GetViewMatrix();
-    const auto& projMatrix = mScene->mCurrentCamera.GetProjectionMatrix();
 
     CameraData cameraData;
-    cameraData.view = viewMatrix;
-    cameraData.projection = projMatrix;
-    cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.Position, 0.0f);
-	cameraData.previousView = mScene->mCurrentCamera.GetPreviousViewMatrix();
-	cameraData.previousProjection = mScene->mCurrentCamera.GetPreviousProjectionMatrix();
+    cameraData.view = mScene->mCurrentCamera.GetViewMatrix();
 
+    // Apply the jitter to the projection matrix
+    // This will offset the projection slightly for each frame in the sequence
+    cameraData.projection = mScene->mCurrentCamera.GetProjectionMatrix();
+    if(mTAAEnabled)
+    {
+	    cameraData.projection[2][0] += mCurrentJitter.x;
+	    cameraData.projection[2][1] += mCurrentJitter.y;
+    }
+
+    // Set camera position for shaders
+    cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.Position, 0.0f);
+
+    // Previous matrices for reprojection
+    cameraData.previousView = mScene->mCurrentCamera.GetPreviousViewMatrix();
+    cameraData.previousProjection = mScene->mCurrentCamera.GetPreviousProjectionMatrix();
+
+    // Upload data to the uniform buffer
     mCameraUBO->setData(&cameraData, sizeof(CameraData));
 
+    // Store the current matrices for next frame
     mScene->mCurrentCamera.storePreviousMatrices();
 }
+
+
+
 
 //void SRender::buildRenderLists()
 //{
@@ -645,6 +662,7 @@ void SRender::geometryPass()
 	mGBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
 	mGBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 });
 	mGBuffer->bind();
+
     GL_CHECK(glEnable(GL_DEPTH_TEST));
     GL_CHECK(glDepthFunc(GL_LEQUAL));  // Use LEQUAL to render fragments at same depth
 	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
@@ -743,8 +761,9 @@ void SRender::lightingPass()
 
     // 2. Bind HDR framebuffer and clear
     mHDRFrameBuffer->setViewport(0, 0, width, height);
-    mHDRFrameBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 });
+    mHDRFrameBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
     mHDRFrameBuffer->bind();
+	mHDRFrameBuffer->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     
     GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
@@ -804,6 +823,18 @@ void SRender::lightingPass()
 void SRender::postProcessPass()
 {
     {
+        GL_SCOPED_MARKER("TAA Process");
+        GL_SCOPED_TIMER("TAA Process");
+        taaPass();
+    }
+    //Moved blur to after image is stabilized
+    {
+        GL_SCOPED_MARKER("Motion Blur Process");
+        GL_SCOPED_TIMER("Motion Blur");
+        motionBlurPass();
+    }
+    //Extract bright lights after image is stabilized
+    {
 		GL_SCOPED_MARKER("Bloom Process");
 		GL_SCOPED_TIMER("Bloom Process");
 		bloomPass();
@@ -812,16 +843,6 @@ void SRender::postProcessPass()
         GL_SCOPED_MARKER("HDR Process");
         GL_SCOPED_TIMER("HDR Process");
         hdrPass();
-    }
-    {
-        GL_SCOPED_MARKER("TAA Process");
-        GL_SCOPED_TIMER("TAA Process");
-        taaPass();
-    }
-    {
-        GL_SCOPED_MARKER("Motion Blur Process");
-        GL_SCOPED_TIMER("Motion Blur");
-        motionBlurPass();
     }
     {
         GL_SCOPED_MARKER("FXAA Process");
@@ -908,6 +929,16 @@ void SRender::renderPointShadows(const LightData& lightData)
 
 void SRender::bloomPass()
 {
+	auto bloomExtractShader = GameManager::mGraphicsManager->getShader("BloomExtract");
+	bloomExtractShader->use();
+	mBloomFrameBuffer->bind();
+	mBloomFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+	mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+	bloomExtractShader->setInt("hdrBuffer", PostProcessSlots::HDR);
+	bloomExtractShader->setFloat("threshold", bloomThreshold);
+	OpenGlUtil::drawQuad();
+	mBloomFrameBuffer->unbind();
+
 
     auto blurShader = GameManager::mGraphicsManager->getShader("BloomBlur");
     blurShader->use();
@@ -924,7 +955,7 @@ void SRender::bloomPass()
 
         if (firstIteration)
         {
-            mHDRFrameBuffer->getColorAttachment(1)->bind(PostProcessSlots::BLOOM);
+			mBloomFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
             blurShader->setInt("image", PostProcessSlots::BLOOM);
             firstIteration = false;
         }
@@ -961,10 +992,8 @@ void SRender::hdrPass()
     hdrShader->setInt("hdrBuffer", PostProcessSlots::HDR);
 
     // Bloom color
+	//this should be mPingPongFBO[!horizontal], need to fix
     mPingPongFBO[0]->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
-    mPingPongFBO[1]->getColorAttachment(0)->bind(PostProcessSlots::BLOOM + 1);
-    // Typically, we only need one final blurred result, so we just bind pingPongFBO[!horizontal].
-    // For completeness, we could keep both, but only one is actually used in shading.
 
     hdrShader->setInt("bloomBuffer", PostProcessSlots::BLOOM);
 
@@ -974,13 +1003,52 @@ void SRender::hdrPass()
 
 }
 
-void SRender::taaPass()
-{
-	if (!mTAAEnabled) return;
+void SRender::taaPass() {
+    if (!mTAAEnabled) return;
 
-	auto taaShader = GameManager::mGraphicsManager->getShader("TAA");
-	taaShader->use();
+    auto taaShader = GameManager::mGraphicsManager->getShader("TAA");
+    taaShader->use();
+
+    mTAACurrentFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+    mTAACurrentFrameBuffer->bind();
+
+    // Init history buffer on first frame
+    if (mFirstFrame) {
+        mTAACurrentFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
+        mTAAPreviousFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
+        mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+        taaShader->setInt("currentFrame", PostProcessSlots::HDR);
+        taaShader->setInt("previousFrame", PostProcessSlots::HDR);
+        mFirstFrame = false;
+    } else {
+        // Normal TAA pass bindings
+
+        mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+        taaShader->setInt("currentFrame", PostProcessSlots::HDR);
+        mTAAPreviousFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::TAA_HISTORY);
+        taaShader->setInt("previousFrame", PostProcessSlots::TAA_HISTORY);
+    }
+
+    taaShader->setFloat("blendFactor", mTAABlendFactor);
+    taaShader->setVec2("resolution", glm::vec2(settings::window_width, settings::window_height));
+
+    mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY);
+    taaShader->setInt("velocityMap", GBufferSlots::VELOCITY);
+
+    OpenGlUtil::drawQuad();
+
+    // Copy to HDR buffer and swap 
+    mTAACurrentFrameBuffer->blitTo(mHDRFrameBuffer,
+                                   0, 0, settings::window_width, settings::window_height,
+                                   0, 0, settings::window_width, settings::window_height,
+                                   GL_COLOR_BUFFER_BIT,
+                                   GL_LINEAR);
+
+    std::swap(mTAACurrentFrameBuffer, mTAAPreviousFrameBuffer);
 }
+
+
+
 
 void SRender::motionBlurPass()
 {
@@ -1066,7 +1134,6 @@ void SRender::bindSkyboxResources(std::shared_ptr<Shader>& shader)
 
     shader->setFloat("farPlane", farPlane);
     shader->setBool("enableShadows", mEnableShadows);
-    shader->setFloat("bloomThreshold", bloomThreshold);
 }
 
 void SRender::bindShadowMaps(std::shared_ptr<Shader>& shader)
@@ -1156,12 +1223,48 @@ void SRender::drawImGui()
             ImGui::SliderFloat("Motion Blur Strength", &mMotionBlurStrength, 0.0f, 10.0f);
             ImGui::SliderInt("Motion Blur Samples", &mMotionBlurSamples, 2, 32);
         }
+        // In drawImGui(), inside the Post-Processing section where TAA is handled:
         ImGui::Separator();
         ImGui::Checkbox("Enable TAA", &mTAAEnabled);
         if (mTAAEnabled)
         {
             ImGui::SliderFloat("TAA Blend Factor", &mTAABlendFactor, 0.0f, 1.0f, "%.3f");
+            ImGui::SliderFloat("Jitter Scale", &mJitterScale, 0.0f, 1.0f, "%.3f");
+
+            // Display current jitter info
+            ImGui::Text("Current Jitter: (%.3f, %.3f)", mCurrentJitter.x, mCurrentJitter.y);
+            ImGui::Text("Previous Jitter: (%.3f, %.3f)", mPreviousJitter.x, mPreviousJitter.y);
+
+            if (ImGui::TreeNode("Advanced TAA Settings"))
+            {
+                static bool showJitterPattern = false;
+                ImGui::Checkbox("Show Jitter Pattern", &showJitterPattern);
+
+                if (showJitterPattern)
+                {
+                    ImGui::Text("Halton Pattern Samples:");
+                    ImGui::Indent();
+                    for (int i = 0; i < HALTON_SAMPLES; i++)
+                    {
+                        ImGui::Text("[%d]: (%.3f, %.3f)", i, 
+                                    mHaltonPattern[i].x, mHaltonPattern[i].y);
+                    }
+                    ImGui::Unindent();
+                }
+
+                // Pattern size info
+                ImGui::Text("Pattern Size: %d samples", HALTON_SAMPLES);
+                ImGui::Text("Current Sample: %d", mJitterIndex);
+
+                if (ImGui::Button("Reset History"))
+                {
+                    mFirstFrame = true; // Force history buffer reset
+                }
+
+                ImGui::TreePop();
+            }
         }
+
     }
 
     if (ImGui::CollapsingHeader("Lighting"))
@@ -1594,6 +1697,35 @@ void SRender::generateSSAONoise()
     // Create and store the texture object
     mSSAONoise = Texture2D::createTexture2D(noiseTexture, SSAO_NOISE_SIZE, SSAO_NOISE_SIZE);
 }
+
+void SRender::generateHaltonSequence() {
+    mHaltonPattern.resize(HALTON_SAMPLES);
+
+    auto halton = [](int index, int base) -> float {
+        float f = 1.0f;
+        float r = 0.0f;
+        while (index > 0) {
+            f /= base;
+            r += f * (index % base);
+            index /= base;
+        }
+        return r;
+        };
+
+    for (int i = 0; i < HALTON_SAMPLES; i++) {
+        float x = 2.0f * halton(i + 1, 2) - 1.0f; // Base 2 for X
+        float y = 2.0f * halton(i + 1, 3) - 1.0f;  // Base 3 for Y
+
+        float u = x /  settings::window_width;
+        float v = y / settings::window_height;
+
+        mHaltonPattern[i] = glm::vec2(u, v);
+    }
+
+}
+
+
+
 
 
 

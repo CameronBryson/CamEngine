@@ -78,6 +78,7 @@ private:
 
     void generateSSAOKernel();
 	void generateSSAONoise();
+    void generateHaltonSequence();
 
     // Scene data
     BaseScene* mScene;
@@ -93,6 +94,7 @@ private:
     std::shared_ptr<FrameBuffer> mSpotShadowMapBuffer;
     std::shared_ptr<FrameBuffer> mPointShadwMapBuffer;
     std::shared_ptr<FrameBuffer> mHDRFrameBuffer;
+	std::shared_ptr<FrameBuffer> mBloomFrameBuffer;
     std::shared_ptr<FrameBuffer> mPingPongFBO[2];
 	std::shared_ptr<FrameBuffer> mFXAAFrameBuffer;
 	std::shared_ptr<FrameBuffer> mMotionBlurFrameBuffer;
@@ -124,7 +126,13 @@ private:
 	int mMotionBlurSamples = 8;
 	bool mTAAEnabled = true;
 	float mTAABlendFactor = 0.5f;
-
+    static constexpr int HALTON_SAMPLES = 16;
+    std::vector<glm::vec2> mHaltonPattern;
+    int mJitterIndex = 0;
+    glm::vec2 mCurrentJitter{0.0f};
+    glm::vec2 mPreviousJitter{0.0f};
+    float mJitterScale = 0.5f;
+    bool mFirstFrame = true;
     
 
     // SSAO data
@@ -136,9 +144,9 @@ private:
     // SSAO settings
     static const int SSAO_KERNEL_SIZE = 16;
     static const int SSAO_NOISE_SIZE = 4;
-    float mSSAORadius = 0.2f;
+    float mSSAORadius = 0.1f;
     float mSSAOBias = 0.05f;
-    float mSSAOPower = 0.75f;
+    float mSSAOPower = 0.5f;
     float mSSAOMinDistance = 0.01f;
     float mSSAOMaxDistance = 0.5f;
 
