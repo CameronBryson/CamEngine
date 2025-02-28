@@ -125,13 +125,17 @@ private:
 	float mMotionBlurStrength = 1.0f;
 	int mMotionBlurSamples = 8;
 	bool mTAAEnabled = true;
+    bool mShowEdges = false;
 	float mTAABlendFactor = 0.5f;
+	float mEdgeBlendThreshold = 0.1f;
+    float mMinBlendAtEdges = 0.3;
+    float mEdgeResponsive = 3.0f;
     static constexpr int HALTON_SAMPLES = 16;
     std::vector<glm::vec2> mHaltonPattern;
     int mJitterIndex = 0;
     glm::vec2 mCurrentJitter{0.0f};
     glm::vec2 mPreviousJitter{0.0f};
-    float mJitterScale = 0.5f;
+    float mJitterScale = 0.4f;
     bool mFirstFrame = true;
     
 

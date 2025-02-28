@@ -1035,6 +1035,12 @@ void SRender::taaPass() {
     mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY);
     taaShader->setInt("velocityMap", GBufferSlots::VELOCITY);
 
+	taaShader->setBool("showEdges", mShowEdges);
+	taaShader->setFloat("edgeThreshold", mEdgeBlendThreshold);
+    taaShader->setFloat("edgeResponsiveness", mEdgeResponsive);
+	taaShader->setFloat("minBlend", mMinBlendAtEdges);
+
+
     OpenGlUtil::drawQuad();
 
     // Copy to HDR buffer and swap 
@@ -1228,10 +1234,12 @@ void SRender::drawImGui()
         ImGui::Checkbox("Enable TAA", &mTAAEnabled);
         if (mTAAEnabled)
         {
+			ImGui::Checkbox("Show Edges", &mShowEdges);
             ImGui::SliderFloat("TAA Blend Factor", &mTAABlendFactor, 0.0f, 1.0f, "%.3f");
             ImGui::SliderFloat("Jitter Scale", &mJitterScale, 0.0f, 1.0f, "%.3f");
-
-            // Display current jitter info
+			ImGui::SliderFloat("Blend Edge Threshold", &mEdgeBlendThreshold, 0.0f, 1.0f, "%.3f");
+			ImGui::SliderFloat("Min Blend at Edges", &mMinBlendAtEdges, 0.0f, 1.0f, "%.3f");
+			ImGui::SliderFloat("Edge Responsive", &mEdgeResponsive, 0.0f, 10.0f, "%.3f");
             ImGui::Text("Current Jitter: (%.3f, %.3f)", mCurrentJitter.x, mCurrentJitter.y);
             ImGui::Text("Previous Jitter: (%.3f, %.3f)", mPreviousJitter.x, mPreviousJitter.y);
 
