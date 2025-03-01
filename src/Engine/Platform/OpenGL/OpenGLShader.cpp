@@ -142,14 +142,75 @@ OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fra
    GL_CHECK(glDeleteShader(geometry));  
 
    shaderID = ID;  
-}  
+}
+
+OpenGLShader::OpenGLShader(const std::string& computePath)
+{
+    std::string computeCode;
+    std::ifstream cShaderFile;
+
+    std::cout << "computePath: " << engine_util::buildPath(computePath) << '\n';
+
+    // ensure ifstream objects can throw exceptions:
+    cShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+    try
+    {
+        // open file
+        cShaderFile.open(engine_util::buildPath(computePath));
+
+        std::stringstream cShaderStream;
+        // read file's buffer contents into streams
+        cShaderStream << cShaderFile.rdbuf();
+        // close file handlers
+        cShaderFile.close();
+        // convert stream into string
+        computeCode = cShaderStream.str();
+    }
+    catch (std::ifstream::failure& e)
+    {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << '\n';
+    }
+
+    const char* cShaderCode = computeCode.c_str();
+
+    // compute shader
+    unsigned int compute = glCreateShader(GL_COMPUTE_SHADER);
+    GL_CHECK(glShaderSource(compute, 1, &cShaderCode, NULL));
+    GL_CHECK(glCompileShader(compute));
+    checkCompileError(compute, "COMPUTE");
+
+    // shader Program
+    unsigned int ID = glCreateProgram();
+    GL_CHECK(glAttachShader(ID, compute));
+    GL_CHECK(glLinkProgram(ID));
+    checkCompileError(ID, "PROGRAM");
+
+    // delete the shader as it's linked into our program now and no longer necessary
+    GL_CHECK(glDeleteShader(compute));
+
+    shaderID = ID;
+    isComputeShader = true;
+}
+
 
 OpenGLShader::~OpenGLShader() 
 {
     deleteShader();
 }  
 
-void OpenGLShader::use() const { GL_CHECK(glUseProgram(shaderID)); }  
+void OpenGLShader::use() const { GL_CHECK(glUseProgram(shaderID)); }
+
+void OpenGLShader::dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ) const
+{
+    if (!isComputeShader) {
+        std::cout << "ERROR::SHADER::NOT_A_COMPUTE_SHADER\n";
+        return;
+    }
+    use();
+    GL_CHECK(glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ));
+
+}
 
 void OpenGLShader::setBool(const std::string& name, bool value) const  
 {  

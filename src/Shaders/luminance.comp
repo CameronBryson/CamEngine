@@ -1,0 +1,54 @@
+#version 460
+
+layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+layout(binding = 0) uniform sampler2D HDRTexture;
+layout(std430, binding = 0) buffer LuminanceHistogram {
+    uint histogramBins[256];
+};
+
+layout(std140, binding = 2) uniform LuminanceHistogramBuffer {
+    uint inputWidth;
+    uint inputHeight;
+    float minLogLuminance;
+    float oneOverLogLuminanceRange;
+};
+
+shared uint HistogramShared[256];
+
+const float EPSILON = 0.005;
+
+float GetLuminance(vec3 color) {
+    return dot(color, vec3(0.2127, 0.7152, 0.0722));
+}
+
+uint HDRToHistogramBin(vec3 hdrColor) {
+    float luminance = GetLuminance(hdrColor);
+    
+    if(luminance < EPSILON) {
+        return 0;
+    }
+    
+    float logLuminance = clamp((log2(luminance) - minLogLuminance) * oneOverLogLuminanceRange, 0.0, 1.0);
+    return uint(logLuminance * 254.0 + 1.0);
+}
+
+void main() {
+    uint groupIndex = gl_LocalInvocationIndex;
+    HistogramShared[groupIndex] = 0;
+    
+    memoryBarrierShared();
+    barrier();
+    
+    uvec3 threadId = gl_GlobalInvocationID;
+    if(threadId.x < inputWidth && threadId.y < inputHeight) {
+        vec3 hdrColor = texelFetch(HDRTexture, ivec2(threadId.xy), 0).rgb;
+        uint binIndex = HDRToHistogramBin(hdrColor);
+        atomicAdd(HistogramShared[binIndex], 1);
+    }
+    
+    memoryBarrierShared();
+    barrier();
+    
+    atomicAdd(histogramBins[groupIndex], HistogramShared[groupIndex]);
+}

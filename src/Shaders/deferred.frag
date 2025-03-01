@@ -258,7 +258,7 @@ vec3 computeIBL(vec3 N, vec3 V, vec3 R, vec3 F0, vec3 albedo, float metallic, fl
     // Apply combined AO to both diffuse and specular IBL
     vec3 ambient = (kD * diffuse + specular) * finalAO;
     //return ambient;
-    return ambient * 0.15; // Match forward renderer IBL intensity
+    return ambient; // Match forward renderer IBL intensity
 }
 
 

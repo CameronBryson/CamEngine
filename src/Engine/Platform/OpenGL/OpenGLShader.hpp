@@ -8,10 +8,13 @@ class OpenGLShader : public Shader
 public:
     explicit OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath);
 	OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
+	OpenGLShader(const std::string& computePath);
 
     ~OpenGLShader();
 
     void use() const override;
+
+	void dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ) const override;
 
     void setBool(const std::string& name, bool value) const override;
 
@@ -35,4 +38,5 @@ public:
 	void checkCompileError(unsigned shader, const std::string& type);
 private:
     unsigned int shaderID;
+    bool isComputeShader = false;
 };

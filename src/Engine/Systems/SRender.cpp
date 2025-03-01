@@ -48,7 +48,7 @@ void SRender::lateInit()
     calculateSceneBounds();
 }
 
-void SRender::render()
+void SRender::render(float dt)
 {
     mPreviousJitter = mCurrentJitter;
     mCurrentJitter = mHaltonPattern[mJitterIndex] * mJitterScale;
@@ -104,7 +104,7 @@ void SRender::render()
     {
         GL_SCOPED_MARKER("Post Process");
         GL_SCOPED_TIMER("Post Processing");
-        postProcessPass();
+        postProcessPass(dt);
     }
     drawImGui();
 
@@ -147,6 +147,32 @@ void SRender::initFramebuffers()
     GL_LABEL_OBJECT(GL_BUFFER, mCameraUBO->getID(), "Camera UBO");
     mLightUBO = UniformBuffer::createUniformBuffer(sizeof(LightData), LIGHT_BINDING);
     GL_LABEL_OBJECT(GL_BUFFER, mLightUBO->getID(), "Light UBO");
+    mLuminanceHistogramUBO = UniformBuffer::createUniformBuffer(sizeof(LuminanceHistogramData), LUMINANCE_HISTOGRAM_BINDING);
+    GL_LABEL_OBJECT(GL_BUFFER, mLuminanceHistogramUBO->getID(), "Luminance Histogram UBO");
+
+    mAdaptationDataUBO = UniformBuffer::createUniformBuffer(sizeof(LuminanceHistogramAverageData), LUMINANCE_HISTOGRAM_AVERAGE_BINDING);
+    GL_LABEL_OBJECT(GL_BUFFER, mAdaptationDataUBO->getID(), "Adaptation Data UBO");
+
+    //INIT LUMINANCE SSBO HERE
+    mLuminanceSSBO = ShaderStorageBuffer::create(256 * sizeof(uint32_t), LUMINANCE_SSBO_BINDING);
+    GL_LABEL_OBJECT(GL_BUFFER, mLuminanceSSBO->getID(), "Luminance Histogram SSBO");
+	//CREATE 1x1 TEXTURE FOR LUMINANCE ADAPTAION
+    GLuint luminanceTexID;
+    GL_CHECK(glGenTextures(1, &luminanceTexID));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, luminanceTexID));
+    GL_CHECK(glTexStorage2D(GL_TEXTURE_2D, 1, GL_R32F, 1, 1));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+
+    // Initialize with middle-gray value (0.18)
+    float initialValue = mTargetMiddleGray;
+    GL_CHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialValue));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+
+    mAdaptedLuminance = Texture2D::createTexture2D(luminanceTexID, 1, 1);
+    GL_LABEL_OBJECT(GL_TEXTURE, mAdaptedLuminance->getTextureID(), "Adapted Luminance Texture");
 
     // Directional & Spot shadow map FBO
     auto depthAttachment =
@@ -249,7 +275,7 @@ void SRender::initFramebuffers()
 		settings::window_height,
 		colorAttachment
 	);
-
+	
 }
 
 void SRender::calculateSceneBounds()
@@ -714,7 +740,7 @@ void SRender::ssaoPass()
     mSSAOBuffer->bind();
     mSSAOBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
     mSSAOBuffer->clear(GL_COLOR_BUFFER_BIT);
-    OpenGlUtil::drawQuad();
+    gl::drawQuad();
     mSSAOBuffer->unbind();
 
     // Unbind textures after use
@@ -742,7 +768,7 @@ void SRender::ssaoPass()
     blurShader->setFloat("depthThereshold", mSSAOBlurDepthThreshold);
     blurShader->setFloat("normalThreshold", mSSAOBlurNormalThreshold);
 
-    OpenGlUtil::drawQuad();
+    gl::drawQuad();
     mSSAOBlurBuffer->unbind();
 
     // Unbind textures after blur pass
@@ -808,7 +834,7 @@ void SRender::lightingPass()
     deferredShader->setBool("ssaoEnabled", ssaoEnabled);
 
     // 8. Draw full-screen quad
-    OpenGlUtil::drawQuad();
+    gl::drawQuad();
 
     // 9. Unbind G-Buffer textures
     mGBuffer->getColorAttachment(0)->unbind(GBufferSlots::ALBEDO_AO);
@@ -850,19 +876,26 @@ void SRender::lightingPass()
 
 
 
-void SRender::postProcessPass()
+void SRender::postProcessPass(float dt)
 {
+    {
+        GL_SCOPED_MARKER("Auto Exposure");
+        GL_SCOPED_TIMER("Auto Exposure");
+        autoExposurePass(dt);
+    }
     {
         GL_SCOPED_MARKER("TAA Process");
         GL_SCOPED_TIMER("TAA Process");
         taaPass();
     }
+
     //Moved blur to after image is stabilized
     {
         GL_SCOPED_MARKER("Motion Blur Process");
         GL_SCOPED_TIMER("Motion Blur");
         motionBlurPass();
     }
+
     //Extract bright lights after image is stabilized
     {
 		GL_SCOPED_MARKER("Bloom Process");
@@ -966,7 +999,7 @@ void SRender::bloomPass()
 	mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
 	bloomExtractShader->setInt("hdrBuffer", PostProcessSlots::HDR);
 	bloomExtractShader->setFloat("threshold", bloomThreshold);
-	OpenGlUtil::drawQuad();
+	gl::drawQuad();
     mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
 	mBloomFrameBuffer->unbind();
 
@@ -996,7 +1029,7 @@ void SRender::bloomPass()
             blurShader->setInt("image", PostProcessSlots::BLOOM);
         }
 
-        OpenGlUtil::drawQuad();
+        gl::drawQuad();
         horizontal = !horizontal;
     }
 
@@ -1013,10 +1046,36 @@ void SRender::hdrPass()
     auto hdrShader = GameManager::mGraphicsManager->getShader("HDR");
     hdrShader->use();
     mHDRFrameBuffer->bind();
+
+	float exposure = mExposure;
+    if (mAutoExposureEnabled)
+    {
+        float adaptedLuminance = mTargetMiddleGray;
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, mAdaptedLuminance->getTextureID()));
+        GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, &adaptedLuminance));
+
+        if (adaptedLuminance > 0.0001f) {
+            // Use middle gray key value (0.18) divided by luminance
+            // This is the standard formula for auto-exposure
+            exposure = mTargetMiddleGray / adaptedLuminance;
+
+            // Apply exposure limits to prevent extreme values
+            exposure = glm::clamp(exposure, mMinAdaptedLuminance, mMaxAdaptedLuminance);
+        }
+    }
+	mExposure = exposure;
+
     hdrShader->setFloat("exposure", mExposure);
     hdrShader->setBool("hdr", mHDR);
+    hdrShader->setBool("aces", mACES);
+
     hdrShader->setBool("bloom", bloomEnabled);
     hdrShader->setFloat("bloomStrength", bloomStrength);
+    hdrShader->setFloat("brightness", mBrightness);
+	hdrShader->setFloat("contrast", mContrast);
+	hdrShader->setFloat("saturation", mSaturation);
+
+
 
     // HDR color
     mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
@@ -1028,7 +1087,7 @@ void SRender::hdrPass()
 
     hdrShader->setInt("bloomBuffer", PostProcessSlots::BLOOM);
 
-    OpenGlUtil::drawQuad();
+    gl::drawQuad();
     mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
     mPingPongFBO[0]->getColorAttachment(0)->unbind(PostProcessSlots::BLOOM);
     mHDRFrameBuffer->unbind();
@@ -1073,7 +1132,7 @@ void SRender::taaPass() {
 	taaShader->setFloat("minBlend", mMinBlendAtEdges);
 
 
-    OpenGlUtil::drawQuad();
+    gl::drawQuad();
     mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
     mBloomFrameBuffer->unbind();
     // Copy to HDR buffer and swap 
@@ -1110,7 +1169,7 @@ void SRender::motionBlurPass()
     motionBlurShader->setFloat("blurStrength", mMotionBlurStrength);
     motionBlurShader->setInt("numSamples", mMotionBlurSamples);
 
-    OpenGlUtil::drawQuad();
+    gl::drawQuad();
     mMotionBlurFrameBuffer->unbind();
 
     // Copy result back to HDR buffer for next pass
@@ -1149,9 +1208,83 @@ void SRender::motionBlurPass()
        fxaaShader->setFloat("SUBPIXEL_QUALITY", mFXAASubPixelQuality);
 
        // Draw fullscreen quad to apply FXAA directly to the screen
-       OpenGlUtil::drawQuad();
+       gl::drawQuad();
        mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
    }
+
+   void SRender::autoExposurePass(float dt)
+   {
+       if (!mAutoExposureEnabled) return;
+
+       GL_SCOPED_MARKER("Auto Exposure");
+       GL_SCOPED_TIMER("Auto Exposure");
+
+       // Reset histogram to zero
+       uint32_t zeros[256] = {0};
+       mLuminanceSSBO->setData(zeros, sizeof(zeros));
+
+       // 1. First pass: Build the luminance histogram
+       auto luminanceComputeShader = GameManager::mGraphicsManager->getShader("Luminance");
+       luminanceComputeShader->use();
+
+       // Bind HDR input texture
+       mHDRFrameBuffer->getColorAttachment(0)->bind(0);
+
+       // Setup histogram parameters
+       LuminanceHistogramData histogramData;
+       histogramData.inputWidth = settings::window_width;
+       histogramData.inputHeight = settings::window_height;
+       histogramData.minLogLuminance = mMinLogLuminance;
+       histogramData.oneOverLogLuminanceRange = 1.0f / mLogLuminanceRange;
+
+       // Update uniform buffer
+       mLuminanceHistogramUBO->setData(&histogramData, sizeof(LuminanceHistogramData));
+
+       // Bind SSBO (shader storage buffer object)
+       mLuminanceSSBO->bind(LUMINANCE_SSBO_BINDING);
+
+       // Dispatch compute shader with appropriate group count
+       // Each group is 16x16 threads, so we divide the screen dimensions by 16 (with ceiling)
+       uint32_t dispatchX = (settings::window_width + 15) / 16;
+       uint32_t dispatchY = (settings::window_height + 15) / 16;
+       luminanceComputeShader->dispatch(dispatchX, dispatchY, 1);
+
+       // Add memory barrier to ensure histogram is fully written before adaptation pass
+       GL_CHECK(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT));
+
+       // 2. Second pass: Calculate the adapted luminance
+       auto adaptationComputeShader = GameManager::mGraphicsManager->getShader("Adaptation");
+       adaptationComputeShader->use();
+
+       // Setup adaptation parameters
+       LuminanceHistogramAverageData adaptationData;
+       adaptationData.pixelCount = settings::window_width * settings::window_height;
+       adaptationData.minLogLuminance = mMinLogLuminance;
+       adaptationData.logLuminanceRange = mLogLuminanceRange;
+       adaptationData.timeDelta = dt;
+       adaptationData.tau = mAdaptationSpeed;
+
+       // Update uniform buffer
+       mAdaptationDataUBO->setData(&adaptationData, sizeof(LuminanceHistogramAverageData));
+
+       // Bind SSBO and adapted luminance texture
+       mLuminanceSSBO->bind(LUMINANCE_SSBO_BINDING);
+       GL_CHECK(glBindImageTexture(1, mAdaptedLuminance->getTextureID(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F));
+
+       // Dispatch a single workgroup (16x16x1) for reduction/adaptation
+       adaptationComputeShader->dispatch(1, 1, 1);
+
+       // Memory barrier to ensure results are visible for HDR pass
+       GL_CHECK(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
+
+       // Unbind resources
+       mLuminanceSSBO->unbind();
+   }
+
+
+
+
+
    
 
 
@@ -1236,6 +1369,32 @@ void SRender::drawImGui()
         // HDR Settings
         ImGui::Checkbox("Enable HDR", &mHDR);
         ImGui::SliderFloat("Exposure", &mExposure, 0.0f, 5.0f);
+		ImGui::Checkbox("Enable ACES Tonemapping", &mACES);
+		ImGui::SliderFloat("Brightness", &mBrightness, 0.0f, 2.0f);
+		ImGui::SliderFloat("Contrast", &mContrast, 0.0f, 2.0f);
+		ImGui::SliderFloat("Saturation", &mSaturation, 0.0f, 2.0f);
+        // Auto Exposure Settings
+        ImGui::Separator();
+        ImGui::Checkbox("Enable Auto Exposure", &mAutoExposureEnabled);
+        if (mAutoExposureEnabled)
+        {
+            ImGui::SliderFloat("Adaptation Speed", &mAdaptationSpeed, 0.1f, 5.0f);
+            ImGui::SliderFloat("Min Log Luminance", &mMinLogLuminance, -20.0f, 0.0f);
+            ImGui::SliderFloat("Log Luminance Range", &mLogLuminanceRange, 1.0f, 20.0f);
+			ImGui::SliderFloat("Min Adapted Luminance", &mMinAdaptedLuminance, 0.0f, 1.0f);
+			ImGui::SliderFloat("Max Adapted Luminance", &mMaxAdaptedLuminance, 0.0f, 10.0f);
+			ImGui::SliderFloat("Middle Gray", &mTargetMiddleGray, 0.0f, 2.0f);
+
+            if (ImGui::Button("Reset Adaptation"))
+            {
+                // Reset to middle gray (0.18)
+                float initialValue = mTargetMiddleGray;
+                GL_CHECK(glBindTexture(GL_TEXTURE_2D, mAdaptedLuminance->getTextureID()));
+                GL_CHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialValue));
+                GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+            }
+        }
+
 
         // Bloom Settings
         ImGui::Separator();
@@ -1404,22 +1563,22 @@ void SRender::drawImGui()
         }
         if (ImGui::CollapsingHeader("Debug Settings"))
         {
-            bool debugOutput = OpenGlUtil::isDebugOutputEnabled();
+            bool debugOutput = gl::isDebugOutputEnabled();
             if (ImGui::Checkbox("Debug Output", &debugOutput))
             {
-                OpenGlUtil::enableDebugOutput(debugOutput);
+                gl::enableDebugOutput(debugOutput);
             }
 
-            bool profiling = OpenGlUtil::GPUTimer::isProfilingEnabled();
+            bool profiling = gl::timer::isProfilingEnabled();
             if (ImGui::Checkbox("GPU Profiling", &profiling))
             {
-                OpenGlUtil::GPUTimer::enableProfiling(profiling);
+                gl::timer::enableProfiling(profiling);
             }
 
             static bool breakOnError = true;
             if (ImGui::Checkbox("Break On Error", &breakOnError))
             {
-                OpenGlUtil::setBreakOnError(breakOnError);
+                gl::setBreakOnError(breakOnError);
             }
         }
     }
@@ -1617,6 +1776,7 @@ void SRender::drawImGui()
 
     ImGui::End();
     // Performance Statistics Window
+    // Performance Statistics Window
     ImGui::Begin("Performance Statistics");
     {
         ImGuiIO& io = ImGui::GetIO();
@@ -1624,6 +1784,8 @@ void SRender::drawImGui()
         // FPS and frame timing
         ImGui::Text("FPS: %.1f (%.2f ms/frame)", io.Framerate, 1000.0f / io.Framerate);
         ImGui::Separator();
+
+        // Culling Statistics
         ImGui::Text("Culling Statistics:");
         int totalMeshes = mOpaqueRenderList.size() + mTransparentRenderList.size() + mCulledMeshes;
         ImGui::Text("Total Meshes: %d", totalMeshes);
@@ -1633,7 +1795,7 @@ void SRender::drawImGui()
         ImGui::Text("Culling Percentage: %.1f%%", cullPercentage);
 
         // GPU Timings for each render pass
-        if (OpenGlUtil::GPUTimer::isProfilingEnabled())
+        if (gl::timer::isProfilingEnabled())
         {
             ImGui::Separator();
             ImGui::Text("GPU Timings (ms):");
@@ -1653,25 +1815,41 @@ void SRender::drawImGui()
                 ImGui::Text("%.2f", time); ImGui::NextColumn();
                 };
 
-            // Display timings for main passes
-            displayTiming("Light Data", OpenGlUtil::GPUTimer::getLastDuration("Light Data"));
-            displayTiming("Shadow Pass", OpenGlUtil::GPUTimer::getLastDuration("Shadow Pass"));
-            displayTiming("Depth Pass", OpenGlUtil::GPUTimer::getLastDuration("Depth Pass"));
-            displayTiming("G-Buffer", OpenGlUtil::GPUTimer::getLastDuration("G-Buffer"));
-            displayTiming("SSAO", OpenGlUtil::GPUTimer::getLastDuration("SSAO"));
-            displayTiming("Deferred Lighting", OpenGlUtil::GPUTimer::getLastDuration("Deferred Lighting"));
-            displayTiming("Post Processing", OpenGlUtil::GPUTimer::getLastDuration("Post Processing"));
+            // Main passes
+            displayTiming("Light Data", gl::timer::getLastDuration("Light Data"));
+            displayTiming("Shadow Pass", gl::timer::getLastDuration("Shadow Pass"));
+            displayTiming("Depth Pass", gl::timer::getLastDuration("Depth Pass"));
+            displayTiming("G-Buffer", gl::timer::getLastDuration("G-Buffer"));
+            displayTiming("SSAO", gl::timer::getLastDuration("SSAO"));
+            displayTiming("Deferred Lighting", gl::timer::getLastDuration("Deferred Lighting"));
+            displayTiming("Post Processing", gl::timer::getLastDuration("Post Processing"));
 
             // Shadow sub-passes
             ImGui::Separator();
             ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Shadow Sub-passes:"); ImGui::NextColumn();
             ImGui::NextColumn();
-            displayTiming("  Directional Shadows", OpenGlUtil::GPUTimer::getLastDuration("Directional Shadows"));
-            displayTiming("  Spot Shadows", OpenGlUtil::GPUTimer::getLastDuration("Spot Shadows"));
-            displayTiming("  Point Shadows", OpenGlUtil::GPUTimer::getLastDuration("Point Shadows"));
+            displayTiming("  Directional Shadows", gl::timer::getLastDuration("Directional Shadows"));
+            displayTiming("  Spot Shadows", gl::timer::getLastDuration("Spot Shadows"));
+            displayTiming("  Point Shadows", gl::timer::getLastDuration("Point Shadows"));
 
+            // Post-processing sub-passes
+            ImGui::Separator();
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Post-Processing Sub-passes:"); ImGui::NextColumn();
+            ImGui::NextColumn();
+            displayTiming("  TAA Process", gl::timer::getLastDuration("TAA Process"));
+            displayTiming("  Motion Blur", gl::timer::getLastDuration("Motion Blur"));
+            displayTiming("  Bloom Process", gl::timer::getLastDuration("Bloom Process"));
+            displayTiming("  HDR Process", gl::timer::getLastDuration("HDR Process"));
+            displayTiming("  FXAA Process", gl::timer::getLastDuration("FXAA Process"));
 
-            
+            // Memory statistics (if available)
+            ImGui::Separator();
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Render Lists:"); ImGui::NextColumn();
+            ImGui::NextColumn();
+            displayTiming("  Opaque Objects", static_cast<float>(mOpaqueRenderList.size()));
+            displayTiming("  Transparent Objects", static_cast<float>(mTransparentRenderList.size()));
+
+            ImGui::Columns(1);
         }
         else
         {
@@ -1680,6 +1858,7 @@ void SRender::drawImGui()
         }
     }
     ImGui::End();
+
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

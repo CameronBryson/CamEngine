@@ -98,7 +98,7 @@ OpenGLTextureCubemap::OpenGLTextureCubemap(const std::string& hdrPath,
         );
 		fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
         fbo->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        OpenGlUtil::drawCube();
+        gl::drawCube();
     }
     fbo->unbind();
 

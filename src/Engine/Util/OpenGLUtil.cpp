@@ -9,283 +9,307 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
-
-// Static member initialization
-bool OpenGlUtil::sGLDebugOutput = true;
-bool OpenGlUtil::sBreakOnError = true;
-bool OpenGlUtil::GPUTimer::sProfilingEnabled = true;
-std::unordered_map<std::string, OpenGlUtil::GPUTimer::TimerQuery> OpenGlUtil::GPUTimer::mTimerQueries;
-
-void OpenGlUtil::init()
-{
-    glfwSetErrorCallback(engine_util::errorCallback);
-    if (!glfwInit())
-    {
-        exit(EXIT_FAILURE);
+namespace gl {
+    namespace detail {
+        bool g_GLDebugOutput = true;
+        bool g_BreakOnError = true;
+        bool g_ProfilingEnabled = true;
+        std::unordered_map<std::string, timer::TimerQuery> g_TimerQueries;
     }
 
-#ifdef _DEBUG
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#endif
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow* game_window = glfwCreateWindow(
-        settings::window_width,
-        settings::window_height,
-        "Game Window",
-        nullptr,
-        nullptr
-    );
-    if (!game_window)
+    void init()
     {
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    glfwMakeContextCurrent(game_window);
-    glfwSetKeyCallback(game_window, engine_util::keyCallback);
-    glfwSetCursorPosCallback(game_window, engine_util::cursorPosCallback);
-    glfwSetMouseButtonCallback(game_window, engine_util::mouseKeyCallback);
-    glfwSetFramebufferSizeCallback(game_window, OpenGlUtil::framebufferSizeCallback);
-    glfwSwapInterval(0); // Disable vsync
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cerr << "Failed to initialize GLAD" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-#ifdef _DEBUG
-    if (GLAD_GL_VERSION_4_3)
-    {
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        glDebugMessageCallback(debugMessageCallback, nullptr);
-
-        // Configure debug output
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_MEDIUM, 0, nullptr, GL_TRUE);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW, 0, nullptr, GL_FALSE);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
-    }
-#endif
-
-    GL_CHECK(glClearColor(0, 0, 0, 0));
-    GL_CHECK(glEnable(GL_DEPTH_TEST));
-    GL_CHECK(glEnable(GL_CULL_FACE));
-    GL_CHECK(glCullFace(GL_BACK));
-    GL_CHECK(glFrontFace(GL_CCW));
-    GL_CHECK(glEnable(GL_BLEND));
-    GL_CHECK(glBlendEquation(GL_FUNC_ADD));
-
-    GameManager::set_glfw_window(game_window);
-}
-
-void OpenGlUtil::shutdown()
-{
-    GPUTimer::reset();
-    glfwDestroyWindow(GameManager::mGameWindow);
-    glfwTerminate();
-}
-
-void OpenGlUtil::GPUTimer::begin(const char* name)
-{
-#ifdef _DEBUG
-    if (!sProfilingEnabled) return;
-
-    auto& timer = mTimerQueries[name];
-    if (!timer.startQuery)
-    {
-        glGenQueries(1, &timer.startQuery);
-        glGenQueries(1, &timer.endQuery);
-        timer.minDuration = FLT_MAX;
-        timer.maxDuration = -FLT_MAX;
-        timer.totalDuration = 0;
-        timer.sampleCount = 0;
-    }
-    timer.active = true;
-    glQueryCounter(timer.startQuery, GL_TIMESTAMP);
-#endif
-}
-
-void OpenGlUtil::GPUTimer::end(const char* name)
-{
-#ifdef _DEBUG
-    if (!sProfilingEnabled) return;
-
-    auto& timer = mTimerQueries[name];
-    if (timer.active)
-    {
-        glQueryCounter(timer.endQuery, GL_TIMESTAMP);
-        timer.active = false;
-
-        GLint64 startTime, endTime;
-        glGetQueryObjecti64v(timer.startQuery, GL_QUERY_RESULT, &startTime);
-        glGetQueryObjecti64v(timer.endQuery, GL_QUERY_RESULT, &endTime);
-
-        float duration = (endTime - startTime) / 1000000.0f; // Convert to ms
-        timer.lastDuration = duration;
-        timer.minDuration = std::min(timer.minDuration, duration);
-        timer.maxDuration = std::max(timer.maxDuration, duration);
-        timer.totalDuration += duration;
-        timer.sampleCount++;
-
-        if (duration > 1.0f) // Only log if over 1ms
+        glfwSetErrorCallback(engine_util::errorCallback);
+        if (!glfwInit())
         {
-            float avgDuration = timer.totalDuration / timer.sampleCount;
-            /*std::cout << "GPU Operation '" << name 
-                << "' took " << duration << "ms "
-                << "(avg: " << avgDuration << "ms, "
-                << "min: " << timer.minDuration << "ms, "
-                << "max: " << timer.maxDuration << "ms)" 
-                << std::endl;*/
+            exit(EXIT_FAILURE);
         }
-    }
-#endif
-}
 
-void OpenGlUtil::GPUTimer::reset()
-{
 #ifdef _DEBUG
-    for (auto& [name, timer] : mTimerQueries)
-    {
-        if (timer.startQuery)
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif
+
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+        GLFWwindow* game_window = glfwCreateWindow(
+            settings::window_width,
+            settings::window_height,
+            "Game Window",
+            nullptr,
+            nullptr
+        );
+        if (!game_window)
         {
-            glDeleteQueries(1, &timer.startQuery);
-            glDeleteQueries(1, &timer.endQuery);
+            glfwTerminate();
+            exit(EXIT_FAILURE);
         }
-    }
-    mTimerQueries.clear();
-#endif
-}
 
-void OpenGlUtil::GPUTimer::printResults()
-{
-#ifdef _DEBUG
-    if (!sProfilingEnabled) return;
+        glfwMakeContextCurrent(game_window);
+        glfwSetKeyCallback(game_window, engine_util::keyCallback);
+        glfwSetCursorPosCallback(game_window, engine_util::cursorPosCallback);
+        glfwSetMouseButtonCallback(game_window, engine_util::mouseKeyCallback);
+        glfwSetFramebufferSizeCallback(game_window, framebufferSizeCallback);
+        glfwSwapInterval(0); // Disable vsync
 
-    for (const auto& [name, timer] : mTimerQueries)
-    {
-        if (timer.sampleCount > 0)
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            float avgDuration = timer.totalDuration / timer.sampleCount;
-            std::cout << "GPU Operation '" << name << "' stats:\n"
-                << "  Average: " << avgDuration << "ms\n"
-                << "  Min: " << timer.minDuration << "ms\n"
-                << "  Max: " << timer.maxDuration << "ms\n"
-                << "  Samples: " << timer.sampleCount << std::endl;
+            std::cerr << "Failed to initialize GLAD" << std::endl;
+            exit(EXIT_FAILURE);
         }
-    }
-#endif
-}
 
-void OpenGlUtil::validateState(const char* location)
-{
 #ifdef _DEBUG
-    GLenum error;
-    bool hasError = false;
-    while ((error = glGetError()) != GL_NO_ERROR)
-    {
-        std::cerr << "OpenGL Error at " << location << ": 0x" 
-            << std::hex << error << std::dec << std::endl;
-        hasError = true;
-    }
-
-    if (hasError && sBreakOnError)
-    {
-        __debugbreak();
-    }
-#endif
-}
-
-void OpenGlUtil::labelObject(GLenum type, GLuint object, const char* label)
-{
-#ifdef _DEBUG
-    if (GLAD_GL_VERSION_4_3)
-    {
-        glObjectLabel(type, object, -1, label);
-    }
-#endif
-}
-
-void OpenGlUtil::enableDebugOutput(bool enable)
-{
-    sGLDebugOutput = enable;
-#ifdef _DEBUG
-    if (GLAD_GL_VERSION_4_3)
-    {
-        if (enable)
+        if (GLAD_GL_VERSION_4_3)
         {
             glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            glDebugMessageCallback(detail::debugMessageCallback, nullptr);
+
+            // Configure debug output
+            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
+            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_MEDIUM, 0, nullptr, GL_TRUE);
+            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW, 0, nullptr, GL_FALSE);
+            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
         }
-        else
-        {
-            glDisable(GL_DEBUG_OUTPUT);
-            glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        }
+#endif
+
+        GL_CHECK(glClearColor(0, 0, 0, 0));
+        GL_CHECK(glEnable(GL_DEPTH_TEST));
+        GL_CHECK(glEnable(GL_CULL_FACE));
+        GL_CHECK(glCullFace(GL_BACK));
+        GL_CHECK(glFrontFace(GL_CCW));
+        GL_CHECK(glEnable(GL_BLEND));
+        GL_CHECK(glBlendEquation(GL_FUNC_ADD));
+
+        GameManager::set_glfw_window(game_window);
     }
-#endif
-}
 
-void OpenGlUtil::beginFrame()
-{
-#ifdef _DEBUG
-    GPUTimer::reset();
-#endif
-}
-
-void OpenGlUtil::endFrame()
-{
-#ifdef _DEBUG
-    glFinish();
-    //GPUTimer::printResults();
-#endif
-}
-
-// Keep your existing utility functions but add debug markers
-void OpenGlUtil::drawQuad()
-{
-    GL_SCOPED_MARKER("DrawQuad");
-    static GLuint quadVAO = 0;
-    static GLuint quadVBO = 0;
-    if (quadVAO == 0)
+    void shutdown()
     {
-        float quadVertices[] = {
-            // positions        // texCoords
-            -1.0f,  1.0f,  0.0f, 1.0f,
-            -1.0f, -1.0f,  0.0f, 0.0f,
-            1.0f, -1.0f,  1.0f, 0.0f,
-
-            -1.0f,  1.0f,  0.0f, 1.0f,
-            1.0f, -1.0f,  1.0f, 0.0f,
-            1.0f,  1.0f,  1.0f, 1.0f
-        };
-        GL_CHECK(glGenVertexArrays(1, &quadVAO));
-        GL_CHECK(glGenBuffers(1, &quadVBO));
-        GL_CHECK(glBindVertexArray(quadVAO));
-        GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, quadVBO));
-        GL_CHECK(glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices),
-                              quadVertices, GL_STATIC_DRAW));
-
-        GL_CHECK(glEnableVertexAttribArray(0));
-        GL_CHECK(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
-                                       4 * sizeof(float), (void*)0));
-
-        GL_CHECK(glEnableVertexAttribArray(1));
-        GL_CHECK(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-                                       4 * sizeof(float), (void*)(2 * sizeof(float))));
+        timer::reset();
+        glfwDestroyWindow(GameManager::mGameWindow);
+        glfwTerminate();
     }
-    GL_CHECK(glBindVertexArray(quadVAO));
-    GL_CHECK(glDrawArrays(GL_TRIANGLES, 0, 6));
-    GL_CHECK(glBindVertexArray(0));
-}
 
-void OpenGlUtil::drawCube()
+    namespace timer {
+        void begin(const char* name)
+        {
+#ifdef _DEBUG
+            if (!detail::g_ProfilingEnabled) return;
+
+            auto& timer = detail::g_TimerQueries[name];
+            if (!timer.startQuery)
+            {
+                glGenQueries(1, &timer.startQuery);
+                glGenQueries(1, &timer.endQuery);
+                timer.minDuration = FLT_MAX;
+                timer.maxDuration = -FLT_MAX;
+                timer.totalDuration = 0;
+                timer.sampleCount = 0;
+            }
+            timer.active = true;
+            glQueryCounter(timer.startQuery, GL_TIMESTAMP);
+#endif
+        }
+
+        void end(const char* name)
+        {
+#ifdef _DEBUG
+            if (!detail::g_ProfilingEnabled) return;
+
+            auto& timer = detail::g_TimerQueries[name];
+            if (timer.active)
+            {
+                glQueryCounter(timer.endQuery, GL_TIMESTAMP);
+                timer.active = false;
+
+                GLint64 startTime, endTime;
+                glGetQueryObjecti64v(timer.startQuery, GL_QUERY_RESULT, &startTime);
+                glGetQueryObjecti64v(timer.endQuery, GL_QUERY_RESULT, &endTime);
+
+                float duration = (endTime - startTime) / 1000000.0f;
+                timer.lastDuration = duration;
+                timer.minDuration = std::min(timer.minDuration, duration);
+                timer.maxDuration = std::max(timer.maxDuration, duration);
+                timer.totalDuration += duration;
+                timer.sampleCount++;
+            }
+#endif
+        }
+
+        void reset()
+        {
+#ifdef _DEBUG
+            for (auto& [name, timer] : detail::g_TimerQueries)
+            {
+                if (timer.startQuery)
+                {
+                    glDeleteQueries(1, &timer.startQuery);
+                    glDeleteQueries(1, &timer.endQuery);
+                }
+            }
+            detail::g_TimerQueries.clear();
+#endif
+        }
+
+        void printResults()
+        {
+#ifdef _DEBUG
+            if (!detail::g_ProfilingEnabled) return;
+
+            for (const auto& [name, timer] : detail::g_TimerQueries)
+            {
+                if (timer.sampleCount > 0)
+                {
+                    float avgDuration = timer.totalDuration / timer.sampleCount;
+                    std::cout << "GPU Operation '" << name << "' stats:\n"
+                        << "  Average: " << avgDuration << "ms\n"
+                        << "  Min: " << timer.minDuration << "ms\n"
+                        << "  Max: " << timer.maxDuration << "ms\n"
+                        << "  Samples: " << timer.sampleCount << std::endl;
+                }
+            }
+#endif
+        }
+
+        void enableProfiling(bool enable) 
+        { 
+            detail::g_ProfilingEnabled = enable; 
+        }
+
+        bool isProfilingEnabled() 
+        { 
+            return detail::g_ProfilingEnabled; 
+        }
+
+        float getLastDuration(const char* name)
+        {
+#ifdef _DEBUG
+            if (!detail::g_ProfilingEnabled) return 0.0f;
+            auto it = detail::g_TimerQueries.find(name);
+            if (it != detail::g_TimerQueries.end())
+            {
+                return it->second.lastDuration;
+            }
+#endif
+            return 0.0f;
+        }
+    }
+
+    void validateState(const char* location)
+    {
+#ifdef _DEBUG
+        GLenum error;
+        bool hasError = false;
+        while ((error = glGetError()) != GL_NO_ERROR)
+        {
+            std::cerr << "OpenGL Error at " << location << ": 0x" 
+                << std::hex << error << std::dec << std::endl;
+            hasError = true;
+        }
+
+        if (hasError && detail::g_BreakOnError)
+        {
+            __debugbreak();
+        }
+#endif
+    }
+
+    void labelObject(GLenum type, GLuint object, const char* label)
+    {
+#ifdef _DEBUG
+        if (GLAD_GL_VERSION_4_3)
+        {
+            glObjectLabel(type, object, -1, label);
+        }
+#endif
+    }
+
+    void enableDebugOutput(bool enable)
+    {
+        detail::g_GLDebugOutput = enable;
+#ifdef _DEBUG
+        if (GLAD_GL_VERSION_4_3)
+        {
+            if (enable)
+            {
+                glEnable(GL_DEBUG_OUTPUT);
+                glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            }
+            else
+            {
+                glDisable(GL_DEBUG_OUTPUT);
+                glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            }
+        }
+#endif
+    }
+
+    bool isDebugOutputEnabled()
+    {
+        return detail::g_GLDebugOutput;
+    }
+
+    void setBreakOnError(bool enable)
+    {
+        detail::g_BreakOnError = enable;
+    }
+
+    void beginFrame()
+    {
+#ifdef _DEBUG
+        timer::reset();
+#endif
+    }
+
+    void endFrame()
+    {
+#ifdef _DEBUG
+        glFinish();
+        //timer::printResults();
+#endif
+    }
+
+    void drawQuad()
+    {
+        GL_SCOPED_MARKER("DrawQuad");
+        static GLuint quadVAO = 0;
+        static GLuint quadVBO = 0;
+        if (quadVAO == 0)
+        {
+            float quadVertices[] = {
+                // positions        // texCoords
+                -1.0f,  1.0f,  0.0f, 1.0f,
+                -1.0f, -1.0f,  0.0f, 0.0f,
+                1.0f, -1.0f,  1.0f, 0.0f,
+
+                -1.0f,  1.0f,  0.0f, 1.0f,
+                1.0f, -1.0f,  1.0f, 0.0f,
+                1.0f,  1.0f,  1.0f, 1.0f
+            };
+            GL_CHECK(glGenVertexArrays(1, &quadVAO));
+            GL_CHECK(glGenBuffers(1, &quadVBO));
+            GL_CHECK(glBindVertexArray(quadVAO));
+            GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, quadVBO));
+            GL_CHECK(glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices),
+                                  quadVertices, GL_STATIC_DRAW));
+
+            GL_CHECK(glEnableVertexAttribArray(0));
+            GL_CHECK(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
+                                           4 * sizeof(float), (void*)0));
+
+            GL_CHECK(glEnableVertexAttribArray(1));
+            GL_CHECK(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+                                           4 * sizeof(float), (void*)(2 * sizeof(float))));
+        }
+        GL_CHECK(glBindVertexArray(quadVAO));
+        GL_CHECK(glDrawArrays(GL_TRIANGLES, 0, 6));
+        GL_CHECK(glBindVertexArray(0));
+    }
+
+void gl::drawCube()
 {
     GL_SCOPED_MARKER("DrawCube");
     static unsigned int cubeVAO = 0;
@@ -379,7 +403,7 @@ void OpenGlUtil::drawCube()
     GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer));
 }
 
-void OpenGlUtil::checkGLState()
+void gl::checkGLState()
 {
     GL_SCOPED_MARKER("CheckGLState");
     GLint maxTextureUnits;
@@ -417,7 +441,7 @@ void OpenGlUtil::checkGLState()
     std::cout << "\nBound Framebuffer: " << boundFBO << "\n";
 }
 
-void OpenGlUtil::checkTextureState(unsigned int unit)
+void gl::checkTextureState(unsigned int unit)
 {
     GL_SCOPED_MARKER("CheckTextureState");
     GLint activeUnit;
@@ -443,18 +467,18 @@ void OpenGlUtil::checkTextureState(unsigned int unit)
     glActiveTexture(GL_TEXTURE0 + activeUnit);
 }
 
-void OpenGlUtil::clearBackground()
+void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+
+void gl::clearBackground()
 {
     GL_SCOPED_MARKER("ClearBackground");
     GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
-void OpenGlUtil::framebufferSizeCallback(GLFWwindow* window, int width, int height)
-{
-    GL_CHECK(glViewport(0, 0, width, height));
-}
-
-void APIENTRY OpenGlUtil::debugMessageCallback(GLenum source, GLenum type, GLuint id,
+void APIENTRY gl::detail::debugMessageCallback(GLenum source, GLenum type, GLuint id,
                                                GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
     // Ignore non-significant error/warning codes
@@ -473,15 +497,52 @@ void APIENTRY OpenGlUtil::debugMessageCallback(GLenum source, GLenum type, GLuin
     }
 
     if (severity == GL_DEBUG_SEVERITY_HIGH ||
-        (severity == GL_DEBUG_SEVERITY_MEDIUM && sGLDebugOutput) ||
-        (severity == GL_DEBUG_SEVERITY_LOW && sGLDebugOutput))
+        (severity == GL_DEBUG_SEVERITY_MEDIUM && g_GLDebugOutput) ||
+        (severity == GL_DEBUG_SEVERITY_LOW && g_GLDebugOutput))
     {
         std::cerr << "OpenGL Debug [" << severityStr << "] (" << id << "): " 
             << message << std::endl;
 
-        if (severity == GL_DEBUG_SEVERITY_HIGH && sBreakOnError)
+        if (severity == GL_DEBUG_SEVERITY_HIGH && g_BreakOnError)
         {
             __debugbreak();
         }
     }
 }
+// Define the ScopedTimer and ScopedLabel implementations
+gl::ScopedTimer::ScopedTimer(const char* name) : mName(name)
+{
+#ifdef _DEBUG
+    timer::begin(name);
+#endif
+}
+
+gl::ScopedTimer::~ScopedTimer()
+{
+#ifdef _DEBUG
+    timer::end(mName);
+#endif
+}
+
+gl::ScopedLabel::ScopedLabel(const char* label)
+{
+#ifdef _DEBUG
+    if (GLAD_GL_VERSION_4_3)
+    {
+        glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, label);
+    }
+#endif
+}
+
+gl::ScopedLabel::~ScopedLabel()
+{
+#ifdef _DEBUG
+    if (GLAD_GL_VERSION_4_3)
+    {
+        glPopDebugGroup();
+    }
+#endif
+}
+} // namespace gl
+
+

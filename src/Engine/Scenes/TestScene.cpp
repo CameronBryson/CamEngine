@@ -63,13 +63,13 @@ void TestScene::init()
 	auto pointLight = mEnttRegistry.create();
 	// Add some ambient light and tone down the intensity
 	glm::vec3 pointAmbient = glm::vec3(0.05);
-	glm::vec3 pointDiffuse = glm::vec3(0.5f);    // Strong but not max diffuse
-	glm::vec3 pointSpecular = glm::vec3(0.6f);   // Full specular
+	glm::vec3 pointDiffuse = glm::vec3(6);    // Strong but not max diffuse
+	glm::vec3 pointSpecular = glm::vec3(6);   // Full specular
 
 	// Adjust attenuation for your scene scale (your chess piece is at -75 units)
 	float constant = 1.0f;
-	float linear = 0.09f;      // Reduced for larger scenes
-	float quadratic = 0.0032f; // Reduced for larger scenes
+	float linear = 0.22f;      // Reduced for larger scenes
+	float quadratic = 0.20f; // Reduced for larger scenes
 
 	 //Position the light higher and further back to better illuminate the chess piece
 	mEnttRegistry.emplace<CPointLight>(pointLight,
@@ -79,12 +79,12 @@ void TestScene::init()
 
 	// For the spot light, adjust similarly
 	auto spotLight = mEnttRegistry.create();
-	glm::vec3 spotDirection = glm::normalize(glm::vec3(0.7f, -0.8f, 0.3f)); // Angle it slightly
+	glm::vec3 spotDirection = glm::normalize(glm::vec3(0.7f, -0.6f, 0.3f)); // Angle it slightly
 	float innerCutoff = glm::cos(glm::radians(12.5f));  // Use cos for better precision
 	float outerCutoff = glm::cos(glm::radians(17.5f));  // Use cos for better precision
-	glm::vec3 spotAmbient = glm::vec3(0.01);
-	glm::vec3 spotDiffuse = glm::vec3(0.7);
-	glm::vec3 spotSpecular = glm::vec3(0.8);
+	glm::vec3 spotAmbient = glm::vec3(0.0);
+	glm::vec3 spotDiffuse = glm::vec3(6);
+	glm::vec3 spotSpecular = glm::vec3(7);
 
 	mEnttRegistry.emplace<CSpotLight>(spotLight,
 		glm::vec3(4.0f, 3.0f, 0.0f), // Position it above the chess piece
@@ -94,8 +94,8 @@ void TestScene::init()
 
 	glm::vec3 directionalDirection = glm::normalize(glm::vec3(0.0f, -1.0f, -0.2f)); // Angle it slightly
 	glm::vec3 directionalAmbient = glm::vec3(0.0f);
-	glm::vec3 directionalDiffuse = glm::vec3(0.8f);
-	glm::vec3 directionalSpecular = glm::vec3(0.9);
+	glm::vec3 directionalDiffuse = glm::vec3(4.0f);
+	glm::vec3 directionalSpecular = glm::vec3(4.0);
 
 	auto directionalLight = mEnttRegistry.create();
 	mEnttRegistry.emplace<CDirectionalLight>(directionalLight, directionalDirection, directionalAmbient, directionalDiffuse, directionalSpecular);
@@ -210,7 +210,7 @@ void TestScene::update(float dt) {
 	}
 }
 void TestScene::lateUpdate(float dt) { BaseScene::lateUpdate(dt); }
-void TestScene::render() { BaseScene::render(); }
+void TestScene::render(float dt) { BaseScene::render(dt); }
 void TestScene::lateRender()
 {
 	BaseScene::lateRender();

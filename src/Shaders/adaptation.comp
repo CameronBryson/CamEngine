@@ -1,0 +1,44 @@
+#version 460
+
+layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+layout(std430, binding = 0) buffer LuminanceHistogram {
+    uint histogramBins[256];
+};
+
+layout(binding = 1, r32f) uniform image2D LuminanceOutput;
+
+layout(std140, binding = 3) uniform LuminanceHistogramAverageBuffer {
+    uint pixelCount;
+    float minLogLuminance;
+    float logLuminanceRange;
+    float timeDelta;
+    float tau;
+};
+
+shared float HistogramShared[256];
+
+void main() {
+    uint groupIndex = gl_LocalInvocationIndex;
+    float countForThisBin = float(histogramBins[groupIndex]);
+    HistogramShared[groupIndex] = countForThisBin * float(groupIndex);
+    
+    memoryBarrierShared();
+    barrier();
+    
+    for(uint i = 256 >> 1; i > 0; i >>= 1) {
+        if(groupIndex < i) {
+            HistogramShared[groupIndex] += HistogramShared[groupIndex + i];
+        }
+        memoryBarrierShared();
+        barrier();
+    }
+    
+    if(groupIndex == 0) {
+        float weightedLogAverage = (HistogramShared[0] / max(float(pixelCount) - countForThisBin, 1.0)) - 1.0;
+        float weightedAverageLuminance = exp2((weightedLogAverage / 254.0) * logLuminanceRange + minLogLuminance);
+        float luminanceLastFrame = imageLoad(LuminanceOutput, ivec2(0, 0)).r;
+        float adaptedLuminance = luminanceLastFrame + (weightedAverageLuminance - luminanceLastFrame) * (1.0 - exp(-timeDelta * tau));
+        imageStore(LuminanceOutput, ivec2(0, 0), vec4(adaptedLuminance));
+    }
+}

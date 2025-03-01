@@ -33,6 +33,8 @@ void GraphicsManager::loadResources()
 	loadShader("src/Shaders/motionblur.vert", "src/Shaders/motionblur.frag", "MotionBlur");
 	loadShader("src/Shaders/taa.vert", "src/Shaders/taa.frag", "TAA");
 	loadShader("src/Shaders/bloomextract.vert", "src/Shaders/bloomextract.frag", "BloomExtract");
+	loadShader("src/Shaders/luminance.comp", "Luminance");
+	loadShader("src/Shaders/adaptation.comp", "Adaptation");
     //This is needed to create a cubemap texture from an hdr
 	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps
@@ -103,6 +105,28 @@ std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPat
 
     // Load and compile shader
     auto shader = Shader::createShader(vertexPath, fragmentPath, geometryPath);
+    if (shader)
+    {
+        shader_map_.emplace(name, shader);
+    }
+    else
+    {
+        std::cerr << "Failed to load shader: " << name << std::endl;
+    }
+    return shader;
+}
+
+std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& computePath, const std::string& name)
+{
+    // Check if shader already loaded
+    auto it = shader_map_.find(name);
+    if (it != shader_map_.end())
+    {
+        return it->second;
+    }
+
+    // Load and compile shader
+    auto shader = Shader::createShader(computePath);
     if (shader)
     {
         shader_map_.emplace(name, shader);

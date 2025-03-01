@@ -11,6 +11,8 @@ public:
 
     virtual void use() const = 0;
 
+    virtual void dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ) const = 0;
+
     virtual void setBool(const std::string& name, bool value) const = 0;
 
     virtual void setInt(const std::string& name, int value) const = 0;
@@ -33,4 +35,5 @@ public:
 
 	static std::shared_ptr<Shader> createShader(const std::string& vertexPath, const std::string& fragmentPath);
 	static std::shared_ptr<Shader> createShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
+	static std::shared_ptr<Shader> createShader(const std::string& computePath);
 };

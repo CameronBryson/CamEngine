@@ -12,3 +12,8 @@ std::shared_ptr<Shader> Shader::createShader(const std::string& vertexPath, cons
 {
 	return std::make_shared<OpenGLShader>(vertexPath, fragmentPath, geometryPath);
 }
+
+std::shared_ptr<Shader> Shader::createShader(const std::string& computePath)
+{
+	return std::make_shared<OpenGLShader>(computePath);
+}

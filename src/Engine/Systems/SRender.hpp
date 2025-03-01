@@ -8,8 +8,7 @@
 #include <FrameBuffer.hpp>
 #include <Texture2D.hpp>
 #include "Mesh.hpp"
-template<typename T>
-class SparseSet;
+#include "ShaderStorageBuffer.hpp"
 class BaseScene;
 class Shader;
 struct RenderItem {
@@ -32,7 +31,7 @@ public:
     // Core system functions
     void init();
     void lateInit();
-    void render();
+    void render(float dt);
     void shutdown();
 
 private:
@@ -55,7 +54,7 @@ private:
     void geometryPass();
     void ssaoPass();
     void lightingPass();
-    void postProcessPass();
+    void postProcessPass(float dt);
 
     // Shadow mapping
     void renderDirectionalShadows(const LightData& lightData);
@@ -68,6 +67,7 @@ private:
     void taaPass();
 	void motionBlurPass();
 	void fxaaPass();
+	void autoExposurePass(float dt);
     // Resource binding
     void bindSkyboxResources(std::shared_ptr<Shader>& shader);
     void unbindSkyboxResources();
@@ -88,6 +88,8 @@ private:
     // Uniform buffers
     std::shared_ptr<UniformBuffer> mCameraUBO;
     std::shared_ptr<UniformBuffer> mLightUBO;
+	std::shared_ptr<UniformBuffer> mLuminanceHistogramUBO;
+	std::shared_ptr<UniformBuffer> mAdaptationDataUBO;
 
     // Framebuffers
     std::shared_ptr<FrameBuffer> mGBuffer;
@@ -103,9 +105,14 @@ private:
 	std::shared_ptr<FrameBuffer> mTAAPreviousFrameBuffer;
 
 
+    std::shared_ptr<Texture2D> mAdaptedLuminance;
+    std::shared_ptr<ShaderStorageBuffer> mLuminanceSSBO;
+
+
+
     // Shadow mapping settings
-    const int mShadowMapWidth = 512;
-    const int mShadowMapHeight = 512;
+    const int mShadowMapWidth = 1024;
+    const int mShadowMapHeight = 1024;
     bool mEnableShadows = true;
     float nearPlane = 1.0f;
     float farPlane = 25.0f;
@@ -113,17 +120,21 @@ private:
     // Post-processing settings
     float mExposure = 1.0f;
     bool mHDR = true;
+    bool mACES = true;
+    float mContrast = 1.0f;
+    float mSaturation = 1.0f;
+    float mBrightness = 0.0f;
     bool bloomEnabled = true;
 	bool ssaoEnabled = true;
-    float bloomThreshold = 1.0f;
-    float bloomStrength = 1.0f;
+    float bloomThreshold = 0.9f;
+    float bloomStrength = 0.8f;
     int bloomBlurPasses = 6;
 	bool mFXAAEnabled = true;
     float mFXAAEdgeThreshholdMin = 0.1f;
 	float mFXAAEdgeThreshholdMax = 0.2f;
 	float mFXAASubPixelQuality = 0.75f;
 	bool mMotionBlurEnabled = true;
-	float mMotionBlurStrength = 1.0f;
+	float mMotionBlurStrength = 2.0f;
 	int mMotionBlurSamples = 8;
 	bool mTAAEnabled = true;
     bool mShowEdges = false;
@@ -138,7 +149,15 @@ private:
     glm::vec2 mPreviousJitter{0.0f};
     float mJitterScale = 0.4f;
     bool mFirstFrame = true;
-    
+    bool mCurrentLuminanceIndex = 0;
+
+    bool mAutoExposureEnabled = true;
+	float mAdaptationSpeed = 1.0f;
+	float mMinLogLuminance = -4.5f;
+	float mLogLuminanceRange = 8.0f;
+	float mMinAdaptedLuminance = 0.05f;
+	float mMaxAdaptedLuminance = 4.0f;
+	float mTargetMiddleGray = 0.18f;
 
     // SSAO data
     std::shared_ptr<FrameBuffer> mSSAOBuffer;
@@ -150,8 +169,8 @@ private:
     static const int SSAO_KERNEL_SIZE = 16;
     static const int SSAO_NOISE_SIZE = 4;
     float mSSAORadius = 0.1f;
-    float mSSAOBias = 0.05f;
-    float mSSAOPower = 0.5f;
+    float mSSAOBias = 0.125f;
+    float mSSAOPower = 0.8f;
     float mSSAOMinDistance = 0.01f;
     float mSSAOMaxDistance = 0.5f;
 

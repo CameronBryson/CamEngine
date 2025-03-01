@@ -13,7 +13,7 @@ public:
 	static void firstInit();
 	static void init();
 	static void update(float dt);
-	static void render();
+	static void render(float dt);
 	static void shutdown();
 	static void finalShutdown();
 	static void gameLoop();

@@ -25,7 +25,7 @@ std::unique_ptr<AudioManager> GameManager::mAudioManager = nullptr;
 std::unique_ptr<GraphicsManager> GameManager::mGraphicsManager = nullptr;
 void GameManager::firstInit()
 {
-	OpenGlUtil::init();
+	gl::init();
 	//OpenALUtil::init();
 	//mAudioManager = std::make_unique<AudioManager>();
 	mGraphicsManager = std::make_unique<GraphicsManager>();
@@ -44,9 +44,9 @@ void GameManager::update(float dt)
     mCurrentScene->lateUpdate(dt);
 }
 
-void GameManager::render()
+void GameManager::render(float dt)
 {
-    mCurrentScene->render();
+    mCurrentScene->render(dt);
 	mCurrentScene->lateRender();
 }
 
@@ -63,7 +63,7 @@ void GameManager::finalShutdown()
 	//mAudioManager->unloadResources();
 	mGraphicsManager->unloadResources();
 	//OpenALUtil::shutdown();
-	OpenGlUtil::shutdown();
+	gl::shutdown();
 }
 
 
@@ -122,15 +122,15 @@ void GameManager::gameLoop()
 
     while (!glfwWindowShouldClose(mGameWindow))
     {
-        OpenGlUtil::beginFrame();
+        gl::beginFrame();
         auto loopStart = std::chrono::high_resolution_clock::now();
         double deltaTime = std::chrono::duration<double>(loopStart - previousTime).count();
         previousTime = loopStart;
 
         glfwPollEvents();
         update(static_cast<float>(deltaTime));
-        render();
-        OpenGlUtil::endFrame();
+        render(static_cast<float>(deltaTime));
+        gl::endFrame();
         // End frame
         glfwSwapBuffers(mGameWindow);
 

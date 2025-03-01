@@ -17,7 +17,7 @@ public:
 	virtual void lateInit();
 	virtual void update(float dt);
 	virtual void lateUpdate(float dt);
-	virtual void render();
+	virtual void render(float dt);
 	virtual void lateRender();
 	virtual void shutdown();
 	virtual void lateShutdown();

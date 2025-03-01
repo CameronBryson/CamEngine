@@ -10,7 +10,7 @@ public:
 	void lateInit() override;
 	void update(float dt) override;
 	void lateUpdate(float dt) override;
-	void render() override;
+	void render(float dt) override;
 	void lateRender() override;
 	void shutdown() override;
 	void lateShutdown() override;

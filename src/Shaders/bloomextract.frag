@@ -18,17 +18,6 @@ void main()
     // Calculate brightness using luminance
     float brightness = getLuminance(hdrColor);
     
-    // Apply soft threshold
-    float softness = 0.1; // Controls the smoothness of the threshold cutoff
-    float knee = threshold + softness;
-    float soft = brightness - threshold;
-    soft = clamp(soft, 0.0, softness);
-    soft = soft * soft * (3.0 - 2.0 * soft) / softness; // Smooth interpolation
-    
-    // If brightness is higher than threshold, output the color
-    vec3 brightColor = mix(vec3(0.0), hdrColor, 
-                          brightness < threshold ? 0.0 : 
-                          brightness > knee ? 1.0 : soft);
-    
+    vec3 brightColor = (brightness > threshold) ? hdrColor : vec3(0.0);
     FragColor = vec4(brightColor, 1.0);
 }

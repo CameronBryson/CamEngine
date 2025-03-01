@@ -45,6 +45,7 @@ namespace PostProcessSlots {
     constexpr unsigned int BLOOM = 4;         // Reuses NORMAL
     constexpr unsigned int DEPTH = 5;         // Reuses METALLIC
     constexpr unsigned int TAA_HISTORY = 6;   // Reuses ROUGHNESS
+	constexpr unsigned int LUMINANCE = 12;    
 }
 
 

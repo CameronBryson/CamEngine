@@ -36,6 +36,7 @@ public:
     // Shader management
     std::shared_ptr<Shader> loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& name);
 	std::shared_ptr<Shader> loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath, const std::string& name);
+	std::shared_ptr<Shader> loadShader(const std::string& computePath, const std::string& name);
     std::shared_ptr<Shader> getShader(const std::string& name);
 
     // Texture management

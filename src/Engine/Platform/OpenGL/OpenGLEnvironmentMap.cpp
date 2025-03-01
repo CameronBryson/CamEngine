@@ -120,7 +120,7 @@ void OpenGLEnvironmentMap::generateIrradianceMap()
 
         fbo->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        OpenGlUtil::drawCube();
+        gl::drawCube();
     }
 
     fbo->unbind();
@@ -189,7 +189,7 @@ void OpenGLEnvironmentMap::generatePrefilterMap()
             fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
 
             fbo->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            OpenGlUtil::drawCube();
+            gl::drawCube();
         }
 
         fbo->unbind();
@@ -228,7 +228,7 @@ void OpenGLEnvironmentMap::generateBRDFLUT()
     // Clear + draw
     fbo->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     mBRDFShader->use();
-    OpenGlUtil::drawQuad();
+    gl::drawQuad();
 
     fbo->unbind();
 }
@@ -270,6 +270,6 @@ void OpenGLEnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
     skyboxShader->use();
 	skyboxShader->setInt("skybox", IBLSlots::SKYBOX);
     mSkyboxCubemap->bind(IBLSlots::SKYBOX);
-    OpenGlUtil::drawCube();
+    gl::drawCube();
     glDepthFunc(GL_LESS);
 }

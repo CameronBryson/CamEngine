@@ -9,6 +9,10 @@ const unsigned int MAX_DIRECTIONAL_LIGHTS = 10;
 
 const unsigned int CAMERA_BINDING = 0;
 const unsigned int LIGHT_BINDING = 1;
+const unsigned int LUMINANCE_HISTOGRAM_BINDING = 2;
+const unsigned int LUMINANCE_HISTOGRAM_AVERAGE_BINDING = 3;
+const unsigned int LUMINANCE_SSBO_BINDING = 0;
+
 
 struct CameraData
 {
@@ -71,4 +75,19 @@ struct LightData
     PointLightData       pointLights[MAX_POINT_LIGHTS];
     SpotLightData        spotLights[MAX_SPOT_LIGHTS];
     DirectionalLightData directionalLights[MAX_DIRECTIONAL_LIGHTS];
+};
+struct LuminanceHistogramData
+{
+    uint32_t inputWidth;
+    uint32_t inputHeight;
+    float minLogLuminance;
+    float oneOverLogLuminanceRange;
+};
+struct LuminanceHistogramAverageData
+{
+    uint32_t pixelCount;
+    float minLogLuminance;
+    float logLuminanceRange;
+    float timeDelta;
+    float tau;
 };

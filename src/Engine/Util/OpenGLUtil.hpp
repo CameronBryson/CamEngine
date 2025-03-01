@@ -5,6 +5,8 @@
 #include <iostream>
 #include <glm/fwd.hpp>
 #include <unordered_map>
+
+// Macro definitions
 #define GL_CHECK(stmt)                      \
     do {                                    \
         stmt;                               \
@@ -15,48 +17,43 @@
                       << " for call: " << #stmt << std::endl;       \
         }                                  \
     } while (0)
-class OpenGlUtil {
-public:
-    // Add perfmarker management
-    class GPUTimer {
 
-    public:
-        class ScopedTimer {
-        public:
-            explicit ScopedTimer(const char* name) : mName(name) {
-#ifdef _DEBUG
-                GPUTimer::begin(name);
-#endif
-            }
+namespace gl {
 
-            ~ScopedTimer() {
-#ifdef _DEBUG
-                GPUTimer::end(mName);
-#endif
-            }
+    // Forward declarations
+    struct TimerQuery;
+    class ScopedLabel;
+    class ScopedTimer;
 
-        private:
-            const char* mName;
-        };
-        static void begin(const char* name);
-        static void end(const char* name);
-        static void reset();
-        static void printResults();
-        static void enableProfiling(bool enable) { sProfilingEnabled = enable; }
-        static bool isProfilingEnabled() { return sProfilingEnabled; }
-        static float getLastDuration(const char* name) {
-#ifdef _DEBUG
-            if (!sProfilingEnabled) return 0.0f;
-            auto it = mTimerQueries.find(name);
-            if (it != mTimerQueries.end()) {
-                return it->second.lastDuration;
-            }
-#endif
-            return 0.0f;
-        }
+    // Core OpenGL utility functions
+    void init();
+    void shutdown();
+    void beginFrame();
+    void endFrame();
+    void clearBackground();
+    void drawQuad();
+    void drawCube();
+    void checkGLState();
+    void checkTextureState(unsigned int unit);
+    void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
+    // Debug features
+    void enableDebugOutput(bool enable);
+    bool isDebugOutputEnabled();
+    void setBreakOnError(bool enable);
+    void labelObject(GLenum type, GLuint object, const char* label);
+    void validateState(const char* location);
 
-    private:
+    // GPU timing functionality
+    namespace timer {
+        void begin(const char* name);
+        void end(const char* name);
+        void reset();
+        void printResults();
+        void enableProfiling(bool enable);
+        bool isProfilingEnabled();
+        float getLastDuration(const char* name);
+
         struct TimerQuery {
             GLuint startQuery;
             GLuint endQuery;
@@ -67,59 +64,45 @@ public:
             float totalDuration;
             uint32_t sampleCount;
         };
-        static std::unordered_map<std::string, TimerQuery> mTimerQueries;
-        static bool sProfilingEnabled;
+    }
+    
+
+    // Nested class definitions
+    class ScopedTimer {
+    public:
+        explicit ScopedTimer(const char* name);
+        ~ScopedTimer();
+
+    private:
+        const char* mName;
     };
 
     class ScopedLabel {
     public:
-        explicit ScopedLabel(const char* label) {
-#ifdef _DEBUG
-            if (GLAD_GL_VERSION_4_3) {
-                glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, label);
-            }
-#endif
-        }
-        ~ScopedLabel() {
-#ifdef _DEBUG
-            if (GLAD_GL_VERSION_4_3) {
-                glPopDebugGroup();
-            }
-#endif
-        }
+        explicit ScopedLabel(const char* label);
+        ~ScopedLabel();
     };
 
-    static void init();
-    static void shutdown();
-    static void beginFrame();
-    static void endFrame();
-    static void clearBackground();
-    static void drawQuad();
-    static void drawCube();
-    static void checkGLState();
-    static void checkTextureState(unsigned int unit);
-    static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+    // Private/internal variables and functions
+    namespace detail {
+        extern bool g_GLDebugOutput;
+        extern bool g_BreakOnError;
+        extern std::unordered_map<std::string, timer::TimerQuery> g_TimerQueries;
+        extern bool g_ProfilingEnabled;
 
-    // Debug features
-    static void enableDebugOutput(bool enable);
-    static bool isDebugOutputEnabled() { return sGLDebugOutput; }
-    static void setBreakOnError(bool enable) { sBreakOnError = enable; }
-    static void labelObject(GLenum type, GLuint object, const char* label);
-    static void validateState(const char* location);
+        void APIENTRY debugMessageCallback(
+            GLenum source, GLenum type, GLuint id, GLenum severity, 
+            GLsizei length, const GLchar* message, const void* userParam);
+    }
 
-private:
-    static bool sGLDebugOutput;
-    static bool sBreakOnError;
-    static void APIENTRY debugMessageCallback(GLenum source, GLenum type, GLuint id,
-                                              GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
-};
+} // namespace gl
 
-// Debug macros
+  // Debug macros
 #ifdef _DEBUG
-#define GL_SCOPED_MARKER(name) OpenGlUtil::ScopedLabel scopedLabel##__LINE__(name)
-#define GL_SCOPED_TIMER(name) OpenGlUtil::GPUTimer::ScopedTimer scopedTimer##__LINE__(name)
-#define GL_LABEL_OBJECT(type, obj, name) OpenGlUtil::labelObject(type, obj, name)
-#define GL_VALIDATE_STATE() OpenGlUtil::validateState(__FUNCTION__)
+#define GL_SCOPED_MARKER(name) gl::ScopedLabel scopedLabel##__LINE__(name)
+#define GL_SCOPED_TIMER(name) gl::ScopedTimer scopedTimer##__LINE__(name)
+#define GL_LABEL_OBJECT(type, obj, name) gl::labelObject(type, obj, name)
+#define GL_VALIDATE_STATE() gl::validateState(__FUNCTION__)
 #else
 #define GL_SCOPED_MARKER(name)
 #define GL_SCOPED_TIMER(name)

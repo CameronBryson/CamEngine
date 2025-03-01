@@ -26,9 +26,9 @@ void BaseScene::update(float dt)
 void BaseScene::lateUpdate(float dt)
 {
 }
-void BaseScene::render()
+void BaseScene::render(float dt)
 {
-	mRenderSystem.render();
+	mRenderSystem.render(dt);
 }
 
 void BaseScene::lateRender()

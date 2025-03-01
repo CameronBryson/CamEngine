@@ -18,6 +18,7 @@ enum class FrameBufferTextureFormat
 {
     None = 0,
     R16F,
+    R32F,
     RG16F,
     RGBA8,
     RGBA16F,
