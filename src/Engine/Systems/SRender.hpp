@@ -129,6 +129,9 @@ private:
     float bloomThreshold = 0.9f;
     float bloomStrength = 0.8f;
     int bloomBlurPasses = 6;
+    float mBloomScatteringCoefficient = 1.0f;  
+    int mBloomKernelSize = 15;                
+    float mBloomSoftThreshold = 0.2f;   
 	bool mFXAAEnabled = true;
     float mFXAAEdgeThreshholdMin = 0.1f;
 	float mFXAAEdgeThreshholdMax = 0.2f;

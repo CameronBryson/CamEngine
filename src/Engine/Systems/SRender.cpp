@@ -992,34 +992,63 @@ void SRender::renderPointShadows(const LightData& lightData)
 
 void SRender::bloomPass()
 {
-	auto bloomExtractShader = GameManager::mGraphicsManager->getShader("BloomExtract");
-	bloomExtractShader->use();
-	mBloomFrameBuffer->bind();
-	mBloomFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
-	mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
-	bloomExtractShader->setInt("hdrBuffer", PostProcessSlots::HDR);
-	bloomExtractShader->setFloat("threshold", bloomThreshold);
-	gl::drawQuad();
+    if (!bloomEnabled)
+        return;
+
+    // 1. Extract bright parts of the scene with the physically-based approach
+    auto bloomExtractShader = GameManager::mGraphicsManager->getShader("BloomExtract");
+    bloomExtractShader->use();
+
+    mBloomFrameBuffer->bind();
+    mBloomFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+    mBloomFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
+
+    // Bind HDR buffer as input
+    mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+    bloomExtractShader->setInt("hdrBuffer", PostProcessSlots::HDR);
+
+    // Bind G-Buffer textures for physically-based extraction
+    mGBuffer->getColorAttachment(1)->bind(GBufferSlots::NORMAL_METALLIC);  // Normal + Metallic
+    bloomExtractShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
+
+    mGBuffer->getColorAttachment(2)->bind(GBufferSlots::ROUGH_EMISSIVE);   // Roughness + Emissive
+    bloomExtractShader->setInt("gRoughEmissive", GBufferSlots::ROUGH_EMISSIVE);
+
+    // Set extraction parameters
+    bloomExtractShader->setFloat("threshold", bloomThreshold);
+    bloomExtractShader->setFloat("softThreshold", mBloomSoftThreshold);
+
+    gl::drawQuad();
+
+    // Unbind textures before moving to blur stage
     mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
-	mBloomFrameBuffer->unbind();
+    mGBuffer->getColorAttachment(1)->unbind(GBufferSlots::NORMAL_METALLIC);
+    mGBuffer->getColorAttachment(2)->unbind(GBufferSlots::ROUGH_EMISSIVE);
+    mBloomFrameBuffer->unbind();
 
-
+    // 2. Apply physically-based blur to the extracted bright areas
     auto blurShader = GameManager::mGraphicsManager->getShader("BloomBlur");
     blurShader->use();
+
+    // Set common blur parameters
+    blurShader->setFloat("scatteringCoefficient", mBloomScatteringCoefficient);
+    blurShader->setInt("kernelSize", mBloomKernelSize);
 
     bool horizontal = true;
     bool firstIteration = true;
 
-    // Perform multiple Gaussian blur passes, alternating ping-pong FBO
+    // Perform multiple blur passes, alternating ping-pong FBO
     for (int i = 0; i < bloomBlurPasses; i++)
     {
         mPingPongFBO[horizontal]->bind();
         mPingPongFBO[horizontal]->setViewport(0, 0, settings::window_width, settings::window_height);
+        mPingPongFBO[horizontal]->clear(GL_COLOR_BUFFER_BIT);
+
         blurShader->setBool("horizontal", horizontal);
 
         if (firstIteration)
         {
-			mBloomFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
+            mBloomFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
             blurShader->setInt("image", PostProcessSlots::BLOOM);
             firstIteration = false;
         }
@@ -1030,11 +1059,20 @@ void SRender::bloomPass()
         }
 
         gl::drawQuad();
+
+        // Unbind texture
+        if (firstIteration)
+            mBloomFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::BLOOM);
+        else
+            mPingPongFBO[!horizontal]->getColorAttachment(0)->unbind(PostProcessSlots::BLOOM);
+
         horizontal = !horizontal;
     }
 
     mPingPongFBO[!horizontal]->unbind();
 }
+
+
 
 void SRender::hdrPass()
 {
@@ -1082,9 +1120,8 @@ void SRender::hdrPass()
     hdrShader->setInt("hdrBuffer", PostProcessSlots::HDR);
 
     // Bloom color
-	//this should be mPingPongFBO[!horizontal], need to fix
-    mPingPongFBO[0]->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
-
+    int finalPingPongIndex = (bloomBlurPasses % 2 == 0) ? 1 : 0;
+    mPingPongFBO[finalPingPongIndex]->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
     hdrShader->setInt("bloomBuffer", PostProcessSlots::BLOOM);
 
     gl::drawQuad();
@@ -1404,6 +1441,9 @@ void SRender::drawImGui()
             ImGui::SliderFloat("Bloom Threshold", &bloomThreshold, 0.0f, 1.0f);
             ImGui::SliderFloat("Bloom Strength", &bloomStrength, 0.0f, 2.0f);
             ImGui::SliderInt("Blur Passes", &bloomBlurPasses, 1, 20);
+            ImGui::SliderFloat("Soft Threshold", &mBloomSoftThreshold, 0.0f, 1.0f, "%.2f");
+            ImGui::SliderFloat("Scattering Coefficient", &mBloomScatteringCoefficient, 0.1f, 10.0f, "%.1f");
+            ImGui::SliderInt("Kernel Size", &mBloomKernelSize, 5, 31);
         }
 
         // SSAO Settings
