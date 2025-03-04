@@ -35,6 +35,7 @@ void GraphicsManager::loadResources()
 	loadShader("src/Shaders/bloomextract.vert", "src/Shaders/bloomextract.frag", "BloomExtract");
 	loadShader("src/Shaders/luminance.comp", "Luminance");
 	loadShader("src/Shaders/adaptation.comp", "Adaptation");
+	loadShader("src/Shaders/ssr.vert", "src/Shaders/ssr.frag", "SSR");
     //This is needed to create a cubemap texture from an hdr
 	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps
@@ -45,11 +46,11 @@ void GraphicsManager::loadResources()
 	auto brdfShader = loadShader("src/Shaders/brdf.vert", "src/Shaders/brdf.frag", "brdf");
 
     //loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
-	loadModel(engine_util::buildPath("assets/Sponza.gltf"), "Sponza");
+	loadModel(engine_util::buildPath("assets/Sponza/Sponza.gltf"), "Sponza");
 	//loadModel(engine_util::buildPath("assets/ABeautifulGame.gltf"), "Chess");
 	//loadModel(engine_util::buildPath("assets/scene.gltf"), "Scene");
 
-    loadEnvironmentMap("default", engine_util::buildPath("assets/puresky.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    loadEnvironmentMap("default", engine_util::buildPath("assets/night.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
     
 
 
@@ -465,9 +466,16 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
     //material->setShader(getShader("PBR"));
 
     // Base color/albedo
-    aiColor4D albedoColor;
-    if (AI_SUCCESS == mat->Get(AI_MATKEY_BASE_COLOR, albedoColor)) {
-        material->setAlbedo(glm::vec4(albedoColor.r, albedoColor.g, albedoColor.b, albedoColor.a));
+    aiColor4D baseColor;
+    if (AI_SUCCESS == mat->Get(AI_MATKEY_BASE_COLOR, baseColor)) {
+        material->setAlbedo(glm::vec4(baseColor.r, baseColor.g, baseColor.b, baseColor.a));
+    }
+    else {
+        // Fallback to legacy diffuse color
+        aiColor4D diffuseColor;
+        if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor)) {
+            material->setAlbedo(glm::vec4(diffuseColor.r, diffuseColor.g, diffuseColor.b, diffuseColor.a));
+        }
     }
 
     // Metallic factor
@@ -506,11 +514,17 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
         material->setDisplacementScale(displacementScale);
     }
 
+	float reflectivity = 0.2f;
+    if (AI_SUCCESS == mat->Get(AI_MATKEY_REFLECTIVITY, reflectivity))
+    {
+		material->setReflectivity(reflectivity);
+    }
+
     // Load textures
     auto albedoTextures = loadMaterialTextures(mat, aiTextureType_BASE_COLOR, directory, scene);
     if (!albedoTextures.empty()) material->setAlbedoTexture(albedoTextures[0]);
 
-    auto normalTextures = loadMaterialTextures(mat, aiTextureType_NORMAL_CAMERA, directory, scene);
+    auto normalTextures = loadMaterialTextures(mat, aiTextureType_NORMALS, directory, scene);
     if (!normalTextures.empty()) material->setNormalTexture(normalTextures[0]);
 
     auto metallicTextures = loadMaterialTextures(mat, aiTextureType_METALNESS, directory, scene);
@@ -550,6 +564,7 @@ std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
     std::vector<std::shared_ptr<Texture>> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
+
         aiString ai_str;
         mat->GetTexture(type, i, &ai_str);
 

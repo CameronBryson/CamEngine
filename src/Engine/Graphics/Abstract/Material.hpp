@@ -38,7 +38,10 @@ public:
     // Displacement properties
     virtual void setDisplacementScale(float value) = 0;
     virtual float getDisplacementScale() const = 0;
-
+	//Reflective properties
+	virtual void setReflectivity(float value) = 0;
+	virtual float getReflectivity() const = 0;
+    
     // Textures
     virtual void setAlbedoTexture(std::shared_ptr<Texture> texture) = 0;
     virtual std::shared_ptr<Texture> getAlbedoTexture() const = 0;

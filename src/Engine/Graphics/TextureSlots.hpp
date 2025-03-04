@@ -36,7 +36,7 @@ namespace GBufferSlots {
     constexpr unsigned int NORMAL_METALLIC = 4;  // Reuses NORMAL
     constexpr unsigned int ROUGH_EMISSIVE = 5;   // Reuses METALLIC
     constexpr unsigned int DEPTH = 6;            // Reuses ROUGHNESS
-    constexpr unsigned int VELOCITY = 7;         // Reuses AO
+    constexpr unsigned int VELOCITY_REFLECTIVE = 7;         // Reuses AO
 }
 
 

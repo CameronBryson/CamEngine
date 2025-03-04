@@ -42,6 +42,10 @@ public:
     void setDisplacementScale(float value) override { displacementScale = value; }
     float getDisplacementScale() const override { return displacementScale; }
 
+	//Reflective properties
+	void setReflectivity(float value) override { reflectivity = value; }
+	float getReflectivity() const override { return reflectivity; }
+
     // Textures
     void setAlbedoTexture(std::shared_ptr<Texture> texture) override { albedoTexture = texture; }
     std::shared_ptr<Texture> getAlbedoTexture() const override { return albedoTexture; }
@@ -71,6 +75,7 @@ private:
     glm::vec3 emissiveColor = glm::vec3(0.0f);
     float emissiveIntensity = 0.0f;
     float displacementScale = 0.1f;
+	float reflectivity = 0.2f;
     std::string mName;
 
     std::shared_ptr<Texture> albedoTexture = nullptr;

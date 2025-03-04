@@ -56,6 +56,7 @@ private:
     void lightingPass();
     void postProcessPass(float dt);
 
+
     // Shadow mapping
     void renderDirectionalShadows(const LightData& lightData);
     void renderSpotShadows(const LightData& lightData);
@@ -68,6 +69,7 @@ private:
 	void motionBlurPass();
 	void fxaaPass();
 	void autoExposurePass(float dt);
+    void ssrPass();
     // Resource binding
     void bindSkyboxResources(std::shared_ptr<Shader>& shader);
     void unbindSkyboxResources();
@@ -103,6 +105,8 @@ private:
 	std::shared_ptr<FrameBuffer> mMotionBlurFrameBuffer;
 	std::shared_ptr<FrameBuffer> mTAACurrentFrameBuffer;
 	std::shared_ptr<FrameBuffer> mTAAPreviousFrameBuffer;
+    std::shared_ptr<FrameBuffer> mSSRBuffer;
+    std::shared_ptr<FrameBuffer> mSSRBlurBuffer;
 
 
     std::shared_ptr<Texture2D> mAdaptedLuminance;
@@ -186,4 +190,15 @@ private:
 	int mCulledMeshes = 0;
     std::vector<RenderItem> mOpaqueRenderList;
     std::vector<RenderItem> mTransparentRenderList;
+
+    //SSR
+	bool mSSREnabled = false;
+    float mSSRMaxDistance = 100.0f;
+	float mSSRResolution = 0.3f;
+	float mSSRThickness = 0.5f;
+    int mSSRSteps = 5.0f;
+
+
+    bool normalMapping = true;
+
 };

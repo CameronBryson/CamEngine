@@ -5,7 +5,7 @@ precision highp float;
 layout (location = 0) out vec4 gAlbedoAO;      // RGB: Albedo, A: Ambient Occlusion
 layout (location = 1) out vec4 gNormalMetallic; // RGB: World space normal, A: Metallic
 layout (location = 2) out vec4 gRoughEmissive;  // R: Roughness, GBA: Emissive
-layout (location = 3) out vec2 gVelocity; // RG: Screen-space Velocity
+layout (location = 3) out vec4 gVelocityReflective; // RG: Screen-space Velocity, B Reflective , A Unused
 
 // Inputs from vertex shader
 layout (location = 0) in vec2 TexCoord;
@@ -43,20 +43,33 @@ struct Material {
     vec3  emissiveColor;
     float emissiveIntensity;
     float displacementScale;
+    float reflectivity;
 };
 
 uniform Material material;
+uniform bool normalmapping;
 
-// Helper functions from your PBR shader
 vec3 getNormalFromMap()
 {
-    if(material.hasNormalMap) {
-        vec3 tNormal = texture(material.normalMap, TexCoord).rgb;
-        tNormal = tNormal * 2.0 - 1.0;
-        return normalize(TBN * tNormal);
+    if(material.hasNormalMap && normalmapping) {
+        // Sample normal from texture
+        vec3 tangentNormal = texture(material.normalMap, TexCoord).rgb;
+        
+        // Transform from [0,1] to [-1,1] range
+        //tangentNormal = normalize(tangentNormal * 2.0 - 1.0);
+        //tangentNormal.y = -tangentNormal.y;
+        
+        // Transform normal from tangent to world space using TBN matrix
+        vec3 worldNormal = normalize(TBN * tangentNormal);
+        return worldNormal;
     }
+    
+    // If no normal map, return the interpolated vertex normal
     return normalize(TBN[2]);
 }
+
+
+
 
 void main()
 {
@@ -121,6 +134,8 @@ void main()
     {
         velocity = vec2(0.0);
     }
-    gVelocity = velocity;
-   
+    float smoothness = 1.0 - roughness;
+    float reflectivity = mix(material.reflectivity, 1.0, metallic) * smoothness * smoothness;
+
+    gVelocityReflective = vec4(velocity, reflectivity,0);
 }

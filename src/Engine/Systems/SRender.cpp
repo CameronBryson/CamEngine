@@ -87,12 +87,11 @@ void SRender::render(float dt)
         GL_SCOPED_TIMER("G-Buffer");
         geometryPass();
     }
-
-    {
-        GL_SCOPED_MARKER("SSAO Pass");
-        GL_SCOPED_TIMER("SSAO");
-        ssaoPass();
-    }
+	{
+		GL_SCOPED_MARKER("SSAO Pass");
+		GL_SCOPED_TIMER("SSAO");
+		ssaoPass();
+	}
 
     {
         GL_SCOPED_MARKER("Lighting Pass");
@@ -209,7 +208,7 @@ void SRender::initFramebuffers()
 		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
 		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
 		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
-		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RG16F },
+		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
 		{ FrameBufferAttachmentType::Depth,  FrameBufferTextureFormat::Depth32F }
 	};
 	mGBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, gBufferAttachments);
@@ -271,6 +270,16 @@ void SRender::initFramebuffers()
 		colorAttachment
 	);
 	mTAAPreviousFrameBuffer = FrameBuffer::createFrameBuffer(
+		settings::window_width,
+		settings::window_height,
+		colorAttachment
+	);
+	mSSRBuffer = FrameBuffer::createFrameBuffer(
+		settings::window_width,
+		settings::window_height,
+		colorAttachment
+	);
+	mSSRBlurBuffer = FrameBuffer::createFrameBuffer(
 		settings::window_width,
 		settings::window_height,
 		colorAttachment
@@ -688,6 +697,7 @@ void SRender::geometryPass()
 	mGBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
 	mGBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 });
 	mGBuffer->bind();
+	gBufferShader->setBool("normalmapping", normalMapping);
 
     GL_CHECK(glEnable(GL_DEPTH_TEST));
     GL_CHECK(glDepthFunc(GL_LEQUAL));  // Use LEQUAL to render fragments at same depth
@@ -878,6 +888,11 @@ void SRender::lightingPass()
 
 void SRender::postProcessPass(float dt)
 {
+    {
+		GL_SCOPED_MARKER("SSR Process");
+		GL_SCOPED_TIMER("SSR Process");
+        ssrPass();
+    }
     {
         GL_SCOPED_MARKER("Auto Exposure");
         GL_SCOPED_TIMER("Auto Exposure");
@@ -1160,8 +1175,8 @@ void SRender::taaPass() {
     taaShader->setFloat("blendFactor", mTAABlendFactor);
     taaShader->setVec2("resolution", glm::vec2(settings::window_width, settings::window_height));
 
-    mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY);
-    taaShader->setInt("velocityMap", GBufferSlots::VELOCITY);
+    mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY_REFLECTIVE);
+    taaShader->setInt("velocityReflectiveMap", GBufferSlots::VELOCITY_REFLECTIVE);
 
 	taaShader->setBool("showEdges", mShowEdges);
 	taaShader->setFloat("edgeThreshold", mEdgeBlendThreshold);
@@ -1199,8 +1214,8 @@ void SRender::motionBlurPass()
     motionBlurShader->setInt("colorTexture", PostProcessSlots::HDR);
 
     // Bind velocity buffer from G-Buffer
-    mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY);
-    motionBlurShader->setInt("velocityTexture", GBufferSlots::VELOCITY);
+    mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY_REFLECTIVE);
+    motionBlurShader->setInt("velocityReflectiveTexture", GBufferSlots::VELOCITY_REFLECTIVE);
 
     // Set motion blur parameters
     motionBlurShader->setFloat("blurStrength", mMotionBlurStrength);
@@ -1318,6 +1333,42 @@ void SRender::motionBlurPass()
        mLuminanceSSBO->unbind();
    }
 
+   void SRender::ssrPass()
+   {
+	   auto ssrShader = GameManager::mGraphicsManager->getShader("SSR");
+	   ssrShader->use();
+
+	   mGBuffer->getColorAttachment(1)->bind(GBufferSlots::NORMAL_METALLIC);
+	   ssrShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
+
+	   mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY_REFLECTIVE);
+	   ssrShader->setInt("gVelocityReflective", GBufferSlots::VELOCITY_REFLECTIVE);
+
+	   mGBuffer->getDepthAttachment()->bind(GBufferSlots::DEPTH);
+	   ssrShader->setInt("gDepth", GBufferSlots::DEPTH);
+
+	   mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+	   ssrShader->setInt("gSceneColor", PostProcessSlots::HDR);
+
+	   ssrShader->setFloat("maxDistance", mSSRMaxDistance);
+	   ssrShader->setFloat("resolution", mSSRResolution);
+	   ssrShader->setFloat("thickness", mSSRThickness);
+	   ssrShader->setInt("steps", mSSRSteps);
+
+
+	   mSSRBuffer->bind();
+	   mSSRBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+	   mSSRBuffer->clear(GL_COLOR_BUFFER_BIT);
+       gl::drawQuad();
+	   mSSRBuffer->blitTo(mHDRFrameBuffer,
+						  0, 0, settings::window_width, settings::window_height,
+						  0, 0, settings::window_width, settings::window_height,
+						  GL_COLOR_BUFFER_BIT,
+						  GL_LINEAR);
+	   mSSRBuffer->unbind();
+
+   }
+
 
 
 
@@ -1325,9 +1376,6 @@ void SRender::motionBlurPass()
    
 
 
-// ------------------------------------------------------
-// Resource Binding
-// ------------------------------------------------------
 
 void SRender::bindSkyboxResources(std::shared_ptr<Shader>& shader)
 {
@@ -1371,9 +1419,7 @@ void SRender::bindShadowMaps(std::shared_ptr<Shader>& shader)
     shader->setInt("pointShadowMap", ShadowSlots::POINT);
 }
 
-// ------------------------------------------------------
-// Drawing Helpers
-// ------------------------------------------------------
+
 
 
 
@@ -1622,6 +1668,7 @@ void SRender::drawImGui()
             }
         }
     }
+    
 
     if (ImGui::CollapsingHeader("Scene Objects"))
     {
@@ -1813,7 +1860,17 @@ void SRender::drawImGui()
             mSceneBounds.radius *= 1.1f;
         }
     }
-
+    ImGui::Separator();
+    ImGui::Checkbox("Enable SSR", &mSSREnabled);
+    if (mSSREnabled)
+    {
+        ImGui::SliderFloat("SSR Max Distance", &mSSRMaxDistance, 0.1f, 500.0f);
+        ImGui::SliderFloat("SSR Thickness", &mSSRThickness, 0.01f, 1.0f);
+        ImGui::SliderFloat("SSR Resolution", &mSSRResolution, 0.1f, 1.0f);
+        ImGui::SliderInt("SSR Steps", &mSSRSteps, 1,10);
+    }
+    ImGui::Separator();
+    ImGui::Checkbox("Enable normalmaps", &normalMapping);
     ImGui::End();
     // Performance Statistics Window
     // Performance Statistics Window

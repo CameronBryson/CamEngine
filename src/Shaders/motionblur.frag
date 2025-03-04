@@ -5,13 +5,13 @@ out vec4 FragColor;
 in vec2 TexCoords;
 
 uniform sampler2D colorTexture;    // HDR color buffer
-uniform sampler2D velocityTexture; // Velocity from G-buffer
+uniform sampler2D velocityReflectiveTexture; // Velocity from G-buffer
 uniform float blurStrength = 1.0;  // Adjustable blur strength
 uniform int numSamples = 8;        // Number of samples for the blur
 
 void main()
 {
-    vec2 velocity = texture(velocityTexture, TexCoords).rg;
+    vec2 velocity = texture(velocityReflectiveTexture, TexCoords).rg;
     // Scale velocity by blur strength
     velocity *= blurStrength;
     

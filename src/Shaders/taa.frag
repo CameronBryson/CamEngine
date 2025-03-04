@@ -4,7 +4,7 @@ in vec2 TexCoords;
 
 uniform sampler2D currentFrame;
 uniform sampler2D previousFrame; 
-uniform sampler2D velocityMap;
+uniform sampler2D velocityReflectiveMap;
 uniform float blendFactor;
 uniform vec2 resolution;
 uniform bool showEdges;
@@ -13,7 +13,7 @@ uniform float edgeResponsiveness;
 uniform float minBlend;
 
 vec2 getVelocity(vec2 uv) {
-    return texture(velocityMap, uv).rg;
+    return texture(velocityReflectiveMap, uv).rg;
 }
 
 vec3 sampleCurrentFrame(vec2 uv) {

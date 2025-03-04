@@ -31,6 +31,10 @@ void OpenGLMaterial::bind(std::shared_ptr<Shader> bindShader)
     bindShader->setVec3("material.emissiveColor", emissiveColor);
     bindShader->setFloat("material.emissiveIntensity", emissiveIntensity);
 
+	// Reflective Properties
+	bindShader->setFloat("material.reflectivity", reflectivity);
+
+
     // Displacement Properties
     bindShader->setFloat("material.displacementScale", displacementScale);
 
