@@ -10,6 +10,7 @@
 #include <entt/entity/registry.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include "EngineUtil.hpp"
+#include "GraphicsManager.hpp"
 #include <GameManager.hpp>
 TestScene::TestScene() : BaseScene() {}
 TestScene::~TestScene() {}
@@ -128,6 +129,10 @@ void TestScene::update(float dt) {
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_D)) {
 		mCurrentCamera.Position += mCurrentCamera.Right * finalSpeed * dt;
+	}
+	if (engine_util::isKeyPressed(GLFW_KEY_R))
+	{
+		GameManager::mGraphicsManager->reloadShaders();
 	}
 
 	// Q/E for vertical movement (Unity-like)

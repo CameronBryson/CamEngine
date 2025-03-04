@@ -1871,6 +1871,7 @@ void SRender::drawImGui()
     }
     ImGui::Separator();
     ImGui::Checkbox("Enable normalmaps", &normalMapping);
+	ImGui::Checkbox("Test", &test);
     ImGui::End();
     // Performance Statistics Window
     // Performance Statistics Window

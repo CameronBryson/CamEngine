@@ -141,7 +141,7 @@ private:
 	float mFXAAEdgeThreshholdMax = 0.2f;
 	float mFXAASubPixelQuality = 0.75f;
 	bool mMotionBlurEnabled = true;
-	float mMotionBlurStrength = 2.0f;
+	float mMotionBlurStrength = 1.0f;
 	int mMotionBlurSamples = 8;
 	bool mTAAEnabled = true;
     bool mShowEdges = false;
@@ -200,5 +200,6 @@ private:
 
 
     bool normalMapping = true;
+    bool test = true;
 
 };

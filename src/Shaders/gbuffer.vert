@@ -25,33 +25,29 @@ out mat3 TBN;
 out vec4 ClipPos;
 out vec4 PrevClipPos;
 
-// In gbuffer.vert:
 void main()
 {
+    // Compute world-space position of this vertex
     TexCoord = aTexCoords;
     FragPos = vec3(model * vec4(aPos, 1.0));
     
-    // Modified version to ensure proper handedness
-    mat3 normalMatrix = transpose(inverse(mat3(model)));
+    // Calculate TBN matrix for normal mapping
+    mat3 normalMatrix = transpose(inverse(mat3(model))); 
     vec3 T = normalize(normalMatrix * aTangent);
     vec3 N = normalize(normalMatrix * aNormal);
-    // Re-orthogonalize T with respect to N
-    T = normalize(T - dot(T, N) * N);
-    // Use the input bitangent's direction to ensure correct handedness
     vec3 B = normalize(normalMatrix * aBitangent);
-    // Ensure proper handedness
-    vec3 tangentSpaceNormal = cross(N, T);
-    if (dot(tangentSpaceNormal, B) < 0.0) {
-        T = -T;
-    }
-    B = cross(N, T);
-    TBN = mat3(T, B, N);
-
     
-    // Calculate clip space positions
+    // Re-orthogonalize T with respect to N (Gram-Schmidt process)
+    T = normalize(T - dot(T, N) * N);
+    
+    // Standard TBN for transforming from tangent to world space
+    TBN = mat3(T, B, N);
+    
+    // Calculate clip positions for current and previous frames
     ClipPos = uProjection * uView * vec4(FragPos, 1.0);
     PrevClipPos = uPrevProjection * uPrevView * vec4(FragPos, 1.0);
     gl_Position = ClipPos;
 }
+
 
 

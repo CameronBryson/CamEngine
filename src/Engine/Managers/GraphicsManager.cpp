@@ -63,6 +63,27 @@ void GraphicsManager::unloadResources()
     clear();
 }
 
+void GraphicsManager::reloadShaders()
+{
+    loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
+    loadShader("src/Shaders/shadowmap.vert", "src/Shaders/shadowmap.frag", "ShadowMap");
+    loadShader("src/Shaders/pointshadow.vert", "src/Shaders/pointshadow.frag", "src/Shaders/pointshadow.geom", "PointShadowMap");
+    loadShader("src/Shaders/hdr.vert", "src/Shaders/hdr.frag", "HDR");
+    loadShader("src/Shaders/bloomblur.vert", "src/Shaders/bloomblur.frag", "BloomBlur");
+    loadShader("src/Shaders/gbuffer.vert", "src/Shaders/gbuffer.frag", "GBuffer");
+    loadShader("src/Shaders/depth.vert", "src/Shaders/depth.frag", "Depth");
+    loadShader("src/Shaders/deferred.vert", "src/Shaders/deferred.frag", "Deferred");
+    loadShader("src/Shaders/ssao.vert", "src/Shaders/ssao.frag", "SSAO");
+    loadShader("src/Shaders/ssaoblur.vert", "src/Shaders/ssaoblur.frag", "SSAOBlur");
+    loadShader("src/Shaders/fxaa.vert", "src/Shaders/fxaa.frag", "FXAA");
+    loadShader("src/Shaders/motionblur.vert", "src/Shaders/motionblur.frag", "MotionBlur");
+    loadShader("src/Shaders/taa.vert", "src/Shaders/taa.frag", "TAA");
+    loadShader("src/Shaders/bloomextract.vert", "src/Shaders/bloomextract.frag", "BloomExtract");
+    loadShader("src/Shaders/luminance.comp", "Luminance");
+    loadShader("src/Shaders/adaptation.comp", "Adaptation");
+    loadShader("src/Shaders/ssr.vert", "src/Shaders/ssr.frag", "SSR");
+}
+
 void GraphicsManager::clear()
 {
     shader_map_.clear();
@@ -77,16 +98,17 @@ std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPat
 {
     // Check if shader already loaded
     auto it = shader_map_.find(name);
-    if (it != shader_map_.end())
-    {
-        return it->second;
-    }
+    //if (it != shader_map_.end())
+    //{
+    //    return it->second;
+    //}
 
     // Load and compile shader
     auto shader = Shader::createShader(vertexPath, fragmentPath);
     if (shader)
     {
-        shader_map_.emplace(name, shader);
+        //shader_map_.emplace(name, shader);
+		shader_map_[name] = shader;
     }
     else
     {
@@ -337,7 +359,8 @@ std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& path, const
         aiProcess_GenSmoothNormals |
         aiProcess_OptimizeMeshes |
         aiProcess_ValidateDataStructure |
-        aiProcess_EmbedTextures);
+        aiProcess_EmbedTextures
+        );
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
@@ -525,7 +548,8 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
     if (!albedoTextures.empty()) material->setAlbedoTexture(albedoTextures[0]);
 
     auto normalTextures = loadMaterialTextures(mat, aiTextureType_NORMALS, directory, scene);
-    if (!normalTextures.empty()) material->setNormalTexture(normalTextures[0]);
+    if (!normalTextures.empty())material->setNormalTexture(normalTextures[0]);
+
 
     auto metallicTextures = loadMaterialTextures(mat, aiTextureType_METALNESS, directory, scene);
     if (!metallicTextures.empty()) material->setMetallicTexture(metallicTextures[0]);
@@ -584,6 +608,12 @@ std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
         }
 
         auto texture = loadTexture(full_path, type, scene);
+        // Apply texture parameters based on type and retrieved mapModes
+        if (type == aiTextureType_NORMALS || type == aiTextureType_HEIGHT) 
+        {
+            // Normal maps need special handling
+            texture->setNormalSamplerParameters();
+        }
         if (texture)
         {
             textures.push_back(texture);

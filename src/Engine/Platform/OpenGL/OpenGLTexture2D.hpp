@@ -26,4 +26,5 @@ private:
 	int width = 0;
 	int height = 0;
 	bool isShadowSampler = false;
+	bool isNormalMap = false;
 };

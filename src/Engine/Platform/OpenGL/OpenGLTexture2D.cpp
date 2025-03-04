@@ -127,7 +127,7 @@ OpenGLTexture2D::OpenGLTexture2D(const aiTexture* aiTex)
             else if (nrChannels == 3)
             {
                 format = GL_RGB;
-                internalFormat = GL_SRGB;
+                internalFormat = GL_RGB8;
             }
             else if (nrChannels == 4)
             {
@@ -300,21 +300,23 @@ void OpenGLTexture2D::setShadowSamplerParameters()
 
 void OpenGLTexture2D::setNormalSamplerParameters()
 {
-	bind(31);
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, textureID));
+    bind(31);
 
     // Disable depth comparison mode
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE));
 
-    // Set normal texture parameters
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 
-	unbind(31);
+    unbind(31);
     isShadowSampler = false;
+    isNormalMap = true;
 }
+
+
 
 
 

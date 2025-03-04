@@ -53,18 +53,16 @@ vec3 getNormalFromMap()
 {
     if(material.hasNormalMap && normalmapping) {
         // Sample normal from texture
+
         vec3 tangentNormal = texture(material.normalMap, TexCoord).rgb;
+        tangentNormal = tangentNormal * 2.0f - 1.0f;
+
+        vec3 worldNormal = TBN * tangentNormal;
         
-        // Transform from [0,1] to [-1,1] range
-        //tangentNormal = normalize(tangentNormal * 2.0 - 1.0);
-        //tangentNormal.y = -tangentNormal.y;
-        
-        // Transform normal from tangent to world space using TBN matrix
-        vec3 worldNormal = normalize(TBN * tangentNormal);
-        return worldNormal;
+        // Only normalize once at the end
+        return normalize(worldNormal);
     }
     
-    // If no normal map, return the interpolated vertex normal
     return normalize(TBN[2]);
 }
 
