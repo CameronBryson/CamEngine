@@ -135,5 +135,6 @@ void main()
     float smoothness = 1.0 - roughness;
     float reflectivity = mix(material.reflectivity, 1.0, metallic) * smoothness * smoothness;
 
-    gVelocityReflective = vec4(velocity, reflectivity,0);
+    //reflectivity is purposfully set high to test ssr
+    gVelocityReflective = vec4(velocity, 1.0,0);
 }

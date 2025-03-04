@@ -141,20 +141,20 @@ private:
 	float mFXAAEdgeThreshholdMax = 0.2f;
 	float mFXAASubPixelQuality = 0.75f;
 	bool mMotionBlurEnabled = true;
-	float mMotionBlurStrength = 1.0f;
+	float mMotionBlurStrength = 0.8f;
 	int mMotionBlurSamples = 8;
 	bool mTAAEnabled = true;
     bool mShowEdges = false;
-	float mTAABlendFactor = 0.5f;
+	float mTAABlendFactor = 0.6f;
 	float mEdgeBlendThreshold = 0.1f;
-    float mMinBlendAtEdges = 0.3;
+    float mMinBlendAtEdges = 0.5;
     float mEdgeResponsive = 3.0f;
     static constexpr int HALTON_SAMPLES = 16;
     std::vector<glm::vec2> mHaltonPattern;
     int mJitterIndex = 0;
     glm::vec2 mCurrentJitter{0.0f};
     glm::vec2 mPreviousJitter{0.0f};
-    float mJitterScale = 0.4f;
+    float mJitterScale = 0.3f;
     bool mFirstFrame = true;
     bool mCurrentLuminanceIndex = 0;
 

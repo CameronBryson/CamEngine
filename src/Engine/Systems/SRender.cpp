@@ -1350,6 +1350,7 @@ void SRender::motionBlurPass()
 	   mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
 	   ssrShader->setInt("gSceneColor", PostProcessSlots::HDR);
 
+       ssrShader->setBool("test", test);
 	   ssrShader->setFloat("maxDistance", mSSRMaxDistance);
 	   ssrShader->setFloat("resolution", mSSRResolution);
 	   ssrShader->setFloat("thickness", mSSRThickness);

@@ -46,6 +46,7 @@ void main()
     // Calculate clip positions for current and previous frames
     ClipPos = uProjection * uView * vec4(FragPos, 1.0);
     PrevClipPos = uPrevProjection * uPrevView * vec4(FragPos, 1.0);
+    //gl_Position goes through automatic perspective division
     gl_Position = ClipPos;
 }
 
