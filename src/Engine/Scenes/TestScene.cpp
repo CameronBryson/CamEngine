@@ -17,6 +17,7 @@ TestScene::~TestScene() {}
 void TestScene::init()
 {
 	BaseScene::init();
+
 	edyn::set_gravity(mEnttRegistry, edyn::vector3{ 0, -9.81, 0 });
 	auto controller = mEnttRegistry.create();
 
@@ -64,8 +65,8 @@ void TestScene::init()
 	auto pointLight = mEnttRegistry.create();
 	// Add some ambient light and tone down the intensity
 	glm::vec3 pointAmbient = glm::vec3(0.05);
-	glm::vec3 pointDiffuse = glm::vec3(4);    // Strong but not max diffuse
-	glm::vec3 pointSpecular = glm::vec3(4);   // Full specular
+	glm::vec3 pointDiffuse = glm::vec3(3);    // Strong but not max diffuse
+	glm::vec3 pointSpecular = glm::vec3(3);   // Full specular
 
 	// Adjust attenuation for your scene scale (your chess piece is at -75 units)
 	float constant = 1.0f;
@@ -74,7 +75,7 @@ void TestScene::init()
 
 	 //Position the light higher and further back to better illuminate the chess piece
 	mEnttRegistry.emplace<CPointLight>(pointLight,
-		glm::vec3(-9.5f, 0.5f, 3.0f), // Positioned above and closer to the chess piece
+		glm::vec3(9.0f, -3.0f, -3.5f), // Positioned above and closer to the chess piece
 		pointAmbient, pointDiffuse, pointSpecular,
 		constant, linear, quadratic);
 
@@ -93,7 +94,7 @@ void TestScene::init()
 		constant, linear, quadratic,
 		innerCutoff, outerCutoff);
 
-	glm::vec3 directionalDirection = glm::normalize(glm::vec3(0.0f, -1.0f, -0.2f)); // Angle it slightly
+	glm::vec3 directionalDirection = glm::normalize(glm::vec3(-0.35, -1.0f, -0.2f)); // Angle it slightly
 	glm::vec3 directionalAmbient = glm::vec3(0.0f);
 	glm::vec3 directionalDiffuse = glm::vec3(3.0f);
 	glm::vec3 directionalSpecular = glm::vec3(3.0);
@@ -146,25 +147,25 @@ void TestScene::update(float dt) {
 	float rotationSpeed = 100.0f * dt; // Adjust this value to change rotation speed
 	if (engine_util::isKeyPressed(GLFW_KEY_LEFT)) {
 		mCurrentCamera.Yaw -= rotationSpeed;
-		mCurrentCamera.updateCameraVectors();
+		mCurrentCamera.updateCamera();
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_RIGHT)) {
 		mCurrentCamera.Yaw += rotationSpeed;
-		mCurrentCamera.updateCameraVectors();
+		mCurrentCamera.updateCamera();
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_UP)) {
 		mCurrentCamera.Pitch += rotationSpeed;
 		// Constrain pitch to prevent camera flipping
 		if (mCurrentCamera.Pitch > 89.0f)
 			mCurrentCamera.Pitch = 89.0f;
-		mCurrentCamera.updateCameraVectors();
+		mCurrentCamera.updateCamera();
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_DOWN)) {
 		mCurrentCamera.Pitch -= rotationSpeed;
 		// Constrain pitch to prevent camera flipping
 		if (mCurrentCamera.Pitch < -89.0f)
 			mCurrentCamera.Pitch = -89.0f;
-		mCurrentCamera.updateCameraVectors();
+		mCurrentCamera.updateCamera();
 	}
 	// Handle camera rotation with right mouse button
 	if (engine_util::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
@@ -203,7 +204,7 @@ void TestScene::update(float dt) {
 				mCurrentCamera.Pitch = -89.0f;
 
 			// Update camera vectors based on new angles
-			mCurrentCamera.updateCameraVectors();
+			mCurrentCamera.updateCamera();
 		}
 	}
 	else {

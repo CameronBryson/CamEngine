@@ -8,9 +8,6 @@ uniform sampler2D gDepth;           // Depth from G-buffer
 uniform sampler2D texNoise;         // Random rotation vectors
 
 uniform vec3 samples[64];           // Sample kernel (SSAO_KERNEL_SIZE)
-uniform mat4 projection;
-uniform mat4 view;
-uniform mat4 inverseProjection;     // Now used directly
 
 uniform float radius;               // Maps to mSSAORadius
 uniform float bias;                 // Maps to mSSAOBias
@@ -24,6 +21,18 @@ uniform int kernelSize;
 // Screen-space noise tiling (SSAO_NOISE_SIZE is 4x4)
 const vec2 noiseScale = vec2(resolution.x/noiseSize, resolution.y/noiseSize); 
 
+layout(std140, binding = 0) uniform CameraBlock {
+    vec4 cameraPos;              
+    mat4 view;                  
+    mat4 projection;
+    mat4 viewProjection;
+    mat4 inverseView;
+    mat4 inverseProjection;
+    mat4 inverseViewProjection;
+    mat4 previousView;           
+    mat4 previousProjection;
+    mat4 previousViewProjection;
+};
 // Optimized function using inverseProjection uniform directly
 vec3 reconstructViewPosition(float depth, vec2 texCoords) {
     vec4 clipSpacePosition = vec4(texCoords * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
@@ -52,8 +61,6 @@ void main()
     vec3 bitangent = cross(normal, tangent);
     mat3 TBN = mat3(tangent, bitangent, normal);
     
-    // Calculate occlusion
-        // Calculate occlusion
     // Calculate occlusion
     float occlusion = 0.0;
     for (int i = 0; i < kernelSize; ++i)

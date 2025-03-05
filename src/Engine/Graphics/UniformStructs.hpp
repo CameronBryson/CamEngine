@@ -16,11 +16,16 @@ const unsigned int LUMINANCE_SSBO_BINDING = 0;
 
 struct CameraData
 {
+    glm::vec4 cameraPos;   // Camera position (xyz used, w is padding)
     glm::mat4 view;        // View matrix
     glm::mat4 projection;  // Projection matrix
-    glm::vec4 cameraPos;   // Camera position (xyz used, w is padding)
+	glm::mat4 viewProjection;
+	glm::mat4 inverseView;
+	glm::mat4 inverseProjection;
+	glm::mat4 inverseViewProjection;
     glm::mat4 previousView;
 	glm::mat4 previousProjection;
+    glm::mat4 previousViewProjection;
 };
 
 

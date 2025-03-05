@@ -18,11 +18,16 @@ uniform float uReflectionFalloffDistance = 1000.0; // Controls how far reflectio
 uniform float uRayOffset = 1.0;               // Controls ray starting position offset to avoid self-intersection
 
 layout(std140, binding = 0) uniform CameraBlock {
-    mat4 view;                  
-    mat4 projection;            
     vec4 cameraPos;              
+    mat4 view;                  
+    mat4 projection;
+    mat4 viewProjection;
+    mat4 inverseView;
+    mat4 inverseProjection;
+    mat4 inverseViewProjection;
     mat4 previousView;           
-    mat4 previousProjection;     
+    mat4 previousProjection;
+    mat4 previousViewProjection;
 };
 uniform bool test;
 

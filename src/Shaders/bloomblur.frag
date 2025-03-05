@@ -31,21 +31,81 @@ void main()
     // Dynamic sampling with minimum to ensure we always have some samples
     int samples = max(3, min(kernelSize, int(blurRadius * 2.0) + 1));
     
-    // Perform physically-based blur
+    // Pre-calculate weights to reduce dependency chain
+    float weights[41]; // Maximum possible kernel size (2*20+1)
+    for(int i = -samples; i <= samples; i++) {
+        weights[i + 20] = gaussian(float(i), blurRadius);
+    }
+    
+    // Perform physically-based blur with texture prefetch
     if(horizontal) {
-        for(int i = -samples; i <= samples; i++) {
-            float offset = float(i);
-            float weight = gaussian(offset, blurRadius);
-            result += texture(image, TexCoords + vec2(texelSize.x * offset, 0.0)).rgb * weight;
-            totalWeight += weight;
+        // Prefetch approach - batch texture fetches (4 at a time)
+        for(int i = -samples; i <= samples; i += 4) {
+            // Prefetch 4 textures (or fewer at the edges)
+            vec3 color1 = i <= samples ? texture(image, TexCoords + vec2(texelSize.x * float(i), 0.0)).rgb : vec3(0.0);
+            vec3 color2 = i+1 <= samples ? texture(image, TexCoords + vec2(texelSize.x * float(i+1), 0.0)).rgb : vec3(0.0);
+            vec3 color3 = i+2 <= samples ? texture(image, TexCoords + vec2(texelSize.x * float(i+2), 0.0)).rgb : vec3(0.0);
+            vec3 color4 = i+3 <= samples ? texture(image, TexCoords + vec2(texelSize.x * float(i+3), 0.0)).rgb : vec3(0.0);
+            
+            // Process each sample after prefetching
+            if(i <= samples) {
+                float w1 = weights[i + 20];
+                result += color1 * w1;
+                totalWeight += w1;
+            }
+            
+            if(i+1 <= samples) {
+                float w2 = weights[i+1 + 20];
+                result += color2 * w2;
+                totalWeight += w2;
+            }
+            
+            if(i+2 <= samples) {
+                float w3 = weights[i+2 + 20];
+                result += color3 * w3;
+                totalWeight += w3;
+            }
+            
+            if(i+3 <= samples) {
+                float w4 = weights[i+3 + 20];
+                result += color4 * w4;
+                totalWeight += w4;
+            }
         }
     }
     else {
-        for(int i = -samples; i <= samples; i++) {
-            float offset = float(i);
-            float weight = gaussian(offset, blurRadius);
-            result += texture(image, TexCoords + vec2(0.0, texelSize.y * offset)).rgb * weight;
-            totalWeight += weight;
+        // Prefetch approach - batch texture fetches (4 at a time)
+        for(int i = -samples; i <= samples; i += 4) {
+            // Prefetch 4 textures (or fewer at the edges)
+            vec3 color1 = i <= samples ? texture(image, TexCoords + vec2(0.0, texelSize.y * float(i))).rgb : vec3(0.0);
+            vec3 color2 = i+1 <= samples ? texture(image, TexCoords + vec2(0.0, texelSize.y * float(i+1))).rgb : vec3(0.0);
+            vec3 color3 = i+2 <= samples ? texture(image, TexCoords + vec2(0.0, texelSize.y * float(i+2))).rgb : vec3(0.0);
+            vec3 color4 = i+3 <= samples ? texture(image, TexCoords + vec2(0.0, texelSize.y * float(i+3))).rgb : vec3(0.0);
+            
+            // Process each sample after prefetching
+            if(i <= samples) {
+                float w1 = weights[i + 20];
+                result += color1 * w1;
+                totalWeight += w1;
+            }
+            
+            if(i+1 <= samples) {
+                float w2 = weights[i+1 + 20];
+                result += color2 * w2;
+                totalWeight += w2;
+            }
+            
+            if(i+2 <= samples) {
+                float w3 = weights[i+2 + 20];
+                result += color3 * w3;
+                totalWeight += w3;
+            }
+            
+            if(i+3 <= samples) {
+                float w4 = weights[i+3 + 20];
+                result += color4 * w4;
+                totalWeight += w4;
+            }
         }
     }
     

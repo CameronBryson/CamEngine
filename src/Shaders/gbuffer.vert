@@ -6,15 +6,17 @@ layout(location = 2) in vec2 aTexCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
 
-// Remove old uniform mat4 view, uniform mat4 projection
-// Instead, define a uniform block for camera data:
-layout(std140, binding = 0) uniform CameraUBO
-{
-    mat4 uView;
-    mat4 uProjection;
-    vec4 uCameraPos; // .xyz used if you need camera pos here, .w is padding
-    mat4 uPrevView;
-    mat4 uPrevProjection;
+layout(std140, binding = 0) uniform CameraBlock {
+    vec4 cameraPos;              
+    mat4 view;                  
+    mat4 projection;
+    mat4 viewProjection;
+    mat4 inverseView;
+    mat4 inverseProjection;
+    mat4 inverseViewProjection;
+    mat4 previousView;           
+    mat4 previousProjection;
+    mat4 previousViewProjection;
 };
 
 uniform mat4 model; // Per-object transform still remains a normal uniform
@@ -44,8 +46,8 @@ void main()
     TBN = mat3(T, B, N);
     
     // Calculate clip positions for current and previous frames
-    ClipPos = uProjection * uView * vec4(FragPos, 1.0);
-    PrevClipPos = uPrevProjection * uPrevView * vec4(FragPos, 1.0);
+    ClipPos = viewProjection * vec4(FragPos, 1.0);
+    PrevClipPos = previousViewProjection * vec4(FragPos, 1.0);
     //gl_Position goes through automatic perspective division
     gl_Position = ClipPos;
 }

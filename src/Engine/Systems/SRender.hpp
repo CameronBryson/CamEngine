@@ -106,7 +106,6 @@ private:
 	std::shared_ptr<FrameBuffer> mTAACurrentFrameBuffer;
 	std::shared_ptr<FrameBuffer> mTAAPreviousFrameBuffer;
     std::shared_ptr<FrameBuffer> mSSRBuffer;
-    std::shared_ptr<FrameBuffer> mSSRBlurBuffer;
 
 
     std::shared_ptr<Texture2D> mAdaptedLuminance;
@@ -132,7 +131,7 @@ private:
 	bool ssaoEnabled = true;
     float bloomThreshold = 1.0f;
     float bloomStrength = 0.6f;
-    int bloomBlurPasses = 6;
+    int bloomBlurPasses = 4;
     float mBloomScatteringCoefficient = 1.0f;  
     int mBloomKernelSize = 15;                
     float mBloomSoftThreshold = 0.4f;   

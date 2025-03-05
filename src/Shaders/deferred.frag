@@ -25,9 +25,16 @@ const int   MAX_DIRECTIONAL_LIGHTS  = 10;
 // Camera & Light Data
 // ------------------------------------------------------------------------------------
 layout(std140, binding = 0) uniform CameraBlock {
-    mat4 view;
+    vec4 cameraPos;              
+    mat4 view;                  
     mat4 projection;
-    vec4 cameraPos; // .xyz is camera position
+    mat4 viewProjection;
+    mat4 inverseView;
+    mat4 inverseProjection;
+    mat4 inverseViewProjection;
+    mat4 previousView;           
+    mat4 previousProjection;
+    mat4 previousViewProjection;
 };
 
 struct PointLightData {
@@ -114,10 +121,10 @@ vec3 reconstructWorldPos(float depth, vec2 texCoords)
     float z = depth * 2.0 - 1.0;
     vec4 clipSpacePos = vec4(texCoords * 2.0 - 1.0, z, 1.0);
     
-    vec4 viewSpacePos = inverse(projection) * clipSpacePos;
+    vec4 viewSpacePos = inverseProjection * clipSpacePos;
     viewSpacePos /= viewSpacePos.w;
     
-    vec4 worldSpacePos = inverse(view) * viewSpacePos;
+    vec4 worldSpacePos = inverseView * viewSpacePos;
     return worldSpacePos.xyz;
 }
 

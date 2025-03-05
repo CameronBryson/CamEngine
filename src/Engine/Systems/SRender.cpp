@@ -279,11 +279,6 @@ void SRender::initFramebuffers()
 		settings::window_height,
 		colorAttachment
 	);
-	mSSRBlurBuffer = FrameBuffer::createFrameBuffer(
-		settings::window_width,
-		settings::window_height,
-		colorAttachment
-	);
 	
 }
 
@@ -521,6 +516,7 @@ void SRender::updateCameraUniforms()
 {
 
     CameraData cameraData;
+    cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.Position, 0.0f);
     cameraData.view = mScene->mCurrentCamera.GetViewMatrix();
 
     // Apply the jitter to the projection matrix
@@ -531,13 +527,22 @@ void SRender::updateCameraUniforms()
 	    cameraData.projection[2][0] += mCurrentJitter.x;
 	    cameraData.projection[2][1] += mCurrentJitter.y;
     }
-
+	cameraData.viewProjection = mScene->mCurrentCamera.GetViewProjectionMatrix();
+    if (mTAAEnabled)
+    {
+		cameraData.viewProjection[2][0] += mCurrentJitter.x;
+		cameraData.viewProjection[2][1] += mCurrentJitter.y;
+    }
     // Set camera position for shaders
-    cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.Position, 0.0f);
+
+	cameraData.inverseView = mScene->mCurrentCamera.GetInverseViewMatrix();
+	cameraData.inverseProjection = mScene->mCurrentCamera.GetInverseProjectionMatrix();
+	cameraData.inverseViewProjection = mScene->mCurrentCamera.GetInverseViewProjectionMatrix();
 
     // Previous matrices for reprojection
     cameraData.previousView = mScene->mCurrentCamera.GetPreviousViewMatrix();
     cameraData.previousProjection = mScene->mCurrentCamera.GetPreviousProjectionMatrix();
+	cameraData.previousViewProjection = mScene->mCurrentCamera.GetPreviousViewProjectionMatrix();
 
     // Upload data to the uniform buffer
     mCameraUBO->setData(&cameraData, sizeof(CameraData));
@@ -681,7 +686,10 @@ void SRender::depthPass()
     GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
     // Clear depth
     GL_CHECK(glClear(GL_DEPTH_BUFFER_BIT));
+    GL_CHECK(glEnable(GL_DEPTH_TEST));
+    GL_CHECK(glDepthFunc(GL_LESS));
     GL_CHECK(glDepthMask(GL_TRUE));
+    GL_CHECK(glDisable(GL_BLEND));
     // Draw all opaque geometry
 	drawRenderList(mOpaqueRenderList, depthShader);
 	GL_CHECK(glDepthMask(GL_FALSE));
@@ -700,7 +708,8 @@ void SRender::geometryPass()
 	gBufferShader->setBool("normalmapping", normalMapping);
 
     GL_CHECK(glEnable(GL_DEPTH_TEST));
-    GL_CHECK(glDepthFunc(GL_LEQUAL));  // Use LEQUAL to render fragments at same depth
+    GL_CHECK(glDepthFunc(GL_EQUAL));  // Use LEQUAL to render fragments at same depth
+    GL_CHECK(glDepthMask(GL_FALSE));
 	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
     //We dont want to clear depth pass
     GL_CHECK(glDisable(GL_BLEND)); // Disable blending for G-Buffer pass
@@ -708,6 +717,7 @@ void SRender::geometryPass()
 
     //GL_CHECK(glDepthMask(GL_TRUE));
     GL_CHECK(glDepthFunc(GL_LESS));
+    GL_CHECK(glDepthMask(GL_TRUE));
 	mGBuffer->unbind();
 
 }
@@ -720,9 +730,6 @@ void SRender::ssaoPass()
     ssaoShader->use();
 
     // Set view and projection matrices
-    ssaoShader->setMat4("projection", mScene->mCurrentCamera.GetProjectionMatrix());
-    ssaoShader->setMat4("view", mScene->mCurrentCamera.GetViewMatrix());
-    ssaoShader->setMat4("inverseProjection", mScene->mCurrentCamera.GetInverseProjectionMatrix());
 
     // Send kernel and settings
     for (unsigned int i = 0; i < SSAO_KERNEL_SIZE; ++i)
@@ -1447,8 +1454,7 @@ void SRender::drawImGui()
         ImGui::SliderFloat("Yaw", &camera.Yaw, -180.0f, 180.0f);
         ImGui::SliderFloat("Pitch", &camera.Pitch, -89.0f, 89.0f);
         ImGui::SliderFloat("FOV", &camera.Fov, 1.0f, 120.0f);
-        camera.updateCameraVectors();
-        camera.updateProjectionMatrix();
+        camera.updateCamera();
     }
 
     if (ImGui::CollapsingHeader("Post-Processing"))
@@ -1941,6 +1947,8 @@ void SRender::drawImGui()
             ImGui::Separator();
             ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Post-Processing Sub-passes:"); ImGui::NextColumn();
             ImGui::NextColumn();
+            displayTiming("  SSR Process", gl::timer::getLastDuration("SSR Process"));
+            displayTiming("  Auto Exposure", gl::timer::getLastDuration("Auto Exposure"));
             displayTiming("  TAA Process", gl::timer::getLastDuration("TAA Process"));
             displayTiming("  Motion Blur", gl::timer::getLastDuration("Motion Blur"));
             displayTiming("  Bloom Process", gl::timer::getLastDuration("Bloom Process"));

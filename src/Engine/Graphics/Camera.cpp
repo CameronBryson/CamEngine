@@ -13,7 +13,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up,
 	       Yaw = yaw;
 	       Pitch = pitch;
 		   Fov = FOV;
-	       updateCameraVectors();
+	       updateCamera();
 	       projection_matrix = glm::perspective(glm::radians(Fov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
 	       view_matrix = glm::lookAt(Position, Position + Front, Up);
 		   inverse_projection_matrix = glm::inverse(projection_matrix);
@@ -29,9 +29,22 @@ glm::mat4& Camera::GetProjectionMatrix()
 {
     return projection_matrix;
 }
+glm::mat4& Camera::GetViewProjectionMatrix()
+{
+	return view_projection_matrix;
+}
+glm::mat4& Camera::GetInverseViewMatrix()
+{
+	return inverse_view_matrix;
+}
 glm::mat4& Camera::GetInverseProjectionMatrix()
 {
    return inverse_projection_matrix;
+}
+
+glm::mat4& Camera::GetInverseViewProjectionMatrix()
+{
+	return inverse_view_projection_matrix;
 }
 
 glm::mat4& Camera::GetPreviousViewMatrix()
@@ -44,7 +57,12 @@ glm::mat4& Camera::GetPreviousProjectionMatrix()
 	return previous_projection_matrix;
 }
 
-void Camera::updateCameraVectors()
+glm::mat4& Camera::GetPreviousViewProjectionMatrix()
+{
+	return previous_view_projection_matrix;
+}
+
+void Camera::updateCamera()
 {
     // calculate the new Front vector
     glm::vec3 front;
@@ -57,18 +75,20 @@ void Camera::updateCameraVectors()
     // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     Up = glm::normalize(glm::cross(Right, Front));
 	view_matrix = glm::lookAt(Position, Position + Front, Up);
+	projection_matrix = glm::perspective(glm::radians(Fov), settings::aspect_ratio, 0.1f, 10000.0f);
+	view_projection_matrix = projection_matrix * view_matrix;
+	inverse_view_matrix = glm::inverse(view_matrix);
+	inverse_projection_matrix = glm::inverse(projection_matrix);
+	inverse_view_projection_matrix = glm::inverse(view_projection_matrix);
+
 }
 
-void Camera::updateProjectionMatrix()
-{
-   projection_matrix = glm::perspective(glm::radians(Fov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
-   inverse_projection_matrix = glm::inverse(projection_matrix);
-}
 
 void Camera::storePreviousMatrices()
 {
 	previous_projection_matrix = projection_matrix;
 	previous_view_matrix = view_matrix;
+	previous_view_projection_matrix = view_projection_matrix;
 }
 
 std::array<glm::vec4, 6> Camera::GetFrustumPlanes()
