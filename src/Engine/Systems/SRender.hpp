@@ -130,12 +130,12 @@ private:
     float mBrightness = 0.0f;
     bool bloomEnabled = true;
 	bool ssaoEnabled = true;
-    float bloomThreshold = 0.9f;
-    float bloomStrength = 0.8f;
+    float bloomThreshold = 1.0f;
+    float bloomStrength = 0.6f;
     int bloomBlurPasses = 6;
     float mBloomScatteringCoefficient = 1.0f;  
     int mBloomKernelSize = 15;                
-    float mBloomSoftThreshold = 0.2f;   
+    float mBloomSoftThreshold = 0.4f;   
 	bool mFXAAEnabled = true;
     float mFXAAEdgeThreshholdMin = 0.1f;
 	float mFXAAEdgeThreshholdMax = 0.2f;
@@ -145,16 +145,16 @@ private:
 	int mMotionBlurSamples = 8;
 	bool mTAAEnabled = true;
     bool mShowEdges = false;
-	float mTAABlendFactor = 0.6f;
+	float mTAABlendFactor = 0.7f;
 	float mEdgeBlendThreshold = 0.1f;
-    float mMinBlendAtEdges = 0.5;
+    float mMinBlendAtEdges = 0.6;
     float mEdgeResponsive = 3.0f;
     static constexpr int HALTON_SAMPLES = 16;
     std::vector<glm::vec2> mHaltonPattern;
     int mJitterIndex = 0;
     glm::vec2 mCurrentJitter{0.0f};
     glm::vec2 mPreviousJitter{0.0f};
-    float mJitterScale = 0.3f;
+    float mJitterScale = 0.2f;
     bool mFirstFrame = true;
     bool mCurrentLuminanceIndex = 0;
 
@@ -164,7 +164,7 @@ private:
 	float mLogLuminanceRange = 8.0f;
 	float mMinAdaptedLuminance = 0.05f;
 	float mMaxAdaptedLuminance = 4.0f;
-	float mTargetMiddleGray = 0.18f;
+	float mTargetMiddleGray = 0.14f;
 
     // SSAO data
     std::shared_ptr<FrameBuffer> mSSAOBuffer;
@@ -192,11 +192,13 @@ private:
     std::vector<RenderItem> mTransparentRenderList;
 
     //SSR
-	bool mSSREnabled = false;
-    float mSSRMaxDistance = 100.0f;
-	float mSSRResolution = 0.3f;
-	float mSSRThickness = 0.5f;
-    int mSSRSteps = 5.0f;
+	bool mSSREnabled = true;
+    float mSSRReflectionIntensity = 1.2f;
+    float mSSRRayThickness = 0.05;
+    int mSSRMaxRaySteps = 128;
+	float mSSRMinReflectivity = 0.1f;
+    float mSSRReflectionFalloffDistance = 500.0f;
+    float mSSRRayOffset = 1.0f;
 
 
     bool normalMapping = true;

@@ -1335,6 +1335,7 @@ void SRender::motionBlurPass()
 
    void SRender::ssrPass()
    {
+       if (!mSSREnabled) return;
 	   auto ssrShader = GameManager::mGraphicsManager->getShader("SSR");
 	   ssrShader->use();
 
@@ -1351,10 +1352,12 @@ void SRender::motionBlurPass()
 	   ssrShader->setInt("gSceneColor", PostProcessSlots::HDR);
 
        ssrShader->setBool("test", test);
-	   ssrShader->setFloat("maxDistance", mSSRMaxDistance);
-	   ssrShader->setFloat("resolution", mSSRResolution);
-	   ssrShader->setFloat("thickness", mSSRThickness);
-	   ssrShader->setInt("steps", mSSRSteps);
+       ssrShader->setFloat("uReflectionIntensity", mSSRReflectionIntensity);
+	   ssrShader->setFloat("uRayThickness", mSSRRayThickness);
+	   ssrShader->setInt("uMaxRaySteps", mSSRMaxRaySteps);
+	   ssrShader->setFloat("uMinReflectivity", mSSRMinReflectivity);
+	   ssrShader->setFloat("uReflectionFalloffDistance", mSSRReflectionFalloffDistance);
+	   ssrShader->setFloat("uRayOffset", mSSRRayOffset);
 
 
 	   mSSRBuffer->bind();
@@ -1863,13 +1866,16 @@ void SRender::drawImGui()
     }
     ImGui::Separator();
     ImGui::Checkbox("Enable SSR", &mSSREnabled);
-    if (mSSREnabled)
-    {
-        ImGui::SliderFloat("SSR Max Distance", &mSSRMaxDistance, 0.1f, 500.0f);
-        ImGui::SliderFloat("SSR Thickness", &mSSRThickness, 0.01f, 1.0f);
-        ImGui::SliderFloat("SSR Resolution", &mSSRResolution, 0.1f, 1.0f);
-        ImGui::SliderInt("SSR Steps", &mSSRSteps, 1,10);
-    }
+	if (mSSREnabled)
+	{
+		ImGui::SliderFloat("Reflection Intensity", &mSSRReflectionIntensity, 0.0f, 5.0f);
+		ImGui::SliderFloat("Ray Thickness", &mSSRRayThickness, 0.0f, 2.0f);
+		ImGui::SliderInt("Max Ray Steps", &mSSRMaxRaySteps, 1, 1000);
+		ImGui::SliderFloat("Min Reflectivity", &mSSRMinReflectivity, 0.0f, 1.0f);
+		ImGui::SliderFloat("Reflection Falloff Distance", &mSSRReflectionFalloffDistance, 0.0f, 100.0f);
+		ImGui::SliderFloat("Ray Offset", &mSSRRayOffset, 0.0f, 3.0f);
+	}
+
     ImGui::Separator();
     ImGui::Checkbox("Enable normalmaps", &normalMapping);
 	ImGui::Checkbox("Test", &test);

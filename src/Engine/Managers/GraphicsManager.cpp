@@ -50,7 +50,7 @@ void GraphicsManager::loadResources()
 	loadModel(engine_util::buildPath("assets/helmet/DamagedHelmet.gltf"), "Helmet");
 	//loadModel(engine_util::buildPath("assets/scene.gltf"), "Scene");
 
-    loadEnvironmentMap("default", engine_util::buildPath("assets/night.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    loadEnvironmentMap("default", engine_util::buildPath("assets/puresky.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
     
 
 

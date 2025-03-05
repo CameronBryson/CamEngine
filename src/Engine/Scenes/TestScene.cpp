@@ -34,13 +34,13 @@ void TestScene::init()
 	mEnttRegistry.emplace<CChildren>(testParent);
 	mEnttRegistry.get<CChildren>(sceneRoot).children.push_back(testParent);
 
-	auto testModel = mEnttRegistry.create();
-	mEnttRegistry.emplace<CModel>(testModel, "Helmet");
-	glm::vec3 rotationEulerAngles = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
-	glm::quat rotationQuat = glm::quat(rotationEulerAngles);
-	mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -2.5}, rotationQuat, glm::vec3{1, 1, 1});
-	mEnttRegistry.emplace<CParent>(testModel, testParent);
-	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
+	//auto testModel = mEnttRegistry.create();
+	//mEnttRegistry.emplace<CModel>(testModel, "Helmet");
+	//glm::vec3 rotationEulerAngles = glm::radians(glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust angles as needed
+	//glm::quat rotationQuat = glm::quat(rotationEulerAngles);
+	//mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -2.5}, rotationQuat, glm::vec3{1, 1, 1});
+	//mEnttRegistry.emplace<CParent>(testModel, testParent);
+	//mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
 
 	auto testModel2 = mEnttRegistry.create();
 	mEnttRegistry.emplace<CModel>(testModel2, "Sponza");
@@ -64,8 +64,8 @@ void TestScene::init()
 	auto pointLight = mEnttRegistry.create();
 	// Add some ambient light and tone down the intensity
 	glm::vec3 pointAmbient = glm::vec3(0.05);
-	glm::vec3 pointDiffuse = glm::vec3(6);    // Strong but not max diffuse
-	glm::vec3 pointSpecular = glm::vec3(6);   // Full specular
+	glm::vec3 pointDiffuse = glm::vec3(4);    // Strong but not max diffuse
+	glm::vec3 pointSpecular = glm::vec3(4);   // Full specular
 
 	// Adjust attenuation for your scene scale (your chess piece is at -75 units)
 	float constant = 1.0f;
@@ -84,8 +84,8 @@ void TestScene::init()
 	float innerCutoff = glm::cos(glm::radians(12.5f));  // Use cos for better precision
 	float outerCutoff = glm::cos(glm::radians(17.5f));  // Use cos for better precision
 	glm::vec3 spotAmbient = glm::vec3(0.0);
-	glm::vec3 spotDiffuse = glm::vec3(6);
-	glm::vec3 spotSpecular = glm::vec3(7);
+	glm::vec3 spotDiffuse = glm::vec3(5);
+	glm::vec3 spotSpecular = glm::vec3(6);
 
 	mEnttRegistry.emplace<CSpotLight>(spotLight,
 		glm::vec3(4.0f, 3.0f, 0.0f), // Position it above the chess piece
@@ -95,8 +95,8 @@ void TestScene::init()
 
 	glm::vec3 directionalDirection = glm::normalize(glm::vec3(0.0f, -1.0f, -0.2f)); // Angle it slightly
 	glm::vec3 directionalAmbient = glm::vec3(0.0f);
-	glm::vec3 directionalDiffuse = glm::vec3(4.0f);
-	glm::vec3 directionalSpecular = glm::vec3(4.0);
+	glm::vec3 directionalDiffuse = glm::vec3(3.0f);
+	glm::vec3 directionalSpecular = glm::vec3(3.0);
 
 	auto directionalLight = mEnttRegistry.create();
 	mEnttRegistry.emplace<CDirectionalLight>(directionalLight, directionalDirection, directionalAmbient, directionalDiffuse, directionalSpecular);

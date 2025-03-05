@@ -132,9 +132,17 @@ void main()
     {
         velocity = vec2(0.0);
     }
-    float smoothness = 1.0 - roughness;
-    float reflectivity = mix(material.reflectivity, 1.0, metallic) * smoothness * smoothness;
+    // Calculate reflectivity based on Fresnel equation approximation
+    float F0 = material.reflectivity; // Base reflectivity at normal incidence
+    float dielectricReflectivity = F0;
+    float metallicReflectivity = 1.0; // Metals reflect almost all light
+    float reflectivity = mix(dielectricReflectivity, metallicReflectivity, metallic);
 
-    //reflectivity is purposfully set high to test ssr
-    gVelocityReflective = vec4(velocity, 1.0,0);
+    // Modify reflectivity based on roughness (rougher surfaces reflect less clearly)
+    reflectivity *= max(0.2, 1.0 - roughness * 0.5);
+
+    // Ensure reflectivity stays in reasonable range
+    reflectivity = clamp(reflectivity, 0.0, 1.0);
+
+    gVelocityReflective = vec4(velocity, reflectivity, 0);
 }
