@@ -139,7 +139,7 @@ void main()
     float reflectivity = mix(dielectricReflectivity, metallicReflectivity, metallic);
 
     // Modify reflectivity based on roughness (rougher surfaces reflect less clearly)
-    reflectivity *= max(0.2, 1.0 - roughness * 0.3);
+    reflectivity *= max(0.2, 1.0 - roughness * 0.7);
 
     // Ensure reflectivity stays in reasonable range
     reflectivity = clamp(reflectivity, 0.0, 1.0);

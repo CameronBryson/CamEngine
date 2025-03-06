@@ -910,7 +910,6 @@ void SRender::postProcessPass(float dt)
         GL_SCOPED_TIMER("TAA Process");
         taaPass();
     }
-
     //Moved blur to after image is stabilized
     {
         GL_SCOPED_MARKER("Motion Blur Process");

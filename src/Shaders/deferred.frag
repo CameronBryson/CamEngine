@@ -3,27 +3,18 @@ precision mediump float;
 precision mediump sampler2DShadow;
 precision mediump samplerCubeShadow;
 
-// ------------------------------------------------------------------------------------
-// Outputs
-// ------------------------------------------------------------------------------------
+
 layout (location = 0) out vec4 FragColor;
 
-// ------------------------------------------------------------------------------------
-// Inputs
-// ------------------------------------------------------------------------------------
 in vec2 TexCoord;
 
-// ------------------------------------------------------------------------------------
-// Constants & Limits
-// ------------------------------------------------------------------------------------
+
 const float PI = 3.14159265359;
 const int   MAX_POINT_LIGHTS        = 10;
 const int   MAX_SPOT_LIGHTS         = 10;
 const int   MAX_DIRECTIONAL_LIGHTS  = 10;
 
-// ------------------------------------------------------------------------------------
-// Camera & Light Data
-// ------------------------------------------------------------------------------------
+
 layout(std140, binding = 0) uniform CameraBlock {
     vec4 cameraPos;              
     mat4 view;                  
@@ -72,17 +63,12 @@ layout(std140, binding = 1) uniform LightBlock {
     DirectionalLightData directionalLights[MAX_DIRECTIONAL_LIGHTS];
 };
 
-// ------------------------------------------------------------------------------------
-// G-Buffer Textures
-// ------------------------------------------------------------------------------------
+
 uniform sampler2D gAlbedoAO;       // RGB: Albedo, A: AO
 uniform sampler2D gNormalMetallic; // RGB: Normal, A: Metallic
 uniform sampler2D gRoughEmissive;  // R: Roughness, GBA: Emissive
 uniform sampler2D gDepth;          // Depth (for position reconstruction)
 
-// ------------------------------------------------------------------------------------
-// Environment & Shadows
-// ------------------------------------------------------------------------------------
 uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D   brdfLUT;
@@ -91,16 +77,12 @@ uniform sampler2DShadow  directionalShadowMap;
 uniform sampler2DShadow  spotShadowMap;
 uniform samplerCubeShadow pointShadowMap;
 
-// ------------------------------------------------------------------------------------
-// Misc Uniforms
-// ------------------------------------------------------------------------------------
+
 uniform bool   enableShadows;
 uniform float  farPlane;
 uniform sampler2D ssaoTexture;
 uniform bool ssaoEnabled;
-// ------------------------------------------------------------------------------------
-// Function Prototypes
-// ------------------------------------------------------------------------------------
+
 float calculatePointShadow(vec3 FragPos, vec3 lightPos);
 float calculateShadow(vec3 FragPos, vec3 normal, vec3 lightDir, mat4 lightSpaceMatrix, sampler2DShadow shadowMap);
 
@@ -110,9 +92,6 @@ float GeometrySchlickGGX(float NdotV, float roughness);
 vec3  fresnelSchlick(float cosTheta, vec3 F0);
 vec3  fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
 
-// ------------------------------------------------------------------------------------
-// Position Reconstruction from Depth
-// ------------------------------------------------------------------------------------
 vec3 reconstructWorldPos(float depth, vec2 texCoords) 
 {
     // Early exit if depth is 1.0 (far plane/background)
@@ -129,9 +108,6 @@ vec3 reconstructWorldPos(float depth, vec2 texCoords)
 }
 
 
-// ------------------------------------------------------------------------------------
-// Direct Lighting (Cook-Torrance) Adaptation
-// ------------------------------------------------------------------------------------
 vec3 computeDirectLighting(vec3 FragPos, vec3 N, vec3 V, vec3 F0, vec3 albedo, float metallic, float roughness)
 {
     vec3 Lo = vec3(0.0);
@@ -237,9 +213,6 @@ vec3 computeDirectLighting(vec3 FragPos, vec3 N, vec3 V, vec3 F0, vec3 albedo, f
     return Lo;
 }
 
-// ------------------------------------------------------------------------------------
-// Image-Based Lighting (IBL)
-// ------------------------------------------------------------------------------------
 vec3 computeIBL(vec3 N, vec3 V, vec3 R, vec3 F0, vec3 albedo, float metallic, float roughness, float ao)
 {
     float NdotV = max(dot(N, V), 0.0);
@@ -264,15 +237,13 @@ vec3 computeIBL(vec3 N, vec3 V, vec3 R, vec3 F0, vec3 albedo, float metallic, fl
     
     // Apply combined AO to both diffuse and specular IBL
     vec3 ambient = (kD * diffuse + specular) * finalAO;
-    //return ambient;
-    return ambient; // Match forward renderer IBL intensity
+    return ambient * 0.7;
+    return ambient; 
 }
 
 
 
-// ------------------------------------------------------------------------------------
-// Main Fragment
-// ------------------------------------------------------------------------------------
+
 void main()
 {
     // 1) Read from G-Buffer
@@ -320,12 +291,6 @@ void main()
     // 8) Add ambient term with SSAO
     color += albedo * 0.01 * ao; // Small ambient term affected by SSAO
     
-    // Debug views
-    // FragColor = vec4(vec3(ssaoValue), 1.0); return;    // Debug SSAO
-    // FragColor = vec4(vec3(ao), 1.0); return;           // Debug combined AO
-    // FragColor = vec4(direct, 1.0); return;             // Debug direct lighting
-    // FragColor = vec4(ibl, 1.0); return;                // Debug IBL lighting
-    // FragColor = vec4(emissive, 1.0); return;           // Debug emissive
     
     // 9) Output final color
     FragColor = vec4(color, 1.0);
@@ -334,9 +299,7 @@ void main()
 
 
 
-// ------------------------------------------------------------------------------------
-// Shadow Functions and BRDF Helpers
-// ------------------------------------------------------------------------------------
+
 float calculatePointShadow(vec3 FragPos, vec3 lightPos)
 {
     // Calculate vector from fragment to light

@@ -163,7 +163,7 @@ private:
 	float mLogLuminanceRange = 8.0f;
 	float mMinAdaptedLuminance = 0.05f;
 	float mMaxAdaptedLuminance = 4.0f;
-	float mTargetMiddleGray = 0.14f;
+	float mTargetMiddleGray = 0.1f;
 
     // SSAO data
     std::shared_ptr<FrameBuffer> mSSAOBuffer;
@@ -195,7 +195,7 @@ private:
     float mSSRReflectionIntensity = 1.2f;
     float mSSRRayThickness = 0.05;
     int mSSRMaxRaySteps = 128;
-	float mSSRMinReflectivity = 0.1f;
+	float mSSRMinReflectivity = 0.0f;
     float mSSRReflectionFalloffDistance = 500.0f;
     float mSSRRayOffset = 1.0f;
 
