@@ -5,7 +5,6 @@
 #include "Engine/Util/EngineUtil.hpp"
 #include "Engine/Util/platform.hpp"
 
-#include "edyn/edyn.hpp"
 #include "Engine/Base/BaseScene.hpp"
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"

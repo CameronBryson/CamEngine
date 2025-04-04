@@ -247,7 +247,10 @@ void OpenGLShader::setMat4(const std::string& name, const glm::mat4& value) cons
    GL_CHECK(glUniformMatrix4fv(glGetUniformLocation(shaderID, name.c_str()), 1, GL_FALSE, &value[0][0]));  
 }  
 
-void OpenGLShader::deleteShader() { GL_CHECK(glDeleteProgram(shaderID)); }  
+void OpenGLShader::deleteShader() {
+    //GL_CHECK(glDeleteProgram(shaderID));
+    glDeleteProgram(shaderID);
+}  
 
 void OpenGLShader::checkCompileError(unsigned shader, const std::string& type)  
 {  

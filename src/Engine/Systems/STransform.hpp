@@ -13,6 +13,4 @@ private:
 
     void updateTransform(entt::entity entity, entt::registry& registry);
     glm::mat4 computeLocalMatrix(const CTransform& transform) const;
-    glm::mat4 computePhysicsMatrix(entt::entity entity, entt::registry& registry) const;
-    bool hasPhysicsComponents(entt::entity entity, entt::registry& registry) const;
 };

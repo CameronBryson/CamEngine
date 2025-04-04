@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Engine/Systems/SAudio.hpp"
 #include "Engine/Systems/SRender.hpp"
 #include "Engine/Systems/STransform.hpp"
 
@@ -34,7 +33,6 @@ public:
 
 	//dont hold data or very little data
 	SRender mRenderSystem;
-	SAudio mAudioSystem;
 	STransform mTransformSystem;
 
 	Camera mCurrentCamera;

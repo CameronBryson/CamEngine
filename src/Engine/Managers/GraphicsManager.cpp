@@ -47,7 +47,7 @@ void GraphicsManager::loadResources()
 
     //loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
 	loadModel(engine_util::buildPath("assets/Sponza/Sponza.gltf"), "Sponza");
-	loadModel(engine_util::buildPath("assets/helmet/DamagedHelmet.gltf"), "Helmet");
+	//loadModel(engine_util::buildPath("assets/helmet/DamagedHelmet.gltf"), "Helmet");
 	//loadModel(engine_util::buildPath("assets/scene.gltf"), "Scene");
 
     loadEnvironmentMap("default", engine_util::buildPath("assets/8ksky.hdr"), equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);

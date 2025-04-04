@@ -112,7 +112,8 @@ OpenGLTextureCubemap::OpenGLTextureCubemap(GLuint id, int w, int h)
 
 OpenGLTextureCubemap::~OpenGLTextureCubemap()
 {
-    GL_CHECK(glDeleteTextures(1, &textureID));
+    //GL_CHECK(glDeleteTextures(1, &textureID));
+	glDeleteTextures(1, &textureID);
 }
 
 void OpenGLTextureCubemap::bind(unsigned int slot)

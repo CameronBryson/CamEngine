@@ -3,10 +3,6 @@
 
 #include <BaseScene.hpp>
 #include <Components.hpp>
-#include <edyn/math/vector3.hpp>
-#include <edyn/shapes/box_shape.hpp>
-#include <edyn/util/gravity_util.hpp>
-#include <edyn/util/rigidbody.hpp>
 #include <entt/entity/registry.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include "EngineUtil.hpp"
@@ -18,7 +14,6 @@ void TestScene::init()
 {
 	BaseScene::init();
 
-	edyn::set_gravity(mEnttRegistry, edyn::vector3{ 0, -9.81, 0 });
 	auto controller = mEnttRegistry.create();
 
 

@@ -1,17 +1,14 @@
 #include "pch.hpp"
 #include "GameManager.hpp"
-#include "Engine/Managers/AudioManager.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"
 #include <chrono>
 #include <thread>
 
 #include <iostream>
 
-#include <Engine/Util/OpenALUtil.hpp>
 #include <Engine/Util/OpenGLUtil.hpp>
 
 #include <Engine/Base/BaseScene.hpp>
-#include <AL/alc.h>
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <GameSettings.hpp>
@@ -19,9 +16,6 @@ GLFWwindow * GameManager::mGameWindow = nullptr;
 std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
 std::unique_ptr<BaseScene> GameManager::mPendingScene = nullptr;
 
-ALCdevice* GameManager::mAudioDevice = nullptr;
-ALCcontext* GameManager::mAudioContext = nullptr;
-std::unique_ptr<AudioManager> GameManager::mAudioManager = nullptr;
 std::unique_ptr<GraphicsManager> GameManager::mGraphicsManager = nullptr;
 void GameManager::firstInit()
 {
@@ -161,22 +155,3 @@ void GameManager::set_glfw_window(GLFWwindow * window)
     mGameWindow = window;
 }
 
-ALCdevice* GameManager::get_audio_device()
-{
-	return mAudioDevice;
-}
-
-ALCcontext* GameManager::get_audio_context()
-{
-	return mAudioContext;
-}
-
-void GameManager::set_audio_device(ALCdevice* device)
-{
-	mAudioDevice = device;
-}
-
-void GameManager::set_audio_context(ALCcontext* context)
-{
-	mAudioContext = context;
-}
