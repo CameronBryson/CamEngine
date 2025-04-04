@@ -19,7 +19,6 @@
 #include "Material.hpp"
 #include "Model.hpp"
 #include "EnvironmentMap.hpp"
-#include "Font.hpp"
 
 class GraphicsManager
 {
@@ -57,9 +56,6 @@ public:
     std::shared_ptr<Model> loadModel(const std::string& path, const std::string& name);
 
 
-    // Font management
-    std::shared_ptr<Font> loadFont(const std::string& fontPath, float fontSize);
-    std::shared_ptr<Font> getFont(const std::string& name);
 
     std::shared_ptr<EnvironmentMap> loadEnvironmentMap(const std::string& name, const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
     std::shared_ptr<EnvironmentMap> getEnvironmentMap(const std::string& name);
@@ -75,7 +71,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Material>> material_map_;
     std::unordered_map<std::string, std::shared_ptr<Mesh>> mesh_map_;
     std::unordered_map<std::string, std::shared_ptr<Model>> model_map_;
-    std::unordered_map<std::string, std::shared_ptr<Font>> font_map_;
     std::unordered_map<std::string, std::shared_ptr<EnvironmentMap>> environment_map_;
 
 

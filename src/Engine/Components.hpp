@@ -9,13 +9,6 @@
 #include <glm/fwd.hpp>
 #include <vector>
 
-// Component for rendering-related data
-struct CRender
-{
-    CRender(const int layer, const glm::vec3 color) : layer(layer), color(color) {}
-    int layer = 0;
-    glm::vec3 color;
-};
 
 struct CModel
 {

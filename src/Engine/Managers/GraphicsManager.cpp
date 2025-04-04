@@ -91,7 +91,6 @@ void GraphicsManager::clear()
     material_map_.clear();
     mesh_map_.clear();
     model_map_.clear();
-    font_map_.clear();
 }
 
 std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& name)
@@ -624,38 +623,6 @@ std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
         }
     }
     return textures;
-}
-
-
-// Font management
-
-std::shared_ptr<Font> GraphicsManager::loadFont(const std::string& fontPath, float fontSize)
-{
-    // Check if font already loaded
-    auto it = font_map_.find(fontPath);
-    if (it != font_map_.end())
-    {
-        return it->second;
-    }
-
-    // Load font
-    auto font = std::make_shared<Font>(fontPath, fontSize);
-    font_map_.emplace(fontPath, font);
-    return font;
-}
-
-std::shared_ptr<Font> GraphicsManager::getFont(const std::string& name)
-{
-    auto it = font_map_.find(name);
-    if (it != font_map_.end())
-    {
-        return it->second;
-    }
-    else
-    {
-        std::cerr << "Font not found: " << name << std::endl;
-        return nullptr;
-    }
 }
 
 std::shared_ptr<EnvironmentMap> GraphicsManager::loadEnvironmentMap(const std::string& name, const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader)
