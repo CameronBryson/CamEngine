@@ -1,6 +1,6 @@
 #include "pch.hpp"
 #include "GameManager.hpp"
-#include "Engine/Managers/GraphicsManager.hpp"
+#include "GraphicsManager.hpp"
 #include <chrono>
 #include <thread>
 
@@ -8,7 +8,7 @@
 
 #include <Engine/Util/OpenGLUtil.hpp>
 
-#include <Engine/Base/BaseScene.hpp>
+#include <BaseScene.hpp>
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <GameSettings.hpp>

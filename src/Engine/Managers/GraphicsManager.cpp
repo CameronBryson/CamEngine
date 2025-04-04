@@ -104,7 +104,7 @@ std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPat
     //}
 
     // Load and compile shader
-    auto shader = Shader::createShader(vertexPath, fragmentPath);
+    auto shader = std::make_shared<Shader>(vertexPath, fragmentPath);
     if (shader)
     {
         //shader_map_.emplace(name, shader);
@@ -127,7 +127,7 @@ std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPat
     }
 
     // Load and compile shader
-    auto shader = Shader::createShader(vertexPath, fragmentPath, geometryPath);
+    auto shader = std::make_shared<Shader>(vertexPath, fragmentPath, geometryPath);
     if (shader)
     {
         shader_map_.emplace(name, shader);
@@ -149,7 +149,7 @@ std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& computePa
     }
 
     // Load and compile shader
-    auto shader = Shader::createShader(computePath);
+    auto shader = std::make_shared<Shader>(computePath);
     if (shader)
     {
         shader_map_.emplace(name, shader);
@@ -207,7 +207,7 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
         // Actually load the embedded texture from Assimp
         unsigned int texIndex = textureIndex;
         aiTexture* aiTex = scene->mTextures[texIndex];
-        auto texture = Texture2D::createTexture2D(aiTex);
+        auto texture = std::make_shared<Texture2D>(aiTex);
         if (texture)
         {
             texture_map_.emplace(uniqueKey, texture);
@@ -244,7 +244,7 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
         }
 
         // Otherwise, load from file
-        auto texture = Texture2D::createTexture2D(full_path);
+        auto texture = std::make_shared<Texture2D>(full_path);
         if (texture)
         {
             texture_map_.emplace(uniqueKey, texture);
@@ -303,7 +303,7 @@ std::shared_ptr<Mesh> GraphicsManager::createMesh(const std::string& name,
     }
 
     // Create new mesh
-    auto mesh = Mesh::createMesh(vertices, indices, material);
+    auto mesh = std::make_shared<Mesh>(vertices, indices, material);
 	mesh->setName(name);
     mesh_map_.emplace(name, mesh);
 
@@ -375,7 +375,7 @@ std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& path, const
     processNode(scene->mRootNode, scene, directory, glm::mat4(1.0f), meshInstances);
 
     // Create the model with mesh instances
-    auto model = Model::createModel(meshInstances);
+    auto model = std::make_shared<Model>(meshInstances);
 	model->setName(name);
     model_map_.emplace(name, model);
 
@@ -485,7 +485,7 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
     }
 
     // Create new material
-    auto material = Material::createMaterial();
+    auto material = std::make_shared<Material>();
     //material->setShader(getShader("PBR"));
 
     // Base color/albedo
@@ -665,7 +665,7 @@ std::shared_ptr<EnvironmentMap> GraphicsManager::loadEnvironmentMap(const std::s
     {
         return it->second;
     }
-    auto environmentMap = EnvironmentMap::createEnvironmentMap(hdrPath, equirectangularToCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    auto environmentMap = std::make_shared<EnvironmentMap>(hdrPath, equirectangularToCubemapShader, irradianceShader, prefilterShader, brdfShader);
     environment_map_.emplace(name, environmentMap);
     return environmentMap;
 }

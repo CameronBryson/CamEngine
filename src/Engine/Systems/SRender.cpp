@@ -5,7 +5,7 @@
 #include "Engine/Util/EngineUtil.hpp"
 #include "Engine/Util/platform.hpp"
 
-#include "Engine/Base/BaseScene.hpp"
+#include "BaseScene.hpp"
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Managers/GraphicsManager.hpp"
 #include "Engine/Util/OpenGLUtil.hpp"
@@ -141,18 +141,18 @@ void SRender::initImGui()
 void SRender::initFramebuffers()
 {
     // Create uniform buffers
-    mCameraUBO = UniformBuffer::createUniformBuffer(sizeof(CameraData), CAMERA_BINDING);
+    mCameraUBO = std::make_shared<UniformBuffer>(sizeof(CameraData), CAMERA_BINDING);
     GL_LABEL_OBJECT(GL_BUFFER, mCameraUBO->getID(), "Camera UBO");
-    mLightUBO = UniformBuffer::createUniformBuffer(sizeof(LightData), LIGHT_BINDING);
+    mLightUBO = std::make_shared<UniformBuffer>(sizeof(LightData), LIGHT_BINDING);
     GL_LABEL_OBJECT(GL_BUFFER, mLightUBO->getID(), "Light UBO");
-    mLuminanceHistogramUBO = UniformBuffer::createUniformBuffer(sizeof(LuminanceHistogramData), LUMINANCE_HISTOGRAM_BINDING);
+    mLuminanceHistogramUBO = std::make_shared<UniformBuffer>(sizeof(LuminanceHistogramData), LUMINANCE_HISTOGRAM_BINDING);
     GL_LABEL_OBJECT(GL_BUFFER, mLuminanceHistogramUBO->getID(), "Luminance Histogram UBO");
 
-    mAdaptationDataUBO = UniformBuffer::createUniformBuffer(sizeof(LuminanceHistogramAverageData), LUMINANCE_HISTOGRAM_AVERAGE_BINDING);
+    mAdaptationDataUBO = std::make_shared<UniformBuffer>(sizeof(LuminanceHistogramAverageData), LUMINANCE_HISTOGRAM_AVERAGE_BINDING);
     GL_LABEL_OBJECT(GL_BUFFER, mAdaptationDataUBO->getID(), "Adaptation Data UBO");
 
     //INIT LUMINANCE SSBO HERE
-    mLuminanceSSBO = ShaderStorageBuffer::create(256 * sizeof(uint32_t), LUMINANCE_SSBO_BINDING);
+    mLuminanceSSBO = std::make_shared<ShaderStorageBuffer>(256 * sizeof(uint32_t), LUMINANCE_SSBO_BINDING);
     GL_LABEL_OBJECT(GL_BUFFER, mLuminanceSSBO->getID(), "Luminance Histogram SSBO");
 	//CREATE 1x1 TEXTURE FOR LUMINANCE ADAPTAION
     GLuint luminanceTexID;
@@ -169,7 +169,7 @@ void SRender::initFramebuffers()
     GL_CHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialValue));
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 
-    mAdaptedLuminance = Texture2D::createTexture2D(luminanceTexID, 1, 1);
+    mAdaptedLuminance = std::make_shared<Texture2D>(luminanceTexID, 1, 1);
     GL_LABEL_OBJECT(GL_TEXTURE, mAdaptedLuminance->getTextureID(), "Adapted Luminance Texture");
 
     // Directional & Spot shadow map FBO
@@ -178,13 +178,13 @@ void SRender::initFramebuffers()
             { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth32F }
     };
 
-    mDirectionalShadowMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, depthAttachment);
+    mDirectionalShadowMapBuffer = std::make_shared<FrameBuffer>(mShadowMapWidth, mShadowMapHeight, depthAttachment);
     GL_LABEL_OBJECT(GL_FRAMEBUFFER, mDirectionalShadowMapBuffer->getRendererID(), "Directional Shadow FBO");
     mDirectionalShadowMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
     if (!mDirectionalShadowMapBuffer->isComplete() || !mDirectionalShadowMapBuffer->getDepthAttachment())
         throw std::runtime_error("Directional shadow map framebuffer setup failed!");
 
-    mSpotShadowMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, depthAttachment);
+    mSpotShadowMapBuffer = std::make_shared<FrameBuffer>(mShadowMapWidth, mShadowMapHeight, depthAttachment);
     GL_LABEL_OBJECT(GL_FRAMEBUFFER, mSpotShadowMapBuffer->getRendererID(), "Spot Shadow FBO");
     mSpotShadowMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
     if (!mSpotShadowMapBuffer->isComplete() || !mSpotShadowMapBuffer->getDepthAttachment())
@@ -195,8 +195,8 @@ void SRender::initFramebuffers()
         std::vector<FrameBufferAttachmentSpecification>{
             { FrameBufferAttachmentType::DepthCubemap, FrameBufferTextureFormat::Depth32F }
     };
-
-    mPointShadwMapBuffer = FrameBuffer::createFrameBuffer(mShadowMapWidth, mShadowMapHeight, depthCubemapAttachment);
+    
+    mPointShadwMapBuffer = std::make_shared<FrameBuffer>(mShadowMapWidth, mShadowMapHeight, depthCubemapAttachment);
     GL_LABEL_OBJECT(GL_FRAMEBUFFER, mPointShadwMapBuffer->getRendererID(), "Point Shadow FBO");
     mPointShadwMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
     if (!mPointShadwMapBuffer->isComplete())
@@ -210,7 +210,7 @@ void SRender::initFramebuffers()
 		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
 		{ FrameBufferAttachmentType::Depth,  FrameBufferTextureFormat::Depth32F }
 	};
-	mGBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, gBufferAttachments);
+	mGBuffer = std::make_shared<FrameBuffer>(settings::window_width, settings::window_height, gBufferAttachments);
     GL_LABEL_OBJECT(GL_FRAMEBUFFER, mGBuffer->getRendererID(), "G-Buffer FBO");
     if (!mGBuffer->isComplete())
     {
@@ -223,7 +223,7 @@ void SRender::initFramebuffers()
         { FrameBufferAttachmentType::Depth,  FrameBufferTextureFormat::Depth32F }
     };
 
-    mHDRFrameBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, hdrAttachments);
+    mHDRFrameBuffer = std::make_shared<FrameBuffer>(settings::window_width, settings::window_height, hdrAttachments);
     GL_LABEL_OBJECT(GL_FRAMEBUFFER, mHDRFrameBuffer->getRendererID(), "HDR FBO");
     if (!mHDRFrameBuffer->isComplete())
         throw std::runtime_error("HDR framebuffer setup failed!");
@@ -233,47 +233,47 @@ void SRender::initFramebuffers()
         std::vector<FrameBufferAttachmentSpecification>{
             { FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F }
     };
-	mBloomFrameBuffer = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, colorAttachment);
+	mBloomFrameBuffer = std::make_shared<FrameBuffer>(settings::window_width, settings::window_height, colorAttachment);
     for (int i = 0; i < 2; i++)
     {
-        mPingPongFBO[i] = FrameBuffer::createFrameBuffer(settings::window_width, settings::window_height, colorAttachment);
+        mPingPongFBO[i] = std::make_shared<FrameBuffer>(settings::window_width, settings::window_height, colorAttachment);
         if (!mPingPongFBO[i]->isComplete())
             throw std::runtime_error("Ping-pong framebuffer setup failed!");
     }
-    mSSAOBuffer = FrameBuffer::createFrameBuffer(
+    mSSAOBuffer = std::make_shared<FrameBuffer>(
         settings::window_width, 
         settings::window_height, 
         colorAttachment
     );
 
     // SSAO Blur buffer
-    mSSAOBlurBuffer = FrameBuffer::createFrameBuffer(
+    mSSAOBlurBuffer = std::make_shared<FrameBuffer>(
         settings::window_width, 
         settings::window_height, 
         colorAttachment
     );
 
-	mFXAAFrameBuffer = FrameBuffer::createFrameBuffer(
+	mFXAAFrameBuffer = std::make_shared<FrameBuffer>(
 		settings::window_width,
 		settings::window_height,
         colorAttachment
 	);
-	mMotionBlurFrameBuffer = FrameBuffer::createFrameBuffer(
+	mMotionBlurFrameBuffer = std::make_shared<FrameBuffer>(
 		settings::window_width,
 		settings::window_height,
 		colorAttachment
 	);
-	mTAACurrentFrameBuffer = FrameBuffer::createFrameBuffer(
+	mTAACurrentFrameBuffer = std::make_shared<FrameBuffer>(
 		settings::window_width,
 		settings::window_height,
 		colorAttachment
 	);
-	mTAAPreviousFrameBuffer = FrameBuffer::createFrameBuffer(
+	mTAAPreviousFrameBuffer = std::make_shared<FrameBuffer>(
 		settings::window_width,
 		settings::window_height,
 		colorAttachment
 	);
-	mSSRBuffer = FrameBuffer::createFrameBuffer(
+	mSSRBuffer = std::make_shared<FrameBuffer>(
 		settings::window_width,
 		settings::window_height,
 		colorAttachment
@@ -2040,7 +2040,7 @@ void SRender::generateSSAONoise()
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 
     // Create and store the texture object
-    mSSAONoise = Texture2D::createTexture2D(noiseTexture, SSAO_NOISE_SIZE, SSAO_NOISE_SIZE);
+    mSSAONoise = std::make_shared<Texture2D>(noiseTexture, SSAO_NOISE_SIZE, SSAO_NOISE_SIZE);
 }
 
 void SRender::generateHaltonSequence() {

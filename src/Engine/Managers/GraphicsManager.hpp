@@ -21,9 +21,6 @@
 #include "EnvironmentMap.hpp"
 #include "Font.hpp"
 
-
-
-
 class GraphicsManager
 {
 public:
