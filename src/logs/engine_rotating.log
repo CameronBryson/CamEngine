@@ -1,0 +1,440 @@
+[2025-04-05 14:53:45.502] [info] [engine] Logging system initialized
+[2025-04-05 14:53:45.506] [info] [engine] Initializing game engine...
+[2025-04-05 14:53:45.507] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 14:53:45.509] [info] [engine] Error handling system initialized
+[2025-04-05 14:53:45.512] [warning] [engine] Mount point base directory does not exist: assets
+[2025-04-05 14:53:45.512] [info] [engine] Created mount point directory: assets
+[2025-04-05 14:53:45.513] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 14:53:45.513] [warning] [engine] Mount point base directory does not exist: src/Shaders
+[2025-04-05 14:53:45.514] [info] [engine] Created mount point directory: src/Shaders
+[2025-04-05 14:53:45.514] [info] [engine] Mounted 'src/Shaders' to '/shaders'
+[2025-04-05 14:53:45.515] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 14:53:45.515] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 14:53:45.516] [info] [engine] Virtual file system initialized
+[2025-04-05 14:53:45.516] [info] [graphics] Initializing OpenGL...
+[2025-04-05 14:53:45.675] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 14:53:45.675] [info] [engine] OpenGL initialized successfully
+[2025-04-05 14:53:45.675] [info] [resource] Loading graphics resources...
+[2025-04-05 14:53:45.676] [info] [resource] Loading shaders...
+[2025-04-05 14:53:45.676] [error] [engine] Failed to open file: src/Shaders/skybox.vert
+[2025-04-05 14:53:45.676] [error] [engine] Failed to open file for reading: /shaders/skybox.vert
+[2025-04-05 14:53:45.676] [warning] [resource] VFS fallback for vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:53:45.677] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.vert
+[2025-04-05 14:53:45.677] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.vert
+[2025-04-05 14:53:45.677] [error] [engine] Failed to open file: src/Shaders/skybox.frag
+[2025-04-05 14:53:45.677] [error] [engine] Failed to open file for reading: /shaders/skybox.frag
+[2025-04-05 14:53:45.677] [warning] [resource] VFS fallback for fragment shader: src/Shaders/skybox.frag
+[2025-04-05 14:53:45.678] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.frag
+[2025-04-05 14:53:45.678] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.frag
+[2025-04-05 14:53:45.678] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:53:45.678] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:53:45.679] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:53:45.680] [error] [resource] Error loading shader Skybox: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:53:45.680] [error] [engine] Failed to open file: src/Shaders/shadowmap.vert
+[2025-04-05 14:53:45.680] [error] [engine] Failed to open file for reading: /shaders/shadowmap.vert
+[2025-04-05 14:53:45.680] [warning] [resource] VFS fallback for vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:53:45.680] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 14:53:45.681] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 14:53:45.681] [error] [engine] Failed to open file: src/Shaders/shadowmap.frag
+[2025-04-05 14:53:45.681] [error] [engine] Failed to open file for reading: /shaders/shadowmap.frag
+[2025-04-05 14:53:45.681] [warning] [resource] VFS fallback for fragment shader: src/Shaders/shadowmap.frag
+[2025-04-05 14:53:45.682] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 14:53:45.682] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 14:53:45.682] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:53:45.683] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:53:45.683] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:53:45.684] [error] [resource] Error loading shader ShadowMap: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:53:45.684] [error] [engine] Failed to open file: src/Shaders/pointshadow.vert
+[2025-04-05 14:53:45.685] [error] [engine] Failed to open file for reading: /shaders/pointshadow.vert
+[2025-04-05 14:53:45.685] [warning] [resource] VFS fallback for vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:53:45.685] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 14:53:45.686] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 14:53:45.686] [error] [engine] Failed to open file: src/Shaders/pointshadow.frag
+[2025-04-05 14:53:45.687] [error] [engine] Failed to open file for reading: /shaders/pointshadow.frag
+[2025-04-05 14:53:45.687] [warning] [resource] VFS fallback for fragment shader: src/Shaders/pointshadow.frag
+[2025-04-05 14:53:45.687] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 14:53:45.688] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 14:53:45.688] [error] [engine] Failed to open file: src/Shaders/pointshadow.geom
+[2025-04-05 14:53:45.688] [error] [engine] Failed to open file for reading: /shaders/pointshadow.geom
+[2025-04-05 14:53:45.688] [warning] [resource] VFS fallback for geometry shader: src/Shaders/pointshadow.geom
+[2025-04-05 14:53:45.689] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 14:53:45.689] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 14:53:45.689] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:53:45.690] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:53:45.690] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:53:45.691] [critical] [engine] Fatal error in main: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:53:45.691] [error] [engine] Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:56:23.725] [info] [engine] Logging system initialized
+[2025-04-05 14:56:23.726] [info] [engine] Initializing game engine...
+[2025-04-05 14:56:23.726] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 14:56:23.726] [info] [engine] Error handling system initialized
+[2025-04-05 14:56:23.726] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 14:56:23.726] [info] [engine] Mounted 'src/Shaders' to '/shaders'
+[2025-04-05 14:56:23.726] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 14:56:23.726] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 14:56:23.727] [info] [engine] Virtual file system initialized
+[2025-04-05 14:56:23.727] [info] [graphics] Initializing OpenGL...
+[2025-04-05 14:56:23.881] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 14:56:23.881] [info] [engine] OpenGL initialized successfully
+[2025-04-05 14:56:23.881] [info] [resource] Loading graphics resources...
+[2025-04-05 14:56:23.882] [info] [resource] Loading shaders...
+[2025-04-05 14:56:23.882] [error] [engine] Failed to open file: src/Shaders/skybox.vert
+[2025-04-05 14:56:23.882] [error] [engine] Failed to open file for reading: /shaders/skybox.vert
+[2025-04-05 14:56:23.882] [warning] [resource] VFS fallback for vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:56:23.883] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.vert
+[2025-04-05 14:56:23.883] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.vert
+[2025-04-05 14:56:23.883] [error] [engine] Failed to open file: src/Shaders/skybox.frag
+[2025-04-05 14:56:23.883] [error] [engine] Failed to open file for reading: /shaders/skybox.frag
+[2025-04-05 14:56:23.884] [warning] [resource] VFS fallback for fragment shader: src/Shaders/skybox.frag
+[2025-04-05 14:56:23.884] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.frag
+[2025-04-05 14:56:23.884] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.frag
+[2025-04-05 14:56:23.884] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:56:23.884] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:56:23.885] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:56:23.885] [error] [resource] Error loading shader Skybox: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:56:23.886] [error] [engine] Failed to open file: src/Shaders/shadowmap.vert
+[2025-04-05 14:56:23.886] [error] [engine] Failed to open file for reading: /shaders/shadowmap.vert
+[2025-04-05 14:56:23.886] [warning] [resource] VFS fallback for vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:56:23.886] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 14:56:23.886] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 14:56:23.886] [error] [engine] Failed to open file: src/Shaders/shadowmap.frag
+[2025-04-05 14:56:23.887] [error] [engine] Failed to open file for reading: /shaders/shadowmap.frag
+[2025-04-05 14:56:23.887] [warning] [resource] VFS fallback for fragment shader: src/Shaders/shadowmap.frag
+[2025-04-05 14:56:23.887] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 14:56:23.887] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 14:56:23.887] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:56:23.887] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:56:23.888] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:56:23.888] [error] [resource] Error loading shader ShadowMap: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:56:23.888] [error] [engine] Failed to open file: src/Shaders/pointshadow.vert
+[2025-04-05 14:56:23.889] [error] [engine] Failed to open file for reading: /shaders/pointshadow.vert
+[2025-04-05 14:56:23.889] [warning] [resource] VFS fallback for vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:56:23.889] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 14:56:23.889] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 14:56:23.890] [error] [engine] Failed to open file: src/Shaders/pointshadow.frag
+[2025-04-05 14:56:23.890] [error] [engine] Failed to open file for reading: /shaders/pointshadow.frag
+[2025-04-05 14:56:23.890] [warning] [resource] VFS fallback for fragment shader: src/Shaders/pointshadow.frag
+[2025-04-05 14:56:23.890] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 14:56:23.890] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 14:56:23.890] [error] [engine] Failed to open file: src/Shaders/pointshadow.geom
+[2025-04-05 14:56:23.891] [error] [engine] Failed to open file for reading: /shaders/pointshadow.geom
+[2025-04-05 14:56:23.891] [warning] [resource] VFS fallback for geometry shader: src/Shaders/pointshadow.geom
+[2025-04-05 14:56:23.891] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 14:56:23.891] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 14:56:23.891] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:56:23.891] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:56:23.892] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:56:23.892] [critical] [engine] Fatal error in main: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:56:23.892] [error] [engine] Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:59:31.317] [info] [engine] Logging system initialized
+[2025-04-05 14:59:31.318] [info] [engine] Initializing game engine...
+[2025-04-05 14:59:31.318] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 14:59:31.318] [info] [engine] Error handling system initialized
+[2025-04-05 14:59:31.318] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 14:59:31.318] [info] [engine] Mounted 'src/Shaders' to '/shaders'
+[2025-04-05 14:59:31.319] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 14:59:31.319] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 14:59:31.319] [info] [engine] Virtual file system initialized
+[2025-04-05 14:59:31.319] [info] [graphics] Initializing OpenGL...
+[2025-04-05 14:59:31.478] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 14:59:31.479] [info] [engine] OpenGL initialized successfully
+[2025-04-05 14:59:31.479] [info] [resource] Loading graphics resources...
+[2025-04-05 14:59:31.479] [warning] [engine] Mount point already exists: /shaders
+[2025-04-05 14:59:31.479] [error] [resource] Failed to mount shaders directory: C:\Users\Cam\Documents\GitHub\CamEngine\src\Shaders
+[2025-04-05 14:59:31.480] [info] [resource] Loading shaders...
+[2025-04-05 14:59:31.480] [error] [engine] Failed to open file: src/Shaders/skybox.vert
+[2025-04-05 14:59:31.480] [error] [engine] Failed to open file for reading: /shaders/skybox.vert
+[2025-04-05 14:59:31.480] [warning] [resource] VFS fallback for vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:59:31.480] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.vert
+[2025-04-05 14:59:31.480] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.vert
+[2025-04-05 14:59:31.481] [error] [engine] Failed to open file: src/Shaders/skybox.frag
+[2025-04-05 14:59:31.481] [error] [engine] Failed to open file for reading: /shaders/skybox.frag
+[2025-04-05 14:59:31.481] [warning] [resource] VFS fallback for fragment shader: src/Shaders/skybox.frag
+[2025-04-05 14:59:31.481] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.frag
+[2025-04-05 14:59:31.481] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/skybox.frag
+[2025-04-05 14:59:31.481] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:59:31.482] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:59:31.482] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:59:31.483] [error] [resource] Error loading shader Skybox: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 14:59:31.483] [error] [engine] Failed to open file: src/Shaders/shadowmap.vert
+[2025-04-05 14:59:31.483] [error] [engine] Failed to open file for reading: /shaders/shadowmap.vert
+[2025-04-05 14:59:31.483] [warning] [resource] VFS fallback for vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:59:31.483] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 14:59:31.484] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 14:59:31.484] [error] [engine] Failed to open file: src/Shaders/shadowmap.frag
+[2025-04-05 14:59:31.484] [error] [engine] Failed to open file for reading: /shaders/shadowmap.frag
+[2025-04-05 14:59:31.484] [warning] [resource] VFS fallback for fragment shader: src/Shaders/shadowmap.frag
+[2025-04-05 14:59:31.484] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 14:59:31.484] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 14:59:31.485] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:59:31.485] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:59:31.485] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:59:31.486] [error] [resource] Error loading shader ShadowMap: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 14:59:31.486] [error] [engine] Failed to open file: src/Shaders/pointshadow.vert
+[2025-04-05 14:59:31.486] [error] [engine] Failed to open file for reading: /shaders/pointshadow.vert
+[2025-04-05 14:59:31.486] [warning] [resource] VFS fallback for vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:59:31.487] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 14:59:31.487] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 14:59:31.487] [error] [engine] Failed to open file: src/Shaders/pointshadow.frag
+[2025-04-05 14:59:31.487] [error] [engine] Failed to open file for reading: /shaders/pointshadow.frag
+[2025-04-05 14:59:31.487] [warning] [resource] VFS fallback for fragment shader: src/Shaders/pointshadow.frag
+[2025-04-05 14:59:31.487] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 14:59:31.488] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 14:59:31.488] [error] [engine] Failed to open file: src/Shaders/pointshadow.geom
+[2025-04-05 14:59:31.488] [error] [engine] Failed to open file for reading: /shaders/pointshadow.geom
+[2025-04-05 14:59:31.488] [warning] [resource] VFS fallback for geometry shader: src/Shaders/pointshadow.geom
+[2025-04-05 14:59:31.488] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 14:59:31.488] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 14:59:31.489] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:59:31.489] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:59:31.489] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:59:31.489] [critical] [engine] Fatal error in main: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 14:59:31.490] [error] [engine] Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:00:35.101] [info] [engine] Logging system initialized
+[2025-04-05 15:00:35.102] [info] [engine] Initializing game engine...
+[2025-04-05 15:00:35.102] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 15:00:35.102] [info] [engine] Error handling system initialized
+[2025-04-05 15:00:35.104] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 15:00:35.104] [info] [engine] Mounted 'src/Shaders' to '/shaders'
+[2025-04-05 15:00:35.104] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 15:00:35.104] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 15:00:35.104] [info] [engine] Virtual file system initialized
+[2025-04-05 15:00:35.104] [info] [graphics] Initializing OpenGL...
+[2025-04-05 15:00:35.246] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 15:00:35.247] [info] [engine] OpenGL initialized successfully
+[2025-04-05 15:00:35.247] [info] [resource] Loading graphics resources...
+[2025-04-05 15:00:35.247] [info] [resource] Loading shaders...
+[2025-04-05 15:00:35.247] [error] [engine] Failed to open file: src/Shaders/skybox.vert
+[2025-04-05 15:00:35.248] [error] [engine] Failed to open file for reading: /shaders/skybox.vert
+[2025-04-05 15:00:35.248] [warning] [resource] VFS fallback for vertex shader: skybox.vert
+[2025-04-05 15:00:35.248] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/skybox.vert
+[2025-04-05 15:00:35.248] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/skybox.vert
+[2025-04-05 15:00:35.248] [error] [engine] Failed to open file: src/Shaders/skybox.frag
+[2025-04-05 15:00:35.249] [error] [engine] Failed to open file for reading: /shaders/skybox.frag
+[2025-04-05 15:00:35.249] [warning] [resource] VFS fallback for fragment shader: skybox.frag
+[2025-04-05 15:00:35.249] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/skybox.frag
+[2025-04-05 15:00:35.249] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/skybox.frag
+[2025-04-05 15:00:35.249] [error] [engine] Engine Exception: Failed to load vertex shader: skybox.vert
+[2025-04-05 15:00:35.249] [error] [resource] Resource Exception: Failed to load vertex shader: skybox.vert
+[2025-04-05 15:00:35.250] [error] [resource] Failed to create shader program: Failed to load vertex shader: skybox.vert
+[2025-04-05 15:00:35.250] [error] [resource] Error loading shader Skybox: Failed to load vertex shader: skybox.vert
+[2025-04-05 15:00:35.251] [error] [engine] Failed to open file: src/Shaders/shadowmap.vert
+[2025-04-05 15:00:35.251] [error] [engine] Failed to open file for reading: /shaders/shadowmap.vert
+[2025-04-05 15:00:35.251] [warning] [resource] VFS fallback for vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:00:35.251] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 15:00:35.251] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 15:00:35.251] [error] [engine] Failed to open file: src/Shaders/shadowmap.frag
+[2025-04-05 15:00:35.252] [error] [engine] Failed to open file for reading: /shaders/shadowmap.frag
+[2025-04-05 15:00:35.252] [warning] [resource] VFS fallback for fragment shader: src/Shaders/shadowmap.frag
+[2025-04-05 15:00:35.252] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 15:00:35.252] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 15:00:35.252] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:00:35.252] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:00:35.253] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:00:35.253] [error] [resource] Error loading shader ShadowMap: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:00:35.253] [error] [engine] Failed to open file: src/Shaders/pointshadow.vert
+[2025-04-05 15:00:35.254] [error] [engine] Failed to open file for reading: /shaders/pointshadow.vert
+[2025-04-05 15:00:35.254] [warning] [resource] VFS fallback for vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:00:35.254] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 15:00:35.254] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 15:00:35.254] [error] [engine] Failed to open file: src/Shaders/pointshadow.frag
+[2025-04-05 15:00:35.254] [error] [engine] Failed to open file for reading: /shaders/pointshadow.frag
+[2025-04-05 15:00:35.255] [warning] [resource] VFS fallback for fragment shader: src/Shaders/pointshadow.frag
+[2025-04-05 15:00:35.255] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 15:00:35.255] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 15:00:35.255] [error] [engine] Failed to open file: src/Shaders/pointshadow.geom
+[2025-04-05 15:00:35.255] [error] [engine] Failed to open file for reading: /shaders/pointshadow.geom
+[2025-04-05 15:00:35.256] [warning] [resource] VFS fallback for geometry shader: src/Shaders/pointshadow.geom
+[2025-04-05 15:00:35.256] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 15:00:35.256] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 15:00:35.256] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:00:35.256] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:00:35.257] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:00:35.257] [critical] [engine] Fatal error in main: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:00:35.257] [error] [engine] Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:13.328] [info] [engine] Logging system initialized
+[2025-04-05 15:01:13.329] [info] [engine] Initializing game engine...
+[2025-04-05 15:01:13.329] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 15:01:13.329] [info] [engine] Error handling system initialized
+[2025-04-05 15:01:13.330] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 15:01:13.330] [info] [engine] Mounted 'src/Shaders' to '/shaders'
+[2025-04-05 15:01:13.330] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 15:01:13.330] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 15:01:13.331] [info] [engine] Virtual file system initialized
+[2025-04-05 15:01:13.331] [info] [graphics] Initializing OpenGL...
+[2025-04-05 15:01:13.476] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 15:01:13.476] [info] [engine] OpenGL initialized successfully
+[2025-04-05 15:01:13.476] [info] [resource] Loading graphics resources...
+[2025-04-05 15:01:13.476] [info] [resource] Loading shaders...
+[2025-04-05 15:01:13.476] [error] [engine] Failed to open file: src/Shaders/skybox.vert
+[2025-04-05 15:01:13.477] [error] [engine] Failed to open file for reading: /shaders/skybox.vert
+[2025-04-05 15:01:13.477] [warning] [resource] VFS fallback for vertex shader: /Shaders/skybox.vert
+[2025-04-05 15:01:13.477] [warning] [engine] No mount point found for path: C:/Shaders/skybox.vert
+[2025-04-05 15:01:13.477] [error] [engine] Failed to open file for reading: C:/Shaders/skybox.vert
+[2025-04-05 15:01:13.477] [error] [engine] Failed to open file: src/Shaders/skybox.frag
+[2025-04-05 15:01:13.477] [error] [engine] Failed to open file for reading: /shaders/skybox.frag
+[2025-04-05 15:01:13.478] [warning] [resource] VFS fallback for fragment shader: /Shaders/skybox.frag
+[2025-04-05 15:01:13.478] [warning] [engine] No mount point found for path: C:/Shaders/skybox.frag
+[2025-04-05 15:01:13.478] [error] [engine] Failed to open file for reading: C:/Shaders/skybox.frag
+[2025-04-05 15:01:13.478] [error] [engine] Engine Exception: Failed to load vertex shader: /Shaders/skybox.vert
+[2025-04-05 15:01:13.478] [error] [resource] Resource Exception: Failed to load vertex shader: /Shaders/skybox.vert
+[2025-04-05 15:01:13.479] [error] [resource] Failed to create shader program: Failed to load vertex shader: /Shaders/skybox.vert
+[2025-04-05 15:01:13.479] [error] [resource] Error loading shader Skybox: Failed to load vertex shader: /Shaders/skybox.vert
+[2025-04-05 15:01:13.479] [error] [engine] Failed to open file: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:13.480] [error] [engine] Failed to open file for reading: /shaders/shadowmap.vert
+[2025-04-05 15:01:13.480] [warning] [resource] VFS fallback for vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:13.480] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 15:01:13.480] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 15:01:13.480] [error] [engine] Failed to open file: src/Shaders/shadowmap.frag
+[2025-04-05 15:01:13.480] [error] [engine] Failed to open file for reading: /shaders/shadowmap.frag
+[2025-04-05 15:01:13.481] [warning] [resource] VFS fallback for fragment shader: src/Shaders/shadowmap.frag
+[2025-04-05 15:01:13.481] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 15:01:13.481] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 15:01:13.481] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:13.482] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:13.482] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:13.483] [error] [resource] Error loading shader ShadowMap: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:13.483] [error] [engine] Failed to open file: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:13.483] [error] [engine] Failed to open file for reading: /shaders/pointshadow.vert
+[2025-04-05 15:01:13.483] [warning] [resource] VFS fallback for vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:13.483] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 15:01:13.484] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 15:01:13.484] [error] [engine] Failed to open file: src/Shaders/pointshadow.frag
+[2025-04-05 15:01:13.484] [error] [engine] Failed to open file for reading: /shaders/pointshadow.frag
+[2025-04-05 15:01:13.484] [warning] [resource] VFS fallback for fragment shader: src/Shaders/pointshadow.frag
+[2025-04-05 15:01:13.484] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 15:01:13.484] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 15:01:13.485] [error] [engine] Failed to open file: src/Shaders/pointshadow.geom
+[2025-04-05 15:01:13.485] [error] [engine] Failed to open file for reading: /shaders/pointshadow.geom
+[2025-04-05 15:01:13.485] [warning] [resource] VFS fallback for geometry shader: src/Shaders/pointshadow.geom
+[2025-04-05 15:01:13.485] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 15:01:13.485] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 15:01:13.486] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:13.486] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:13.486] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:13.487] [critical] [engine] Fatal error in main: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:13.487] [error] [engine] Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:31.775] [info] [engine] Logging system initialized
+[2025-04-05 15:01:31.776] [info] [engine] Initializing game engine...
+[2025-04-05 15:01:31.776] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 15:01:31.776] [info] [engine] Error handling system initialized
+[2025-04-05 15:01:31.776] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 15:01:31.777] [info] [engine] Mounted 'src/Shaders' to '/shaders'
+[2025-04-05 15:01:31.777] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 15:01:31.777] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 15:01:31.777] [info] [engine] Virtual file system initialized
+[2025-04-05 15:01:31.777] [info] [graphics] Initializing OpenGL...
+[2025-04-05 15:01:31.924] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 15:01:31.924] [info] [engine] OpenGL initialized successfully
+[2025-04-05 15:01:31.924] [info] [resource] Loading graphics resources...
+[2025-04-05 15:01:31.925] [info] [resource] Loading shaders...
+[2025-04-05 15:01:31.925] [error] [engine] Failed to open file: src/Shaders/skybox.vert
+[2025-04-05 15:01:31.925] [error] [engine] Failed to open file for reading: /shaders/skybox.vert
+[2025-04-05 15:01:31.925] [warning] [resource] VFS fallback for vertex shader: Shaders/skybox.vert
+[2025-04-05 15:01:31.925] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/Shaders/skybox.vert
+[2025-04-05 15:01:31.926] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/Shaders/skybox.vert
+[2025-04-05 15:01:31.926] [error] [engine] Failed to open file: src/Shaders/skybox.frag
+[2025-04-05 15:01:31.926] [error] [engine] Failed to open file for reading: /shaders/skybox.frag
+[2025-04-05 15:01:31.926] [warning] [resource] VFS fallback for fragment shader: Shaders/skybox.frag
+[2025-04-05 15:01:31.926] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/Shaders/skybox.frag
+[2025-04-05 15:01:31.926] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/Shaders/skybox.frag
+[2025-04-05 15:01:31.927] [error] [engine] Engine Exception: Failed to load vertex shader: Shaders/skybox.vert
+[2025-04-05 15:01:31.927] [error] [resource] Resource Exception: Failed to load vertex shader: Shaders/skybox.vert
+[2025-04-05 15:01:31.927] [error] [resource] Failed to create shader program: Failed to load vertex shader: Shaders/skybox.vert
+[2025-04-05 15:01:31.928] [error] [resource] Error loading shader Skybox: Failed to load vertex shader: Shaders/skybox.vert
+[2025-04-05 15:01:31.929] [error] [engine] Failed to open file: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:31.929] [error] [engine] Failed to open file for reading: /shaders/shadowmap.vert
+[2025-04-05 15:01:31.929] [warning] [resource] VFS fallback for vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:31.929] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 15:01:31.929] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.vert
+[2025-04-05 15:01:31.930] [error] [engine] Failed to open file: src/Shaders/shadowmap.frag
+[2025-04-05 15:01:31.930] [error] [engine] Failed to open file for reading: /shaders/shadowmap.frag
+[2025-04-05 15:01:31.930] [warning] [resource] VFS fallback for fragment shader: src/Shaders/shadowmap.frag
+[2025-04-05 15:01:31.930] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 15:01:31.930] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/shadowmap.frag
+[2025-04-05 15:01:31.930] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:31.931] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:31.931] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:31.931] [error] [resource] Error loading shader ShadowMap: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:01:31.932] [error] [engine] Failed to open file: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:31.932] [error] [engine] Failed to open file for reading: /shaders/pointshadow.vert
+[2025-04-05 15:01:31.932] [warning] [resource] VFS fallback for vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:31.932] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 15:01:31.932] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.vert
+[2025-04-05 15:01:31.932] [error] [engine] Failed to open file: src/Shaders/pointshadow.frag
+[2025-04-05 15:01:31.933] [error] [engine] Failed to open file for reading: /shaders/pointshadow.frag
+[2025-04-05 15:01:31.933] [warning] [resource] VFS fallback for fragment shader: src/Shaders/pointshadow.frag
+[2025-04-05 15:01:31.933] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 15:01:31.933] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.frag
+[2025-04-05 15:01:31.933] [error] [engine] Failed to open file: src/Shaders/pointshadow.geom
+[2025-04-05 15:01:31.933] [error] [engine] Failed to open file for reading: /shaders/pointshadow.geom
+[2025-04-05 15:01:31.934] [warning] [resource] VFS fallback for geometry shader: src/Shaders/pointshadow.geom
+[2025-04-05 15:01:31.934] [warning] [engine] No mount point found for path: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 15:01:31.934] [error] [engine] Failed to open file for reading: C:/Users/Cam/Documents/GitHub/CamEngine/src/Shaders/pointshadow.geom
+[2025-04-05 15:01:31.934] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:31.934] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:31.934] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:31.935] [critical] [engine] Fatal error in main: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:01:31.935] [error] [engine] Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:07:36.973] [info] [engine] Logging system initialized
+[2025-04-05 15:07:36.974] [info] [engine] Initializing game engine...
+[2025-04-05 15:07:36.974] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 15:07:36.974] [info] [engine] Error handling system initialized
+[2025-04-05 15:07:36.975] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 15:07:36.975] [info] [engine] Mounted 'src/Shaders' to '/shaders'
+[2025-04-05 15:07:36.975] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 15:07:36.975] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 15:07:36.975] [info] [engine] Virtual file system initialized
+[2025-04-05 15:07:36.975] [info] [graphics] Initializing OpenGL...
+[2025-04-05 15:07:37.133] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 15:07:37.133] [info] [engine] OpenGL initialized successfully
+[2025-04-05 15:07:37.134] [info] [resource] Loading graphics resources...
+[2025-04-05 15:07:37.134] [info] [resource] Loading shaders...
+[2025-04-05 15:07:37.134] [error] [engine] Failed to open file: src/Shaders/skybox.vert
+[2025-04-05 15:07:37.134] [error] [engine] Failed to open file for reading: /shaders/skybox.vert
+[2025-04-05 15:07:37.134] [warning] [resource] VFS fallback for vertex shader: src/Shaders/skybox.vert
+[2025-04-05 15:07:37.135] [warning] [engine] No mount point found for path: src/Shaders/skybox.vert
+[2025-04-05 15:07:37.135] [error] [engine] Failed to open file for reading: src/Shaders/skybox.vert
+[2025-04-05 15:07:37.135] [error] [engine] Failed to open file: src/Shaders/skybox.frag
+[2025-04-05 15:07:37.135] [error] [engine] Failed to open file for reading: /shaders/skybox.frag
+[2025-04-05 15:07:37.135] [warning] [resource] VFS fallback for fragment shader: src/Shaders/skybox.frag
+[2025-04-05 15:07:37.135] [warning] [engine] No mount point found for path: src/Shaders/skybox.frag
+[2025-04-05 15:07:37.136] [error] [engine] Failed to open file for reading: src/Shaders/skybox.frag
+[2025-04-05 15:07:37.136] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 15:07:37.136] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 15:07:37.136] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 15:07:37.137] [error] [resource] Error loading shader Skybox: Failed to load vertex shader: src/Shaders/skybox.vert
+[2025-04-05 15:07:37.137] [error] [engine] Failed to open file: src/Shaders/shadowmap.vert
+[2025-04-05 15:07:37.137] [error] [engine] Failed to open file for reading: /shaders/shadowmap.vert
+[2025-04-05 15:07:37.137] [warning] [resource] VFS fallback for vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:07:37.137] [warning] [engine] No mount point found for path: src/Shaders/shadowmap.vert
+[2025-04-05 15:07:37.138] [error] [engine] Failed to open file for reading: src/Shaders/shadowmap.vert
+[2025-04-05 15:07:37.138] [error] [engine] Failed to open file: src/Shaders/shadowmap.frag
+[2025-04-05 15:07:37.138] [error] [engine] Failed to open file for reading: /shaders/shadowmap.frag
+[2025-04-05 15:07:37.138] [warning] [resource] VFS fallback for fragment shader: src/Shaders/shadowmap.frag
+[2025-04-05 15:07:37.138] [warning] [engine] No mount point found for path: src/Shaders/shadowmap.frag
+[2025-04-05 15:07:37.138] [error] [engine] Failed to open file for reading: src/Shaders/shadowmap.frag
+[2025-04-05 15:07:37.139] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:07:37.139] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:07:37.139] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:07:37.140] [error] [resource] Error loading shader ShadowMap: Failed to load vertex shader: src/Shaders/shadowmap.vert
+[2025-04-05 15:07:37.140] [error] [engine] Failed to open file: src/Shaders/pointshadow.vert
+[2025-04-05 15:07:37.140] [error] [engine] Failed to open file for reading: /shaders/pointshadow.vert
+[2025-04-05 15:07:37.140] [warning] [resource] VFS fallback for vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:07:37.140] [warning] [engine] No mount point found for path: src/Shaders/pointshadow.vert
+[2025-04-05 15:07:37.141] [error] [engine] Failed to open file for reading: src/Shaders/pointshadow.vert
+[2025-04-05 15:07:37.141] [error] [engine] Failed to open file: src/Shaders/pointshadow.frag
+[2025-04-05 15:07:37.141] [error] [engine] Failed to open file for reading: /shaders/pointshadow.frag
+[2025-04-05 15:07:37.141] [warning] [resource] VFS fallback for fragment shader: src/Shaders/pointshadow.frag
+[2025-04-05 15:07:37.141] [warning] [engine] No mount point found for path: src/Shaders/pointshadow.frag
+[2025-04-05 15:07:37.141] [error] [engine] Failed to open file for reading: src/Shaders/pointshadow.frag
+[2025-04-05 15:07:37.142] [error] [engine] Failed to open file: src/Shaders/pointshadow.geom
+[2025-04-05 15:07:37.142] [error] [engine] Failed to open file for reading: /shaders/pointshadow.geom
+[2025-04-05 15:07:37.142] [warning] [resource] VFS fallback for geometry shader: src/Shaders/pointshadow.geom
+[2025-04-05 15:07:37.142] [warning] [engine] No mount point found for path: src/Shaders/pointshadow.geom
+[2025-04-05 15:07:37.142] [error] [engine] Failed to open file for reading: src/Shaders/pointshadow.geom
+[2025-04-05 15:07:37.142] [error] [engine] Engine Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:07:37.143] [error] [resource] Resource Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:07:37.143] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:07:37.144] [critical] [engine] Fatal error in main: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 15:07:37.144] [error] [engine] Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert

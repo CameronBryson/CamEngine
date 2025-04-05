@@ -24,7 +24,7 @@ Texture2D::Texture2D(const std::string& file)
     // Load the texture data using stb_image
     int nrChannels;
     stbi_set_flip_vertically_on_load(false); // Flip the image vertically if needed
-    std::string fullPath = engine_util::buildPath(file);
+    std::string fullPath = file;
     unsigned char* data = stbi_load(fullPath.c_str(), &width, &height, &nrChannels, 0);
     if (!data)
     {

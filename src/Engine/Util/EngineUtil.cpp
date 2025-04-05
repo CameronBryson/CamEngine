@@ -80,15 +80,3 @@ void engine_util::getMouseDelta(double& dx, double& dy) {
 void engine_util::setMouseCursorMode(int mode) {
     glfwSetInputMode(GameManager::get_glfw_window(), GLFW_CURSOR, mode);
 }
-std::string engine_util::buildPath(const std::string& path)
-{
-    //#ifdef _WIN32
-    auto current_path = std::filesystem::current_path();
-    auto parent_path = current_path.parent_path();
-
-    auto new_path = (parent_path / path).make_preferred().string();
-    return new_path;
-    //return "../" + path;
-    //return (std::filesystem::current_path() / path).string();
-//#endif
-}

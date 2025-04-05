@@ -21,8 +21,6 @@ public:
     static void getMouseDelta(double& dx, double& dy);
     static void setMouseCursorMode(int mode); // GLFW_CURSOR_NORMAL, GLFW_CURSOR_DISABLED, etc.
 
-    static std::string buildPath(const std::string& path);
-
 private:
     static std::unordered_map<int, bool> mKeyStates;
     static std::unordered_map<int, bool> mMouseButtonStates;

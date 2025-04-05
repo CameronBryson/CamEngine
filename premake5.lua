@@ -7,7 +7,7 @@ workspace "CamEngine"
     project "CamEngine"
         kind "ConsoleApp"
         language "C++"
-        cppdialect "C++17"
+        cppdialect "C++latest"
 
         targetdir   "build/%{cfg.buildcfg}/bin"
         objdir      "build/%{cfg.buildcfg}/obj"

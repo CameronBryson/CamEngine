@@ -17,8 +17,8 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
     std::string fragmentCode;  
     std::ifstream vShaderFile;  
     std::ifstream fShaderFile;  
-    std::cout << "vertexPath: " << engine_util::buildPath(vertexPath) << '\n';  
-    std::cout << "fragmentPath: " << engine_util::buildPath(fragmentPath) << '\n';  
+    std::cout << "vertexPath: " << vertexPath << '\n';  
+    std::cout << "fragmentPath: " << fragmentPath << '\n';  
     // ensure ifstream objects can throw exceptions:  
     vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);  
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);  
@@ -26,8 +26,8 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
     try  
     {  
         // open files  
-        vShaderFile.open(engine_util::buildPath(vertexPath));  
-        fShaderFile.open(engine_util::buildPath(fragmentPath));  
+        vShaderFile.open(vertexPath);  
+        fShaderFile.open(fragmentPath);  
 
         std::stringstream vShaderStream, fShaderStream;  
         // read file's buffer contents into streams  
@@ -75,9 +75,9 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, c
     std::string vertexCode, fragmentCode, geometryCode;  
     std::ifstream vShaderFile, fShaderFile, gShaderFile;  
 
-    std::cout << "vertexPath: " << engine_util::buildPath(vertexPath) << '\n';  
-    std::cout << "fragmentPath: " << engine_util::buildPath(fragmentPath) << '\n';  
-    std::cout << "geometryPath: " << engine_util::buildPath(geometryPath) << '\n';  
+    std::cout << "vertexPath: " << vertexPath << '\n';  
+    std::cout << "fragmentPath: " << fragmentPath << '\n';  
+    std::cout << "geometryPath: " << geometryPath << '\n';  
 
     vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);  
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);  
@@ -86,9 +86,9 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, c
     try  
     {  
         // open files  
-        vShaderFile.open(engine_util::buildPath(vertexPath));  
-        fShaderFile.open(engine_util::buildPath(fragmentPath));  
-        gShaderFile.open(engine_util::buildPath(geometryPath));  
+        vShaderFile.open(vertexPath);  
+        fShaderFile.open(fragmentPath);  
+        gShaderFile.open(geometryPath);  
 
         std::stringstream vShaderStream, fShaderStream, gShaderStream;  
         vShaderStream << vShaderFile.rdbuf();  
@@ -149,7 +149,7 @@ Shader::Shader(const std::string& computePath)
     std::string computeCode;
     std::ifstream cShaderFile;
 
-    std::cout << "computePath: " << engine_util::buildPath(computePath) << '\n';
+    std::cout << "computePath: " << computePath << '\n';
 
     // ensure ifstream objects can throw exceptions:
     cShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -157,7 +157,7 @@ Shader::Shader(const std::string& computePath)
     try
     {
         // open file
-        cShaderFile.open(engine_util::buildPath(computePath));
+        cShaderFile.open(computePath);
 
         std::stringstream cShaderStream;
         // read file's buffer contents into streams

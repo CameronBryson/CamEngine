@@ -7,6 +7,9 @@
 #include <iostream>
 
 #include <Engine/Util/OpenGLUtil.hpp>
+#include <Engine/Util/Logging.hpp>
+#include <Engine/Util/ErrorHandler.hpp>
+#include <Engine/Util/VirtualFileSystem.hpp>
 
 #include <BaseScene.hpp>
 #include <GLFW/glfw3.h>
@@ -19,45 +22,106 @@ std::unique_ptr<BaseScene> GameManager::mPendingScene = nullptr;
 std::unique_ptr<GraphicsManager> GameManager::mGraphicsManager = nullptr;
 void GameManager::firstInit()
 {
+	// Initialize logging system
+	logging::init();
+	LOG_INFO(logging::gEngineLogger, "Initializing game engine...");
+
+	// Setup error handlers for crash reporting
+	error_handling::setupSignalHandlers();
+	LOG_INFO(logging::gEngineLogger, "Error handling system initialized");
+
+	// Initialize virtual file system
+	initializeFileSystem();
+	LOG_INFO(logging::gEngineLogger, "Virtual file system initialized");
+
+	// Initialize OpenGL
 	gl::init();
-	//OpenALUtil::init();
-	//mAudioManager = std::make_unique<AudioManager>();
+	LOG_INFO(logging::gEngineLogger, "OpenGL initialized successfully");
+
 	mGraphicsManager = std::make_unique<GraphicsManager>();
 	mGraphicsManager->loadResources();
-	//mAudioManager->loadResources();
+	LOG_INFO(logging::gEngineLogger, "Graphics resources loaded successfully");
 }
+
+void GameManager::initializeFileSystem()
+{
+	try {
+		auto& fs = vfs::FileSystem::instance();
+		
+		// Mount standard directories
+		fs.mount("/assets", "assets");
+		fs.mount("/shaders", "src/Shaders");
+		fs.mount("/logs", "logs");
+		
+		LOG_INFO(logging::gEngineLogger, "Virtual file system mounted standard directories");
+	} catch (const std::exception& e) {
+		LOG_ERROR(logging::gEngineLogger, "Failed to initialize file system: {}", e.what());
+	}
+}
+
 void GameManager::init()
 {
-    mCurrentScene->init();
-	mCurrentScene->lateInit();
+	LOG_INFO(logging::gEngineLogger, "Initializing current scene...");
+	try {
+		mCurrentScene->init();
+		mCurrentScene->lateInit();
+		LOG_INFO(logging::gEngineLogger, "Scene initialization complete");
+	} catch (const std::exception& e) {
+		LOG_ERROR(logging::gEngineLogger, "Scene initialization failed: {}", e.what());
+		error_handling::reportException(e);
+	}
 }
 
 void GameManager::update(float dt)
 {
-    mCurrentScene->update(dt);
-    mCurrentScene->lateUpdate(dt);
+	try {
+		mCurrentScene->update(dt);
+		mCurrentScene->lateUpdate(dt);
+	} catch (const std::exception& e) {
+		LOG_ERROR(logging::gEngineLogger, "Error during update: {}", e.what());
+		error_handling::reportException(e);
+	}
 }
 
 void GameManager::render(float dt)
 {
-    mCurrentScene->render(dt);
-	mCurrentScene->lateRender();
+	try {
+		mCurrentScene->render(dt);
+		mCurrentScene->lateRender();
+	} catch (const std::exception& e) {
+		LOG_ERROR(logging::gEngineLogger, "Error during render: {}", e.what());
+		error_handling::reportException(e);
+	}
 }
 
 void GameManager::shutdown()
 {
-    mCurrentScene->shutdown();
-	mCurrentScene->lateShutdown();
-    mCurrentScene = nullptr;
-
+	LOG_INFO(logging::gEngineLogger, "Shutting down current scene...");
+	try {
+		if (mCurrentScene) {
+			mCurrentScene->shutdown();
+			mCurrentScene->lateShutdown();
+			mCurrentScene = nullptr;
+		}
+	} catch (const std::exception& e) {
+		LOG_ERROR(logging::gEngineLogger, "Error during shutdown: {}", e.what());
+		error_handling::reportException(e);
+	}
 }
 
 void GameManager::finalShutdown() 
 {
-	//mAudioManager->unloadResources();
-	mGraphicsManager->unloadResources();
-	//OpenALUtil::shutdown();
-	gl::shutdown();
+	LOG_INFO(logging::gEngineLogger, "Performing final shutdown...");
+	try {
+		if (mGraphicsManager) {
+			mGraphicsManager->unloadResources();
+		}
+		gl::shutdown();
+		LOG_INFO(logging::gEngineLogger, "Shutdown complete");
+	} catch (const std::exception& e) {
+		LOG_ERROR(logging::gEngineLogger, "Error during final shutdown: {}", e.what());
+		error_handling::reportException(e);
+	}
 }
 
 
@@ -111,47 +175,53 @@ void GameManager::finalShutdown()
 
 void GameManager::gameLoop()
 {
-    const double targetFrameTime = 1.0 / settings::max_fps;
-    auto previousTime = std::chrono::high_resolution_clock::now();
+	const double targetFrameTime = 1.0 / settings::max_fps;
+	auto previousTime = std::chrono::high_resolution_clock::now();
 
-    while (!glfwWindowShouldClose(mGameWindow))
-    {
-        gl::beginFrame();
-        auto loopStart = std::chrono::high_resolution_clock::now();
-        double deltaTime = std::chrono::duration<double>(loopStart - previousTime).count();
-        previousTime = loopStart;
+	while (!glfwWindowShouldClose(mGameWindow))
+	{
+		try {
+			gl::beginFrame();
+			auto loopStart = std::chrono::high_resolution_clock::now();
+			double deltaTime = std::chrono::duration<double>(loopStart - previousTime).count();
+			previousTime = loopStart;
 
-        glfwPollEvents();
-        update(static_cast<float>(deltaTime));
-        render(static_cast<float>(deltaTime));
-        gl::endFrame();
-        // End frame
-        glfwSwapBuffers(mGameWindow);
+			glfwPollEvents();
+			update(static_cast<float>(deltaTime));
+			render(static_cast<float>(deltaTime));
+			gl::endFrame();
+			
+			// End frame
+			glfwSwapBuffers(mGameWindow);
 
-        // Measure loop time once, right after swap
-        auto loopEnd = std::chrono::high_resolution_clock::now();
-        double frameDuration = std::chrono::duration<double>(loopEnd - loopStart).count();
-        double sleepTime = targetFrameTime - frameDuration;
-        if (sleepTime > 0.0)
-            std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
+			// Measure loop time once, right after swap
+			auto loopEnd = std::chrono::high_resolution_clock::now();
+			double frameDuration = std::chrono::duration<double>(loopEnd - loopStart).count();
+			double sleepTime = targetFrameTime - frameDuration;
+			if (sleepTime > 0.0)
+				std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
 
-        if (mPendingScene)
-        {
-            shutdown();
-            mCurrentScene = std::move(mPendingScene);
-            init();
-        }
-    }
+			if (mPendingScene)
+			{
+				shutdown();
+				mCurrentScene = std::move(mPendingScene);
+				init();
+			}
+		} catch (const std::exception& e) {
+			LOG_ERROR(logging::gEngineLogger, "Error in game loop: {}", e.what());
+			error_handling::reportException(e);
+		}
+	}
 }
 
 
 GLFWwindow * GameManager::get_glfw_window()
 {
-    return mGameWindow;
+	return mGameWindow;
 }
 
 void GameManager::set_glfw_window(GLFWwindow * window)
 {
-    mGameWindow = window;
+	mGameWindow = window;
 }
 

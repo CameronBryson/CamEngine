@@ -295,7 +295,7 @@ void SRender::calculateSceneBounds()
     {
         const auto& transformComp = view.get<CTransform>(entity);
         const auto& modelComp = view.get<CModel>(entity);
-        auto& model = GameManager::mGraphicsManager->getModel(modelComp.name);
+        const auto& model = GameManager::mGraphicsManager->getModel(modelComp.name);
         auto& meshes = model->getMeshes();
 
         for (const auto& meshInstance : meshes)

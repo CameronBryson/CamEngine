@@ -4,11 +4,14 @@
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Util/EngineUtil.hpp"
 #include "Engine/Util/GameSettings.hpp"
+#include "Engine/Util/Logging.hpp"
+#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <iostream>
 namespace gl {
     namespace detail {
         bool g_GLDebugOutput = true;
@@ -19,9 +22,15 @@ namespace gl {
 
     void init()
     {
-        glfwSetErrorCallback(engine_util::errorCallback);
+        LOG_INFO(logging::gGraphicsLogger, "Initializing OpenGL...");
+        
+        glfwSetErrorCallback([](int error, const char* description) {
+            LOG_ERROR(logging::gGraphicsLogger, "GLFW Error {}: {}", error, description);
+        });
+
         if (!glfwInit())
         {
+            LOG_CRITICAL(logging::gGraphicsLogger, "Failed to initialize GLFW");
             exit(EXIT_FAILURE);
         }
 
@@ -43,6 +52,7 @@ namespace gl {
         );
         if (!game_window)
         {
+            LOG_CRITICAL(logging::gGraphicsLogger, "Failed to create GLFW window");
             glfwTerminate();
             exit(EXIT_FAILURE);
         }
@@ -56,7 +66,7 @@ namespace gl {
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            std::cerr << "Failed to initialize GLAD" << std::endl;
+            LOG_CRITICAL(logging::gGraphicsLogger, "Failed to initialize GLAD");
             exit(EXIT_FAILURE);
         }
 
@@ -84,13 +94,16 @@ namespace gl {
         GL_CHECK(glBlendEquation(GL_FUNC_ADD));
 
         GameManager::set_glfw_window(game_window);
+        LOG_INFO(logging::gGraphicsLogger, "OpenGL initialized successfully");
     }
 
     void shutdown()
     {
+        LOG_INFO(logging::gGraphicsLogger, "Shutting down OpenGL...");
         timer::reset();
         glfwDestroyWindow(GameManager::mGameWindow);
         glfwTerminate();
+        LOG_INFO(logging::gGraphicsLogger, "OpenGL shutdown complete");
     }
 
     namespace timer {

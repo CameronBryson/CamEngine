@@ -2,20 +2,42 @@
 #include <string>
 #include <vector>
 #include "Engine/Util/platform.hpp"
-#include <iostream>
+#include "Engine/Util/ErrorHandler.hpp"
+#include "Engine/Util/Logging.hpp"
 #include <glm/fwd.hpp>
 #include <unordered_map>
 
-// Macro definitions
-#define GL_CHECK(stmt)                      \
-    do {                                    \
-        stmt;                               \
-        GLenum err;                         \
-        while ((err = glGetError()) != GL_NO_ERROR) {               \
-            std::cerr << "[OpenGL Error] 0x" << std::hex << err     \
-                      << " at " << __FILE__ << ":" << std::dec << __LINE__ \
-                      << " for call: " << #stmt << std::endl;       \
-        }                                  \
+// Macro definitions for OpenGL error checking with our error handling system
+#define GL_CHECK(stmt)                                                       \
+    do {                                                                     \
+        stmt;                                                                \
+        GLenum err;                                                          \
+        while ((err = glGetError()) != GL_NO_ERROR) {                        \
+            std::string errorMsg = std::string("[OpenGL Error] 0x") +        \
+                                   std::to_string(err) +                      \
+                                   " at " + __FILE__ + ":" +                 \
+                                   std::to_string(__LINE__) +                \
+                                   " for call: " + #stmt;                    \
+            LOG_ERROR(logging::gGraphicsLogger, "{}", errorMsg);             \
+            if (gl::detail::g_BreakOnError) {                               \
+                error_handling::reportFatalError(errorMsg);                  \
+            }                                                                \
+        }                                                                    \
+    } while (0)
+
+// Macro for validating OpenGL objects with our error handling system
+#define GL_VALIDATE(expr, msg)                                               \
+    do {                                                                     \
+        auto result = (expr);                                                \
+        if (!result) {                                                       \
+            std::string errorMsg = std::string("OpenGL validation failed: ") + \
+                                   msg + " at " + __FILE__ + ":" +           \
+                                   std::to_string(__LINE__);                 \
+            LOG_ERROR(logging::gGraphicsLogger, "{}", errorMsg);             \
+            if (gl::detail::g_BreakOnError) {                               \
+                error_handling::reportFatalError(errorMsg);                  \
+            }                                                                \
+        }                                                                    \
     } while (0)
 
 namespace gl {
@@ -97,7 +119,7 @@ namespace gl {
 
 } // namespace gl
 
-  // Debug macros
+// Debug macros
 #ifdef _DEBUG
 #define GL_SCOPED_MARKER(name) gl::ScopedLabel scopedLabel##__LINE__(name)
 #define GL_SCOPED_TIMER(name) gl::ScopedTimer scopedTimer##__LINE__(name)
