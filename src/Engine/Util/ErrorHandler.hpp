@@ -49,6 +49,7 @@ T checkResult(T result, const std::function<bool(T)>& validator, const std::stri
 // Exception/error reporting
 void reportException(const std::exception& e);
 void reportFatalError(const std::string& message);
+void reportGlError(const std::string& context);
 
 } // namespace error_handling
 

@@ -250,10 +250,53 @@ void reportException(const std::exception& e) {
 }
 
 void reportFatalError(const std::string& message) {
-    LOG_CRITICAL(logging::gEngineLogger, "Fatal error: {}", message);
+    std::string errorMessage = "Fatal error: " + message;
     std::string stackTrace = getStackTrace();
-    LOG_CRITICAL(logging::gEngineLogger, "{}", stackTrace);
-    spdlog::shutdown(); // Ensure logs are flushed
+    
+    // Log the error and stack trace
+    if (logging::gEngineLogger) {
+        LOG_CRITICAL(logging::gEngineLogger, "{}", errorMessage);
+        LOG_CRITICAL(logging::gEngineLogger, "{}", stackTrace);
+        spdlog::shutdown(); // Ensure logs are flushed
+    } else {
+        // If logger is not available, write to stderr
+        std::cerr << errorMessage << std::endl;
+        std::cerr << stackTrace << std::endl;
+    }
+    
+    // Terminate the program
+    std::exit(EXIT_FAILURE);
+}
+
+void reportGlError(const std::string& context) {
+    // Check for OpenGL errors
+    GLenum error;
+    bool hasError = false;
+    std::string errorMsg = "OpenGL errors in context '" + context + "': ";
+    
+    while ((error = glGetError()) != GL_NO_ERROR) {
+        std::string errorStr;
+        switch (error) {
+            case GL_INVALID_ENUM:      errorStr = "GL_INVALID_ENUM"; break;
+            case GL_INVALID_VALUE:     errorStr = "GL_INVALID_VALUE"; break;
+            case GL_INVALID_OPERATION: errorStr = "GL_INVALID_OPERATION"; break;
+            case GL_STACK_OVERFLOW:    errorStr = "GL_STACK_OVERFLOW"; break;
+            case GL_STACK_UNDERFLOW:   errorStr = "GL_STACK_UNDERFLOW"; break;
+            case GL_OUT_OF_MEMORY:     errorStr = "GL_OUT_OF_MEMORY"; break;
+            default:                   errorStr = "Unknown error code " + std::to_string(error); break;
+        }
+        
+        if (hasError) {
+            errorMsg += ", " + errorStr;
+        } else {
+            errorMsg += errorStr;
+            hasError = true;
+        }
+    }
+    
+    if (hasError) {
+        LOG_ERROR(logging::gGraphicsLogger, "{}", errorMsg);
+    }
 }
 
 } // namespace error_handling 

@@ -9,7 +9,6 @@
 #include <Engine/Util/OpenGLUtil.hpp>
 #include <Engine/Util/Logging.hpp>
 #include <Engine/Util/ErrorHandler.hpp>
-#include <Engine/Util/VirtualFileSystem.hpp>
 
 #include <BaseScene.hpp>
 #include <GLFW/glfw3.h>
@@ -30,9 +29,6 @@ void GameManager::firstInit()
 	error_handling::setupSignalHandlers();
 	LOG_INFO(logging::gEngineLogger, "Error handling system initialized");
 
-	// Initialize virtual file system
-	initializeFileSystem();
-	LOG_INFO(logging::gEngineLogger, "Virtual file system initialized");
 
 	// Initialize OpenGL
 	gl::init();
@@ -43,21 +39,6 @@ void GameManager::firstInit()
 	LOG_INFO(logging::gEngineLogger, "Graphics resources loaded successfully");
 }
 
-void GameManager::initializeFileSystem()
-{
-	try {
-		auto& fs = vfs::FileSystem::instance();
-		
-		// Mount standard directories
-		fs.mount("/assets", "assets");
-		fs.mount("/shaders", "src/Shaders");
-		fs.mount("/logs", "logs");
-		
-		LOG_INFO(logging::gEngineLogger, "Virtual file system mounted standard directories");
-	} catch (const std::exception& e) {
-		LOG_ERROR(logging::gEngineLogger, "Failed to initialize file system: {}", e.what());
-	}
-}
 
 void GameManager::init()
 {

@@ -204,12 +204,21 @@ void Shader::use() const { GL_CHECK(glUseProgram(shaderID)); }
 void Shader::dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ) const
 {
     if (!isComputeShader) {
-        std::cout << "ERROR::SHADER::NOT_A_COMPUTE_SHADER\n";
-        return;
+        LOG_ERROR(logging::gGraphicsLogger, "Cannot dispatch non-compute shader (ID: {})", shaderID);
+        throw error_handling::GraphicsException("Cannot dispatch a non-compute shader");
     }
-    use();
-    GL_CHECK(glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ));
-
+    
+    try {
+        use();
+        GL_CHECK(glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ));
+        LOG_DEBUG(logging::gGraphicsLogger, "Dispatched compute shader with groups: {}x{}x{}", 
+                 numGroupsX, numGroupsY, numGroupsZ);
+    }
+    catch (const std::exception& e) {
+        LOG_ERROR(logging::gGraphicsLogger, "Failed to dispatch compute shader: {}", e.what());
+        error_handling::reportGlError("Compute shader dispatch failed");
+        throw;
+    }
 }
 
 void Shader::setBool(const std::string& name, bool value) const  

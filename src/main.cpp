@@ -2,7 +2,6 @@
 #include "Engine/Managers/GameManager.hpp"
 #include "Engine/Util/Logging.hpp"
 #include "Engine/Util/ErrorHandler.hpp"
-#include "Engine/Util/VirtualFileSystem.hpp"
 #include "TestScene.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -15,42 +14,6 @@ extern "C" {
 	_declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 
-bool initializeVirtualFilesystem() {
-	try {
-		// Mount main directories to VFS
-		auto& fs = vfs::FileSystem::instance();
-		
-		// Mount assets directory
-		if (!fs.mount("/assets", "../assets")) {
-			LOG_ERROR(logging::gEngineLogger, "Failed to mount assets directory");
-			return false;
-		}
-		
-		// Mount shaders directory
-		if (!fs.mount("/shaders", "../src/Shaders")) {
-			LOG_ERROR(logging::gEngineLogger, "Failed to mount shaders directory");
-			return false;
-		}
-		
-		// Mount logs directory
-		std::filesystem::create_directory("logs");
-		if (!fs.mount("/logs", "logs")) {
-			LOG_ERROR(logging::gEngineLogger, "Failed to mount logs directory");
-			return false;
-		}
-		
-		LOG_INFO(logging::gEngineLogger, "Virtual filesystem initialized successfully");
-		return true;
-	}
-	catch (const std::exception& e) {
-		if (logging::gEngineLogger) {
-			LOG_ERROR(logging::gEngineLogger, "Failed to initialize virtual filesystem: {}", e.what());
-		} else {
-			std::cerr << "Failed to initialize virtual filesystem: " << e.what() << std::endl;
-		}
-		return false;
-	}
-}
 
 int main()
 {
@@ -63,11 +26,6 @@ int main()
 		error_handling::setupSignalHandlers();
 		LOG_INFO(logging::gEngineLogger, "Signal handlers installed");
 		
-		// Initialize virtual filesystem
-		if (!initializeVirtualFilesystem()) {
-			LOG_CRITICAL(logging::gEngineLogger, "Failed to initialize virtual filesystem, aborting");
-			return EXIT_FAILURE;
-		}
 		
 		// Initialize engine systems
 		LOG_INFO(logging::gEngineLogger, "Initializing engine systems");

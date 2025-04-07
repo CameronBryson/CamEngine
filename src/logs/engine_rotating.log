@@ -438,3 +438,770 @@
 [2025-04-05 15:07:37.143] [error] [resource] Failed to create shader program: Failed to load vertex shader: src/Shaders/pointshadow.vert
 [2025-04-05 15:07:37.144] [critical] [engine] Fatal error in main: Failed to load vertex shader: src/Shaders/pointshadow.vert
 [2025-04-05 15:07:37.144] [error] [engine] Exception: Failed to load vertex shader: src/Shaders/pointshadow.vert
+[2025-04-05 17:54:03.505] [info] [engine] Logging system initialized
+[2025-04-05 17:54:03.506] [info] [engine] Starting application
+[2025-04-05 17:54:03.506] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 17:54:03.507] [info] [engine] Signal handlers installed
+[2025-04-05 17:54:03.508] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 17:54:03.508] [info] [engine] Mounted '../src/Shaders' to '/shaders'
+[2025-04-05 17:54:03.508] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 17:54:03.509] [info] [engine] Virtual filesystem initialized successfully
+[2025-04-05 17:54:03.509] [info] [engine] Initializing engine systems
+[2025-04-05 17:54:03.511] [info] [engine] Initializing game engine...
+[2025-04-05 17:54:03.511] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 17:54:03.511] [info] [engine] Error handling system initialized
+[2025-04-05 17:54:03.512] [warning] [engine] Mount point already exists: /assets
+[2025-04-05 17:54:03.512] [warning] [engine] Mount point already exists: /shaders
+[2025-04-05 17:54:03.512] [warning] [engine] Mount point already exists: /logs
+[2025-04-05 17:54:03.512] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 17:54:03.512] [info] [engine] Virtual file system initialized
+[2025-04-05 17:54:03.512] [info] [graphics] Initializing OpenGL...
+[2025-04-05 17:54:03.704] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 17:54:03.705] [info] [engine] OpenGL initialized successfully
+[2025-04-05 17:54:03.745] [info] [engine] Creating environment map from HDR: assets/8ksky.hdr
+[2025-04-05 17:54:03.745] [warning] [engine] No mount point found for path: assets/8ksky.hdr
+[2025-04-05 17:54:03.745] [error] [engine] HDR file not found in virtual filesystem: assets/8ksky.hdr
+[2025-04-05 17:54:03.746] [error] [engine] Failed to create environment map: Failed to load HDR file: assets/8ksky.hdr
+[2025-04-05 17:54:03.746] [critical] [engine] Fatal error in main: Failed to load HDR file: assets/8ksky.hdr
+[2025-04-05 17:54:03.746] [error] [engine] Exception: Failed to load HDR file: assets/8ksky.hdr
+[2025-04-05 17:54:03.746] [info] [engine] Shutting down logging system
+[2025-04-05 17:59:56.636] [info] [engine] Logging system initialized
+[2025-04-05 17:59:56.637] [info] [engine] Starting application
+[2025-04-05 17:59:56.638] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 17:59:56.639] [info] [engine] Signal handlers installed
+[2025-04-05 17:59:56.640] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 17:59:56.640] [info] [engine] Mounted '../src/Shaders' to '/shaders'
+[2025-04-05 17:59:56.641] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 17:59:56.642] [info] [engine] Virtual filesystem initialized successfully
+[2025-04-05 17:59:56.642] [info] [engine] Initializing engine systems
+[2025-04-05 17:59:56.644] [info] [engine] Initializing game engine...
+[2025-04-05 17:59:56.645] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 17:59:56.645] [info] [engine] Error handling system initialized
+[2025-04-05 17:59:56.646] [info] [engine] Initializing virtual file system
+[2025-04-05 17:59:56.646] [warning] [engine] Mount point already exists: /assets
+[2025-04-05 17:59:56.646] [error] [engine] Failed to mount assets directory
+[2025-04-05 17:59:56.647] [error] [engine] Engine Exception: Failed to mount /assets
+[2025-04-05 17:59:56.647] [error] [engine] File System Exception: Failed to mount /assets
+[2025-04-05 17:59:56.648] [error] [engine] Failed to initialize file system: Failed to mount /assets
+[2025-04-05 17:59:56.648] [error] [engine] Exception: Failed to mount /assets
+[2025-04-05 17:59:56.648] [critical] [engine] Fatal error in main: Failed to mount /assets
+[2025-04-05 17:59:56.649] [error] [engine] Exception: Failed to mount /assets
+[2025-04-05 17:59:56.650] [info] [engine] Shutting down logging system
+[2025-04-05 18:00:00.767] [info] [engine] Logging system initialized
+[2025-04-05 18:00:00.768] [info] [engine] Starting application
+[2025-04-05 18:00:00.768] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:00:00.768] [info] [engine] Signal handlers installed
+[2025-04-05 18:00:00.769] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 18:00:00.769] [info] [engine] Mounted '../src/Shaders' to '/shaders'
+[2025-04-05 18:00:00.769] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:00:00.769] [info] [engine] Virtual filesystem initialized successfully
+[2025-04-05 18:00:00.769] [info] [engine] Initializing engine systems
+[2025-04-05 18:00:00.771] [info] [engine] Initializing game engine...
+[2025-04-05 18:00:00.771] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:00:00.771] [info] [engine] Error handling system initialized
+[2025-04-05 18:00:00.771] [info] [engine] Initializing virtual file system
+[2025-04-05 18:00:00.771] [warning] [engine] Mount point already exists: /assets
+[2025-04-05 18:00:00.771] [error] [engine] Failed to mount assets directory
+[2025-04-05 18:00:00.771] [error] [engine] Engine Exception: Failed to mount /assets
+[2025-04-05 18:00:00.771] [error] [engine] File System Exception: Failed to mount /assets
+[2025-04-05 18:00:00.772] [error] [engine] Failed to initialize file system: Failed to mount /assets
+[2025-04-05 18:00:00.772] [error] [engine] Exception: Failed to mount /assets
+[2025-04-05 18:00:00.772] [critical] [engine] Fatal error in main: Failed to mount /assets
+[2025-04-05 18:00:00.772] [error] [engine] Exception: Failed to mount /assets
+[2025-04-05 18:00:00.772] [info] [engine] Shutting down logging system
+[2025-04-05 18:02:13.188] [info] [engine] Logging system initialized
+[2025-04-05 18:02:13.189] [info] [engine] Starting application
+[2025-04-05 18:02:13.189] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:02:13.189] [info] [engine] Signal handlers installed
+[2025-04-05 18:02:13.190] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 18:02:13.190] [info] [engine] Mounted '../src/Shaders' to '/shaders'
+[2025-04-05 18:02:13.190] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:02:13.190] [info] [engine] Virtual filesystem initialized successfully
+[2025-04-05 18:02:13.191] [info] [engine] Initializing engine systems
+[2025-04-05 18:02:13.192] [info] [engine] Initializing game engine...
+[2025-04-05 18:02:13.192] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:02:13.192] [info] [engine] Error handling system initialized
+[2025-04-05 18:02:13.192] [info] [engine] Initializing virtual file system
+[2025-04-05 18:02:13.192] [warning] [engine] Mount point already exists: /assets
+[2025-04-05 18:02:13.192] [error] [engine] Failed to mount assets directory
+[2025-04-05 18:02:13.192] [error] [engine] Engine Exception: Failed to mount /assets
+[2025-04-05 18:02:13.193] [error] [engine] File System Exception: Failed to mount /assets
+[2025-04-05 18:02:13.193] [error] [engine] Failed to initialize file system: Failed to mount /assets
+[2025-04-05 18:02:13.193] [error] [engine] Exception: Failed to mount /assets
+[2025-04-05 18:02:13.193] [critical] [engine] Fatal error in main: Failed to mount /assets
+[2025-04-05 18:02:13.194] [error] [engine] Exception: Failed to mount /assets
+[2025-04-05 18:02:13.194] [info] [engine] Shutting down logging system
+[2025-04-05 18:06:48.566] [info] [engine] Logging system initialized
+[2025-04-05 18:06:48.567] [info] [engine] Starting application
+[2025-04-05 18:06:48.567] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:06:48.567] [info] [engine] Signal handlers installed
+[2025-04-05 18:06:48.568] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 18:06:48.568] [info] [engine] Mounted '../src/Shaders' to '/shaders'
+[2025-04-05 18:06:48.569] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:06:48.569] [info] [engine] Virtual filesystem initialized successfully
+[2025-04-05 18:06:48.569] [info] [engine] Initializing engine systems
+[2025-04-05 18:06:48.570] [info] [engine] Initializing game engine...
+[2025-04-05 18:06:48.571] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:06:48.571] [info] [engine] Error handling system initialized
+[2025-04-05 18:06:48.571] [info] [engine] Initializing virtual file system
+[2025-04-05 18:06:48.571] [warning] [engine] Mount point already exists: /assets
+[2025-04-05 18:06:48.571] [error] [engine] Failed to mount assets directory
+[2025-04-05 18:06:48.571] [error] [engine] Engine Exception: Failed to mount /assets
+[2025-04-05 18:06:48.571] [error] [engine] File System Exception: Failed to mount /assets
+[2025-04-05 18:06:48.572] [error] [engine] Failed to initialize file system: Failed to mount /assets
+[2025-04-05 18:06:48.572] [error] [engine] Exception: Failed to mount /assets
+[2025-04-05 18:06:48.572] [critical] [engine] Fatal error in main: Failed to mount /assets
+[2025-04-05 18:06:48.573] [error] [engine] Exception: Failed to mount /assets
+[2025-04-05 18:06:48.573] [info] [engine] Shutting down logging system
+[2025-04-05 18:08:11.705] [info] [engine] Logging system initialized
+[2025-04-05 18:08:11.706] [info] [engine] Starting application
+[2025-04-05 18:08:11.706] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:08:11.707] [info] [engine] Signal handlers installed
+[2025-04-05 18:08:11.707] [info] [engine] Initializing engine systems
+[2025-04-05 18:08:11.709] [info] [engine] Initializing game engine...
+[2025-04-05 18:08:11.709] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:08:11.709] [info] [engine] Error handling system initialized
+[2025-04-05 18:08:11.709] [info] [engine] Initializing virtual file system
+[2025-04-05 18:08:14.699] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 18:08:14.700] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:08:14.701] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:08:14.703] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:08:14.704] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:08:14.704] [info] [engine] Virtual file system initialized
+[2025-04-05 18:08:14.704] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:08:14.857] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:08:14.857] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:08:14.857] [info] [graphics] Creating shader: vertex=src/Shaders/skybox.vert, fragment=src/Shaders/skybox.frag
+[2025-04-05 18:08:14.857] [warning] [engine] No mount point found for path: src/Shaders/skybox.vert
+[2025-04-05 18:08:14.857] [error] [graphics] Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:14.857] [error] [engine] Engine Exception: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:14.857] [error] [graphics] Graphics Exception: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:14.858] [error] [graphics] Failed to create shader: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:14.859] [critical] [engine] Fatal error in main: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:14.859] [error] [engine] Exception: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:14.859] [info] [engine] Shutting down logging system
+[2025-04-05 18:08:20.403] [info] [engine] Logging system initialized
+[2025-04-05 18:08:20.405] [info] [engine] Starting application
+[2025-04-05 18:08:20.405] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:08:20.405] [info] [engine] Signal handlers installed
+[2025-04-05 18:08:20.405] [info] [engine] Initializing engine systems
+[2025-04-05 18:08:20.407] [info] [engine] Initializing game engine...
+[2025-04-05 18:08:20.407] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:08:20.407] [info] [engine] Error handling system initialized
+[2025-04-05 18:08:20.407] [info] [engine] Initializing virtual file system
+[2025-04-05 18:08:20.407] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 18:08:20.407] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:08:20.409] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:08:20.410] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:08:20.410] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:08:20.410] [info] [engine] Virtual file system initialized
+[2025-04-05 18:08:20.410] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:08:20.565] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:08:20.565] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:08:20.565] [info] [graphics] Creating shader: vertex=src/Shaders/skybox.vert, fragment=src/Shaders/skybox.frag
+[2025-04-05 18:08:20.565] [warning] [engine] No mount point found for path: src/Shaders/skybox.vert
+[2025-04-05 18:08:20.565] [error] [graphics] Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:20.565] [error] [engine] Engine Exception: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:20.566] [error] [graphics] Graphics Exception: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:20.566] [error] [graphics] Failed to create shader: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:20.566] [critical] [engine] Fatal error in main: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:20.567] [error] [engine] Exception: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:08:20.567] [info] [engine] Shutting down logging system
+[2025-04-05 18:09:44.884] [info] [engine] Logging system initialized
+[2025-04-05 18:09:44.884] [info] [engine] Starting application
+[2025-04-05 18:09:44.884] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:09:44.885] [info] [engine] Signal handlers installed
+[2025-04-05 18:09:44.885] [info] [engine] Initializing engine systems
+[2025-04-05 18:09:44.886] [info] [engine] Initializing game engine...
+[2025-04-05 18:09:44.886] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:09:44.886] [info] [engine] Error handling system initialized
+[2025-04-05 18:09:44.886] [info] [engine] Initializing virtual file system
+[2025-04-05 18:09:44.886] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 18:09:44.887] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:09:44.887] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:09:44.887] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:09:44.887] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:09:44.887] [info] [engine] Virtual file system initialized
+[2025-04-05 18:09:44.887] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:09:45.029] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:09:45.029] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:09:45.029] [info] [graphics] Creating shader: vertex=Shaders/skybox.vert, fragment=Shaders/skybox.frag
+[2025-04-05 18:09:45.029] [warning] [engine] No mount point found for path: Shaders/skybox.vert
+[2025-04-05 18:09:45.029] [error] [graphics] Vertex shader file not found: Shaders/skybox.vert
+[2025-04-05 18:09:45.030] [error] [engine] Engine Exception: Vertex shader file not found: Shaders/skybox.vert
+[2025-04-05 18:09:45.030] [error] [graphics] Graphics Exception: Vertex shader file not found: Shaders/skybox.vert
+[2025-04-05 18:09:45.030] [error] [graphics] Failed to create shader: Vertex shader file not found: Shaders/skybox.vert
+[2025-04-05 18:09:45.031] [critical] [engine] Fatal error in main: Vertex shader file not found: Shaders/skybox.vert
+[2025-04-05 18:09:45.031] [error] [engine] Exception: Vertex shader file not found: Shaders/skybox.vert
+[2025-04-05 18:09:45.031] [info] [engine] Shutting down logging system
+[2025-04-05 18:10:11.651] [info] [engine] Logging system initialized
+[2025-04-05 18:10:11.651] [info] [engine] Starting application
+[2025-04-05 18:10:11.652] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:10:11.652] [info] [engine] Signal handlers installed
+[2025-04-05 18:10:11.652] [info] [engine] Initializing engine systems
+[2025-04-05 18:10:11.653] [info] [engine] Initializing game engine...
+[2025-04-05 18:10:11.653] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:10:11.654] [info] [engine] Error handling system initialized
+[2025-04-05 18:10:11.654] [info] [engine] Initializing virtual file system
+[2025-04-05 18:10:11.654] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 18:10:11.654] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:10:11.654] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:10:11.654] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:10:11.655] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:10:11.655] [info] [engine] Virtual file system initialized
+[2025-04-05 18:10:11.655] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:10:11.795] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:10:11.796] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:10:11.796] [info] [graphics] Creating shader: vertex=src/Shaders/skybox.vert, fragment=src/Shaders/skybox.frag
+[2025-04-05 18:10:11.796] [warning] [engine] No mount point found for path: src/Shaders/skybox.vert
+[2025-04-05 18:10:11.796] [error] [graphics] Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:10:11.796] [error] [engine] Engine Exception: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:10:11.796] [error] [graphics] Graphics Exception: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:10:11.797] [error] [graphics] Failed to create shader: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:10:11.797] [critical] [engine] Fatal error in main: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:10:11.797] [error] [engine] Exception: Vertex shader file not found: src/Shaders/skybox.vert
+[2025-04-05 18:10:11.797] [info] [engine] Shutting down logging system
+[2025-04-05 18:12:16.300] [info] [engine] Logging system initialized
+[2025-04-05 18:12:16.301] [info] [engine] Starting application
+[2025-04-05 18:12:16.301] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:12:16.302] [info] [engine] Signal handlers installed
+[2025-04-05 18:12:16.302] [info] [engine] Initializing engine systems
+[2025-04-05 18:12:16.303] [info] [engine] Initializing game engine...
+[2025-04-05 18:12:16.303] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:12:16.303] [info] [engine] Error handling system initialized
+[2025-04-05 18:12:16.303] [info] [engine] Initializing virtual file system
+[2025-04-05 18:12:16.303] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 18:12:16.303] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:12:16.304] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:12:16.304] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:12:16.304] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:12:16.304] [info] [engine] Virtual file system initialized
+[2025-04-05 18:12:16.304] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:12:16.449] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:12:16.449] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:12:16.449] [info] [graphics] Creating shader: vertex=/shaders/skybox.vert, fragment=/shaders/skybox.frag
+[2025-04-05 18:12:16.472] [info] [graphics] Shader compiled and linked successfully (ID: 3)
+[2025-04-05 18:12:16.472] [info] [graphics] Creating shader: vertex=src/Shaders/shadowmap.vert, fragment=src/Shaders/shadowmap.frag
+[2025-04-05 18:12:16.472] [warning] [engine] No mount point found for path: src/Shaders/shadowmap.vert
+[2025-04-05 18:12:16.473] [error] [graphics] Vertex shader file not found: src/Shaders/shadowmap.vert
+[2025-04-05 18:12:16.473] [error] [engine] Engine Exception: Vertex shader file not found: src/Shaders/shadowmap.vert
+[2025-04-05 18:12:16.473] [error] [graphics] Graphics Exception: Vertex shader file not found: src/Shaders/shadowmap.vert
+[2025-04-05 18:12:16.473] [error] [graphics] Failed to create shader: Vertex shader file not found: src/Shaders/shadowmap.vert
+[2025-04-05 18:12:16.474] [critical] [engine] Fatal error in main: Vertex shader file not found: src/Shaders/shadowmap.vert
+[2025-04-05 18:12:16.474] [error] [engine] Exception: Vertex shader file not found: src/Shaders/shadowmap.vert
+[2025-04-05 18:12:16.474] [info] [engine] Shutting down logging system
+[2025-04-05 18:12:54.116] [info] [engine] Initializing game engine...
+[2025-04-05 18:12:54.116] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:12:54.116] [info] [engine] Error handling system initialized
+[2025-04-05 18:12:54.116] [info] [engine] Initializing virtual file system
+[2025-04-05 18:12:54.117] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 18:12:54.117] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:12:54.117] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:12:54.117] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:12:54.117] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:12:54.117] [info] [engine] Virtual file system initialized
+[2025-04-05 18:12:54.118] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:12:54.258] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:12:54.258] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:12:54.258] [info] [graphics] Creating shader: vertex=/shaders/skybox.vert, fragment=/shaders/skybox.frag
+[2025-04-05 18:12:54.259] [info] [graphics] Shader compiled and linked successfully (ID: 3)
+[2025-04-05 18:12:54.259] [info] [graphics] Creating shader: vertex=/shaders/shadowmap.vert, fragment=/shaders/shadowmap.frag
+[2025-04-05 18:12:54.278] [info] [graphics] Shader compiled and linked successfully (ID: 6)
+[2025-04-05 18:12:54.279] [info] [graphics] Creating shader with geometry: vertex=/shaders/pointshadow.vert, fragment=/shaders/pointshadow.frag, geometry=/shaders/pointshadow.geom
+[2025-04-05 18:12:54.286] [info] [graphics] Shader with geometry compiled and linked successfully (ID: 10)
+[2025-04-05 18:12:54.286] [info] [graphics] Creating shader: vertex=/shaders/hdr.vert, fragment=/shaders/hdr.frag
+[2025-04-05 18:12:54.291] [info] [graphics] Shader compiled and linked successfully (ID: 13)
+[2025-04-05 18:12:54.291] [info] [graphics] Creating shader: vertex=/shaders/bloomblur.vert, fragment=/shaders/bloomblur.frag
+[2025-04-05 18:12:54.299] [info] [graphics] Shader compiled and linked successfully (ID: 16)
+[2025-04-05 18:12:54.299] [info] [graphics] Creating shader: vertex=/shaders/gbuffer.vert, fragment=/shaders/gbuffer.frag
+[2025-04-05 18:12:54.308] [info] [graphics] Shader compiled and linked successfully (ID: 19)
+[2025-04-05 18:12:54.309] [info] [graphics] Creating shader: vertex=/shaders/depth.vert, fragment=/shaders/depth.frag
+[2025-04-05 18:12:54.311] [info] [graphics] Shader compiled and linked successfully (ID: 22)
+[2025-04-05 18:12:54.311] [info] [graphics] Creating shader: vertex=/shaders/deferred.vert, fragment=/shaders/deferred.frag
+[2025-04-05 18:12:54.335] [info] [graphics] Shader compiled and linked successfully (ID: 25)
+[2025-04-05 18:12:54.335] [info] [graphics] Creating shader: vertex=/shaders/ssao.vert, fragment=/shaders/ssao.frag
+[2025-04-05 18:12:54.341] [info] [graphics] Shader compiled and linked successfully (ID: 28)
+[2025-04-05 18:12:54.342] [info] [graphics] Creating shader: vertex=/shaders/ssaoblur.vert, fragment=/shaders/ssaoblur.frag
+[2025-04-05 18:12:54.354] [info] [graphics] Shader compiled and linked successfully (ID: 31)
+[2025-04-05 18:12:54.354] [info] [graphics] Creating shader: vertex=/shaders/fxaa.vert, fragment=/shaders/fxaa.frag
+[2025-04-05 18:12:54.355] [info] [graphics] Shader compiled and linked successfully (ID: 34)
+[2025-04-05 18:12:54.355] [info] [graphics] Creating shader: vertex=/shaders/motionblur.vert, fragment=/shaders/motionblur.frag
+[2025-04-05 18:12:54.356] [info] [graphics] Shader compiled and linked successfully (ID: 37)
+[2025-04-05 18:12:54.356] [info] [graphics] Creating shader: vertex=/shaders/taa.vert, fragment=/shaders/taa.frag
+[2025-04-05 18:12:54.357] [info] [graphics] Shader compiled and linked successfully (ID: 40)
+[2025-04-05 18:12:54.357] [info] [graphics] Creating shader: vertex=/shaders/bloomextract.vert, fragment=/shaders/bloomextract.frag
+[2025-04-05 18:12:54.357] [info] [graphics] Shader compiled and linked successfully (ID: 43)
+[[2025-04-05 18:12:54.114] [info] [engine] Logging system initialized
+[2025-04-05 18:12:54.114] [info] [engine] Starting application
+[2025-04-05 18:12:54.114] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:12:54.114] [info] [engine] Signal handlers installed
+[2025-04-05 18:12:54.115] [info] [engine] Initializing engine systems
+2025-04-05 18:12:54.358] [info] [graphics] Creating compute shader: /shaders/luminance.comp
+[2025-04-05 18:12:54.358] [info] [graphics] Compute shader compiled and linked successfully (ID: 45)
+[2025-04-05 18:12:54.358] [info] [graphics] Creating compute shader: /shaders/adaptation.comp
+[2025-04-05 18:12:54.359] [info] [graphics] Compute shader compiled and linked successfully (ID: 47)
+[2025-04-05 18:12:54.359] [info] [graphics] Creating shader: vertex=/shaders/ssr.vert, fragment=/shaders/ssr.frag
+[2025-04-05 18:12:54.371] [info] [graphics] Shader compiled and linked successfully (ID: 50)
+[2025-04-05 18:12:54.371] [info] [graphics] Creating shader: vertex=/shaders/cubemap.vert, fragment=/shaders/equirect_to_cubemap.frag
+[2025-04-05 18:12:54.377] [info] [graphics] Shader compiled and linked successfully (ID: 53)
+[2025-04-05 18:12:54.377] [info] [graphics] Creating shader: vertex=/shaders/cubemap.vert, fragment=/shaders/irradiance.frag
+[2025-04-05 18:12:54.381] [info] [graphics] Shader compiled and linked successfully (ID: 56)
+[2025-04-05 18:12:54.381] [info] [graphics] Creating shader: vertex=/shaders/cubemap.vert, fragment=/shaders/prefilter.frag
+[2025-04-05 18:12:54.387] [info] [graphics] Shader compiled and linked successfully (ID: 59)
+[2025-04-05 18:12:54.388] [info] [graphics] Creating shader: vertex=/shaders/brdf.vert, fragment=/shaders/brdf.frag
+[2025-04-05 18:12:54.393] [info] [graphics] Shader compiled and linked successfully (ID: 62)
+[2025-04-05 18:12:54.394] [info] [resource] Loading environment map 'default' from HDR: assets/8ksky.hdr
+[2025-04-05 18:12:54.394] [warning] [engine] No mount point found for path: assets/8ksky.hdr
+[2025-04-05 18:12:54.394] [error] [resource] HDR file not found in virtual filesystem: assets/8ksky.hdr
+[2025-04-05 18:12:54.394] [error] [engine] Engine Exception: HDR file not found: assets/8ksky.hdr
+[2025-04-05 18:12:54.394] [error] [resource] Resource Exception: HDR file not found: assets/8ksky.hdr
+[2025-04-05 18:12:54.395] [error] [resource] Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 18:12:54.395] [error] [engine] Engine Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 18:12:54.395] [error] [resource] Resource Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 18:12:54.395] [critical] [engine] Fatal error in main: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 18:12:54.396] [error] [engine] Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 18:12:54.396] [info] [engine] Shutting down logging system
+[2025-04-05 18:13:15.023] [info] [engine] Initializing game engine...
+[2025-04-05 18:13:15.023] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:13:15.023] [info] [engine] Error handling system initialized
+[2025-04-05 18:13:15.023] [info] [engine] Initializing virtual file system
+[2025-04-05 18:13:15.023] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 18:13:15.024] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:13:15.024] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:13:15.024] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:13:15.024] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:13:15.025] [info] [engine] Virtual file system initialized
+[2025-04-05 18:13:15.025] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:13:15.168] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:13:15.169] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:13:15.169] [info] [graphics] Creating shader: vertex=/shaders/skybox.vert, fragment=/shaders/skybox.frag
+[2025-04-05 18:13:15.170] [info] [graphics] Shader compiled and linked successfully (ID: 3)
+[2025-04-05 18:13:15.170] [info] [graphics] Creating shader: vertex=/shaders/shadowmap.vert, fragment=/shaders/shadowmap.frag
+[2025-04-05 18:13:15.170] [info] [graphics] Shader compiled and linked successfully (ID: 6)
+[2025-04-05 18:13:15.170] [info] [graphics] Creating shader with geometry: vertex=/shaders/pointshadow.vert, fragment=/shaders/pointshadow.frag, geometry=/shaders/pointshadow.geom
+[2025-04-05 18:13:15.171] [info] [graphics] Shader with geometry compiled and linked successfully (ID: 10)
+[2025-04-05 18:13:15.171] [info] [graphics] Creating shader: vertex=/shaders/hdr.vert, fragment=/shaders/hdr.frag
+[2025-04-05 18:13:15.172] [info] [graphics] Shader compiled and linked successfully (ID: 13)
+[2025-04-05 18:13:15.172] [info] [graphics] Creating shader: vertex=/shaders/bloomblur.vert, fragment=/shaders/bloomblur.frag
+[2025-04-05 18:13:15.172] [info] [graphics] Shader compiled and linked successfully (ID: 16)
+[2025-04-05 18:13:15.172] [info] [graphics] Creating shader: vertex=/shaders/gbuffer.vert, fragment=/shaders/gbuffer.frag
+[2025-04-05 18:13:15.173] [info] [graphics] Shader compiled and linked successfully (ID: 19)
+[2025-04-05 18:13:15.173] [info] [graphics] Creating shader: vertex=/shaders/depth.vert, fragment=/shaders/depth.frag
+[2025-04-05 18:13:15.174] [info] [graphics] Shader compiled and linked successfully (ID: 22)
+[2025-04-05 18:13:15.174] [info] [graphics] Creating shader: vertex=/shaders/deferred.vert, fragment=/shaders/deferred.frag
+[2025-04-05 18:13:15.175] [info] [graphics] Shader compiled and linked successfully (ID: 25)
+[2025-04-05 18:13:15.175] [info] [graphics] Creating shader: vertex=/shaders/ssao.vert, fragment=/shaders/ssao.frag
+[2025-04-05 18:13:15.175] [info] [graphics] Shader compiled and linked successfully (ID: 28)
+[2025-04-05 18:13:15.176] [info] [graphics] Creating shader: vertex=/shaders/ssaoblur.vert, fragment=/shaders/ssaoblur.frag
+[2025-04-05 18:13:15.177] [info] [graphics] Shader compiled and linked successfully (ID: 31)
+[2025-04-05 18:13:15.177] [info] [graphics] Creating shader: vertex=/shaders/fxaa.vert, fragment=/shaders/fxaa.frag
+[2025-04-05 18:13:15.177] [info] [graphics] Shader compiled and linked successfully (ID: 34)
+[2025-04-05 18:13:15.178] [info] [graphics] Creating shader: vertex=/shaders/motionblur.vert, fragment=/shaders/motionblur.frag
+[2025-04-05 18:13:15.178] [info] [graphics] Shader compiled and linked successfully (ID: 37)
+[2025-04-05 18:13:15.178] [info] [graphics] Creating shader: vertex=/shaders/taa.vert, fragment=/shaders/taa.frag
+[2025-04-05 18:13:15.179] [info] [graphics] Shader compiled and linked successfully (ID: 40)
+[2025-04-05 18:13:15.179] [info] [graphics] Creating shader: vertex=/shaders/bloomextract.vert, fragment=/shaders/bloomextract.frag
+[2025-04-05 18:13:15.180] [info] [graphics] Shader compiled and linked successfully (ID: 43)
+[[2025-04-05 18:13:15.020] [info] [engine] Logging system initialized
+[2025-04-05 18:13:15.021] [info] [engine] Starting application
+[2025-04-05 18:13:15.021] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:13:15.021] [info] [engine] Signal handlers installed
+[2025-04-05 18:13:15.022] [info] [engine] Initializing engine systems
+2025-04-05 18:13:15.180] [info] [graphics] Creating compute shader: /shaders/luminance.comp
+[2025-04-05 18:13:15.180] [info] [graphics] Compute shader compiled and linked successfully (ID: 45)
+[2025-04-05 18:13:15.180] [info] [graphics] Creating compute shader: /shaders/adaptation.comp
+[2025-04-05 18:13:15.181] [info] [graphics] Compute shader compiled and linked successfully (ID: 47)
+[2025-04-05 18:13:15.181] [info] [graphics] Creating shader: vertex=/shaders/ssr.vert, fragment=/shaders/ssr.frag
+[2025-04-05 18:13:15.181] [info] [graphics] Shader compiled and linked successfully (ID: 50)
+[2025-04-05 18:13:15.182] [info] [graphics] Creating shader: vertex=/shaders/cubemap.vert, fragment=/shaders/equirect_to_cubemap.frag
+[2025-04-05 18:13:15.182] [info] [graphics] Shader compiled and linked successfully (ID: 53)
+[2025-04-05 18:13:15.182] [info] [graphics] Creating shader: vertex=/shaders/cubemap.vert, fragment=/shaders/irradiance.frag
+[2025-04-05 18:13:15.183] [info] [graphics] Shader compiled and linked successfully (ID: 56)
+[2025-04-05 18:13:15.183] [info] [graphics] Creating shader: vertex=/shaders/cubemap.vert, fragment=/shaders/prefilter.frag
+[2025-04-05 18:13:15.183] [info] [graphics] Shader compiled and linked successfully (ID: 59)
+[2025-04-05 18:13:15.183] [info] [graphics] Creating shader: vertex=/shaders/brdf.vert, fragment=/shaders/brdf.frag
+[2025-04-05 18:13:15.184] [info] [graphics] Shader compiled and linked successfully (ID: 62)
+[2025-04-05 18:13:15.185] [info] [resource] Loading environment map 'default' from HDR: /assets/8ksky.hdr
+[2025-04-05 18:13:15.185] [error] [resource] HDR file not found in virtual filesystem: /assets/8ksky.hdr
+[2025-04-05 18:13:15.185] [error] [engine] Engine Exception: HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:13:15.186] [error] [resource] Resource Exception: HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:13:15.186] [error] [resource] Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:13:15.186] [error] [engine] Engine Exception: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:13:15.186] [error] [resource] Resource Exception: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:13:15.186] [critical] [engine] Fatal error in main: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:13:15.187] [error] [engine] Exception: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:13:15.187] [info] [engine] Shutting down logging system
+[2025-04-05 18:13:55.401] [info] [engine] Initializing game engine...
+[2025-04-05 18:13:55.402] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:13:55.402] [info] [engine] Error handling system initialized
+[2025-04-05 18:13:55.402] [info] [engine] Initializing virtual file system
+[2025-04-05 18:13:55.402] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 18:13:55.402] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:13:55.403] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:13:55.403] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:13:55.403] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:13:55.403] [info] [engine] Virtual file system initialized
+[2025-04-05 18:13:55.403] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:13:55.547] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:13:55.547] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:13:55.548] [info] [graphics] Creating shader: vertex=/shaders/skybox.vert, fragment=/shaders/skybox.frag
+[2025-04-05 18:13:55.548] [info] [graphics] Shader compiled and linked successfully (ID: 3)
+[2025-04-05 18:13:55.549] [info] [graphics] Creating shader: vertex=/shaders/shadowmap.vert, fragment=/shaders/shadowmap.frag
+[2025-04-05 18:13:55.549] [info] [graphics] Shader compiled and linked successfully (ID: 6)
+[2025-04-05 18:13:55.549] [info] [graphics] Creating shader with geometry: vertex=/shaders/pointshadow.vert, fragment=/shaders/pointshadow.frag, geometry=/shaders/pointshadow.geom
+[2025-04-05 18:13:55.550] [info] [graphics] Shader with geometry compiled and linked successfully (ID: 10)
+[2025-04-05 18:13:55.550] [info] [graphics] Creating shader: vertex=/shaders/hdr.vert, fragment=/shaders/hdr.frag
+[2025-04-05 18:13:55.550] [info] [graphics] Shader compiled and linked successfully (ID: 13)
+[2025-04-05 18:13:55.551] [info] [graphics] Creating shader: vertex=/shaders/bloomblur.vert, fragment=/shaders/bloomblur.frag
+[2025-04-05 18:13:55.551] [info] [graphics] Shader compiled and linked successfully (ID: 16)
+[2025-04-05 18:13:55.551] [info] [graphics] Creating shader: vertex=/shaders/gbuffer.vert, fragment=/shaders/gbuffer.frag
+[2025-04-05 18:13:55.552] [info] [graphics] Shader compiled and linked successfully (ID: 19)
+[2025-04-05 18:13:55.552] [info] [graphics] Creating shader: vertex=/shaders/depth.vert, fragment=/shaders/depth.frag
+[2025-04-05 18:13:55.552] [info] [graphics] Shader compiled and linked successfully (ID: 22)
+[2025-04-05 18:13:55.553] [info] [graphics] Creating shader: vertex=/shaders/deferred.vert, fragment=/shaders/deferred.frag
+[2025-04-05 18:13:55.554] [info] [graphics] Shader compiled and linked successfully (ID: 25)
+[2025-04-05 18:13:55.554] [info] [graphics] Creating shader: vertex=/shaders/ssao.vert, fragment=/shaders/ssao.frag
+[2025-04-05 18:13:55.554] [info] [graphics] Shader compiled and linked successfully (ID: 28)
+[2025-04-05 18:13:55.554] [info] [graphics] Creating shader: vertex=/shaders/ssaoblur.vert, fragment=/shaders/ssaoblur.frag
+[2025-04-05 18:13:55.555] [info] [graphics] Shader compiled and linked successfully (ID: 31)
+[2025-04-05 18:13:55.556] [info] [graphics] Creating shader: vertex=/shaders/fxaa.vert, fragment=/shaders/fxaa.frag
+[2025-04-05 18:13:55.556] [info] [graphics] Shader compiled and linked successfully (ID: 34)
+[2025-04-05 18:13:55.556] [info] [graphics] Creating shader: vertex=/shaders/motionblur.vert, fragment=/shaders/motionblur.frag
+[2025-04-05 18:13:55.557] [info] [graphics] Shader compiled and linked successfully (ID: 37)
+[2025-04-05 18:13:55.557] [info] [graphics] Creating shader: vertex=/shaders/taa.vert, fragment=/shaders/taa.frag
+[2025-04-05 18:13:55.558] [info] [graphics] Shader compiled and linked successfully (ID: 40)
+[2025-04-05 18:13:55.558] [info] [graphics] Creating shader: vertex=/shaders/bloomextract.vert, fragment=/shaders/bloomextract.frag
+[2025-04-05 18:13:55.559] [info] [graphics] Shader compiled and linked successfully (ID: 43)[2025-04-05 18:14:23.117] [info] [engine] Initializing game engine...
+[2025-04-05 18:14:23.117] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:14:23.117] [info] [engine] Error handling system initialized
+[2025-04-05 18:14:23.117] [info] [engine] Initializing virtual file system
+[2025-04-05 18:14:23.117] [info] [engine] Mounted '../../assets' to '/assets'
+[2025-04-05 18:14:23.117] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:14:23.118] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:14:23.118] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:14:23.118] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:14:23.118] [info] [engine] Virtual file system initialized
+[2025-04-05 18:14:23.118] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:14:23.262] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:14:23.262] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:14:23.262] [info] [graphics] Creating shader: vertex=/shaders/skybox.vert, fragment=/shaders/skybox.frag
+[2025-04-05 18:14:23.263] [info] [graphics] Shader compiled and linked successfully (ID: 3)
+[2025-04-05 18:14:23.263] [info] [graphics] Creating shader: vertex=/shaders/shadowmap.vert, fragment=/shaders/shadowmap.frag
+[2025-04-05 18:14:23.263] [info] [graphics] Shader compiled and linked successfully (ID: 6)
+[2025-04-05 18:14:23.263] [info] [graphics] Creating shader with geometry: vertex=/shaders/pointshadow.vert, fragment=/shaders/pointshadow.frag, geometry=/shaders/pointshadow.geom
+[2025-04-05 18:14:23.264] [info] [graphics] Shader with geometry compiled and linked successfully (ID: 10)
+[2025-04-05 18:14:23.264] [info] [graphics] Creating shader: vertex=/shaders/hdr.vert, fragment=/shaders/hdr.frag
+[2025-04-05 18:14:23.264] [info] [graphics] Shader compiled and linked successfully (ID: 13)
+[2025-04-05 18:14:23.265] [info] [graphics] Creating shader: vertex=/shaders/bloomblur.vert, fragment=/shaders/bloomblur.frag
+[2025-04-05 18:14:23.265] [info] [graphics] Shader compiled and linked successfully (ID: 16)
+[2025-04-05 18:14:23.265] [info] [graphics] Creating shader: vertex=/shaders/gbuffer.vert, fragment=/shaders/gbuffer.frag
+[2025-04-05 18:14:23.266] [info] [graphics] Shader compiled and linked successfully (ID: 19)
+[2025-04-05 18:14:23.266] [info] [graphics] Creating shader: vertex=/shaders/depth.vert, fragment=/shaders/depth.frag
+[2025-04-05 18:14:23.266] [info] [graphics] Shader compiled and linked successfully (ID: 22)
+[2025-04-05 18:14:23.267] [info] [graphics] Creating shader: vertex=/shaders/deferred.vert, fragment=/shaders/deferred.frag
+[2025-04-05 18:14:23.268] [info] [graphics] Shader compiled and linked successfully (ID: 25)
+[2025-04-05 18:14:23.268] [info] [graphics] Creating shader: vertex=/shaders/ssao.vert, fragment=/shaders/ssao.frag
+[2025-04-05 18:14:23.268] [info] [graphics] Shader compiled and linked successfully (ID: 28)
+[2025-04-05 18:14:23.268] [info] [graphics] Creating shader: vertex=/shaders/ssaoblur.vert, fragment=/shaders/ssaoblur.frag
+[2025-04-05 18:14:23.269] [info] [graphics] Shader compiled and linked successfully (ID: 31)
+[2025-04-05 18:14:23.269] [info] [graphics] Creating shader: vertex=/shaders/fxaa.vert, fragment=/shaders/fxaa.frag
+[2025-04-05 18:14:23.270] [info] [graphics] Shader compiled and linked successfully (ID: 34)
+[2025-04-05 18:14:23.270] [info] [graphics] Creating shader: vertex=/shaders/motionblur.vert, fragment=/shaders/motionblur.frag
+[2025-04-05 18:14:23.271] [info] [graphics] Shader compiled and linked successfully (ID: 37)
+[2025-04-05 18:14:23.271] [info] [graphics] Creating shader: vertex=/shaders/taa.vert, fragment=/shaders/taa.frag
+[2025-04-05 18:14:23.271] [info] [graphics] Shader compiled and linked successfully (ID: 40)
+[2025-04-05 18:14:23.272] [info] [graphics] Creating shader: vertex=/shaders/bloomextract.vert, fragment=/shaders/bloomextract.frag
+[2025-04-05 18:14:23.272] [info] [graphics] Shader compiled and linked successfully (ID: [2025-04-05 18:14:23.115] [info] [engine] Logging system initialized
+[2025-04-05 18:14:23.115] [info] [engine] Starting application
+[2025-04-05 18:14:23.115] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:14:23.115] [info] [engine] Signal handlers installed
+[2025-04-05 18:14:23.116] [info] [engine] Initializing engine systems
+43)
+[2025-04-05 18:14:23.272] [info] [graphics] Creating compute shader: /shaders/luminance.comp
+[2025-04-05 18:14:23.273] [info] [graphics] Compute shader compiled and linked successfully (ID: 45)
+[2025-04-05 18:14:23.273] [info] [graphics] Creating compute shader: /shaders/adaptation.comp
+[2025-04-05 18:14:23.273] [info] [graphics] Compute shader compiled and linked successfully (ID: 47)
+[2025-04-05 18:14:23.273] [info] [graphics] Creating shader: vertex=/shaders/ssr.vert, fragment=/shaders/ssr.frag
+[2025-04-05 18:14:23.274] [info] [graphics] Shader compiled and linked successfully (ID: 50)
+[2025-04-05 18:14:23.274] [info] [graphics] Creating shader: vertex=/shaders/cubemap.vert, fragment=/shaders/equirect_to_cubemap.frag
+[2025-04-05 18:14:23.274] [info] [graphics] Shader compiled and linked successfully (ID: 53)
+[2025-04-05 18:14:23.275] [info] [graphics] Creating shader: vertex=/shaders/cubemap.vert, fragment=/shaders/irradiance.frag
+[2025-04-05 18:14:23.275] [info] [graphics] Shader compiled and linked successfully (ID: 56)
+[2025-04-05 18:14:23.275] [info] [graphics] Creating shader: vertex=/shaders/cubemap.vert, fragment=/shaders/prefilter.frag
+[2025-04-05 18:14:23.276] [info] [graphics] Shader compiled and linked successfully (ID: 59)
+[2025-04-05 18:14:23.276] [info] [graphics] Creating shader: vertex=/shaders/brdf.vert, fragment=/shaders/brdf.frag
+[2025-04-05 18:14:23.276] [info] [graphics] Shader compiled and linked successfully (ID: 62)
+[2025-04-05 18:14:23.277] [info] [resource] Loading environment map 'default' from HDR: /assets/8ksky.hdr
+[2025-04-05 18:14:23.278] [error] [resource] HDR file not found in virtual filesystem: /assets/8ksky.hdr
+[2025-04-05 18:14:23.278] [error] [engine] Engine Exception: HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:14:23.278] [error] [resource] Resource Exception: HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:14:23.278] [error] [resource] Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:14:23.278] [error] [engine] Engine Exception: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:14:23.279] [error] [resource] Resource Exception: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:14:23.279] [critical] [engine] Fatal error in main: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:14:23.279] [error] [engine] Exception: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 18:14:23.279] [info] [engine] Shutting down logging system
+[2025-04-05 18:14:55.762] [info] [engine] Initializing game engine...
+[2025-04-05 18:14:55.762] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 18:14:55.762] [info] [engine] Error handling system initialized
+[2025-04-05 18:14:55.762] [info] [engine] Initializing virtual file system
+[2025-04-05 18:14:55.762] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 18:14:55.763] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 18:14:55.763] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 18:14:55.763] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 18:14:55.763] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 18:14:55.763] [info] [engine] Virtual file system initialized
+[2025-04-05 18:14:55.764] [info] [graphics] Initializing OpenGL...
+[2025-04-05 18:14:55.907] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 18:14:55.907] [info] [engine] OpenGL initialized successfully
+[2025-04-05 18:14:55.907] [info] [graphics] Creating shader: vertex=/shaders/skybox.vert, fragment=/shaders/skybox.frag
+[2025-04-05 18:14:55.908] [info] [graphics] Shader compiled and linked successfully (ID: 3)
+[2025-04-05 18:14:55.908] [info] [graphics] Creating shader: vertex=/shaders/shadowmap.vert, fragment=/shaders/shadowmap.frag
+[2025-04-05 18:14:55.909] [info] [graphics] Shader compiled and linked successfully (ID: 6)
+[2025-04-05 18:14:55.909] [info] [graphics] Creating shader with geometry: vertex=/shaders/pointshadow.vert, fragment=/shaders/pointshadow.frag, geometry=/shaders/pointshadow.geom
+[2025-04-05 18:14:55.910] [info] [graphics] Shader with geometry compiled and linked successfully (ID: 10)
+[2025-04-05 18:14:55.910] [info] [graphics] Creating shader: vertex=/shaders/hdr.vert, fragment=/shaders/hdr.frag
+[2025-04-05 18:14:55.910] [info] [graphics] Shader compiled and linked successfully (ID: 13)
+[2025-04-05 18:14:55.910] [info] [graphics] Creating shader: vertex=/shaders/bloomblur.vert, fragment=/shaders/bloomblur.frag
+[2025-04-05 18:14:55.911] [info] [graphics] Shader compiled and linked successfully (ID: 16)
+[2025-04-05 18:14:55.911] [info] [graphics] Creating shader: vertex=/shaders/gbuffer.vert, fragment=/shaders/gbuffer.frag
+[2025-04-05 18:14:55.912] [info] [graphics] Shader compiled and linked successfully (ID: 19)
+[2025-04-05 18:14:55.912] [info] [graphics] Creating shader: vertex=/shaders/depth.vert, fragment=/shaders/depth.frag
+[2025-04-05 18:14:55.912] [info] [graphics] Shader compiled and linked successfully (ID: 22)
+[2025-04-05 18:14:55.913] [info] [graphics] Creating shader: vertex=/shaders/deferred.vert, fragment=/shaders/deferred.frag
+[2025-04-05 18:14:55.914] [info] [graphics] Shader compiled and linked successfully (ID: 25)
+[2025-04-05 18:14:55.914] [info] [graphics] Creating shader: vertex=/shaders/ssao.vert, fragment=/shaders/ssao.frag
+[2025-04-05 18:14:55.915] [info] [graphics] Shader compiled and linked successfully (ID: 28)
+[2025-04-05 18:14:55.915] [info] [graphics] Creating shader: vertex=/shaders/ssaoblur.vert, fragment=/shaders/ssaoblur.frag
+[2025-04-05 18:14:55.916] [info] [graphics] Shader compiled and linked successfully (ID: 31)
+[2025-04-05 18:14:55.916] [info] [graphics] Creating shader: vertex=/shaders/fxaa.vert, fragment=/shaders/fxaa.frag
+[2025-04-05 18:14:55.917] [info] [graphics] Shader compiled and linked successfully (ID: 34)
+[2025-04-05 18:14:55.917] [info] [graphics] Creating shader: vertex=/shaders/motionblur.vert, fragment=/shaders/motionblur.frag
+[2025-04-05 18:14:55.917] [info] [graphics] Shader compiled and linked successfully (ID: 37)
+[2025-04-05 18:14:55.917] [info] [graphics] Creating shader: vertex=/shaders/taa.vert, fragment=/shaders/taa.frag
+[2025-04-05 18:14:55.918] [info] [graphics] Shader compiled and linked successfully (ID: 40)
+[2025-04-05 18:14:55.918] [info] [graphics] Creating shader: vertex=/shaders/bloomextract.vert, fragment=/shaders/bloomextract.frag
+[2025-04-05 18:14:55.919] [info] [graphics] Shader compiled and linked successfully (ID: 43)[2025-04-05 21:26:18.729] [info] [engine] Initializing game engine...
+[2025-04-05 21:26:18.730] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 21:26:18.730] [info] [engine] Error handling system initialized
+[2025-04-05 21:26:18.730] [info] [engine] Initializing virtual file system
+[2025-04-05 21:26:18.730] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 21:26:18.730] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 21:26:18.730] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 21:26:18.731] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 21:26:18.731] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 21:26:18.731] [info] [engine] Virtual file system initialized
+[2025-04-05 21:26:18.731] [info] [graphics] Initializing OpenGL...
+[2025-04-05 21:26:18.889] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 21:26:18.889] [info] [engine] OpenGL initialized successfully
+[2025-04-05 21:26:18.889] [info] [graphics] Creating shader: vertex=/shaders/skybox.vert, fragment=/shaders/skybox.frag
+[2025-04-05 21:26:18.890] [info] [graphics] Shader compiled and linked successfully (ID: 3)
+[2025-04-05 21:26:18.890] [info] [graphics] Creating shader: vertex=/shaders/shadowmap.vert, fragment=/shaders/shadowmap.frag
+[2025-04-05 21:26:18.891] [info] [graphics] Shader compiled and linked successfully (ID: 6)
+[2025-04-05 21:26:18.891] [info] [graphics] Creating shader with geometry: vertex=/shaders/pointshadow.vert, fragment=/shaders/pointshadow.frag, geometry=/shaders/pointshadow.geom
+[2025-04-05 21:26:18.892] [info] [graphics] Shader with geometry compiled and linked successfully (ID: 10)
+[2025-04-05 21:26:18.892] [info] [graphics] Creating shader: vertex=/shaders/hdr.vert, fragment=/shaders/hdr.frag
+[2025-04-05 21:26:18.892] [info] [graphics] Shader compiled and linked successfully (ID: 13)
+[2025-04-05 21:26:18.892] [info] [graphics] Creating shader: vertex=/shaders/bloomblur.vert, fragment=/shaders/bloomblur.frag
+[2025-04-05 21:26:18.893] [info] [graphics] Shader compiled and linked successfully (ID: 16)
+[2025-04-05 21:26:18.893] [info] [graphics] Creating shader: vertex=/shaders/gbuffer.vert, fragment=/shaders/gbuffer.frag
+[2025-04-05 21:26:18.894] [info] [graphics] Shader compiled and linked successfully (ID: 19)
+[2025-04-05 21:26:18.894] [info] [graphics] Creating shader: vertex=/shaders/depth.vert, fragment=/shaders/depth.frag
+[2025-04-05 21:26:18.895] [info] [graphics] Shader compiled and linked successfully (ID: 22)
+[2025-04-05 21:26:18.895] [info] [graphics] Creating shader: vertex=/shaders/deferred.vert, fragment=/shaders/deferred.frag
+[2025-04-05 21:26:18.896] [info] [graphics] Shader compiled and linked successfully (ID: 25)
+[2025-04-05 21:26:18.896] [info] [graphics] Creating shader: vertex=/shaders/ssao.vert, fragment=/shaders/ssao.frag
+[2025-04-05 21:26:18.897] [info] [graphics] Shader compiled and linked successfully (ID: 28)
+[2025-04-05 21:26:18.897] [info] [graphics] Creating shader: vertex=/shaders/ssaoblur.vert, fragment=/shaders/ssaoblur.frag
+[2025-04-05 21:26:18.898] [info] [graphics] Shader compiled and linked successfully (ID: 31)
+[2025-04-05 21:26:18.898] [info] [graphics] Creating shader: vertex=/shaders/fxaa.vert, fragment=/shaders/fxaa.frag
+[2025-04-05 21:26:18.899] [info] [graphics] Shader compiled and linked successfully (ID: 34)
+[2025-04-05 21:26:18.899] [info] [graphics] Creating shader: vertex=/shaders/motionblur.vert, fragment=/shaders/motionblur.frag
+[2025-04-05 21:26:18.899] [info] [graphics] Shader compiled and linked successfully (ID: 37)
+[2025-04-05 21:26:18.899] [info] [graphics] Creating shader: vertex=/shaders/taa.vert, fragment=/shaders/taa.frag
+[2025-04-05 21:26:18.900] [info] [graphics] Shader compiled and linked successfully (ID: 40)
+[2025-04-05 21:26:18.900] [info] [graphics] Creating shader: vertex=/shaders/bloomextract.vert, fragment=/shaders/bloomextract.frag
+[2025-04-05 21:26:18.900] [info] [graphics] Shader compiled and linked successfully (ID: 43)[2025-04-05 21:37:06.748] [info] [engine] Initializing game engine...
+[2025-04-05 21:37:06.748] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 21:37:06.748] [info] [engine] Error handling system initialized
+[2025-04-05 21:37:06.748] [info] [engine] Initializing virtual file system
+[2025-04-05 21:37:06.748] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 21:37:06.749] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 21:37:06.749] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 21:37:06.749] [info] [engine] Mounted 'resources' to '/resources'
+[2025-04-05 21:37:06.749] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 21:37:06.749] [info] [engine] Virtual file system initialized
+[2025-04-05 21:37:06.749] [info] [graphics] Initializing OpenGL...
+[2025-04-05 21:37:06.894] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 21:37:06.894] [info] [engine] OpenGL initialized successfully
+[2025-04-05 21:37:06.894] [info] [graphics] Creating shader: vertex=/shaders/skybox.vert, fragment=/shaders/skybox.frag
+[2025-04-05 21:37:06.895] [info] [graphics] Shader compiled and linked successfully (ID: 3)
+[2025-04-05 21:37:06.895] [info] [graphics] Creating shader: vertex=/shaders/shadowmap.vert, fragment=/shaders/shadowmap.frag
+[2025-04-05 21:37:06.895] [info] [graphics] Shader compiled and linked successfully (ID: 6)
+[2025-04-05 21:37:06.895] [info] [graphics] Creating shader with geometry: vertex=/shaders/pointshadow.vert, fragment=/shaders/pointshadow.frag, geometry=/shaders/pointshadow.geom
+[2025-04-05 21:37:06.896] [info] [graphics] Shader with geometry compiled and linked successfully (ID: 10)
+[2025-04-05 21:37:06.896] [info] [graphics] Creating shader: vertex=/shaders/hdr.vert, fragment=/shaders/hdr.frag
+[2025-04-05 21:37:06.897] [info] [graphics] Shader compiled and linked successfully (ID: 13)
+[2025-04-05 21:37:06.897] [info] [graphics] Creating shader: vertex=/shaders/bloomblur.vert, fragment=/shaders/bloomblur.frag
+[2025-04-05 21:37:06.897] [info] [graphics] Shader compiled and linked successfully (ID: 16)
+[2025-04-05 21:37:06.897] [info] [graphics] Creating shader: vertex=/shaders/gbuffer.vert, fragment=/shaders/gbuffer.frag
+[2025-04-05 21:37:06.898] [info] [graphics] Shader compiled and linked successfully (ID: 19)
+[2025-04-05 21:37:06.898] [info] [graphics] Creating shader: vertex=/shaders/depth.vert, fragment=/shaders/depth.frag
+[2025-04-05 21:37:06.899] [info] [graphics] Shader compiled and linked successfully (ID: 22)
+[2025-04-05 21:37:06.899] [info] [graphics] Creating shader: vertex=/shaders/deferred.vert, fragment=/shaders/deferred.frag
+[2025-04-05 21:37:06.900] [info] [graphics] Shader compiled and linked successfully (ID: 25)
+[2025-04-05 21:37:06.900] [info] [graphics] Creating shader: vertex=/shaders/ssao.vert, fragment=/shaders/ssao.frag
+[2025-04-05 21:37:06.901] [info] [graphics] Shader compiled and linked successfully (ID: 28)
+[2025-04-05 21:37:06.901] [info] [graphics] Creating shader: vertex=/shaders/ssaoblur.vert, fragment=/shaders/ssaoblur.frag
+[2025-04-05 21:37:06.902] [info] [graphics] Shader compiled and linked successfully (ID: 31)
+[2025-04-05 21:37:06.902] [info] [graphics] Creating shader: vertex=/shaders/fxaa.vert, fragment=/shaders/fxaa.frag
+[2025-04-05 21:37:06.903] [info] [graphics] Shader compiled and linked successfully (ID: 34)
+[2025-04-05 21:37:06.903] [info] [graphics] Creating shader: vertex=/shaders/motionblur.vert, fragment=/shaders/motionblur.frag
+[2025-04-05 21:37:06.903] [info] [graphics] Shader compiled and linked successfully (ID: 37)
+[2025-04-05 21:37:06.903] [info] [graphics] Creating shader: vertex=/shaders/taa.vert, fragment=/shaders/taa.frag
+[2025-04-05 21:37:06.904] [info] [graphics] Shader compiled and linked successfully (ID: 40)
+[2025-04-05 21:37:06.904] [info] [graphics] Creating shader: vertex=/shaders/bloomextract.vert, fragment=/shaders/bloomextract.frag
+[2025-04-05 21:37:06.905] [info] [graphics] Shader compiled and linked successfully (ID: 43)[2025-04-05 22:34:34.106] [info] [engine] Initializing game engine...
+[2025-04-05 22:34:34.106] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 22:34:34.106] [info] [engine] Error handling system initialized
+[2025-04-05 22:34:34.106] [info] [engine] Initializing virtual file system
+[2025-04-05 22:34:34.107] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 22:34:34.107] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 22:34:34.107] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 22:34:34.107] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 22:34:34.107] [info] [engine] Virtual file system initialized
+[2025-04-05 22:34:34.108] [info] [graphics] Initializing OpenGL...
+[2025-04-05 22:34:34.266] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 22:34:34.267] [info] [engine] OpenGL initialized successfully
+[2025-04-05 22:34:34.267] [info] [graphics] Creating shader: vertex=/shaders/skybox.vert, fragment=/shaders/skybox.frag
+[2025-04-05 22:34:34.268] [info] [graphics] Shader compiled and linked successfully (ID: 3)
+[2025-04-05 22:34:34.268] [info] [graphics] Creating shader: vertex=/shaders/shadowmap.vert, fragment=/shaders/shadowmap.frag
+[2025-04-05 22:34:34.269] [info] [graphics] Shader compiled and linked successfully (ID: 6)
+[2025-04-05 22:34:34.269] [info] [graphics] Creating shader with geometry: vertex=/shaders/pointshadow.vert, fragment=/shaders/pointshadow.frag, geometry=/shaders/pointshadow.geom
+[2025-04-05 22:34:34.269] [info] [graphics] Shader with geometry compiled and linked successfully (ID: 10)
+[2025-04-05 22:34:34.270] [info] [graphics] Creating shader: vertex=/shaders/hdr.vert, fragment=/shaders/hdr.frag
+[2025-04-05 22:34:34.270] [info] [graphics] Shader compiled and linked successfully (ID: 13)
+[2025-04-05 22:34:34.270] [info] [graphics] Creating shader: vertex=/shaders/bloomblur.vert, fragment=/shaders/bloomblur.frag
+[2025-04-05 22:34:34.271] [info] [graphics] Shader compiled and linked successfully (ID: 16)
+[2025-04-05 22:34:34.271] [info] [graphics] Creating shader: vertex=/shaders/gbuffer.vert, fragment=/shaders/gbuffer.frag
+[2025-04-05 22:34:34.272] [info] [graphics] Shader compiled and linked successfully (ID: 19)
+[2025-04-05 22:34:34.272] [info] [graphics] Creating shader: vertex=/shaders/depth.vert, fragment=/shaders/depth.frag
+[2025-04-05 22:34:34.273] [info] [graphics] Shader compiled and linked successfully (ID: 22)
+[2025-04-05 22:34:34.273] [info] [graphics] Creating shader: vertex=/shaders/deferred.vert, fragment=/shaders/deferred.frag
+[2025-04-05 22:34:34.274] [info] [graphics] Shader compiled and linked successfully (ID: 25)
+[2025-04-05 22:34:34.274] [info] [graphics] Creating shader: vertex=/shaders/ssao.vert, fragment=/shaders/ssao.frag
+[2025-04-05 22:34:34.275] [info] [graphics] Shader compiled and linked successfully (ID: 28)
+[2025-04-05 22:34:34.275] [info] [graphics] Creating shader: vertex=/shaders/ssaoblur.vert, fragment=/shaders/ssaoblur.frag
+[2025-04-05 22:34:34.276] [info] [graphics] Shader compiled and linked successfully (ID: 31)
+[2025-04-05 22:34:34.276] [info] [graphics] Creating shader: vertex=/shaders/fxaa.vert, fragment=/shaders/fxaa.frag
+[2025-04-05 22:34:34.277] [info] [graphics] Shader compiled and linked successfully (ID: 34)
+[2025-04-05 22:34:34.277] [info] [graphics] Creating shader: vertex=/shaders/motionblur.vert, fragment=/shaders/motionblur.frag
+[2025-04-05 22:34:34.278] [info] [graphics] Shader compiled and linked successfully (ID: 37)
+[2025-04-05 22:34:34.278] [info] [graphics] Creating shader: vertex=/shaders/taa.vert, fragment=/shaders/taa.frag
+[2025-04-05 22:34:34.279] [info] [graphics] Shader compiled and linked successfully (ID: 40)
+[2025-04-05 22:34:34.279] [info] [graphics] Creating shader: vertex=/shaders/bloomextract.vert, fragment=/shaders/bloomextract.frag
+[2025-04-05 22:34:34.279] [info] [graphics] Shader compiled and linked successfully (ID: 43)
+[2025-04-05 22:34:34.279] [info] [graphics] Creating compute shader: /shaders[2025-04-05 22:35:54.516] [info] [engine] Logging system initialized
+[2025-04-05 22:35:54.517] [info] [engine] Starting application
+[2025-04-05 22:35:54.517] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 22:35:54.518] [info] [engine] Signal handlers installed
+[2025-04-05 22:35:54.518] [info] [engine] Initializing engine systems
+[2025-04-05 22:35:54.519] [info] [engine] Initializing game engine...
+[2025-04-05 22:35:54.519] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 22:35:54.519] [info] [engine] Error handling system initialized
+[2025-04-05 22:35:54.519] [info] [engine] Initializing virtual file system
+[2025-04-05 22:35:54.519] [info] [engine] Mounted '../assets' to '/assets'
+[2025-04-05 22:35:54.519] [info] [engine] Mounted 'shaders' to '/shaders'
+[2025-04-05 22:35:54.520] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 22:35:54.520] [info] [engine] Virtual file system initialized successfully
+[2025-04-05 22:35:54.520] [info] [engine] Virtual file system initialized
+[2025-04-05 22:35:54.520] [info] [graphics] Initializing OpenGL...
+[2025-04-05 22:35:54.664] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 22:35:54.664] [info] [engine] OpenGL initialized successfully
+[2025-04-05 22:35:54.664] [info] [graphics] Creating shader: vertex=shaders/skybox.vert, fragment=shaders/skybox.frag
+[2025-04-05 22:35:54.665] [warning] [engine] No mount point found for path: shaders/skybox.vert
+[2025-04-05 22:35:54.665] [error] [graphics] Vertex shader file not found: shaders/skybox.vert
+[2025-04-05 22:35:54.665] [error] [engine] Engine Exception: Vertex shader file not found: shaders/skybox.vert
+[2025-04-05 22:35:54.665] [error] [graphics] Graphics Exception: Vertex shader file not found: shaders/skybox.vert
+[2025-04-05 22:35:54.665] [error] [graphics] Failed to create shader: Vertex shader file not found: shaders/skybox.vert
+[2025-04-05 22:35:54.666] [critical] [engine] Fatal error in main: Vertex shader file not found: shaders/skybox.vert
+[2025-04-05 22:35:54.666] [error] [engine] Exception: Vertex shader file not found: shaders/skybox.vert
+[2025-04-05 22:35:54.667] [info] [engine] Shutting down logging system
+[2025-04-05 22:42:06.157] [info] [engine] Logging system initialized
+[2025-04-05 22:42:06.164] [info] [engine] Starting application
+[2025-04-05 22:42:06.164] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 22:42:06.165] [info] [engine] Signal handlers installed
+[2025-04-05 22:42:06.165] [info] [engine] Initializing engine systems
+[2025-04-05 22:42:06.166] [info] [engine] Initializing game engine...
+[2025-04-05 22:42:06.166] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 22:42:06.166] [info] [engine] Error handling system initialized
+[2025-04-05 22:42:06.166] [info] [engine] Mounted 'assets' to '/assets'
+[2025-04-05 22:42:06.167] [info] [engine] Mounted 'src/Shaders' to '/shaders'
+[2025-04-05 22:42:06.167] [info] [engine] Mounted 'logs' to '/logs'
+[2025-04-05 22:42:06.167] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 22:42:06.168] [info] [engine] Virtual file system initialized
+[2025-04-05 22:42:06.168] [info] [graphics] Initializing OpenGL...
+[2025-04-05 22:42:06.315] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 22:42:06.315] [info] [engine] OpenGL initialized successfully
+[2025-04-05 22:42:06.353] [info] [resource] Loading environment map 'default' from HDR: /assets/8ksky.hdr
+[2025-04-05 22:42:06.353] [error] [resource] HDR file not found in virtual filesystem: /assets/8ksky.hdr
+[2025-04-05 22:42:06.353] [error] [engine] Engine Exception: HDR file not found: /assets/8ksky.hdr
+[2025-04-05 22:42:06.353] [error] [resource] Resource Exception: HDR file not found: /assets/8ksky.hdr
+[2025-04-05 22:42:06.353] [error] [resource] Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 22:42:06.353] [error] [engine] Engine Exception: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 22:42:06.353] [error] [resource] Resource Exception: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 22:42:06.354] [critical] [engine] Fatal error in main: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 22:42:06.354] [error] [engine] Exception: Failed to load environment map 'default': HDR file not found: /assets/8ksky.hdr
+[2025-04-05 22:42:06.354] [info] [engine] Shutting down logging system
+[2025-04-05 22:44:20.985] [info] [engine] Logging system initialized
+[2025-04-05 22:44:20.986] [info] [engine] Starting application
+[2025-04-05 22:44:20.986] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 22:44:20.987] [info] [engine] Signal handlers installed
+[2025-04-05 22:44:20.987] [info] [engine] Initializing engine systems
+[2025-04-05 22:44:20.988] [info] [engine] Initializing game engine...
+[2025-04-05 22:44:20.988] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 22:44:20.988] [info] [engine] Error handling system initialized
+[2025-04-05 22:44:20.989] [info] [engine] Mounted 'assets' to 'assets'
+[2025-04-05 22:44:20.989] [info] [engine] Mounted 'src/Shaders' to 'shaders'
+[2025-04-05 22:44:20.989] [info] [engine] Mounted 'logs' to 'logs'
+[2025-04-05 22:44:20.989] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 22:44:20.989] [info] [engine] Virtual file system initialized
+[2025-04-05 22:44:20.989] [info] [graphics] Initializing OpenGL...
+[2025-04-05 22:44:21.157] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 22:44:21.158] [info] [engine] OpenGL initialized successfully
+[2025-04-05 22:44:21.180] [info] [resource] Loading environment map 'default' from HDR: assets/8ksky.hdr
+[2025-04-05 22:44:21.180] [error] [resource] HDR file not found in virtual filesystem: assets/8ksky.hdr
+[2025-04-05 22:44:21.180] [error] [engine] Engine Exception: HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:44:21.181] [error] [resource] Resource Exception: HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:44:21.181] [error] [resource] Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:44:21.181] [error] [engine] Engine Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:44:21.181] [error] [resource] Resource Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:44:21.182] [critical] [engine] Fatal error in main: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:44:21.182] [error] [engine] Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:44:21.182] [info] [engine] Shutting down logging system
+[2025-04-05 22:45:28.346] [info] [engine] Logging system initialized
+[2025-04-05 22:45:28.349] [info] [engine] Starting application
+[2025-04-05 22:45:28.349] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 22:45:28.349] [info] [engine] Signal handlers installed
+[2025-04-05 22:45:28.349] [info] [engine] Initializing engine systems
+[2025-04-05 22:45:28.351] [info] [engine] Initializing game engine...
+[2025-04-05 22:45:28.351] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-05 22:45:28.351] [info] [engine] Error handling system initialized
+[2025-04-05 22:45:28.351] [info] [engine] Mounted 'assets' to 'assets'
+[2025-04-05 22:45:28.351] [info] [engine] Mounted 'src/Shaders' to 'shaders'
+[2025-04-05 22:45:28.351] [info] [engine] Mounted 'logs' to 'logs'
+[2025-04-05 22:45:28.351] [info] [engine] Virtual file system mounted standard directories
+[2025-04-05 22:45:28.351] [info] [engine] Virtual file system initialized
+[2025-04-05 22:45:28.351] [info] [graphics] Initializing OpenGL...
+[2025-04-05 22:45:28.504] [info] [graphics] OpenGL initialized successfully
+[2025-04-05 22:45:28.504] [info] [engine] OpenGL initialized successfully
+[2025-04-05 22:45:28.517] [info] [resource] Loading environment map 'default' from HDR: assets/8ksky.hdr
+[2025-04-05 22:45:28.517] [error] [resource] HDR file not found in virtual filesystem: assets/8ksky.hdr
+[2025-04-05 22:45:28.517] [error] [engine] Engine Exception: HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:45:28.517] [error] [resource] Resource Exception: HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:45:28.518] [error] [resource] Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:45:28.518] [error] [engine] Engine Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:45:28.518] [error] [resource] Resource Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:45:28.518] [critical] [engine] Fatal error in main: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:45:28.519] [error] [engine] Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
+[2025-04-05 22:45:28.519] [info] [engine] Shutting down logging system

@@ -19,38 +19,38 @@ void GraphicsManager::loadResources()
 {
     //Probably not nessesary since we are using opengl to render it behind everything
 	//Used to render environment maps
-	loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
-	loadShader("src/Shaders/shadowmap.vert", "src/Shaders/shadowmap.frag", "ShadowMap");
-	loadShader("src/Shaders/pointshadow.vert", "src/Shaders/pointshadow.frag", "src/Shaders/pointshadow.geom", "PointShadowMap");
-	loadShader("src/Shaders/hdr.vert", "src/Shaders/hdr.frag", "HDR");
-	loadShader("src/Shaders/bloomblur.vert", "src/Shaders/bloomblur.frag", "BloomBlur");
-	loadShader("src/Shaders/gbuffer.vert", "src/Shaders/gbuffer.frag", "GBuffer");
-	loadShader("src/Shaders/depth.vert", "src/Shaders/depth.frag", "Depth");
-	loadShader("src/Shaders/deferred.vert", "src/Shaders/deferred.frag", "Deferred");
-	loadShader("src/Shaders/ssao.vert", "src/Shaders/ssao.frag", "SSAO");
-	loadShader("src/Shaders/ssaoblur.vert", "src/Shaders/ssaoblur.frag", "SSAOBlur");
-	loadShader("src/Shaders/fxaa.vert", "src/Shaders/fxaa.frag", "FXAA");
-	loadShader("src/Shaders/motionblur.vert", "src/Shaders/motionblur.frag", "MotionBlur");
-	loadShader("src/Shaders/taa.vert", "src/Shaders/taa.frag", "TAA");
-	loadShader("src/Shaders/bloomextract.vert", "src/Shaders/bloomextract.frag", "BloomExtract");
-	loadShader("src/Shaders/luminance.comp", "Luminance");
-	loadShader("src/Shaders/adaptation.comp", "Adaptation");
-	loadShader("src/Shaders/ssr.vert", "src/Shaders/ssr.frag", "SSR");
+	loadShader("Shaders/skybox.vert", "Shaders/skybox.frag", "Skybox");
+	loadShader("Shaders/shadowmap.vert", "Shaders/shadowmap.frag", "ShadowMap");
+	loadShader("Shaders/pointshadow.vert", "Shaders/pointshadow.frag", "Shaders/pointshadow.geom", "PointShadowMap");
+	loadShader("Shaders/hdr.vert", "Shaders/hdr.frag", "HDR");
+	loadShader("Shaders/bloomblur.vert", "Shaders/bloomblur.frag", "BloomBlur");
+	loadShader("Shaders/gbuffer.vert", "Shaders/gbuffer.frag", "GBuffer");
+	loadShader("Shaders/depth.vert", "Shaders/depth.frag", "Depth");
+	loadShader("Shaders/deferred.vert", "Shaders/deferred.frag", "Deferred");
+	loadShader("Shaders/ssao.vert", "Shaders/ssao.frag", "SSAO");
+	loadShader("Shaders/ssaoblur.vert", "Shaders/ssaoblur.frag", "SSAOBlur");
+	loadShader("Shaders/fxaa.vert", "Shaders/fxaa.frag", "FXAA");
+	loadShader("Shaders/motionblur.vert", "Shaders/motionblur.frag", "MotionBlur");
+	loadShader("Shaders/taa.vert", "Shaders/taa.frag", "TAA");
+	loadShader("Shaders/bloomextract.vert", "Shaders/bloomextract.frag", "BloomExtract");
+	loadShader("Shaders/luminance.comp", "Luminance");
+	loadShader("Shaders/adaptation.comp", "Adaptation");
+	loadShader("Shaders/ssr.vert", "Shaders/ssr.frag", "SSR");
     //This is needed to create a cubemap texture from an hdr
-	auto equirectCubemapShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
+	auto equirectCubemapShader = loadShader("Shaders/cubemap.vert", "Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
     //Used to create environment maps
-	auto irradianceShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/irradiance.frag", "irradiance");
+	auto irradianceShader = loadShader("Shaders/cubemap.vert", "Shaders/irradiance.frag", "irradiance");
 	//Used to create environment maps
-	auto prefilterShader = loadShader("src/Shaders/cubemap.vert", "src/Shaders/prefilter.frag", "prefilter");
+	auto prefilterShader = loadShader("Shaders/cubemap.vert", "Shaders/prefilter.frag", "prefilter");
 	//Used to create environment maps
-	auto brdfShader = loadShader("src/Shaders/brdf.vert", "src/Shaders/brdf.frag", "brdf");
+	auto brdfShader = loadShader("Shaders/brdf.vert", "Shaders/brdf.frag", "brdf");
 
     //loadModel(engine_util::buildPath("assets/MetalRoughSpheres.gltf"), "MetalTests");
-	loadModel("assets/Sponza/Sponza.gltf", "Sponza");
+	loadModel("../assets/Sponza/Sponza.gltf", "Sponza");
 	//loadModel(engine_util::buildPath("assets/helmet/DamagedHelmet.gltf"), "Helmet");
 	//loadModel(engine_util::buildPath("assets/scene.gltf"), "Scene");
 
-    loadEnvironmentMap("default", "assets/8ksky.hdr", equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
+    loadEnvironmentMap("default", "../assets/8ksky.hdr", equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
     
 
 
@@ -65,23 +65,23 @@ void GraphicsManager::unloadResources()
 
 void GraphicsManager::reloadShaders()
 {
-    loadShader("src/Shaders/skybox.vert", "src/Shaders/skybox.frag", "Skybox");
-    loadShader("src/Shaders/shadowmap.vert", "src/Shaders/shadowmap.frag", "ShadowMap");
-    loadShader("src/Shaders/pointshadow.vert", "src/Shaders/pointshadow.frag", "src/Shaders/pointshadow.geom", "PointShadowMap");
-    loadShader("src/Shaders/hdr.vert", "src/Shaders/hdr.frag", "HDR");
-    loadShader("src/Shaders/bloomblur.vert", "src/Shaders/bloomblur.frag", "BloomBlur");
-    loadShader("src/Shaders/gbuffer.vert", "src/Shaders/gbuffer.frag", "GBuffer");
-    loadShader("src/Shaders/depth.vert", "src/Shaders/depth.frag", "Depth");
-    loadShader("src/Shaders/deferred.vert", "src/Shaders/deferred.frag", "Deferred");
-    loadShader("src/Shaders/ssao.vert", "src/Shaders/ssao.frag", "SSAO");
-    loadShader("src/Shaders/ssaoblur.vert", "src/Shaders/ssaoblur.frag", "SSAOBlur");
-    loadShader("src/Shaders/fxaa.vert", "src/Shaders/fxaa.frag", "FXAA");
-    loadShader("src/Shaders/motionblur.vert", "src/Shaders/motionblur.frag", "MotionBlur");
-    loadShader("src/Shaders/taa.vert", "src/Shaders/taa.frag", "TAA");
-    loadShader("src/Shaders/bloomextract.vert", "src/Shaders/bloomextract.frag", "BloomExtract");
-    loadShader("src/Shaders/luminance.comp", "Luminance");
-    loadShader("src/Shaders/adaptation.comp", "Adaptation");
-    loadShader("src/Shaders/ssr.vert", "src/Shaders/ssr.frag", "SSR");
+    loadShader("Shaders/skybox.vert", "Shaders/skybox.frag", "Skybox");
+    loadShader("Shaders/shadowmap.vert", "Shaders/shadowmap.frag", "ShadowMap");
+    loadShader("Shaders/pointshadow.vert", "Shaders/pointshadow.frag", "Shaders/pointshadow.geom", "PointShadowMap");
+    loadShader("Shaders/hdr.vert", "Shaders/hdr.frag", "HDR");
+    loadShader("Shaders/bloomblur.vert", "Shaders/bloomblur.frag", "BloomBlur");
+    loadShader("Shaders/gbuffer.vert", "Shaders/gbuffer.frag", "GBuffer");
+    loadShader("Shaders/depth.vert", "Shaders/depth.frag", "Depth");
+    loadShader("Shaders/deferred.vert", "Shaders/deferred.frag", "Deferred");
+    loadShader("Shaders/ssao.vert", "Shaders/ssao.frag", "SSAO");
+    loadShader("Shaders/ssaoblur.vert", "Shaders/ssaoblur.frag", "SSAOBlur");
+    loadShader("Shaders/fxaa.vert", "Shaders/fxaa.frag", "FXAA");
+    loadShader("Shaders/motionblur.vert", "Shaders/motionblur.frag", "MotionBlur");
+    loadShader("Shaders/taa.vert", "Shaders/taa.frag", "TAA");
+    loadShader("Shaders/bloomextract.vert", "Shaders/bloomextract.frag", "BloomExtract");
+    loadShader("Shaders/luminance.comp", "Luminance");
+    loadShader("Shaders/adaptation.comp", "Adaptation");
+    loadShader("Shaders/ssr.vert", "Shaders/ssr.frag", "SSR");
 }
 
 void GraphicsManager::clear()

@@ -15,7 +15,6 @@ public:
 	static void shutdown();
 	static void finalShutdown();
 	static void gameLoop();
-	static void initializeFileSystem();
 
 	template <typename T>
 	static void loadScene()
