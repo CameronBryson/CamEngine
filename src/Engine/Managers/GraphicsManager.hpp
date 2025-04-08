@@ -66,12 +66,12 @@ public:
 
 private:
     // Resource maps
-    std::unordered_map<std::string, std::shared_ptr<Shader>> shader_map_;
-    std::unordered_map<std::string, std::shared_ptr<Texture>> texture_map_;
-    std::unordered_map<std::string, std::shared_ptr<Material>> material_map_;
-    std::unordered_map<std::string, std::shared_ptr<Mesh>> mesh_map_;
-    std::unordered_map<std::string, std::shared_ptr<Model>> model_map_;
-    std::unordered_map<std::string, std::shared_ptr<EnvironmentMap>> environment_map_;
+    std::unordered_map<std::string, std::shared_ptr<Shader>> mShaderMap;
+    std::unordered_map<std::string, std::shared_ptr<Texture>> mTextureMap;
+    std::unordered_map<std::string, std::shared_ptr<Material>> mMaterialMap;
+    std::unordered_map<std::string, std::shared_ptr<Mesh>> mMeshMap;
+    std::unordered_map<std::string, std::shared_ptr<Model>> mModelMap;
+    std::unordered_map<std::string, std::shared_ptr<EnvironmentMap>> mEnvironmentMap;
 
 
     std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory);

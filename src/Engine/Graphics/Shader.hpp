@@ -36,6 +36,6 @@ public:
 
     void checkCompileError(unsigned shader, const std::string& type);
 private:
-    unsigned int shaderID;
-    bool isComputeShader = false;
+    unsigned int mShaderID;
+    bool mIsComputeShader = false;
 };

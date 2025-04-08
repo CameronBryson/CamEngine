@@ -20,9 +20,9 @@ public:
 	void setMaterial(const std::shared_ptr<Material>& material) ;
 	std::shared_ptr<Material> getMaterial() ;
 	std::vector<Vertex>& getVertices() ;
-	glm::vec3 getBoundingSphereCenter() const ;
-	float getBoundingSphereRadius() const ;
-	void calculateBoundingSphere() ;
+	glm::vec3 getBoundingSphereCenter() const;
+	float getBoundingSphereRadius() const;
+	void calculateBoundingSphere();
 
 	void setName(const std::string& name)  { mName = name; }
 	const std::string& getName() const  { return mName; }

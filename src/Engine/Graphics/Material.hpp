@@ -9,85 +9,77 @@ class Texture;
 class Material
 {
 public:
-    Material();
-    void bind(std::shared_ptr<Shader> shader) ;
-    void unbind() ;
+	Material();
+	void bind(std::shared_ptr<Shader> shader) ;
+	void unbind() ;
 
-    // Implement all getters and setters
-    void setShader(std::shared_ptr<Shader> shader)  { this->shader = shader; }
-    std::shared_ptr<Shader> getShader()  { return shader; }
+	void setShader(std::shared_ptr<Shader> shader)  { this->mShader = shader; }
+	std::shared_ptr<Shader> getShader()  { return mShader; }
 
-    void setName(const std::string& name)  { mName = name; }
-    const std::string& getName() const  { return mName; }
+	void setName(const std::string& name)  { mName = name; }
+	const std::string& getName() const  { return mName; }
 
-    // Base material properties
-    void setAlbedo(const glm::vec4& color)  { albedo = color; }
-    glm::vec4 getAlbedo() const  { return albedo; }
-    void setOpacity(float value)  { opacity = value; }
-    float getOpacity() const  { return opacity; }
+	void setAlbedo(const glm::vec4& color)  { mAlbedo = color; }
+	glm::vec4 getAlbedo() const  { return mAlbedo; }
+	void setOpacity(float value)  { mOpacity = value; }
+	float getOpacity() const  { return mOpacity; }
 
-    // PBR properties
-    void setMetallic(float value)  { metallic = value; }
-    float getMetallic() const  { return metallic; }
-    void setRoughness(float value)  { roughness = value; }
-    float getRoughness() const  { return roughness; }
+	void setMetallic(float value)  { mMetallic = value; }
+	float getMetallic() const  { return mMetallic; }
+	void setRoughness(float value)  { mRoughness = value; }
+	float getRoughness() const  { return mRoughness; }
 
-    // Emission properties
-    void setEmissiveColor(const glm::vec3& color)  { emissiveColor = color; }
-    glm::vec3 getEmissiveColor() const  { return emissiveColor; }
-    void setEmissiveIntensity(float value)  { emissiveIntensity = value; }
-    float getEmissiveIntensity() const  { return emissiveIntensity; }
+	void setEmissiveColor(const glm::vec3& color)  { mEmissiveColor = color; }
+	glm::vec3 getEmissiveColor() const  { return mEmissiveColor; }
+	void setEmissiveIntensity(float value)  { mEmissiveIntensity = value; }
+	float getEmissiveIntensity() const  { return mEmissiveIntensity; }
 
-    // Displacement properties
-    void setDisplacementScale(float value)  { displacementScale = value; }
-    float getDisplacementScale() const  { return displacementScale; }
+	void setDisplacementScale(float value)  { mDisplacementScale = value; }
+	float getDisplacementScale() const  { return mDisplacementScale; }
 
-    //Reflective properties
-    void setReflectivity(float value)  { reflectivity = value; }
-    float getReflectivity() const  { return reflectivity; }
+	void setReflectivity(float value)  { mReflectivity = value; }
+	float getReflectivity() const  { return mReflectivity; }
 
-    // Textures
-    void setAlbedoTexture(std::shared_ptr<Texture> texture)  { albedoTexture = texture; }
-    std::shared_ptr<Texture> getAlbedoTexture() const  { return albedoTexture; }
-    void setNormalTexture(std::shared_ptr<Texture> texture)  { normalTexture = texture; }
-    std::shared_ptr<Texture> getNormalTexture() const  { return normalTexture; }
-    void setMetallicTexture(std::shared_ptr<Texture> texture)  { metallicTexture = texture; }
-    std::shared_ptr<Texture> getMetallicTexture() const  { return metallicTexture; }
-    void setRoughnessTexture(std::shared_ptr<Texture> texture)  { roughnessTexture = texture; }
-    std::shared_ptr<Texture> getRoughnessTexture() const  { return roughnessTexture; }
-    void setAOTexture(std::shared_ptr<Texture> texture)  { AOTexture = texture; }
-    std::shared_ptr<Texture> getAOTexture() const  { return AOTexture; }
-    void setEmissiveTexture(std::shared_ptr<Texture> texture)  { emissiveTexture = texture; }
-    std::shared_ptr<Texture> getEmissiveTexture() const  { return emissiveTexture; }
-    void setMetalRoughTexture(std::shared_ptr<Texture> texture)  { metalRoughTexture = texture; }
-    std::shared_ptr<Texture> getMetalRoughTexture() const  { return metalRoughTexture; }
-    void setOpacityTexture(std::shared_ptr<Texture> texture)  { opacityTexture = texture; }
-    std::shared_ptr<Texture> getOpacityTexture() const  { return opacityTexture; }
-    void setDisplacementTexture(std::shared_ptr<Texture> texture)  { displacementTexture = texture; }
-    std::shared_ptr<Texture> getDisplacementTexture() const  { return displacementTexture; }
+	void setAlbedoTexture(std::shared_ptr<Texture> texture)  { mAlbedoTexture = texture; }
+	std::shared_ptr<Texture> getAlbedoTexture() const  { return mAlbedoTexture; }
+	void setNormalTexture(std::shared_ptr<Texture> texture)  { mNormalTexture = texture; }
+	std::shared_ptr<Texture> getNormalTexture() const  { return mNormalTexture; }
+	void setMetallicTexture(std::shared_ptr<Texture> texture)  { mMetallicTexture = texture; }
+	std::shared_ptr<Texture> getMetallicTexture() const  { return mMetallicTexture; }
+	void setRoughnessTexture(std::shared_ptr<Texture> texture)  { mRoughnessTexture = texture; }
+	std::shared_ptr<Texture> getRoughnessTexture() const  { return mRoughnessTexture; }
+	void setAOTexture(std::shared_ptr<Texture> texture)  { mAOTexture = texture; }
+	std::shared_ptr<Texture> getAOTexture() const  { return mAOTexture; }
+	void setEmissiveTexture(std::shared_ptr<Texture> texture)  { mEmissiveTexture = texture; }
+	std::shared_ptr<Texture> getEmissiveTexture() const  { return mEmissiveTexture; }
+	void setMetalRoughTexture(std::shared_ptr<Texture> texture)  { mMetalRoughTexture = texture; }
+	std::shared_ptr<Texture> getMetalRoughTexture() const  { return mMetalRoughTexture; }
+	void setOpacityTexture(std::shared_ptr<Texture> texture)  { mOpacityTexture = texture; }
+	std::shared_ptr<Texture> getOpacityTexture() const  { return mOpacityTexture; }
+	void setDisplacementTexture(std::shared_ptr<Texture> texture)  { mDisplacementTexture = texture; }
+	std::shared_ptr<Texture> getDisplacementTexture() const  { return mDisplacementTexture; }
 
 private:
-    // Move all properties to private section
-    glm::vec4 albedo = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
-    float opacity = 1.0f;
-    float metallic = 0.0f;
-    float roughness = 0.5f;
-    glm::vec3 emissiveColor = glm::vec3(0.0f);
-    float emissiveIntensity = 0.0f;
-    float displacementScale = 0.1f;
-    float reflectivity = 0.2f;
-    std::string mName;
+	glm::vec4 mAlbedo = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+	float mOpacity = 1.0f;
+	float mMetallic = 0.0f;
+	float mRoughness = 0.5f;
+	glm::vec3 mEmissiveColor = glm::vec3(0.0f);
+	float mEmissiveIntensity = 0.0f;
+	float mDisplacementScale = 0.1f;
+	float mReflectivity = 0.2f;
+	std::string mName;
 
-    std::shared_ptr<Texture> albedoTexture = nullptr;
-    std::shared_ptr<Texture> normalTexture = nullptr;
-    std::shared_ptr<Texture> metallicTexture = nullptr;
-    std::shared_ptr<Texture> roughnessTexture = nullptr;
-    std::shared_ptr<Texture> AOTexture = nullptr;
-    std::shared_ptr<Texture> emissiveTexture = nullptr;
-    std::shared_ptr<Texture> metalRoughTexture = nullptr;
-    std::shared_ptr<Texture> opacityTexture = nullptr;
-    std::shared_ptr<Texture> displacementTexture = nullptr;
-    std::shared_ptr<Shader> shader = nullptr;
+	std::shared_ptr<Texture> mAlbedoTexture = nullptr;
+	std::shared_ptr<Texture> mNormalTexture = nullptr;
+	std::shared_ptr<Texture> mMetallicTexture = nullptr;
+	std::shared_ptr<Texture> mRoughnessTexture = nullptr;
+	std::shared_ptr<Texture> mAOTexture = nullptr;
+	std::shared_ptr<Texture> mEmissiveTexture = nullptr;
+	std::shared_ptr<Texture> mMetalRoughTexture = nullptr;
+	std::shared_ptr<Texture> mOpacityTexture = nullptr;
+	std::shared_ptr<Texture> mDisplacementTexture = nullptr;
+	std::shared_ptr<Shader> mShader = nullptr;
 };
 
 

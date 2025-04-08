@@ -8,33 +8,32 @@
 class EnvironmentMap
 {
 public:
-    EnvironmentMap(const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
-    ~EnvironmentMap();
+	EnvironmentMap(const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
+	~EnvironmentMap();
 
-    void generateIrradianceMap();
-    void generatePrefilterMap();
-    void generateBRDFLUT();
+	void generateIrradianceMap();
+	void generatePrefilterMap();
+	void generateBRDFLUT();
 
-    void bindIrradiance(int slot);
-    void bindPrefilter(int slot);
-    void bindBRDFLUT(int slot);
-    void unbindIrradiance(int slot);
-    void unbindPrefilter(int slot);
-    void unbindBRDFLUT(int slot);
+	void bindIrradiance(int slot);
+	void bindPrefilter(int slot);
+	void bindBRDFLUT(int slot);
+	void unbindIrradiance(int slot);
+	void unbindPrefilter(int slot);
+	void unbindBRDFLUT(int slot);
 
-    // Draw a skybox using the environment map
-    void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
+	void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
 
 private:
-    std::shared_ptr<TextureCubemap> mSkyboxCubemap;     // Equirect->Cubemap
-    std::shared_ptr<TextureCubemap> mIrradianceCubemap; // Convolved irradiance
-    std::shared_ptr<TextureCubemap> mPrefilterCubemap;  // Prefiltered env
-    std::shared_ptr<Texture2D>      mBRDFLUT;
+	std::shared_ptr<TextureCubemap> mSkyboxCubemap;
+	std::shared_ptr<TextureCubemap> mIrradianceCubemap;
+	std::shared_ptr<TextureCubemap> mPrefilterCubemap;
+	std::shared_ptr<Texture2D>      mBRDFLUT;
 
-    std::shared_ptr<Shader> mEquirectangularToCubemapShader;
-    std::shared_ptr<Shader> mIrradianceShader;
-    std::shared_ptr<Shader> mPrefilterShader;
-    std::shared_ptr<Shader> mBRDFShader;
+	std::shared_ptr<Shader> mEquirectangularToCubemapShader;
+	std::shared_ptr<Shader> mIrradianceShader;
+	std::shared_ptr<Shader> mPrefilterShader;
+	std::shared_ptr<Shader> mBRDFShader;
 
 
 };

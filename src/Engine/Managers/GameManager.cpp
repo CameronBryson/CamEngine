@@ -196,12 +196,12 @@ void GameManager::gameLoop()
 }
 
 
-GLFWwindow * GameManager::get_glfw_window()
+GLFWwindow * GameManager::getGLFWWindow()
 {
 	return mGameWindow;
 }
 
-void GameManager::set_glfw_window(GLFWwindow * window)
+void GameManager::setGLFWWindow(GLFWwindow * window)
 {
 	mGameWindow = window;
 }

@@ -10,7 +10,7 @@ public:
 	unsigned int getID() const ;
 	void clear() ;
 private:
-	unsigned int m_ID;
-	unsigned int m_Size;
+	unsigned int mID;
+	unsigned int mSize;
 };
 

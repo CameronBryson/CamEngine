@@ -116,7 +116,7 @@ void SRender::shutdown()
 }
 void SRender::initImGui()
 {
-    GLFWwindow* window = GameManager::get_glfw_window();
+    GLFWwindow* window = GameManager::getGLFWWindow();
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -515,18 +515,18 @@ void SRender::updateCameraUniforms()
 {
 
     CameraData cameraData;
-    cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.Position, 0.0f);
-    cameraData.view = mScene->mCurrentCamera.GetViewMatrix();
+    cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.mPosition, 0.0f);
+    cameraData.view = mScene->mCurrentCamera.getViewMatrix();
 
     // Apply the jitter to the projection matrix
     // This will offset the projection slightly for each frame in the sequence
-    cameraData.projection = mScene->mCurrentCamera.GetProjectionMatrix();
+    cameraData.projection = mScene->mCurrentCamera.getProjectionMatrix();
     if(mTAAEnabled)
     {
 	    cameraData.projection[2][0] += mCurrentJitter.x;
 	    cameraData.projection[2][1] += mCurrentJitter.y;
     }
-	cameraData.viewProjection = mScene->mCurrentCamera.GetViewProjectionMatrix();
+	cameraData.viewProjection = mScene->mCurrentCamera.getViewProjectionMatrix();
     if (mTAAEnabled)
     {
 		cameraData.viewProjection[2][0] += mCurrentJitter.x;
@@ -534,14 +534,14 @@ void SRender::updateCameraUniforms()
     }
     // Set camera position for shaders
 
-	cameraData.inverseView = mScene->mCurrentCamera.GetInverseViewMatrix();
-	cameraData.inverseProjection = mScene->mCurrentCamera.GetInverseProjectionMatrix();
-	cameraData.inverseViewProjection = mScene->mCurrentCamera.GetInverseViewProjectionMatrix();
+	cameraData.inverseView = mScene->mCurrentCamera.getInverseViewMatrix();
+	cameraData.inverseProjection = mScene->mCurrentCamera.getInverseProjectionMatrix();
+	cameraData.inverseViewProjection = mScene->mCurrentCamera.getInverseViewProjectionMatrix();
 
     // Previous matrices for reprojection
-    cameraData.previousView = mScene->mCurrentCamera.GetPreviousViewMatrix();
-    cameraData.previousProjection = mScene->mCurrentCamera.GetPreviousProjectionMatrix();
-	cameraData.previousViewProjection = mScene->mCurrentCamera.GetPreviousViewProjectionMatrix();
+    cameraData.previousView = mScene->mCurrentCamera.getPreviousViewMatrix();
+    cameraData.previousProjection = mScene->mCurrentCamera.getPreviousProjectionMatrix();
+	cameraData.previousViewProjection = mScene->mCurrentCamera.getPreviousViewProjectionMatrix();
 
     // Upload data to the uniform buffer
     mCameraUBO->setData(&cameraData, sizeof(CameraData));
@@ -570,7 +570,7 @@ void SRender::buildRenderLists()
     mTransparentRenderList.clear();
     mCulledMeshes = 0;
 
-    glm::vec3 camPos = mScene->mCurrentCamera.Position;
+    glm::vec3 camPos = mScene->mCurrentCamera.mPosition;
     auto& registry = mScene->mEnttRegistry;
     auto modelView = registry.view<CModel, CTransform>();
 
@@ -801,7 +801,7 @@ void SRender::lightingPass()
     GL_SCOPED_MARKER("Lighting");
     GL_SCOPED_TIMER("Deferred Lighting");
     int width, height;
-    glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
+    glfwGetFramebufferSize(GameManager::getGLFWWindow(), &width, &height);
     GL_CHECK(glViewport(0, 0, width, height));
 
     // 1. Copy depth buffer from G-Buffer to HDR framebuffer
@@ -873,11 +873,11 @@ void SRender::lightingPass()
     auto skyboxShader = GameManager::mGraphicsManager->getShader("Skybox");
     skyboxShader->use();
 
-    const auto& viewMatrix = mScene->mCurrentCamera.GetViewMatrix();
+    const auto& viewMatrix = mScene->mCurrentCamera.getViewMatrix();
     glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(viewMatrix));
 
     skyboxShader->setMat4("view", viewNoTranslation);
-    skyboxShader->setMat4("projection", mScene->mCurrentCamera.GetProjectionMatrix());
+    skyboxShader->setMat4("projection", mScene->mCurrentCamera.getProjectionMatrix());
 
     auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
     skybox->drawSkybox(skyboxShader);
@@ -1097,7 +1097,7 @@ void SRender::bloomPass()
 void SRender::hdrPass()
 {
     int width, height;
-    glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
+    glfwGetFramebufferSize(GameManager::getGLFWWindow(), &width, &height);
     GL_CHECK(glViewport(0, 0, width, height));
     GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
@@ -1246,7 +1246,7 @@ void SRender::motionBlurPass()
 
        // Set viewport to screen dimensions 
        int width, height;
-       glfwGetFramebufferSize(GameManager::get_glfw_window(), &width, &height);
+       glfwGetFramebufferSize(GameManager::getGLFWWindow(), &width, &height);
        GL_CHECK(glViewport(0, 0, width, height));
        
        // Bind the default framebuffer (0) for final output to screen
@@ -1448,10 +1448,10 @@ void SRender::drawImGui()
     if (ImGui::CollapsingHeader("Camera"))
     {
         auto& camera = mScene->mCurrentCamera;
-        ImGui::SliderFloat3("Position", glm::value_ptr(camera.Position), -25.0f, 25.0f);
-        ImGui::SliderFloat("Yaw", &camera.Yaw, -180.0f, 180.0f);
-        ImGui::SliderFloat("Pitch", &camera.Pitch, -89.0f, 89.0f);
-        ImGui::SliderFloat("FOV", &camera.Fov, 1.0f, 120.0f);
+        ImGui::SliderFloat3("Position", glm::value_ptr(camera.mPosition), -25.0f, 25.0f);
+        ImGui::SliderFloat("Yaw", &camera.mYaw, -180.0f, 180.0f);
+        ImGui::SliderFloat("Pitch", &camera.mPitch, -89.0f, 89.0f);
+        ImGui::SliderFloat("FOV", &camera.mFov, 1.0f, 120.0f);
         camera.updateCamera();
     }
 

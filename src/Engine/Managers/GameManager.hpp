@@ -22,8 +22,8 @@ public:
 		mPendingScene = std::make_unique<T>();
 	}
 
-	static GLFWwindow* get_glfw_window();
-	static void set_glfw_window(GLFWwindow* window);
+	static GLFWwindow* getGLFWWindow();
+	static void setGLFWWindow(GLFWwindow* window);
 
 
 

@@ -78,5 +78,5 @@ void engine_util::getMouseDelta(double& dx, double& dy) {
 }
 
 void engine_util::setMouseCursorMode(int mode) {
-    glfwSetInputMode(GameManager::get_glfw_window(), GLFW_CURSOR, mode);
+    glfwSetInputMode(GameManager::getGLFWWindow(), GLFW_CURSOR, mode);
 }

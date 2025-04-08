@@ -101,10 +101,10 @@ void TestScene::init()
 	auto directionalLight = mEnttRegistry.create();
 	mEnttRegistry.emplace<CDirectionalLight>(directionalLight, directionalDirection, directionalAmbient, directionalDiffuse, directionalSpecular);
 	double mouseX, mouseY;
-	glfwGetCursorPos(GameManager::get_glfw_window(), &mouseX, &mouseY);
+	glfwGetCursorPos(GameManager::getGLFWWindow(), &mouseX, &mouseY);
 	mLastMouseX = mouseX;
 	mLastMouseY = mouseY;
-	glfwSetInputMode(GameManager::get_glfw_window(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(GameManager::getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 }
 void TestScene::lateInit() { BaseScene::lateInit(); }
@@ -119,16 +119,16 @@ void TestScene::update(float dt) {
 
 	// WASD movement (horizontal and forward/backward)
 	if (engine_util::isKeyPressed(GLFW_KEY_W)) {
-		mCurrentCamera.Position += mCurrentCamera.Front * finalSpeed * dt;
+		mCurrentCamera.mPosition += mCurrentCamera.mFront * finalSpeed * dt;
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_S)) {
-		mCurrentCamera.Position -= mCurrentCamera.Front * finalSpeed * dt;
+		mCurrentCamera.mPosition -= mCurrentCamera.mFront * finalSpeed * dt;
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_A)) {
-		mCurrentCamera.Position -= mCurrentCamera.Right * finalSpeed * dt;
+		mCurrentCamera.mPosition -= mCurrentCamera.mRight * finalSpeed * dt;
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_D)) {
-		mCurrentCamera.Position += mCurrentCamera.Right * finalSpeed * dt;
+		mCurrentCamera.mPosition += mCurrentCamera.mRight * finalSpeed * dt;
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_R))
 	{
@@ -137,42 +137,42 @@ void TestScene::update(float dt) {
 
 	// Q/E for vertical movement (Unity-like)
 	if (engine_util::isKeyPressed(GLFW_KEY_E) || engine_util::isKeyPressed(GLFW_KEY_SPACE)) {
-		mCurrentCamera.Position += mCurrentCamera.WorldUp * finalSpeed * dt;
+		mCurrentCamera.mPosition += mCurrentCamera.mWorldUp * finalSpeed * dt;
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_Q)) {
-		mCurrentCamera.Position -= mCurrentCamera.WorldUp * finalSpeed * dt;
+		mCurrentCamera.mPosition -= mCurrentCamera.mWorldUp * finalSpeed * dt;
 	}
 	// Arrow key camera rotation
 	float rotationSpeed = 100.0f * dt; // Adjust this value to change rotation speed
 	if (engine_util::isKeyPressed(GLFW_KEY_LEFT)) {
-		mCurrentCamera.Yaw -= rotationSpeed;
+		mCurrentCamera.mYaw -= rotationSpeed;
 		mCurrentCamera.updateCamera();
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_RIGHT)) {
-		mCurrentCamera.Yaw += rotationSpeed;
+		mCurrentCamera.mYaw += rotationSpeed;
 		mCurrentCamera.updateCamera();
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_UP)) {
-		mCurrentCamera.Pitch += rotationSpeed;
+		mCurrentCamera.mPitch += rotationSpeed;
 		// Constrain pitch to prevent camera flipping
-		if (mCurrentCamera.Pitch > 89.0f)
-			mCurrentCamera.Pitch = 89.0f;
+		if (mCurrentCamera.mPitch > 89.0f)
+			mCurrentCamera.mPitch = 89.0f;
 		mCurrentCamera.updateCamera();
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_DOWN)) {
-		mCurrentCamera.Pitch -= rotationSpeed;
+		mCurrentCamera.mPitch -= rotationSpeed;
 		// Constrain pitch to prevent camera flipping
-		if (mCurrentCamera.Pitch < -89.0f)
-			mCurrentCamera.Pitch = -89.0f;
+		if (mCurrentCamera.mPitch < -89.0f)
+			mCurrentCamera.mPitch = -89.0f;
 		mCurrentCamera.updateCamera();
 	}
 	// Handle camera rotation with right mouse button
 	if (engine_util::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
 		// Hide cursor when right mouse is pressed
-		glfwSetInputMode(GameManager::get_glfw_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(GameManager::getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		double mouseX, mouseY;
-		glfwGetCursorPos(GameManager::get_glfw_window(), &mouseX, &mouseY);
+		glfwGetCursorPos(GameManager::getGLFWWindow(), &mouseX, &mouseY);
 
 		if (!mIsRightMousePressed) {
 			// First frame of right click, just update last position
@@ -193,14 +193,14 @@ void TestScene::update(float dt) {
 			yoffset *= mMouseSensitivity;
 
 			// Update camera angles
-			mCurrentCamera.Yaw += xoffset;
-			mCurrentCamera.Pitch += yoffset;
+			mCurrentCamera.mYaw += xoffset;
+			mCurrentCamera.mPitch += yoffset;
 
 			// Constrain pitch to prevent camera flipping
-			if (mCurrentCamera.Pitch > 89.0f)
-				mCurrentCamera.Pitch = 89.0f;
-			if (mCurrentCamera.Pitch < -89.0f)
-				mCurrentCamera.Pitch = -89.0f;
+			if (mCurrentCamera.mPitch > 89.0f)
+				mCurrentCamera.mPitch = 89.0f;
+			if (mCurrentCamera.mPitch < -89.0f)
+				mCurrentCamera.mPitch = -89.0f;
 
 			// Update camera vectors based on new angles
 			mCurrentCamera.updateCamera();
@@ -209,7 +209,7 @@ void TestScene::update(float dt) {
 	else {
 		// Show cursor when right mouse is released
 		if (mIsRightMousePressed) {
-			glfwSetInputMode(GameManager::get_glfw_window(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetInputMode(GameManager::getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			mIsRightMousePressed = false;
 		}
 	}

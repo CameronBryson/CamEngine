@@ -1,6 +1,6 @@
 #include "pch.hpp"
 #include "IndexBuffer.hpp"
-#include "OpenGLUtil.hpp" // Include the header where GL_CHECK is defined
+#include "OpenGLUtil.hpp" 
 
 IndexBuffer::IndexBuffer(const std::vector<unsigned>& indices) : mCount(indices.size())
 {

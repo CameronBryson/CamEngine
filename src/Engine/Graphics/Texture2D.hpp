@@ -15,15 +15,15 @@ public:
 	void unbind(unsigned int slot) override;
 	int getWidth() const override;
 	int getHeight() const override;
-	unsigned int getTextureID() const override { return textureID; }
+	unsigned int getTextureID() const override { return mTextureID; }
 	void setShadowSamplerParameters() override;
 	void setNormalSamplerParameters() override;
 
 private:
-	GLuint textureID = 0;
-	unsigned char* data = nullptr;
-	int width = 0;
-	int height = 0;
-	bool isShadowSampler = false;
-	bool isNormalMap = false;
+	GLuint mTextureID = 0;
+	unsigned char* mData = nullptr;
+	int mWidth = 0;
+	int mHeight = 0;
+	bool mIsShadowSampler = false;
+	bool mIsNormalMap = false;
 };

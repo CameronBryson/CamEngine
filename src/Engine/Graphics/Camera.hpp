@@ -11,57 +11,49 @@ constexpr float PITCH = 0.0f;
 constexpr float FOV = 90.0f;
 
 
-// An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera
 {
 public:
-    // camera Attributes
-    glm::vec3 Position;
-    glm::vec3 Front;
-    glm::vec3 Up;
-    glm::vec3 Right;
-    glm::vec3 WorldUp;
-    // euler Angles
-    float Yaw;
-    float Pitch;
-    // camera options
-    float Fov;
-    glm::mat4 view_matrix;
-    glm::mat4 projection_matrix;
-	glm::mat4 view_projection_matrix;
-    glm::mat4 inverse_view_matrix;
-    glm::mat4 inverse_projection_matrix;
-	glm::mat4 inverse_view_projection_matrix;
+	glm::vec3 mPosition;
+	glm::vec3 mFront;
+	glm::vec3 mUp;
+	glm::vec3 mRight;
+	glm::vec3 mWorldUp;
+	float mYaw;
+	float mPitch;
+	float mFov;
+	glm::mat4 mViewMatrix;
+	glm::mat4 mProjectionMatrix;
+	glm::mat4 mViewProjectionMatrix;
+	glm::mat4 mInverseViewMatrix;
+	glm::mat4 mInverseProjectionMatrix;
+	glm::mat4 mInverseViewProjectionMatrix;
 
-	glm::mat4 previous_view_matrix;
-	glm::mat4 previous_projection_matrix;
-	glm::mat4 previous_view_projection_matrix;
+	glm::mat4 mPreviousViewMatrix;
+	glm::mat4 mPreviousProjectionMatrix;
+	glm::mat4 mPreviousViewProjectionMatrix;
 
-    // constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
+	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
-    // constructor with scalar values
-    // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-    [[nodiscard]] glm::mat4& GetViewMatrix();
+	glm::mat4& getViewMatrix();
 
-    [[nodiscard]] glm::mat4& GetProjectionMatrix();
+	glm::mat4& getProjectionMatrix();
 
-    [[nodiscard]] glm::mat4& GetViewProjectionMatrix();
+	glm::mat4& getViewProjectionMatrix();
 
-	[[nodiscard]] glm::mat4& GetInverseViewMatrix();
-	[[nodiscard]] glm::mat4& GetInverseProjectionMatrix();
-	[[nodiscard]] glm::mat4& GetInverseViewProjectionMatrix();
+	glm::mat4& getInverseViewMatrix();
+	glm::mat4& getInverseProjectionMatrix();
+	glm::mat4& getInverseViewProjectionMatrix();
 
-	[[nodiscard]] glm::mat4& GetPreviousViewMatrix();
+	glm::mat4& getPreviousViewMatrix();
 
-	[[nodiscord]] glm::mat4& GetPreviousProjectionMatrix();
+	glm::mat4& getPreviousProjectionMatrix();
 
-	[[nodiscard]] glm::mat4& GetPreviousViewProjectionMatrix();
+	glm::mat4& getPreviousViewProjectionMatrix();
 
-	[[nodiscard]] std::array<glm::vec4, 6> GetFrustumPlanes();
+	std::array<glm::vec4, 6> getFrustumPlanes();
 
 
-    // calculates the front vector from the Camera's (updated) Euler Angles
 	void updateCamera();
 	void storePreviousMatrices();
 

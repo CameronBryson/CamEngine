@@ -93,7 +93,7 @@ namespace gl {
         GL_CHECK(glEnable(GL_BLEND));
         GL_CHECK(glBlendEquation(GL_FUNC_ADD));
 
-        GameManager::set_glfw_window(game_window);
+        GameManager::setGLFWWindow(game_window);
         LOG_INFO(logging::gGraphicsLogger, "OpenGL initialized successfully");
     }
 
