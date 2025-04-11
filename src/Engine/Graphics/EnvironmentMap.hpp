@@ -5,16 +5,27 @@
 #include "Shader.hpp"
 #include <VertexArray.hpp>
 
+/**
+ * Manages environment mapping for image-based lighting (IBL)
+ * Handles skybox, irradiance, prefiltered environment maps and BRDF LUT
+ */
 class EnvironmentMap
 {
 public:
-	EnvironmentMap(const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
+	// Create an environment map from an HDR equirectangular map
+	EnvironmentMap(const std::string& hdrPath, 
+	              std::shared_ptr<Shader> equirectangularToCubemapShader, 
+	              std::shared_ptr<Shader> irradianceShader, 
+	              std::shared_ptr<Shader> prefilterShader, 
+	              std::shared_ptr<Shader> brdfShader);
 	~EnvironmentMap();
 
+	// Generate different maps for PBR rendering
 	void generateIrradianceMap();
 	void generatePrefilterMap();
 	void generateBRDFLUT();
 
+	// Texture binding utilities
 	void bindIrradiance(int slot);
 	void bindPrefilter(int slot);
 	void bindBRDFLUT(int slot);
@@ -22,10 +33,11 @@ public:
 	void unbindPrefilter(int slot);
 	void unbindBRDFLUT(int slot);
 
+	// Draw the skybox
 	void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
 
 protected:
-	// OpenGL wrapper methods to minimize direct OpenGL calls
+	// OpenGL wrapper methods
 	static void setGLDepthFunc(unsigned int func);
 	
 private:

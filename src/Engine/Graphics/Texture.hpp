@@ -69,6 +69,31 @@ public:
         Never
     };
 
+    // OpenGL wrapper methods grouped by functionality
+    // Texture management
+    static void genTextures(unsigned int count, unsigned int* textureIDs);
+    static void deleteTextures(unsigned int count, const unsigned int* textureIDs);
+    
+    // Texture binding and activation
+    static void bindTexture(unsigned int target, unsigned int textureID);
+    static void activeTexture(unsigned int textureUnit);
+    
+    // Texture data and parameters
+    static void texImage2D(unsigned int target, int level, int internalFormat, 
+                          int width, int height, int border, 
+                          unsigned int format, unsigned int type, const void* data);
+    static void texImage2DMultisample(unsigned int target, int samples, int internalFormat,
+                                     int width, int height, bool fixedSampleLocations);
+    static void texParameteri(unsigned int target, unsigned int pname, int param);
+    static void texParameterfv(unsigned int target, unsigned int pname, const float* params);
+    static void genMipmap(unsigned int target);
+    
+    // Framebuffer attachments
+    static void framebufferTexture(unsigned int target, unsigned int attachment, 
+                                  unsigned int texture, int level);
+    static void framebufferTexture2D(unsigned int target, unsigned int attachment, 
+                                    unsigned int textarget, unsigned int texture, int level);
+
 public:
     // Constructors for different texture sources
     
@@ -109,44 +134,15 @@ public:
     // Texture sampler configurations
     void setShadowSamplerParameters();
     void setNormalSamplerParameters();
-    
-    // Set texture filtering modes
     void setFilterMode(FilterMode minFilter, FilterMode magFilter);
-    
-    // Set texture wrapping modes
     void setWrapMode(WrapMode wrapS, WrapMode wrapT, WrapMode wrapR = WrapMode::Repeat);
-    
-    // Set compare mode for shadow sampling
     void setCompareMode(CompareMode mode, CompareFunc func = CompareFunc::LessEqual);
-    
-    // Set border color for WrapMode::ClampToBorder
     void setBorderColor(const glm::vec4& color);
-    
-    // Generate mipmaps for the texture
     void generateMipmaps();
     
-    // Static helper methods
+    // Static helper methods for texture creation
     static GLuint createEmptyTexture2D(int width, int height, Format format);
     static GLuint createEmptyCubemap(int size, Format format);
-
-
-    // OpenGL wrapper methods to minimize direct OpenGL calls
-    static void genTextures(unsigned int count, unsigned int* textureIDs);
-    static void deleteTextures(unsigned int count, const unsigned int* textureIDs);
-    static void bindTexture(unsigned int target, unsigned int textureID);
-    static void activeTexture(unsigned int textureUnit);
-    static void texImage2D(unsigned int target, int level, int internalFormat, 
-                          int width, int height, int border, unsigned int format, 
-                          unsigned int type, const void* data);
-    static void texImage2DMultisample(unsigned int target, int samples, int internalFormat,
-                                     int width, int height, bool fixedSampleLocations);
-    static void genMipmap(unsigned int target);
-    static void texParameteri(unsigned int target, unsigned int pname, int param);
-    static void texParameterfv(unsigned int target, unsigned int pname, const float* params);
-    static void framebufferTexture(unsigned int target, unsigned int attachment, 
-                                  unsigned int texture, int level);
-    static void framebufferTexture2D(unsigned int target, unsigned int attachment, 
-                                    unsigned int textarget, unsigned int texture, int level);
 
 private:
     // Convert enum values to OpenGL constants

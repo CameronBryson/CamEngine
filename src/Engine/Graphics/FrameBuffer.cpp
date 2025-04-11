@@ -123,7 +123,7 @@ namespace {
     }
 
     // Helper to check framebuffer status and log any issues
-    bool checkFramebufferStatus(GLuint fbo, const std::string& label)
+    bool checkFramebufferStatus(GLuint /*fbo*/, const std::string& label)
     {
         GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (status != GL_FRAMEBUFFER_COMPLETE)
