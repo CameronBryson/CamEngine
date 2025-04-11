@@ -4,6 +4,7 @@
 #include <Mesh.hpp>
 #include "Shader.hpp"
 #include <VertexArray.hpp>
+
 class EnvironmentMap
 {
 public:
@@ -23,6 +24,10 @@ public:
 
 	void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
 
+protected:
+	// OpenGL wrapper methods to minimize direct OpenGL calls
+	static void setGLDepthFunc(unsigned int func);
+	
 private:
 	std::shared_ptr<Texture> mSkyboxCubemap;
 	std::shared_ptr<Texture> mIrradianceCubemap;
@@ -33,7 +38,5 @@ private:
 	std::shared_ptr<Shader> mIrradianceShader;
 	std::shared_ptr<Shader> mPrefilterShader;
 	std::shared_ptr<Shader> mBRDFShader;
-
-
 };
 

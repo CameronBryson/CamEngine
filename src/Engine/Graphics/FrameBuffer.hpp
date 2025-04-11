@@ -180,6 +180,24 @@ public:
 	
 	const std::string& getLabel() const { return mLabel; }
 
+protected:
+    // OpenGL wrapper methods to minimize direct OpenGL calls
+    static void genFramebuffers(unsigned int count, unsigned int* ids);
+    static void deleteFramebuffers(unsigned int count, const unsigned int* ids);
+    static void bindFramebuffer(unsigned int target, unsigned int framebuffer);
+    static void drawBuffer(unsigned int buffer);
+    static void drawBuffers(unsigned int n, const unsigned int* bufs);
+    static void readBuffer(unsigned int src);
+    static void blitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1,
+                              int dstX0, int dstY0, int dstX1, int dstY1,
+                              unsigned int mask, unsigned int filter);
+    static void clearBuffers(unsigned int mask);
+    static void viewport(int x, int y, int width, int height);
+    static void readPixelsBuffer(int x, int y, int width, int height, unsigned int format, 
+                                unsigned int type, void* data);
+    static unsigned int checkFramebufferStatus(unsigned int target);
+    static void getIntegerv(unsigned int pname, int* params);
+
 private:
 	void createFramebuffer();
 	

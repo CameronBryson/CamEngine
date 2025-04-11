@@ -33,6 +33,11 @@ static glm::mat4 captureViews[] =
 	glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f, -1.0f),  glm::vec3(0.0f, -1.0f,  0.0f))
 };
 
+// Implementation of the OpenGL wrapper method
+void EnvironmentMap::setGLDepthFunc(unsigned int func) {
+    GL_CHECK(glDepthFunc(func));
+}
+
 EnvironmentMap::EnvironmentMap(const std::string& hdrPath,
 										   std::shared_ptr<Shader> equirectangularToCubemapShader,
 										   std::shared_ptr<Shader> irradianceShader,
@@ -65,22 +70,15 @@ void EnvironmentMap::generateIrradianceMap()
 {
 	const unsigned int irradianceSize = 32;
 
-	GLuint irradianceCubemapID;
-	GL_CHECK(glGenTextures(1, &irradianceCubemapID));
-	GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceCubemapID));
-	for (unsigned int i = 0; i < 6; ++i)
-	{
-		GL_CHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-							  irradianceSize, irradianceSize, 0, GL_RGB, GL_FLOAT, nullptr));
-	}
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-
+	// Create empty cubemap using Texture's static helper method
+	GLuint irradianceCubemapID = Texture::createEmptyCubemap(irradianceSize, Texture::Format::RGB16F);
+	
+	// Create Texture object to handle the cubemap
 	mIrradianceCubemap = std::make_shared<Texture>(irradianceCubemapID, irradianceSize, irradianceSize, Texture::Type::CUBEMAP);
-
+	
+	// Set appropriate texture parameters using Texture's methods
+	mIrradianceCubemap->setWrapMode(Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge);
+	mIrradianceCubemap->setFilterMode(Texture::FilterMode::Linear, Texture::FilterMode::Linear);
 
 	auto fbo = std::make_shared<FrameBuffer>(
 		irradianceSize,
@@ -88,7 +86,7 @@ void EnvironmentMap::generateIrradianceMap()
 		std::vector<FrameBufferAttachmentSpecification>{
 		FrameBufferAttachmentSpecification(FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth24)
 	}
-	);;
+	);
 	fbo->bind();
 
 	mIrradianceShader->use();
@@ -122,22 +120,18 @@ void EnvironmentMap::generatePrefilterMap()
 {
 	const unsigned int prefilterSize = 128;
 
-	GLuint prefilterCubemapID;
-	GL_CHECK(glGenTextures(1, &prefilterCubemapID));
-	GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterCubemapID));
-	for (unsigned int i = 0; i < 6; ++i)
-	{
-		GL_CHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-							  prefilterSize, prefilterSize, 0, GL_RGB, GL_FLOAT, nullptr));
-	}
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-	GL_CHECK(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
-
+	// Create empty cubemap using Texture's static helper method
+	GLuint prefilterCubemapID = Texture::createEmptyCubemap(prefilterSize, Texture::Format::RGB16F);
+	
+	// Create Texture object to handle the cubemap
 	mPrefilterCubemap = std::make_shared<Texture>(prefilterCubemapID, prefilterSize, prefilterSize, Texture::Type::CUBEMAP);
+	
+	// Set appropriate texture parameters using Texture's methods
+	mPrefilterCubemap->setWrapMode(Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge);
+	mPrefilterCubemap->setFilterMode(Texture::FilterMode::LinearMipmapLinear, Texture::FilterMode::Linear);
+	
+	// Generate mipmaps
+	mPrefilterCubemap->generateMipmaps();
 
 	auto fbo = std::make_shared<FrameBuffer>(
 		prefilterSize,
@@ -156,7 +150,6 @@ void EnvironmentMap::generatePrefilterMap()
 
 	for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
 	{
-
 		unsigned int mipWidth = (unsigned int)(prefilterSize * std::pow(0.5, mip));
 		unsigned int mipHeight = mipWidth;
 		fbo->resize(mipWidth, mipHeight);
@@ -191,18 +184,15 @@ void EnvironmentMap::generateBRDFLUT()
 {
 	const unsigned int brdfLUTSize = 512;
 
-	GLuint brdfLUTID;
-	GL_CHECK(glGenTextures(1, &brdfLUTID));
-	GL_CHECK(glBindTexture(GL_TEXTURE_2D, brdfLUTID));
-	GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F,
-						  brdfLUTSize, brdfLUTSize, 0,
-						  GL_RG, GL_FLOAT, nullptr));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-
+	// Create empty 2D texture using Texture's static helper method
+	GLuint brdfLUTID = Texture::createEmptyTexture2D(brdfLUTSize, brdfLUTSize, Texture::Format::RG);
+	
+	// Use Texture wrapper to bind and set parameters
 	mBRDFLUT = std::make_shared<Texture>(brdfLUTID, brdfLUTSize, brdfLUTSize, Texture::Type::TEXTURE_2D);
+	
+	// Set appropriate texture parameters using Texture's methods
+	mBRDFLUT->setWrapMode(Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge);
+	mBRDFLUT->setFilterMode(Texture::FilterMode::Linear, Texture::FilterMode::Linear);
 
 	auto fbo = std::make_shared<FrameBuffer>(
 		brdfLUTSize,
@@ -257,10 +247,10 @@ void EnvironmentMap::unbindBRDFLUT(int slot)
 
 void EnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
 {
-	glDepthFunc(GL_LEQUAL);
+	setGLDepthFunc(GL_LEQUAL);
 	skyboxShader->use();
 	skyboxShader->setInt("skybox", IBLSlots::SKYBOX);
 	mSkyboxCubemap->bind(IBLSlots::SKYBOX);
 	gl::drawCube();
-	glDepthFunc(GL_LESS);
+	setGLDepthFunc(GL_LESS);
 }

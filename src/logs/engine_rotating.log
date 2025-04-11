@@ -1644,3 +1644,253 @@ d in shader program (ID: 31)
 [2025-04-11 15:33:13.171] [info] [engine] Shutdown complete
 [2025-04-11 15:33:13.171] [info] [engine] Shutting down logging system
 [2025-04-11 15:33:13.171] [info] [engine] Shutting down logging system
+[2025-04-11 15:36:17.672] [info] [engine] Initializing game engine...
+[2025-04-11 15:36:17.673] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:36:17.673] [info] [engine] Error handling system initialized
+[2025-04-11 15:36:17.673] [info] [graphics] Initializing OpenGL...
+[2025-04-11 15:36:17.823] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 15:36:17.823] [info] [engine] OpenGL initialized successfully
+[2025-04-11 15:36:17.824] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 15:36:17.825] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 15:36:17.825] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 15:36:17.826] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 15:36:17.827] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 15:36:17.827] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 15:36:17.828] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 15:36:17.829] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 15:36:17.830] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 15:36:17.831] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 15:36:17.831] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 15:36:17.832] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 15:36:17.833] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 15:36:17.833] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 15:36:17.834] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 15:36:17.835] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 15:36:17.835] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 15:36:17.836] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 15:36:17.836] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 15:36:17.837] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 15:36:17.838] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 15:36:22.462] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 15:36:22.462] [info] [engine] Creating test scene
+[2025-04-11 15:36:22.463] [info] [engine] Initializing scene
+[2025-04-11 15:36:22.463] [info] [engine] Initializing current scene...
+[2025-04-11 15:36:22.514] [info] [engine] Scene initialization complete
+[2025-04-11 15:36:22.514] [info] [engine] Entering main loop
+[2025-04-11 15:36:22.521] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-11 15:36:22.521] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 15:36:22.524] [warning] [graphics] Uniform 'depthThereshold' not foun[2025-04-11 15:36:17.670] [info] [engine] Logging system initialized
+[2025-04-11 15:36:17.671] [info] [engine] Starting application
+[2025-04-11 15:36:17.671] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:36:17.671] [info] [engine] Signal handlers installed
+[2025-04-11 15:36:17.671] [info] [engine] Initializing engine systems
+d in shader program (ID: 31)
+[2025-04-11 15:36:22.529] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 15:36:29.432] [info] [engine] Shutting down
+[2025-04-11 15:36:29.432] [info] [engine] Shutting down current scene...
+[2025-04-11 15:36:29.436] [info] [engine] Performing final shutdown...
+[2025-04-11 15:36:29.439] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 15:36:29.468] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 15:36:29.468] [info] [engine] Shutdown complete
+[2025-04-11 15:36:29.469] [info] [engine] Shutting down logging system
+[2025-04-11 15:36:29.469] [info] [engine] Shutting down logging system
+[2025-04-11 15:38:16.312] [info] [engine] Initializing game engine...
+[2025-04-11 15:38:16.312] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:38:16.312] [info] [engine] Error handling system initialized
+[2025-04-11 15:38:16.312] [info] [graphics] Initializing OpenGL...
+[2025-04-11 15:38:16.462] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 15:38:16.462] [info] [engine] OpenGL initialized successfully
+[2025-04-11 15:38:16.464] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 15:38:16.465] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 15:38:16.466] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 15:38:16.467] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 15:38:16.467] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 15:38:16.468] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 15:38:16.469] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 15:38:16.470] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 15:38:16.470] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 15:38:16.472] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 15:38:16.473] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 15:38:16.473] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 15:38:16.474] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 15:38:16.475] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 15:38:16.475] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 15:38:16.476] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 15:38:16.476] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 15:38:16.477] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 15:38:16.478] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 15:38:16.479] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 15:38:16.480] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 15:38:21.075] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 15:38:21.076] [info] [engine] Creating test scene
+[2025-04-11 15:38:21.079] [info] [engine] Initializing scene
+[2025-04-11 15:38:21.083] [info] [engine] Initializing current scene...
+[2025-04-11 15:38:24.589] [info] [engine] Scene initialization complete
+[2025-04-11 15:38:24.589] [info] [engine] Entering main loop
+[2025-04-11 15:38:24.601] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-11 15:38:24.601] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 15:38:24.617] [warning] [graphics] Uniform 'depthThereshold' not foun[2025-04-11 15:38:16.310] [info] [engine] Logging system initialized
+[2025-04-11 15:38:16.310] [info] [engine] Starting application
+[2025-04-11 15:38:16.310] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:38:16.310] [info] [engine] Signal handlers installed
+[2025-04-11 15:38:16.310] [info] [engine] Initializing engine systems
+d in shader program (ID: 31)
+[2025-04-11 15:38:24.636] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 15:38:31.774] [info] [engine] Shutting down
+[2025-04-11 15:38:31.774] [info] [engine] Shutting down current scene...
+[2025-04-11 15:38:31.778] [info] [engine] Performing final shutdown...
+[2025-04-11 15:38:31.782] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 15:38:31.808] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 15:38:31.809] [info] [engine] Shutdown complete
+[2025-04-11 15:38:31.809] [info] [engine] Shutting down logging system
+[2025-04-11 15:38:31.809] [info] [engine] Shutting down logging system
+[2025-04-11 15:53:02.563] [info] [engine] Initializing game engine...
+[2025-04-11 15:53:02.563] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:53:02.563] [info] [engine] Error handling system initialized
+[2025-04-11 15:53:02.563] [info] [graphics] Initializing OpenGL...
+[2025-04-11 15:53:02.720] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 15:53:02.720] [info] [engine] OpenGL initialized successfully
+[2025-04-11 15:53:02.721] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 15:53:02.722] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 15:53:02.723] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 15:53:02.723] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 15:53:02.724] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 15:53:02.725] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 15:53:02.725] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 15:53:02.726] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 15:53:02.727] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 15:53:02.728] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 15:53:02.729] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 15:53:02.729] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 15:53:02.730] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 15:53:02.730] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 15:53:02.731] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 15:53:02.732] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 15:53:02.732] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 15:53:02.733] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 15:53:02.733] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 15:53:02.734] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 15:53:02.735] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 15:53:07.349] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 15:53:07.351] [info] [engine] Creating test scene
+[2025-04-11 15:53:07.352] [info] [engine] Initializing scene
+[2025-04-11 15:53:07.352] [info] [engine] Initializing current scene...
+[2025-04-11 15:53:07.402] [info] [engine] Scene initialization complete
+[2025-04-11 15:53:07.403] [info] [engine] Entering main loop
+[2025-04-11 15:53:07.411] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-11 15:53:07.411] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 15:53:07.413] [warning] [graphics] Uniform 'depthThereshold' not foun[2025-04-11 15:53:02.561] [info] [engine] Logging system initialized
+[2025-04-11 15:53:02.561] [info] [engine] Starting application
+[2025-04-11 15:53:02.561] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:53:02.561] [info] [engine] Signal handlers installed
+[2025-04-11 15:53:02.561] [info] [engine] Initializing engine systems
+d in shader program (ID: 31)
+[2025-04-11 15:53:07.417] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 15:53:09.958] [info] [engine] Shutting down
+[2025-04-11 15:53:09.959] [info] [engine] Shutting down current scene...
+[2025-04-11 15:53:09.964] [info] [engine] Performing final shutdown...
+[2025-04-11 15:53:09.967] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 15:53:09.995] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 15:53:09.995] [info] [engine] Shutdown complete
+[2025-04-11 15:53:09.995] [info] [engine] Shutting down logging system
+[2025-04-11 15:53:09.995] [info] [engine] Shutting down logging system
+[2025-04-11 16:06:24.412] [info] [engine] Initializing game engine...
+[2025-04-11 16:06:24.412] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 16:06:24.412] [info] [engine] Error handling system initialized
+[2025-04-11 16:06:24.412] [info] [graphics] Initializing OpenGL...
+[2025-04-11 16:06:24.644] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 16:06:24.644] [info] [engine] OpenGL initialized successfully
+[2025-04-11 16:06:24.645] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 16:06:24.645] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 16:06:24.646] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 16:06:24.647] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 16:06:24.647] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 16:06:24.648] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 16:06:24.649] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 16:06:24.650] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 16:06:24.650] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 16:06:24.651] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 16:06:24.652] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 16:06:24.653] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 16:06:24.653] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 16:06:24.654] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 16:06:24.654] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 16:06:24.655] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 16:06:24.656] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 16:06:24.656] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 16:06:24.657] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 16:06:24.657] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 16:06:24.658] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 16:06:29.331] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 16:06:29.335] [info] [engine] Creating test scene
+[2025-04-11 16:06:29.339] [info] [engine] Initializing scene
+[2025-04-11 16:06:29.340] [info] [engine] Initializing current scene...
+[2025-04-11 16:06:29.391] [info] [engine] Scene initialization complete
+[2025-04-11 16:06:29.391] [info] [engine] Entering main loop
+[2025-04-11 16:06:29.397] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-11 16:06:29.398] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 16:06:29.400] [warning] [graphics] Uniform 'depthThereshold' not foun[2025-04-11 16:06:24.409] [info] [engine] Logging system initialized
+[2025-04-11 16:06:24.409] [info] [engine] Starting application
+[2025-04-11 16:06:24.410] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 16:06:24.410] [info] [engine] Signal handlers installed
+[2025-04-11 16:06:24.410] [info] [engine] Initializing engine systems
+d in shader program (ID: 31)
+[2025-04-11 16:06:29.402] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 16:06:37.136] [info] [engine] Shutting down
+[2025-04-11 16:06:37.136] [info] [engine] Shutting down current scene...
+[2025-04-11 16:06:37.140] [info] [engine] Performing final shutdown...
+[2025-04-11 16:06:37.143] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 16:06:37.172] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 16:06:37.173] [info] [engine] Shutdown complete
+[2025-04-11 16:06:37.173] [info] [engine] Shutting down logging system
+[2025-04-11 16:06:37.173] [info] [engine] Shutting down logging system
+[2025-04-11 16:14:13.919] [info] [engine] Initializing game engine...
+[2025-04-11 16:14:13.919] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 16:14:13.919] [info] [engine] Error handling system initialized
+[2025-04-11 16:14:13.919] [info] [graphics] Initializing OpenGL...
+[2025-04-11 16:14:14.090] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 16:14:14.090] [info] [engine] OpenGL initialized successfully
+[2025-04-11 16:14:14.091] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 16:14:14.091] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 16:14:14.092] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 16:14:14.092] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 16:14:14.093] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 16:14:14.093] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 16:14:14.094] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 16:14:14.095] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 16:14:14.095] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 16:14:14.096] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 16:14:14.097] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 16:14:14.098] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 16:14:14.098] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 16:14:14.099] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 16:14:14.099] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 16:14:14.099] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 16:14:14.100] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 16:14:14.100] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 16:14:14.101] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 16:14:14.102] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 16:14:14.102] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 16:14:18.689] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 16:14:18.689] [info] [engine] Creating test scene
+[2025-04-11 16:14:18.690] [info] [engine] Initializing scene
+[2025-04-11 16:14:18.690] [info] [engine] Initializing current scene...
+[2025-04-11 16:14:18.739] [info] [engine] Scene initialization complete
+[2025-04-11 16:14:18.747] [info] [engine] Entering main loop
+[2025-04-11 16:14:18.757] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-11 16:14:18.762] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 16:14:18.766] [warning] [graphics] Uniform 'depthThereshold' not foun[2025-04-11 16:14:13.916] [info] [engine] Logging system initialized
+[2025-04-11 16:14:13.917] [info] [engine] Starting application
+[2025-04-11 16:14:13.917] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 16:14:13.917] [info] [engine] Signal handlers installed
+[2025-04-11 16:14:13.917] [info] [engine] Initializing engine systems
+d in shader program (ID: 31)
+[2025-04-11 16:14:18.771] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 16:14:27.829] [info] [engine] Shutting down
+[2025-04-11 16:14:27.830] [info] [engine] Shutting down current scene...
+[2025-04-11 16:14:27.833] [info] [engine] Performing final shutdown...
+[2025-04-11 16:14:27.837] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 16:14:27.865] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 16:14:27.866] [info] [engine] Shutdown complete
+[2025-04-11 16:14:27.866] [info] [engine] Shutting down logging system
+[2025-04-11 16:14:27.866] [info] [engine] Shutting down logging system

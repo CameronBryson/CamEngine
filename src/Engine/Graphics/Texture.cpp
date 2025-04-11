@@ -37,6 +37,56 @@ static glm::mat4 captureViews[] =
     glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 };
 
+// OpenGL Wrapper Methods Implementation
+void Texture::genTextures(unsigned int count, unsigned int* textureIDs) {
+    GL_CHECK(glGenTextures(count, textureIDs));
+}
+
+void Texture::deleteTextures(unsigned int count, const unsigned int* textureIDs) {
+    GL_CHECK(glDeleteTextures(count, textureIDs));
+}
+
+void Texture::bindTexture(unsigned int target, unsigned int textureID) {
+    GL_CHECK(glBindTexture(target, textureID));
+}
+
+void Texture::activeTexture(unsigned int textureUnit) {
+    GL_CHECK(glActiveTexture(textureUnit));
+}
+
+void Texture::texImage2D(unsigned int target, int level, int internalFormat, 
+                        int width, int height, int border, unsigned int format, 
+                        unsigned int type, const void* data) {
+    GL_CHECK(glTexImage2D(target, level, internalFormat, width, height, border, format, type, data));
+}
+
+void Texture::texImage2DMultisample(unsigned int target, int samples, int internalFormat,
+                                   int width, int height, bool fixedSampleLocations) {
+    GL_CHECK(glTexImage2DMultisample(target, samples, internalFormat, width, height, fixedSampleLocations));
+}
+
+void Texture::genMipmap(unsigned int target) {
+    GL_CHECK(glGenerateMipmap(target));
+}
+
+void Texture::texParameteri(unsigned int target, unsigned int pname, int param) {
+    GL_CHECK(glTexParameteri(target, pname, param));
+}
+
+void Texture::texParameterfv(unsigned int target, unsigned int pname, const float* params) {
+    GL_CHECK(glTexParameterfv(target, pname, params));
+}
+
+void Texture::framebufferTexture(unsigned int target, unsigned int attachment, 
+                                unsigned int texture, int level) {
+    GL_CHECK(glFramebufferTexture(target, attachment, texture, level));
+}
+
+void Texture::framebufferTexture2D(unsigned int target, unsigned int attachment, 
+                                  unsigned int textarget, unsigned int texture, int level) {
+    GL_CHECK(glFramebufferTexture2D(target, attachment, textarget, texture, level));
+}
+
 // Create an empty 2D texture with specified dimensions and format
 Texture::Texture(int width, int height, Format format)
     : mWidth(width), mHeight(height), mFormat(format), mType(Type::TEXTURE_2D)
@@ -53,12 +103,12 @@ Texture::Texture(const std::string& filePath)
     : mTextureID(0), mWidth(0), mHeight(0), mType(Type::TEXTURE_2D)
 {
     // Generate and bind the texture
-    GL_CHECK(glGenTextures(1, &mTextureID));
+    genTextures(1, &mTextureID);
     if (mTextureID == 0)
     {
         throw std::runtime_error("Failed to generate texture ID.");
     }
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, mTextureID));
+    bindTexture(GL_TEXTURE_2D, mTextureID);
 
     // Load the texture data using stb_image
     int nrChannels;
@@ -67,8 +117,8 @@ Texture::Texture(const std::string& filePath)
     unsigned char* data = stbi_load(fullPath.c_str(), &mWidth, &mHeight, &nrChannels, 0);
     if (!data)
     {
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0)); // Unbind the texture
-        GL_CHECK(glDeleteTextures(1, &mTextureID));
+        bindTexture(GL_TEXTURE_2D, 0); // Unbind the texture
+        deleteTextures(1, &mTextureID);
         throw std::runtime_error("Failed to load texture: " + filePath);
     }
     LOG_INFO(logging::gResourceLogger, "Loaded texture: {}", filePath);
@@ -109,29 +159,19 @@ Texture::Texture(const std::string& filePath)
         mFormat = Format::RGB;
     }
 
-    // Set texture wrapping based on format
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-
     // Upload the texture data to the GPU
-    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data));
+    texImage2D(GL_TEXTURE_2D, 0, internalFormat, mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data);
 
-    // Generate mipmaps for the texture
-    GL_CHECK(glGenerateMipmap(GL_TEXTURE_2D));
+    // Set texture parameters using class methods (now unbind and use proper methods)
+    bindTexture(GL_TEXTURE_2D, 0);
 
-    // Check for OpenGL errors
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR)
-    {
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0)); // Unbind the texture
-        stbi_image_free(data);
-        throw std::runtime_error("OpenGL error after uploading texture: " + std::to_string(error));
-    }
-
-    // Unbind the texture
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+    // Set proper wrap mode based on format
+    setWrapMode(format == GL_RGBA ? WrapMode::ClampToEdge : WrapMode::Repeat,
+               format == GL_RGBA ? WrapMode::ClampToEdge : WrapMode::Repeat);
+    setFilterMode(FilterMode::LinearMipmapLinear, FilterMode::Linear);
+    
+    // Generate mipmaps using our method
+    generateMipmaps();
 
     // Free the image data
     stbi_image_free(data);
@@ -151,28 +191,28 @@ Texture::Texture(const std::string& equirectangularMapPath, const std::shared_pt
     }
 
     GLuint hdrTexID;
-    GL_CHECK(glGenTextures(1, &hdrTexID));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, hdrTexID));
-    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, w, h, 0, GL_RGB, GL_FLOAT, hdrData));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    genTextures(1, &hdrTexID);
+    bindTexture(GL_TEXTURE_2D, hdrTexID);
+    texImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, w, h, 0, GL_RGB, GL_FLOAT, hdrData);
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     stbi_image_free(hdrData);
 
-    GL_CHECK(glGenTextures(1, &mTextureID));
-    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureID));
+    genTextures(1, &mTextureID);
+    bindTexture(GL_TEXTURE_CUBE_MAP, mTextureID);
     for (unsigned int i = 0; i < 6; ++i)
     {
-        GL_CHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-                          ENV_MAP_SIZE, ENV_MAP_SIZE, 0, GL_RGB, GL_FLOAT, nullptr));
+        texImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
+                  ENV_MAP_SIZE, ENV_MAP_SIZE, 0, GL_RGB, GL_FLOAT, nullptr);
     }
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     mWidth = ENV_MAP_SIZE;
     mHeight = ENV_MAP_SIZE;
@@ -185,8 +225,8 @@ Texture::Texture(const std::string& equirectangularMapPath, const std::shared_pt
     equirectShader->use();
     equirectShader->setMat4("projection", captureProjection);
     equirectShader->setInt("equirectangularMap", 0);
-    GL_CHECK(glActiveTexture(GL_TEXTURE0));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, hdrTexID));
+    activeTexture(GL_TEXTURE0);
+    bindTexture(GL_TEXTURE_2D, hdrTexID);
 
     GL_CHECK(glViewport(0, 0, ENV_MAP_SIZE, ENV_MAP_SIZE));
     fbo->bind();
@@ -205,7 +245,7 @@ Texture::Texture(const std::string& equirectangularMapPath, const std::shared_pt
     }
     fbo->unbind();
 
-    GL_CHECK(glDeleteTextures(1, &hdrTexID));
+    deleteTextures(1, &hdrTexID);
 }
 
 // Create a texture from an Assimp texture object
@@ -213,12 +253,12 @@ Texture::Texture(const aiTexture* aiTex)
     : mTextureID(0), mWidth(0), mHeight(0), mType(Type::TEXTURE_2D)
 {
     // Generate and bind the texture
-    GL_CHECK(glGenTextures(1, &mTextureID));
+    genTextures(1, &mTextureID);
     if (mTextureID == 0)
     {
         throw std::runtime_error("Failed to generate texture ID.");
     }
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, mTextureID));
+    bindTexture(GL_TEXTURE_2D, mTextureID);
 
     unsigned char* data = nullptr;
     GLenum format = GL_RGB;
@@ -271,22 +311,22 @@ Texture::Texture(const aiTexture* aiTex)
                 mFormat = Format::RGB;
             }
 
-            // Set texture wrapping based on format
-            GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT));
-            GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT));
-            GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-            GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-
             // Upload the texture data to the GPU
-            GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data));
-
-            // Generate mipmaps for the texture
-            GL_CHECK(glGenerateMipmap(GL_TEXTURE_2D));
+            texImage2D(GL_TEXTURE_2D, 0, internalFormat, mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data);
+            bindTexture(GL_TEXTURE_2D, 0); // Unbind before using our methods
+            
+            // Set texture parameters using class methods
+            setWrapMode(format == GL_RGBA ? WrapMode::ClampToEdge : WrapMode::Repeat,
+                       format == GL_RGBA ? WrapMode::ClampToEdge : WrapMode::Repeat);
+            setFilterMode(FilterMode::LinearMipmapLinear, FilterMode::Linear);
+            
+            // Generate mipmaps using our method
+            generateMipmaps();
         }
         else
         {
             LOG_ERROR(logging::gGraphicsLogger, "Failed to load embedded compressed texture.");
-            GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0)); // Unbind the texture
+            bindTexture(GL_TEXTURE_2D, 0); // Unbind the texture
             throw std::runtime_error("Failed to load embedded compressed texture.");
         }
     }
@@ -318,37 +358,17 @@ Texture::Texture(const aiTexture* aiTex)
         format = GL_RGBA;
         internalFormat = GL_SRGB_ALPHA;
 
-        // Set texture wrapping for RGBA (always use CLAMP_TO_EDGE for RGBA)
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-
         // Upload texture data to GPU
-        GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data));
-
-        // Generate mipmaps for the texture
-        GL_CHECK(glGenerateMipmap(GL_TEXTURE_2D));
+        texImage2D(GL_TEXTURE_2D, 0, internalFormat, mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data);
+        bindTexture(GL_TEXTURE_2D, 0); // Unbind before using our methods
+        
+        // Set texture parameters using class methods
+        setWrapMode(WrapMode::ClampToEdge, WrapMode::ClampToEdge);
+        setFilterMode(FilterMode::LinearMipmapLinear, FilterMode::Linear);
+        
+        // Generate mipmaps using our method
+        generateMipmaps();
     }
-
-    // Check for OpenGL errors
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR)
-    {
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0)); // Unbind the texture
-        if (aiTex->mHeight == 0)
-        {
-            stbi_image_free(data);
-        }
-        else
-        {
-            delete[] data;
-        }
-        throw std::runtime_error("OpenGL error after uploading texture: " + std::to_string(error));
-    }
-
-    // Unbind the texture
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 
     // Free the CPU-side data
     if (aiTex->mHeight == 0)
@@ -373,7 +393,7 @@ Texture::~Texture()
 {
     if (mTextureID != 0)
     {
-        GL_CHECK(glDeleteTextures(1, &mTextureID));
+        deleteTextures(1, &mTextureID);
         mTextureID = 0;
     }
 }
@@ -384,8 +404,6 @@ Texture::Texture(Texture&& other) noexcept
     , mWidth(other.mWidth)
     , mHeight(other.mHeight)
     , mType(other.mType)
-    , mIsShadowSampler(other.mIsShadowSampler)
-    , mIsNormalMap(other.mIsNormalMap)
     , mFormat(other.mFormat)
 {
     // Null out the other texture ID to prevent double deletion
@@ -400,7 +418,7 @@ Texture& Texture::operator=(Texture&& other) noexcept
         // Clean up existing resources
         if (mTextureID != 0)
         {
-            GL_CHECK(glDeleteTextures(1, &mTextureID));
+            deleteTextures(1, &mTextureID);
         }
 
         // Move resources from other
@@ -408,8 +426,6 @@ Texture& Texture::operator=(Texture&& other) noexcept
         mWidth = other.mWidth;
         mHeight = other.mHeight;
         mType = other.mType;
-        mIsShadowSampler = other.mIsShadowSampler;
-        mIsNormalMap = other.mIsNormalMap;
         mFormat = other.mFormat;
 
         // Null out the other texture ID
@@ -431,9 +447,9 @@ void Texture::bind(unsigned int slot)
     unbind(slot);
     
     // Then bind our texture to the appropriate target
-    GL_CHECK(glActiveTexture(GL_TEXTURE0 + slot));
+    activeTexture(GL_TEXTURE0 + slot);
     GLenum target = toGLTextureTarget(mType);
-    GL_CHECK(glBindTexture(target, mTextureID));
+    bindTexture(target, mTextureID);
 }
 
 // Unbind any texture from a specified texture slot
@@ -445,9 +461,9 @@ void Texture::unbind(unsigned int slot)
         return;
     }
     
-    GL_CHECK(glActiveTexture(GL_TEXTURE0 + slot));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
-    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+    activeTexture(GL_TEXTURE0 + slot);
+    bindTexture(GL_TEXTURE_2D, 0);
+    bindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 // Configure texture as a shadow sampler
@@ -459,29 +475,28 @@ void Texture::setShadowSamplerParameters()
     
     if (mType == Type::TEXTURE_2D)
     {
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
         
         float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        GL_CHECK(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor));
+        texParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
     }
     else if (mType == Type::CUBEMAP)
     {
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     }
     
     unbind(31);
-    mIsShadowSampler = true;
 }
 
 // Configure texture as a normal map
@@ -494,24 +509,22 @@ void Texture::setNormalSamplerParameters()
     if (mType == Type::TEXTURE_2D)
     {
         // Disable depth comparison mode
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
     else if (mType == Type::CUBEMAP)
     {
         // For cubemaps, we still set them as a type of shadow sampler
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-        GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
     
     unbind(31);
-    mIsShadowSampler = (mType == Type::CUBEMAP); // Only cubemaps are set as shadow samplers
-    mIsNormalMap = true;
 }
 
 // Set texture filtering modes
@@ -520,8 +533,8 @@ void Texture::setFilterMode(FilterMode minFilter, FilterMode magFilter)
     bind(31); // Use a consistent slot for configuration
     
     GLenum target = toGLTextureTarget(mType);
-    GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, toGLFilterMode(minFilter)));
-    GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, toGLFilterMode(magFilter)));
+    texParameteri(target, GL_TEXTURE_MIN_FILTER, toGLFilterMode(minFilter));
+    texParameteri(target, GL_TEXTURE_MAG_FILTER, toGLFilterMode(magFilter));
     
     unbind(31);
 }
@@ -532,12 +545,12 @@ void Texture::setWrapMode(WrapMode wrapS, WrapMode wrapT, WrapMode wrapR)
     bind(31); // Use a consistent slot for configuration
     
     GLenum target = toGLTextureTarget(mType);
-    GL_CHECK(glTexParameteri(target, GL_TEXTURE_WRAP_S, toGLWrapMode(wrapS)));
-    GL_CHECK(glTexParameteri(target, GL_TEXTURE_WRAP_T, toGLWrapMode(wrapT)));
+    texParameteri(target, GL_TEXTURE_WRAP_S, toGLWrapMode(wrapS));
+    texParameteri(target, GL_TEXTURE_WRAP_T, toGLWrapMode(wrapT));
     
     if (mType == Type::CUBEMAP)
     {
-        GL_CHECK(glTexParameteri(target, GL_TEXTURE_WRAP_R, toGLWrapMode(wrapR)));
+        texParameteri(target, GL_TEXTURE_WRAP_R, toGLWrapMode(wrapR));
     }
     
     unbind(31);
@@ -552,14 +565,12 @@ void Texture::setCompareMode(CompareMode mode, CompareFunc func)
     
     if (mode == CompareMode::CompareRefToTexture)
     {
-        GL_CHECK(glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE));
-        GL_CHECK(glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, toGLCompareFunc(func)));
-        mIsShadowSampler = true;
+        texParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        texParameteri(target, GL_TEXTURE_COMPARE_FUNC, toGLCompareFunc(func));
     }
     else
     {
-        GL_CHECK(glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_NONE));
-        mIsShadowSampler = false;
+        texParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_NONE);
     }
     
     unbind(31);
@@ -572,7 +583,7 @@ void Texture::setBorderColor(const glm::vec4& color)
     
     GLenum target = toGLTextureTarget(mType);
     float borderColor[] = { color.r, color.g, color.b, color.a };
-    GL_CHECK(glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, borderColor));
+    texParameterfv(target, GL_TEXTURE_BORDER_COLOR, borderColor);
     
     unbind(31);
 }
@@ -583,7 +594,7 @@ void Texture::generateMipmaps()
     bind(31); // Use a consistent slot for configuration
     
     GLenum target = toGLTextureTarget(mType);
-    GL_CHECK(glGenerateMipmap(target));
+    genMipmap(target);
     
     unbind(31);
 }
@@ -594,22 +605,22 @@ void Texture::generateMipmaps()
 GLuint Texture::createEmptyTexture2D(int width, int height, Format format)
 {
     GLuint textureID;
-    GL_CHECK(glGenTextures(1, &textureID));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, textureID));
+    genTextures(1, &textureID);
+    bindTexture(GL_TEXTURE_2D, textureID);
     
     GLenum glInternalFormat = toGLInternalFormat(format);
     GLenum glFormat = toGLFormat(format);
     GLenum glType = toGLType(format);
     
-    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, width, height, 0, glFormat, glType, nullptr));
+    texImage2D(GL_TEXTURE_2D, 0, glInternalFormat, width, height, 0, glFormat, glType, nullptr);
     
-    // Set default parameters
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    // Set default parameters directly since we don't have a Texture instance yet
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+    bindTexture(GL_TEXTURE_2D, 0);
     
     return textureID;
 }
@@ -618,8 +629,8 @@ GLuint Texture::createEmptyTexture2D(int width, int height, Format format)
 GLuint Texture::createEmptyCubemap(int size, Format format)
 {
     GLuint textureID;
-    GL_CHECK(glGenTextures(1, &textureID));
-    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, textureID));
+    genTextures(1, &textureID);
+    bindTexture(GL_TEXTURE_CUBE_MAP, textureID);
     
     GLenum glInternalFormat = toGLInternalFormat(format);
     GLenum glFormat = toGLFormat(format);
@@ -627,18 +638,18 @@ GLuint Texture::createEmptyCubemap(int size, Format format)
     
     for (unsigned int i = 0; i < 6; ++i)
     {
-        GL_CHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glInternalFormat, 
-                          size, size, 0, glFormat, glType, nullptr));
+        texImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glInternalFormat, 
+                  size, size, 0, glFormat, glType, nullptr);
     }
     
-    // Set default parameters
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    // Set default parameters directly since we don't have a Texture instance yet
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    texParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     
-    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+    bindTexture(GL_TEXTURE_CUBE_MAP, 0);
     
     return textureID;
 }

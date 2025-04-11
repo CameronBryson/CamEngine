@@ -105,8 +105,6 @@ public:
     int getHeight() const { return mHeight; }
     unsigned int getTextureID() const { return mTextureID; }
     Type getType() const { return mType; }
-    bool isShadowSampler() const { return mIsShadowSampler; }
-    bool isNormalMap() const { return mIsNormalMap; }
     
     // Texture sampler configurations
     void setShadowSamplerParameters();
@@ -131,6 +129,25 @@ public:
     static GLuint createEmptyTexture2D(int width, int height, Format format);
     static GLuint createEmptyCubemap(int size, Format format);
 
+
+    // OpenGL wrapper methods to minimize direct OpenGL calls
+    static void genTextures(unsigned int count, unsigned int* textureIDs);
+    static void deleteTextures(unsigned int count, const unsigned int* textureIDs);
+    static void bindTexture(unsigned int target, unsigned int textureID);
+    static void activeTexture(unsigned int textureUnit);
+    static void texImage2D(unsigned int target, int level, int internalFormat, 
+                          int width, int height, int border, unsigned int format, 
+                          unsigned int type, const void* data);
+    static void texImage2DMultisample(unsigned int target, int samples, int internalFormat,
+                                     int width, int height, bool fixedSampleLocations);
+    static void genMipmap(unsigned int target);
+    static void texParameteri(unsigned int target, unsigned int pname, int param);
+    static void texParameterfv(unsigned int target, unsigned int pname, const float* params);
+    static void framebufferTexture(unsigned int target, unsigned int attachment, 
+                                  unsigned int texture, int level);
+    static void framebufferTexture2D(unsigned int target, unsigned int attachment, 
+                                    unsigned int textarget, unsigned int texture, int level);
+
 private:
     // Convert enum values to OpenGL constants
     static GLenum toGLInternalFormat(Format format);
@@ -146,7 +163,5 @@ private:
     int mWidth = 0;
     int mHeight = 0;
     Type mType = Type::TEXTURE_2D;
-    bool mIsShadowSampler = false;
-    bool mIsNormalMap = false;
     Format mFormat = Format::RGBA;
 };
