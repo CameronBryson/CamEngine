@@ -7,7 +7,7 @@
 #include <iostream>
 #include <functional>
 #include <Material.hpp>
-#include <Texture2D.hpp>
+#include <Texture.hpp>
 
 
 GraphicsManager::~GraphicsManager()
@@ -43,10 +43,8 @@ void GraphicsManager::loadResources()
 	loadEnvironmentMap("default", "../assets/8ksky.hdr", equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
 	
 
-
-
-
 }
+
 
 void GraphicsManager::unloadResources()
 {
@@ -175,7 +173,7 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
 		// Actually load the embedded texture from Assimp
 		unsigned int texIndex = textureIndex;
 		aiTexture* aiTex = scene->mTextures[texIndex];
-		auto texture = std::make_shared<Texture2D>(aiTex);
+		auto texture = std::make_shared<Texture>(aiTex);
 		if (texture)
 		{
 			mTextureMap.emplace(uniqueKey, texture);
@@ -212,7 +210,7 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
 		}
 
 		// Otherwise, load from file
-		auto texture = std::make_shared<Texture2D>(full_path);
+		auto texture = std::make_shared<Texture>(full_path);
 		if (texture)
 		{
 			mTextureMap.emplace(uniqueKey, texture);

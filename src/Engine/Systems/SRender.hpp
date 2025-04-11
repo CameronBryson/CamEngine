@@ -6,7 +6,7 @@
 #include <UniformBuffer.hpp>
 #include "UniformStructs.hpp"
 #include <FrameBuffer.hpp>
-#include <Texture2D.hpp>
+#include <Texture.hpp>
 #include "Mesh.hpp"
 #include "ShaderStorageBuffer.hpp"
 class BaseScene;
@@ -108,7 +108,7 @@ private:
     std::shared_ptr<FrameBuffer> mSSRBuffer;
 
 
-    std::shared_ptr<Texture2D> mAdaptedLuminance;
+    std::shared_ptr<Texture> mAdaptedLuminance;
     std::shared_ptr<ShaderStorageBuffer> mLuminanceSSBO;
 
 
@@ -169,7 +169,7 @@ private:
     std::shared_ptr<FrameBuffer> mSSAOBuffer;
     std::shared_ptr<FrameBuffer> mSSAOBlurBuffer;
     std::vector<glm::vec3> mSSAOKernel;
-    std::shared_ptr<Texture2D> mSSAONoise;
+    std::shared_ptr<Texture> mSSAONoise;
 
     // SSAO settings
     static const int SSAO_KERNEL_SIZE = 16;

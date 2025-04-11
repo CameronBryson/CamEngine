@@ -1,8 +1,7 @@
 #include "pch.hpp"
 #include "EnvironmentMap.hpp"
 
-#include "TextureCubemap.hpp"
-#include "Texture2D.hpp"
+#include "Texture.hpp"
 #include "Shader.hpp"
 #include "TextureSlots.hpp"
 #include "OpenGLUtil.hpp"
@@ -47,7 +46,8 @@ EnvironmentMap::EnvironmentMap(const std::string& hdrPath,
 	GLint oldViewport[4];
 	GL_CHECK(glGetIntegerv(GL_VIEWPORT, oldViewport));
 
-	mSkyboxCubemap = std::make_shared<TextureCubemap>(hdrPath, equirectangularToCubemapShader);
+	// Create cubemap from HDR environment map using the equirectangular projection shader
+	mSkyboxCubemap = std::make_shared<Texture>(hdrPath, mEquirectangularToCubemapShader);
 
 	generateIrradianceMap();
 	generatePrefilterMap();
@@ -79,7 +79,7 @@ void EnvironmentMap::generateIrradianceMap()
 	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
-	mIrradianceCubemap = std::make_shared<TextureCubemap>(irradianceCubemapID, irradianceSize, irradianceSize);
+	mIrradianceCubemap = std::make_shared<Texture>(irradianceCubemapID, irradianceSize, irradianceSize, Texture::Type::CUBEMAP);
 
 
 	auto fbo = std::make_shared<FrameBuffer>(
@@ -137,7 +137,7 @@ void EnvironmentMap::generatePrefilterMap()
 	GL_CHECK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 	GL_CHECK(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
 
-	mPrefilterCubemap = std::make_shared<TextureCubemap>(prefilterCubemapID, prefilterSize, prefilterSize);
+	mPrefilterCubemap = std::make_shared<Texture>(prefilterCubemapID, prefilterSize, prefilterSize, Texture::Type::CUBEMAP);
 
 	auto fbo = std::make_shared<FrameBuffer>(
 		prefilterSize,
@@ -202,7 +202,7 @@ void EnvironmentMap::generateBRDFLUT()
 	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
-	mBRDFLUT = std::make_shared<Texture2D>(brdfLUTID, brdfLUTSize, brdfLUTSize);
+	mBRDFLUT = std::make_shared<Texture>(brdfLUTID, brdfLUTSize, brdfLUTSize, Texture::Type::TEXTURE_2D);
 
 	auto fbo = std::make_shared<FrameBuffer>(
 		brdfLUTSize,

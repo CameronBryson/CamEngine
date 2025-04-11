@@ -1205,3 +1205,28 @@
 [2025-04-05 22:45:28.518] [critical] [engine] Fatal error in main: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
 [2025-04-05 22:45:28.519] [error] [engine] Exception: Failed to load environment map 'default': HDR file not found: assets/8ksky.hdr
 [2025-04-05 22:45:28.519] [info] [engine] Shutting down logging system
+[2025-04-11 13:06:35.994] [info] [engine] Logging system initialized
+[2025-04-11 13:06:35.994] [info] [engine] Starting application
+[2025-04-11 13:06:35.994] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 13:06:35.995] [info] [engine] Signal handlers installed
+[2025-04-11 13:06:35.995] [info] [engine] Initializing engine systems
+[2025-04-11 13:06:35.996] [info] [engine] Initializing game engine...
+[2025-04-11 13:06:35.996] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 13:06:35.996] [info] [engine] Error handling system initialized
+[2025-04-11 13:06:35.996] [info] [graphics] Initializing OpenGL...
+[2025-04-11 13:06:36.146] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 13:06:36.146] [info] [engine] OpenGL initialized successfully
+[2025-04-11 13:06:40.851] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 13:06:40.851] [info] [engine] Creating test scene
+[2025-04-11 13:06:40.851] [info] [engine] Initializing scene
+[2025-04-11 13:06:40.851] [info] [engine] Initializing current scene...
+[2025-04-11 13:06:40.902] [info] [engine] Scene initialization complete
+[2025-04-11 13:06:40.902] [info] [engine] Entering main loop
+[2025-04-11 13:06:54.027] [info] [engine] Shutting down
+[2025-04-11 13:06:54.027] [info] [engine] Shutting down current scene...
+[2025-04-11 13:06:54.031] [info] [engine] Performing final shutdown...
+[2025-04-11 13:06:54.035] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 13:06:54.062] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 13:06:54.062] [info] [engine] Shutdown complete
+[2025-04-11 13:06:54.062] [info] [engine] Shutting down logging system
+[2025-04-11 13:06:54.062] [info] [engine] Shutting down logging system

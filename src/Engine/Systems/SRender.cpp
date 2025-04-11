@@ -169,7 +169,7 @@ void SRender::initFramebuffers()
     GL_CHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialValue));
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 
-    mAdaptedLuminance = std::make_shared<Texture2D>(luminanceTexID, 1, 1);
+    mAdaptedLuminance = std::make_shared<Texture>(luminanceTexID, 1, 1);
     GL_LABEL_OBJECT(GL_TEXTURE, mAdaptedLuminance->getTextureID(), "Adapted Luminance Texture");
 
     // Directional & Spot shadow map FBO
@@ -2040,7 +2040,7 @@ void SRender::generateSSAONoise()
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 
     // Create and store the texture object
-    mSSAONoise = std::make_shared<Texture2D>(noiseTexture, SSAO_NOISE_SIZE, SSAO_NOISE_SIZE);
+    mSSAONoise = std::make_shared<Texture>(noiseTexture, SSAO_NOISE_SIZE, SSAO_NOISE_SIZE);
 }
 
 void SRender::generateHaltonSequence() {

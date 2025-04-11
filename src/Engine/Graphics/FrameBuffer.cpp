@@ -3,8 +3,7 @@
 #include <iostream>
 #include <cassert>
 #include <glad/glad.h>
-#include "Texture2D.hpp"
-#include <TextureCubemap.hpp>
+#include "Texture.hpp"
 #include <OpenGLUtil.hpp>
 
 static GLenum toGLInternalFormat(FrameBufferTextureFormat format)
@@ -392,8 +391,8 @@ void FrameBuffer::createFramebuffer()
 			// Attach as depth-only
 			GL_CHECK(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texID, 0));
 
-			// Wrap the cubemap texture in a TextureCubemap
-			auto attachmentTexture = std::make_shared<TextureCubemap>(texID, mWidth, mHeight);
+			// Wrap the cubemap texture in our unified Texture class
+			auto attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::CUBEMAP);
 			mDepthAttachment = attachmentTexture;
 
 			// Disable color buffer for a pure depth pass
@@ -439,49 +438,56 @@ void FrameBuffer::createFramebuffer()
 			GL_CHECK(glTexParameteri(bindTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 		}
 
-		// Wrap as a Texture2D by default
-		auto attachmentTexture = std::make_shared<Texture2D>(texID, mWidth, mHeight);
-
+		// Wrap as a Texture by default with appropriate type
+		std::shared_ptr<Texture> attachmentTexture;
+		
 		if (spec.Type == FrameBufferAttachmentType::Color)
 		{
+			attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
+
 			GL_CHECK(glFramebufferTexture2D(
-				GL_FRAMEBUFFER,
-				GL_COLOR_ATTACHMENT0 + colorIndex,
-				bindTarget,
-				texID,
+				GL_FRAMEBUFFER, 
+				GL_COLOR_ATTACHMENT0 + colorIndex++,
+				GL_TEXTURE_2D, 
+				texID, 
 				0
 			));
 			mColorAttachments.push_back(attachmentTexture);
-			colorIndex++;
 		}
 		else if (spec.Type == FrameBufferAttachmentType::Depth)
 		{
+			attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
+
 			GL_CHECK(glFramebufferTexture2D(
-				GL_FRAMEBUFFER,
+				GL_FRAMEBUFFER, 
 				GL_DEPTH_ATTACHMENT,
-				bindTarget,
-				texID,
+				GL_TEXTURE_2D, 
+				texID, 
 				0
 			));
 			mDepthAttachment = attachmentTexture;
 		}
 		else if (spec.Type == FrameBufferAttachmentType::Stencil)
 		{
+			attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
+
 			GL_CHECK(glFramebufferTexture2D(
-				GL_FRAMEBUFFER,
+				GL_FRAMEBUFFER, 
 				GL_STENCIL_ATTACHMENT,
-				bindTarget,
-				texID,
+				GL_TEXTURE_2D, 
+				texID, 
 				0
 			));
 		}
 		else if (spec.Type == FrameBufferAttachmentType::DepthStencil)
 		{
+			attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
+
 			GL_CHECK(glFramebufferTexture2D(
-				GL_FRAMEBUFFER,
+				GL_FRAMEBUFFER, 
 				GL_DEPTH_STENCIL_ATTACHMENT,
-				bindTarget,
-				texID,
+				GL_TEXTURE_2D, 
+				texID, 
 				0
 			));
 			mDepthAttachment = attachmentTexture;

@@ -2,7 +2,7 @@
 #include "Material.hpp"
 
 #include "Shader.hpp"
-#include "Texture2D.hpp"
+#include "Texture.hpp"
 #include "TextureSlots.hpp"
 #include <OpenGLUtil.hpp>
 

@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
-#include <TextureCubemap.hpp>
-#include <Texture2D.hpp>
+#include "Texture.hpp"
 #include <Mesh.hpp>
 #include "Shader.hpp"
 #include <VertexArray.hpp>
@@ -25,10 +24,10 @@ public:
 	void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
 
 private:
-	std::shared_ptr<TextureCubemap> mSkyboxCubemap;
-	std::shared_ptr<TextureCubemap> mIrradianceCubemap;
-	std::shared_ptr<TextureCubemap> mPrefilterCubemap;
-	std::shared_ptr<Texture2D>      mBRDFLUT;
+	std::shared_ptr<Texture> mSkyboxCubemap;
+	std::shared_ptr<Texture> mIrradianceCubemap;
+	std::shared_ptr<Texture> mPrefilterCubemap;
+	std::shared_ptr<Texture> mBRDFLUT;
 
 	std::shared_ptr<Shader> mEquirectangularToCubemapShader;
 	std::shared_ptr<Shader> mIrradianceShader;
