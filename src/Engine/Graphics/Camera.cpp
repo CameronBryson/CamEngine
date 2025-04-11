@@ -6,21 +6,21 @@
 #include "glm/ext/matrix_transform.hpp"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up,
-			   float yaw , float pitch ) : mFront(glm::vec3(0.0f, 0.0f, -1.0f))
-	   {
-		   mPosition = position;
-		   mWorldUp = up;
-		   mYaw = yaw;
-		   mPitch = pitch;
-		   mFov = FOV;
-		   updateCamera();
-		   mProjectionMatrix = glm::perspective(glm::radians(mFov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
-		   mViewMatrix = glm::lookAt(mPosition, mPosition + mFront, mUp);
-		   mInverseProjectionMatrix = glm::inverse(mProjectionMatrix);
+				float yaw , float pitch ) : mFront(glm::vec3(0.0f, 0.0f, -1.0f))
+		{
+			mPosition = position;
+			mWorldUp = up;
+			mYaw = yaw;
+			mPitch = pitch;
+			mFov = FOV;
+			updateCamera();
+			mProjectionMatrix = glm::perspective(glm::radians(mFov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
+			mViewMatrix = glm::lookAt(mPosition, mPosition + mFront, mUp);
+			mInverseProjectionMatrix = glm::inverse(mProjectionMatrix);
 
-		   mPreviousProjectionMatrix = mProjectionMatrix;
-		   mPreviousViewMatrix = mViewMatrix;
-	   }
+			mPreviousProjectionMatrix = mProjectionMatrix;
+			mPreviousViewMatrix = mViewMatrix;
+		}
 glm::mat4& Camera::getViewMatrix()
 {
 	return mViewMatrix;
