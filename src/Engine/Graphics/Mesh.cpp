@@ -18,7 +18,35 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& ind
 
 Mesh::~Mesh()
 {
+    // Resources are automatically cleaned up by shared_ptr destructors
+}
 
+// Move constructor implementation
+Mesh::Mesh(Mesh&& other) noexcept
+    : mVertices(std::move(other.mVertices)),
+      mVertexArray(std::move(other.mVertexArray)),
+      mMaterial(std::move(other.mMaterial)),
+      mBoundingSphereCenter(other.mBoundingSphereCenter),
+      mBoundingSphereRadius(other.mBoundingSphereRadius),
+      mName(std::move(other.mName))
+{
+    // No need to reset other's shared_ptrs as they're automatically nullified by std::move
+}
+
+// Move assignment operator implementation
+Mesh& Mesh::operator=(Mesh&& other) noexcept
+{
+    if (this != &other)
+    {
+        // Move resources from other to this
+        mVertices = std::move(other.mVertices);
+        mVertexArray = std::move(other.mVertexArray);
+        mMaterial = std::move(other.mMaterial);
+        mBoundingSphereCenter = other.mBoundingSphereCenter;
+        mBoundingSphereRadius = other.mBoundingSphereRadius;
+        mName = std::move(other.mName);
+    }
+    return *this;
 }
 
 void Mesh::draw(glm::mat4 model) const

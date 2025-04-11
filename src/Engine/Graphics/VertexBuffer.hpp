@@ -2,14 +2,65 @@
 #include "Engine/Util/platform.hpp"
 #include <vector>
 #include <Vertex.hpp>
+
+/**
+ * @class VertexBuffer
+ * @brief Wrapper for OpenGL Vertex Buffer Object (VBO)
+ *
+ * Manages the creation, binding, and data transfers for vertex buffers in OpenGL.
+ * Handles vertex data storage and transfer to the GPU.
+ */
 class VertexBuffer
 {
 public:
-	VertexBuffer(const std::vector<Vertex>& vertices);
-	~VertexBuffer();
-	void bind() const;
-	void unbind() const;
-	void setData(const void* data, unsigned int size);
+    /**
+     * @brief Constructs a vertex buffer from vertex data
+     * @param vertices Vector of vertices to store in the buffer
+     */
+    explicit VertexBuffer(const std::vector<Vertex>& vertices);
+    
+    /**
+     * @brief Constructs a vertex buffer from r-value vertex data (move semantics)
+     * @param vertices Vector of vertices to store in the buffer
+     */
+    explicit VertexBuffer(std::vector<Vertex>&& vertices);
+    
+    /**
+     * @brief Destructor - cleans up OpenGL resources
+     */
+    ~VertexBuffer();
+    
+    // Delete copy constructor and assignment operator
+    VertexBuffer(const VertexBuffer&) = delete;
+    VertexBuffer& operator=(const VertexBuffer&) = delete;
+    
+    // Allow move operations
+    VertexBuffer(VertexBuffer&& other) noexcept;
+    VertexBuffer& operator=(VertexBuffer&& other) noexcept;
+    
+    /**
+     * @brief Binds this buffer for rendering or modification
+     */
+    void bind() const;
+    
+    /**
+     * @brief Unbinds this buffer
+     */
+    void unbind() const;
+    
+    /**
+     * @brief Updates buffer data with new content
+     * @param data Pointer to the new data
+     * @param size Size of the data in bytes
+     */
+    void setData(const void* data, unsigned int size);
+    
+    /**
+     * @brief Get the OpenGL buffer ID
+     * @return The internal OpenGL buffer ID
+     */
+    GLuint getID() const { return mVBO; }
+
 private:
-	GLuint mVBO;
+    GLuint mVBO; ///< OpenGL buffer ID
 };

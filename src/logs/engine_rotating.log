@@ -1305,3 +1305,342 @@ d in shader program (ID: 31)
 [2025-04-11 13:49:59.848] [info] [engine] Shutdown complete
 [2025-04-11 13:49:59.848] [info] [engine] Shutting down logging system
 [2025-04-11 13:49:59.849] [info] [engine] Shutting down logging system
+[2025-04-11 14:32:25.956] [info] [engine] Initializing game engine...
+[2025-04-11 14:32:25.956] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 14:32:25.956] [info] [engine] Error handling system initialized
+[2025-04-11 14:32:25.956] [info] [graphics] Initializing OpenGL...
+[2025-04-11 14:32:26.111] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 14:32:26.112] [info] [engine] OpenGL initialized successfully
+[2025-04-11 14:32:26.112] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 14:32:26.113] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 14:32:26.113] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 14:32:26.114] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 14:32:26.114] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 14:32:26.115] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 14:32:26.115] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 14:32:26.116] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 14:32:26.117] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 14:32:26.118] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 14:32:26.119] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 14:32:26.119] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 14:32:26.120] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 14:32:26.120] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 14:32:26.120] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 14:32:26.121] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 14:32:26.122] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 14:32:26.122] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 14:32:26.122] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 14:32:26.123] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 14:32:26.124] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 14:32:30.719] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 14:32:30.719] [info] [engine] Creating test scene
+[2025-04-11 14:32:30.719] [info] [engine] Initializing scene
+[2025-04-11 14:32:30.719] [info] [engine] Initializing current scene...
+[2025-04-11 14:32:30.769] [info] [engine] Scene initialization complete
+[2025-04-11 14:32:30.769] [info] [engine] Entering main loop
+[2025-04-11 14:32:30.779] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-11 14:32:30.779] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 14:32:30.785] [warning] [graphics] Uniform 'depthThereshold' not foun[2025-04-11 14:32:25.953] [info] [engine] Logging system initialized
+[2025-04-11 14:32:25.954] [info] [engine] Starting application
+[2025-04-11 14:32:25.954] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 14:32:25.954] [info] [engine] Signal handlers installed
+[2025-04-11 14:32:25.954] [info] [engine] Initializing engine systems
+d in shader program (ID: 31)
+[2025-04-11 14:32:30.799] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 14:32:33.524] [info] [engine] Shutting down
+[2025-04-11 14:32:33.524] [info] [engine] Shutting down current scene...
+[2025-04-11 14:32:33.530] [info] [engine] Performing final shutdown...
+[2025-04-11 14:32:33.534] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 14:32:33.563] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 14:32:33.563] [info] [engine] Shutdown complete
+[2025-04-11 14:32:33.563] [info] [engine] Shutting down logging system
+[2025-04-11 14:32:33.563] [info] [engine] Shutting down logging system
+[2025-04-11 14:56:03.292] [info] [engine] Initializing game engine...
+[2025-04-11 14:56:03.293] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 14:56:03.293] [info] [engine] Error handling system initialized
+[2025-04-11 14:56:03.293] [info] [graphics] Initializing OpenGL...
+[2025-04-11 14:56:03.437] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 14:56:03.438] [info] [engine] OpenGL initialized successfully
+[2025-04-11 14:56:03.438] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 14:56:03.439] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 14:56:03.439] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 14:56:03.440] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 14:56:03.441] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 14:56:03.441] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 14:56:03.442] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 14:56:03.443] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 14:56:03.443] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 14:56:03.444] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 14:56:03.445] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 14:56:03.446] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 14:56:03.446] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 14:56:03.447] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 14:56:03.447] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 14:56:03.448] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 14:56:03.448] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 14:56:03.449] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 14:56:03.449] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 14:56:03.450] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 14:56:03.450] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 14:56:06.866] [info] [graphics] Creating environment map from '../assets/8ksky.hdr'
+[2025-04-11 14:56:07.930] [info] [graphics] Generating irradiance map (32x32)
+[2025-04-11 14:56:07.931] [info] [graphics] Irradiance map generation complete
+[2025-04-11 14:56:07.931] [info] [graphics] Generating prefilter map (128x128)
+[2025-04-11 14:56:08.038] [info] [graphics] Prefilter map generation complete
+[2025-04-11 14:56:08.039] [info] [graphics] Generating BRDF lookup texture (512x512)
+[2025-04-11 14:56:08.039] [info] [graphics] BRDF lookup texture generation complete
+[2025-04-11 14:56:08.041] [info] [graphics] Successfully created environment map from '../assets/8ksky.hdr'
+[2025-04-11 14:56:08.041] [info] [engine] Grap[2025-04-11 14:56:03.290] [info] [engine] Logging system initialized
+[2025-04-11 14:56:03.291] [info] [engine] Starting application
+[2025-04-11 14:56:03.291] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 14:56:03.291] [info] [engine] Signal handlers installed
+[2025-04-11 14:56:03.291] [info] [engine] Initializing engine systems
+hics resources loaded successfully
+[2025-04-11 14:56:08.041] [info] [engine] Creating test scene
+[2025-04-11 14:56:08.041] [info] [engine] Initializing scene
+[2025-04-11 14:56:08.041] [info] [engine] Initializing current scene...
+[2025-04-11 14:56:08.091] [info] [engine] Scene initialization complete
+[2025-04-11 14:56:08.091] [info] [engine] Entering main loop
+[2025-04-11 14:56:08.100] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-11 14:56:08.100] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 14:56:08.103] [warning] [graphics] Uniform 'depthThereshold' not found in shader program (ID: 31)
+[2025-04-11 14:56:08.108] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 14:56:16.027] [info] [engine] Shutting down
+[2025-04-11 14:56:16.027] [info] [engine] Shutting down current scene...
+[2025-04-11 14:56:16.031] [info] [engine] Performing final shutdown...
+[2025-04-11 14:56:16.034] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 14:56:16.061] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 14:56:16.061] [info] [engine] Shutdown complete
+[2025-04-11 14:56:16.061] [info] [engine] Shutting down logging system
+[2025-04-11 14:56:16.061] [info] [engine] Shutting down logging system
+[2025-04-11 15:32:06.972] [info] [engine] Initializing game engine...
+[2025-04-11 15:32:06.972] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:32:06.972] [info] [engine] Error handling system initialized
+[2025-04-11 15:32:06.972] [info] [graphics] Initializing OpenGL...
+[2025-04-11 15:32:07.130] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 15:32:07.130] [info] [engine] OpenGL initialized successfully
+[2025-04-11 15:32:07.131] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 15:32:07.132] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 15:32:07.132] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 15:32:07.133] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 15:32:07.134] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 15:32:07.134] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 15:32:07.135] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 15:32:07.136] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 15:32:07.137] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 15:32:07.138] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 15:32:07.138] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 15:32:07.139] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 15:32:07.140] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 15:32:07.141] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 15:32:07.141] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 15:32:07.141] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 15:32:07.142] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 15:32:07.143] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 15:32:07.143] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 15:32:07.144] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 15:32:07.144] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 15:32:07.606] [info] [resource] Processed embedded texture (1024x1024, 4 channels)
+[2025-04-11 15:32:07.626] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.655] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.683] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.711] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.769] [info] [resource] Processed embedded texture (1024x1024, 4 channels)
+[2025-04-11 15:32:07.789] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.809] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.828] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.848] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.876] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.892] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.908] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.924] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.940] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.961] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.980] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:07.994] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.008] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.022] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.044] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.064] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.090] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.116] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.143] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.169] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.185] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.212] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.237] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.263] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.288] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.317] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.347] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.375] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.402] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.425] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.448] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.469] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.491] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.513] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.539] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.562] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.587] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.612] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.637] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.660] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.685] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.711] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.734] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.757] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.784] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.811] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.838] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.865] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.891] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.952] [info] [resource] Processed embedded texture (1024x1024, 4 channels)
+[2025-04-11 15:32:08.968] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:08.989] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.010] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.030] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.057] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.081] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.101] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.120] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.140] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.164] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.185] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.206] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.228] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.249] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.280] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.308] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.335] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.362] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.390] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.423] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.448] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.473] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.497] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.522] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.559] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.589] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.612] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.633] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.656] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.687] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.714] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.741] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.768] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.795] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.831] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.861] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.883] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.904] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.926] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.946] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.969] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:09.996] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.023] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.050] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.085] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.115] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.137] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.160] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.182] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.208] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.235] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.264] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.291] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.320] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.351] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.388] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.419] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.451] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.482] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.507] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.535] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.559] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.583] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.607] [info] [resource] Processed embedded texture (1024x1024, 3 channels)
+[2025-04-11 15:32:10.611] [info] [resource] Processed embedded texture (4x4, 3 channels)
+[2025-04-11 15:32:10.638] [info] [graphics] Creating environment map from '../assets/8ksky.hdr'
+[2025-04-11 15:32:11.589] [info] [resource] Loaded HDR: ../assets/8ksky.hdr (8192x4096, components: 3)
+[2025-04-11 15:32:11.708] [info] [graphics] Created cubemap from equirectangular map: ../assets/8ksky.hdr (512x512)
+[2025-04-11 15:32:11.709] [info] [graphics] Generating irradiance map (32x32)
+[2025-04-11 15:32:11.710] [info] [graphics] Irradiance map generation complete
+[2025-04-11 15:32:11.710] [info] [graphics] Generating prefilter map (128x128)
+[2025-04-11 15:32:11.813] [info] [graphics] Prefilter map generation complete
+[2025-04-11 15:32:11.813] [info] [graphics] Generating BRDF lookup texture (512x512)
+[2025-04-11 15:32:11.814] [info] [graphics] BRDF lookup texture generation complete
+[2025-04-11 15:32:11.815] [info] [graphics] Successfully created environment map from '../assets/8ksky.hdr'
+[2025-04-11 15:32:11.815] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 15:32:11.816] [info] [engine] Creating test scene
+[2025-04-11 15:32:11.816] [info] [engine] Initializing scene
+[2025-04-11 15:32:11.816] [info] [engine] Initializing current scene...
+[2025-04-11 15:32:11.866] [info] [engine] Scene initialization complete
+[2025-04-11 15:32:11.866] [info] [engine] Entering main loop
+[2025-04-11 15:32:11.873] [warning] [graphics] Uniform 'material.displacementScale' not [2025-04-11 15:32:06.969] [info] [engine] Logging system initialized
+[2025-04-11 15:32:06.970] [info] [engine] Starting application
+[2025-04-11 15:32:06.970] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:32:06.970] [info] [engine] Signal handlers installed
+[2025-04-11 15:32:06.970] [info] [engine] Initializing engine systems
+found in shader program (ID: 19)
+[2025-04-11 15:32:11.873] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 15:32:11.875] [warning] [graphics] Uniform 'depthThereshold' not found in shader program (ID: 31)
+[2025-04-11 15:32:11.876] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 15:32:24.327] [info] [engine] Shutting down
+[2025-04-11 15:32:24.328] [info] [engine] Shutting down current scene...
+[2025-04-11 15:32:24.332] [info] [engine] Performing final shutdown...
+[2025-04-11 15:32:24.335] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 15:32:24.363] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 15:32:24.363] [info] [engine] Shutdown complete
+[2025-04-11 15:32:24.364] [info] [engine] Shutting down logging system
+[2025-04-11 15:32:24.364] [info] [engine] Shutting down logging system
+[2025-04-11 15:32:48.463] [info] [engine] Initializing game engine...
+[2025-04-11 15:32:48.463] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:32:48.463] [info] [engine] Error handling system initialized
+[2025-04-11 15:32:48.463] [info] [graphics] Initializing OpenGL...
+[2025-04-11 15:32:48.619] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 15:32:48.619] [info] [engine] OpenGL initialized successfully
+[2025-04-11 15:32:48.620] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 15:32:48.621] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 15:32:48.621] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 15:32:48.622] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 15:32:48.622] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 15:32:48.623] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 15:32:48.623] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 15:32:48.624] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 15:32:48.625] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 15:32:48.626] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 15:32:48.627] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 15:32:48.627] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 15:32:48.628] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 15:32:48.628] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 15:32:48.629] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 15:32:48.629] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 15:32:48.630] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 15:32:48.630] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 15:32:48.631] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 15:32:48.631] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 15:32:48.632] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 15:32:53.232] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 15:32:53.232] [info] [engine] Creating test scene
+[2025-04-11 15:32:53.233] [info] [engine] Initializing scene
+[2025-04-11 15:32:53.233] [info] [engine] Initializing current scene...
+[2025-04-11 15:32:53.283] [info] [engine] Scene initialization complete
+[2025-04-11 15:32:53.283] [info] [engine] Entering main loop
+[2025-04-11 15:32:53.290] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-11 15:32:53.290] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 15:32:53.293] [warning] [graphics] Uniform 'depthThereshold' not foun[2025-04-11 15:32:48.461] [info] [engine] Logging system initialized
+[2025-04-11 15:32:48.461] [info] [engine] Starting application
+[2025-04-11 15:32:48.461] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 15:32:48.462] [info] [engine] Signal handlers installed
+[2025-04-11 15:32:48.462] [info] [engine] Initializing engine systems
+d in shader program (ID: 31)
+[2025-04-11 15:32:53.296] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 15:33:13.136] [info] [engine] Shutting down
+[2025-04-11 15:33:13.136] [info] [engine] Shutting down current scene...
+[2025-04-11 15:33:13.139] [info] [engine] Performing final shutdown...
+[2025-04-11 15:33:13.143] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 15:33:13.170] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 15:33:13.171] [info] [engine] Shutdown complete
+[2025-04-11 15:33:13.171] [info] [engine] Shutting down logging system
+[2025-04-11 15:33:13.171] [info] [engine] Shutting down logging system

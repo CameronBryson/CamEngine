@@ -8,6 +8,7 @@
 #include <csignal>
 #include <filesystem>
 #include <cstring>
+#include <algorithm>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -19,6 +20,10 @@
 #endif
 
 namespace error_handling {
+
+// Static containers for callback management
+static std::vector<ErrorCallback> gErrorCallbacks;
+static std::mutex gCallbackMutex;
 
 // Exception implementations
 EngineException::EngineException(const std::string& message)
@@ -163,8 +168,53 @@ static void signalHandler(int signal) {
         std::cerr << stackTrace << std::endl;
     }
     
+    // Create error info and notify callbacks
+    ErrorInfo errorInfo{
+        errorMessage,
+        "Signal Handler",
+        ErrorSeverity::Fatal,
+        stackTrace,
+        "System"
+    };
+    
+    // Notify registered callbacks
+    {
+        std::lock_guard<std::mutex> lock(gCallbackMutex);
+        for (const auto& callback : gErrorCallbacks) {
+            try {
+                callback(errorInfo);
+            } catch (...) {
+                // Prevent callback exceptions from interfering with error handling
+                if (logging::gEngineLogger) {
+                    LOG_ERROR(logging::gEngineLogger, "Exception in error callback");
+                }
+            }
+        }
+    }
+    
     // Terminate the program
     std::exit(EXIT_FAILURE);
+}
+
+// Callback registration functions
+void registerErrorCallback(ErrorCallback callback) {
+    std::lock_guard<std::mutex> lock(gCallbackMutex);
+    gErrorCallbacks.push_back(callback);
+    LOG_DEBUG(logging::gEngineLogger, "Error callback registered");
+}
+
+void unregisterErrorCallback(ErrorCallback callback) {
+    // Note: We can't directly compare std::function objects
+    // This is a limitation in the current implementation
+    std::lock_guard<std::mutex> lock(gCallbackMutex);
+    LOG_DEBUG(logging::gEngineLogger, "Error callback unregistration requested - clearing all callbacks");
+    gErrorCallbacks.clear();
+}
+
+void clearErrorCallbacks() {
+    std::lock_guard<std::mutex> lock(gCallbackMutex);
+    gErrorCallbacks.clear();
+    LOG_DEBUG(logging::gEngineLogger, "All error callbacks cleared");
 }
 
 void setupSignalHandlers() {
@@ -247,6 +297,28 @@ void validateProgram(unsigned int program) {
 
 void reportException(const std::exception& e) {
     LOG_ERROR(logging::gEngineLogger, "Exception: {}", e.what());
+    
+    // Create error info
+    ErrorInfo errorInfo{
+        e.what(),
+        "Exception Handler",
+        ErrorSeverity::High,
+        getStackTrace(),
+        "Engine"
+    };
+    
+    // Notify registered callbacks
+    {
+        std::lock_guard<std::mutex> lock(gCallbackMutex);
+        for (const auto& callback : gErrorCallbacks) {
+            try {
+                callback(errorInfo);
+            } catch (...) {
+                // Prevent callback exceptions from interfering with error handling
+                LOG_ERROR(logging::gEngineLogger, "Exception in error callback");
+            }
+        }
+    }
 }
 
 void reportFatalError(const std::string& message) {
@@ -262,6 +334,30 @@ void reportFatalError(const std::string& message) {
         // If logger is not available, write to stderr
         std::cerr << errorMessage << std::endl;
         std::cerr << stackTrace << std::endl;
+    }
+    
+    // Create error info
+    ErrorInfo errorInfo{
+        message,
+        "Fatal Error",
+        ErrorSeverity::Fatal,
+        stackTrace,
+        "Engine"
+    };
+    
+    // Notify registered callbacks
+    {
+        std::lock_guard<std::mutex> lock(gCallbackMutex);
+        for (const auto& callback : gErrorCallbacks) {
+            try {
+                callback(errorInfo);
+            } catch (...) {
+                // Prevent callback exceptions from interfering with error handling
+                if (logging::gEngineLogger) {
+                    LOG_ERROR(logging::gEngineLogger, "Exception in error callback");
+                }
+            }
+        }
     }
     
     // Terminate the program
@@ -296,7 +392,76 @@ void reportGlError(const std::string& context) {
     
     if (hasError) {
         LOG_ERROR(logging::gGraphicsLogger, "{}", errorMsg);
+        
+        // Create error info
+        ErrorInfo errorInfo{
+            errorMsg,
+            context,
+            ErrorSeverity::Medium,
+            getStackTrace(),
+            "Graphics"
+        };
+        
+        // Notify registered callbacks
+        {
+            std::lock_guard<std::mutex> lock(gCallbackMutex);
+            for (const auto& callback : gErrorCallbacks) {
+                try {
+                    callback(errorInfo);
+                } catch (...) {
+                    // Prevent callback exceptions from interfering with error handling
+                    LOG_ERROR(logging::gEngineLogger, "Exception in error callback");
+                }
+            }
+        }
     }
 }
 
-} // namespace error_handling 
+void reportError(const std::string& message, const std::string& context, 
+                 ErrorSeverity severity, const std::string& subsystem) {
+    // Log the error
+    switch (severity) {
+        case ErrorSeverity::Low:
+            LOG_DEBUG(logging::gEngineLogger, "[{}] {}: {}", subsystem, context, message);
+            break;
+        case ErrorSeverity::Medium:
+            LOG_WARN(logging::gEngineLogger, "[{}] {}: {}", subsystem, context, message);
+            break;
+        case ErrorSeverity::High:
+            LOG_ERROR(logging::gEngineLogger, "[{}] {}: {}", subsystem, context, message);
+            break;
+        case ErrorSeverity::Fatal:
+            LOG_CRITICAL(logging::gEngineLogger, "[{}] {}: {}", subsystem, context, message);
+            break;
+    }
+    
+    // Create error info
+    ErrorInfo errorInfo{
+        message,
+        context,
+        severity,
+        severity >= ErrorSeverity::High ? getStackTrace() : "",
+        subsystem
+    };
+    
+    // Notify registered callbacks
+    {
+        std::lock_guard<std::mutex> lock(gCallbackMutex);
+        for (const auto& callback : gErrorCallbacks) {
+            try {
+                callback(errorInfo);
+            } catch (...) {
+                // Prevent callback exceptions from interfering with error handling
+                LOG_ERROR(logging::gEngineLogger, "Exception in error callback");
+            }
+        }
+    }
+    
+    // If fatal error, terminate the application
+    if (severity == ErrorSeverity::Fatal) {
+        spdlog::shutdown(); // Ensure logs are flushed
+        std::exit(EXIT_FAILURE);
+    }
+}
+
+} // namespace error_handling
