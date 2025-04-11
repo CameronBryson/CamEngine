@@ -1,288 +1,387 @@
-#include "pch.hpp"  
-#include "Shader.hpp"  
-#include <sstream>  
-#include <fstream>  
-#include <iostream>  
-#include "Engine/Util/EngineUtil.hpp"  
-#include "Engine/Util/OpenGLUtil.hpp"  
-#include "glm/mat4x4.hpp"  
-#include "glm/vec2.hpp"  
-#include "glm/vec3.hpp"  
-#include "glm/vec4.hpp"  
+#include "pch.hpp"
+#include "Shader.hpp"
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <filesystem>
+#include "Engine/Util/OpenGLUtil.hpp"
+#include "glm/mat3x3.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
+#include <glad/glad.h>
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)  
-{  
-	// 1. retrieve the vertex/fragment source code from filePath  
-	std::string vertexCode;  
-	std::string fragmentCode;  
-	std::ifstream vShaderFile;  
-	std::ifstream fShaderFile;  
-	std::cout << "vertexPath: " << vertexPath << '\n';  
-	std::cout << "fragmentPath: " << fragmentPath << '\n';  
-	// ensure ifstream objects can throw exceptions:  
-	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);  
-	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);  
+Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
+{
+    try
+    {
+        LOG_DEBUG(logging::gGraphicsLogger, "Creating shader from VS: {} and FS: {}", vertexPath, fragmentPath);
+        
+        std::string vertexCode = loadShaderFile(vertexPath);
+        std::string fragmentCode = loadShaderFile(fragmentPath);
+        
+        unsigned int vertex = compileShader(GL_VERTEX_SHADER, vertexCode, vertexPath);
+        unsigned int fragment = compileShader(GL_FRAGMENT_SHADER, fragmentCode, fragmentPath);
+        
+        // Link the program
+        mShaderID = glCreateProgram();
+        if (mShaderID == 0) {
+            throw error_handling::GraphicsException("Failed to create shader program");
+        }
+        
+        GL_CHECK(glAttachShader(mShaderID, vertex));
+        GL_CHECK(glAttachShader(mShaderID, fragment));
+        GL_CHECK(glLinkProgram(mShaderID));
+        checkCompileError(mShaderID, "PROGRAM", vertexPath + " + " + fragmentPath);
+        
+        // Delete the shaders as they're linked into our program now and no longer necessary
+        GL_CHECK(glDeleteShader(vertex));
+        GL_CHECK(glDeleteShader(fragment));
+        
+        LOG_INFO(logging::gGraphicsLogger, "Successfully created shader program (ID: {}) from {} and {}", 
+                mShaderID, vertexPath, fragmentPath);
+        
+        // Set debug label for the program
+        std::string label = "Shader_" + std::filesystem::path(vertexPath).stem().string();
+        setLabel(label);
+    }
+    catch (const std::exception& e)
+    {
+        LOG_ERROR(logging::gGraphicsLogger, "Failed to create shader: {}", e.what());
+        throw error_handling::GraphicsException(
+            "Failed to create shader from " + vertexPath + " and " + fragmentPath + ": " + e.what());
+    }
+}
 
-	try  
-	{  
-		// open files  
-		vShaderFile.open(vertexPath);  
-		fShaderFile.open(fragmentPath);  
-
-		std::stringstream vShaderStream, fShaderStream;  
-		// read file's buffer contents into streams  
-		vShaderStream << vShaderFile.rdbuf();  
-		fShaderStream << fShaderFile.rdbuf();  
-		// close file handlers  
-		vShaderFile.close();  
-		fShaderFile.close();  
-		// convert stream into string  
-		vertexCode = vShaderStream.str();  
-		fragmentCode = fShaderStream.str();  
-	}  
-	catch (std::ifstream::failure& e)  
-	{  
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << '\n';  
-	}  
-	const char* vShaderCode = vertexCode.c_str();  
-	const char* fShaderCode = fragmentCode.c_str();  
-	// vertex shader  
-	unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);  
-	GL_CHECK(glShaderSource(vertex, 1, &vShaderCode, NULL));  
-	GL_CHECK(glCompileShader(vertex));  
-	checkCompileError(vertex, "VERTEX");  
-	// fragment Shader  
-	unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);  
-	GL_CHECK(glShaderSource(fragment, 1, &fShaderCode, NULL));  
-	GL_CHECK(glCompileShader(fragment));  
-	checkCompileError(fragment, "FRAGMENT");  
-	// shader Program  
-	unsigned int ID = glCreateProgram();  
-	GL_CHECK(glAttachShader(ID, vertex));  
-	GL_CHECK(glAttachShader(ID, fragment));  
-	GL_CHECK(glLinkProgram(ID));  
-	checkCompileError(ID, "PROGRAM");  
-	// delete the shaders as they're linked into our program now and no longer necessary  
-	GL_CHECK(glDeleteShader(vertex));  
-	GL_CHECK(glDeleteShader(fragment));  
-
-	mShaderID = ID;  
-}  
-
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)  
-{  
-	// 1. retrieve the vertex/fragment/geometry source code from filePath  
-	std::string vertexCode, fragmentCode, geometryCode;  
-	std::ifstream vShaderFile, fShaderFile, gShaderFile;  
-
-	std::cout << "vertexPath: " << vertexPath << '\n';  
-	std::cout << "fragmentPath: " << fragmentPath << '\n';  
-	std::cout << "geometryPath: " << geometryPath << '\n';  
-
-	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);  
-	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);  
-	gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);  
-
-	try  
-	{  
-		// open files  
-		vShaderFile.open(vertexPath);  
-		fShaderFile.open(fragmentPath);  
-		gShaderFile.open(geometryPath);  
-
-		std::stringstream vShaderStream, fShaderStream, gShaderStream;  
-		vShaderStream << vShaderFile.rdbuf();  
-		fShaderStream << fShaderFile.rdbuf();  
-		gShaderStream << gShaderFile.rdbuf();  
-
-		vShaderFile.close();  
-		fShaderFile.close();  
-		gShaderFile.close();  
-
-		vertexCode = vShaderStream.str();  
-		fragmentCode = fShaderStream.str();  
-		geometryCode = gShaderStream.str();  
-	}  
-	catch (std::ifstream::failure& e)  
-	{  
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << '\n';  
-	}  
-
-	// 2. compile shaders  
-	const char* vShaderCode = vertexCode.c_str();  
-	const char* fShaderCode = fragmentCode.c_str();  
-	const char* gShaderCode = geometryCode.c_str();  
-
-	unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);  
-	GL_CHECK(glShaderSource(vertex, 1, &vShaderCode, NULL));  
-	GL_CHECK(glCompileShader(vertex));  
-	checkCompileError(vertex, "VERTEX");  
-
-	unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);  
-	GL_CHECK(glShaderSource(fragment, 1, &fShaderCode, NULL));  
-	GL_CHECK(glCompileShader(fragment));  
-	checkCompileError(fragment, "FRAGMENT");  
-
-	unsigned int geometry = glCreateShader(GL_GEOMETRY_SHADER);  
-	GL_CHECK(glShaderSource(geometry, 1, &gShaderCode, NULL));  
-	GL_CHECK(glCompileShader(geometry));  
-	checkCompileError(geometry, "GEOMETRY");  
-
-	// 3. link the program  
-	unsigned int ID = glCreateProgram();  
-	GL_CHECK(glAttachShader(ID, vertex));  
-	GL_CHECK(glAttachShader(ID, fragment));  
-	GL_CHECK(glAttachShader(ID, geometry));  
-	GL_CHECK(glLinkProgram(ID));  
-	checkCompileError(ID, "PROGRAM");  
-
-	// 4. delete shaders, as they're linked into our program now and no longer necessary  
-	GL_CHECK(glDeleteShader(vertex));  
-	GL_CHECK(glDeleteShader(fragment));  
-	GL_CHECK(glDeleteShader(geometry));  
-
-	mShaderID = ID;  
+Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
+{
+    try
+    {
+        LOG_DEBUG(logging::gGraphicsLogger, "Creating shader from VS: {}, FS: {}, and GS: {}", 
+                 vertexPath, fragmentPath, geometryPath);
+        
+        std::string vertexCode = loadShaderFile(vertexPath);
+        std::string fragmentCode = loadShaderFile(fragmentPath);
+        std::string geometryCode = loadShaderFile(geometryPath);
+        
+        unsigned int vertex = compileShader(GL_VERTEX_SHADER, vertexCode, vertexPath);
+        unsigned int fragment = compileShader(GL_FRAGMENT_SHADER, fragmentCode, fragmentPath);
+        unsigned int geometry = compileShader(GL_GEOMETRY_SHADER, geometryCode, geometryPath);
+        
+        // Link the program
+        mShaderID = glCreateProgram();
+        if (mShaderID == 0) {
+            throw error_handling::GraphicsException("Failed to create shader program");
+        }
+        
+        GL_CHECK(glAttachShader(mShaderID, vertex));
+        GL_CHECK(glAttachShader(mShaderID, fragment));
+        GL_CHECK(glAttachShader(mShaderID, geometry));
+        GL_CHECK(glLinkProgram(mShaderID));
+        checkCompileError(mShaderID, "PROGRAM", vertexPath + " + " + fragmentPath + " + " + geometryPath);
+        
+        // Delete the shaders as they're linked into our program now and no longer necessary
+        GL_CHECK(glDeleteShader(vertex));
+        GL_CHECK(glDeleteShader(fragment));
+        GL_CHECK(glDeleteShader(geometry));
+        
+        LOG_INFO(logging::gGraphicsLogger, "Successfully created shader program (ID: {}) with geometry shader", 
+                mShaderID);
+        
+        // Set debug label for the program
+        std::string label = "Shader_" + std::filesystem::path(vertexPath).stem().string() + "_GS";
+        setLabel(label);
+    }
+    catch (const std::exception& e)
+    {
+        LOG_ERROR(logging::gGraphicsLogger, "Failed to create shader with geometry: {}", e.what());
+        throw error_handling::GraphicsException(
+            "Failed to create shader from " + vertexPath + ", " + fragmentPath + 
+            ", and " + geometryPath + ": " + e.what());
+    }
 }
 
 Shader::Shader(const std::string& computePath)
 {
-	std::string computeCode;
-	std::ifstream cShaderFile;
-
-	std::cout << "computePath: " << computePath << '\n';
-
-	// ensure ifstream objects can throw exceptions:
-	cShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-	try
-	{
-		// open file
-		cShaderFile.open(computePath);
-
-		std::stringstream cShaderStream;
-		// read file's buffer contents into streams
-		cShaderStream << cShaderFile.rdbuf();
-		// close file handlers
-		cShaderFile.close();
-		// convert stream into string
-		computeCode = cShaderStream.str();
-	}
-	catch (std::ifstream::failure& e)
-	{
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << '\n';
-	}
-
-	const char* cShaderCode = computeCode.c_str();
-
-	// compute shader
-	unsigned int compute = glCreateShader(GL_COMPUTE_SHADER);
-	GL_CHECK(glShaderSource(compute, 1, &cShaderCode, NULL));
-	GL_CHECK(glCompileShader(compute));
-	checkCompileError(compute, "COMPUTE");
-
-	// shader Program
-	unsigned int ID = glCreateProgram();
-	GL_CHECK(glAttachShader(ID, compute));
-	GL_CHECK(glLinkProgram(ID));
-	checkCompileError(ID, "PROGRAM");
-
-	// delete the shader as it's linked into our program now and no longer necessary
-	GL_CHECK(glDeleteShader(compute));
-
-	mShaderID = ID;
-	mIsComputeShader = true;
+    try
+    {
+        LOG_DEBUG(logging::gGraphicsLogger, "Creating compute shader from: {}", computePath);
+        
+        std::string computeCode = loadShaderFile(computePath);
+        unsigned int compute = compileShader(GL_COMPUTE_SHADER, computeCode, computePath);
+        
+        // Link the program
+        mShaderID = glCreateProgram();
+        if (mShaderID == 0) {
+            throw error_handling::GraphicsException("Failed to create compute shader program");
+        }
+        
+        GL_CHECK(glAttachShader(mShaderID, compute));
+        GL_CHECK(glLinkProgram(mShaderID));
+        checkCompileError(mShaderID, "PROGRAM", computePath);
+        
+        // Delete the shader as it's linked into our program now and no longer necessary
+        GL_CHECK(glDeleteShader(compute));
+        
+        mIsComputeShader = true;
+        
+        LOG_INFO(logging::gGraphicsLogger, "Successfully created compute shader program (ID: {}) from {}", 
+                mShaderID, computePath);
+        
+        // Set debug label for the program
+        std::string label = "ComputeShader_" + std::filesystem::path(computePath).stem().string();
+        setLabel(label);
+    }
+    catch (const std::exception& e)
+    {
+        LOG_ERROR(logging::gGraphicsLogger, "Failed to create compute shader: {}", e.what());
+        throw error_handling::GraphicsException("Failed to create compute shader from " + computePath + ": " + e.what());
+    }
 }
-
 
 Shader::~Shader() 
 {
-	deleteShader();
-}  
+    deleteShader();
+}
 
-void Shader::use() const { GL_CHECK(glUseProgram(mShaderID)); }
+Shader::Shader(Shader&& other) noexcept
+    : mShaderID(other.mShaderID)
+    , mIsComputeShader(other.mIsComputeShader)
+    , mLabel(std::move(other.mLabel))
+    , mUniformLocationCache(std::move(other.mUniformLocationCache))
+{
+    // Make sure the other shader doesn't delete our program
+    other.mShaderID = 0;
+}
+
+Shader& Shader::operator=(Shader&& other) noexcept
+{
+    if (this != &other)
+    {
+        // Clean up our resources
+        deleteShader();
+        
+        // Move resources from other
+        mShaderID = other.mShaderID;
+        mIsComputeShader = other.mIsComputeShader;
+        mLabel = std::move(other.mLabel);
+        mUniformLocationCache = std::move(other.mUniformLocationCache);
+        
+        // Make sure the other shader doesn't delete our program
+        other.mShaderID = 0;
+    }
+    return *this;
+}
+
+void Shader::use() const 
+{ 
+    GL_CHECK(glUseProgram(mShaderID));
+}
 
 void Shader::dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ) const
 {
-	if (!mIsComputeShader) {
-		LOG_ERROR(logging::gGraphicsLogger, "Cannot dispatch non-compute shader (ID: {})", mShaderID);
-		throw error_handling::GraphicsException("Cannot dispatch a non-compute shader");
-	}
-	
-	try {
-		use();
-		GL_CHECK(glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ));
-		LOG_DEBUG(logging::gGraphicsLogger, "Dispatched compute shader with groups: {}x{}x{}", 
-				 numGroupsX, numGroupsY, numGroupsZ);
-	}
-	catch (const std::exception& e) {
-		LOG_ERROR(logging::gGraphicsLogger, "Failed to dispatch compute shader: {}", e.what());
-		error_handling::reportGlError("Compute shader dispatch failed");
-		throw;
-	}
+    if (!mIsComputeShader) {
+        LOG_ERROR(logging::gGraphicsLogger, "Cannot dispatch non-compute shader (ID: {})", mShaderID);
+        throw error_handling::GraphicsException("Cannot dispatch a non-compute shader");
+    }
+    
+    try {
+        use();
+        GL_CHECK(glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ));
+        LOG_DEBUG(logging::gGraphicsLogger, "Dispatched compute shader with groups: {}x{}x{}", 
+                 numGroupsX, numGroupsY, numGroupsZ);
+    }
+    catch (const std::exception& e) {
+        LOG_ERROR(logging::gGraphicsLogger, "Failed to dispatch compute shader: {}", e.what());
+        error_handling::reportGlError("Compute shader dispatch failed");
+        throw;
+    }
 }
 
-void Shader::setBool(const std::string& name, bool value) const  
-{  
-	GL_CHECK(glUniform1i(glGetUniformLocation(mShaderID, name.c_str()), (int)value));  
-}  
+void Shader::memoryBarrier(unsigned int barriers) const
+{
+    if (!mIsComputeShader) {
+        LOG_WARN(logging::gGraphicsLogger, "Memory barrier called on non-compute shader (ID: {})", mShaderID);
+    }
+    
+    GL_CHECK(glMemoryBarrier(barriers));
+    LOG_TRACE(logging::gGraphicsLogger, "Memory barrier established with flags: 0x{:x}", barriers);
+}
 
-void Shader::setInt(const std::string& name, int value) const  
-{  
-	GL_CHECK(glUniform1i(glGetUniformLocation(mShaderID, name.c_str()), value));  
-}  
+void Shader::setBool(const std::string& name, bool value) const
+{
+    GL_CHECK(glUniform1i(getUniformLocation(name), static_cast<int>(value)));
+}
 
-void Shader::setFloat(const std::string& name, float value) const  
-{  
-	GL_CHECK(glUniform1f(glGetUniformLocation(mShaderID, name.c_str()), value));  
-}  
+void Shader::setInt(const std::string& name, int value) const
+{
+    GL_CHECK(glUniform1i(getUniformLocation(name), value));
+}
 
-void Shader::setVec2(const std::string& name, const glm::vec2& value) const  
-{  
-	GL_CHECK(glUniform2fv(glGetUniformLocation(mShaderID, name.c_str()), 1, &value[0]));  
-}  
+void Shader::setFloat(const std::string& name, float value) const
+{
+    GL_CHECK(glUniform1f(getUniformLocation(name), value));
+}
 
-void Shader::setVec3(const std::string& name, const glm::vec3& value) const  
-{  
-	GL_CHECK(glUniform3fv(glGetUniformLocation(mShaderID, name.c_str()), 1, &value[0]));  
-}  
+void Shader::setVec2(const std::string& name, const glm::vec2& value) const
+{
+    GL_CHECK(glUniform2fv(getUniformLocation(name), 1, &value[0]));
+}
 
-void Shader::setVec4(const std::string& name, const glm::vec4& value) const  
-{  
-	GL_CHECK(glUniform4fv(glGetUniformLocation(mShaderID, name.c_str()), 1, &value[0]));  
-}  
+void Shader::setVec3(const std::string& name, const glm::vec3& value) const
+{
+    GL_CHECK(glUniform3fv(getUniformLocation(name), 1, &value[0]));
+}
 
-void Shader::setMat4(const std::string& name, const glm::mat4& value) const  
-{  
-	GL_CHECK(glUniformMatrix4fv(glGetUniformLocation(mShaderID, name.c_str()), 1, GL_FALSE, &value[0][0]));  
-}  
+void Shader::setVec4(const std::string& name, const glm::vec4& value) const
+{
+    GL_CHECK(glUniform4fv(getUniformLocation(name), 1, &value[0]));
+}
 
-void Shader::deleteShader() {
-	//GL_CHECK(glDeleteProgram(shaderID));
-	glDeleteProgram(mShaderID);
-}  
+void Shader::setMat4(const std::string& name, const glm::mat4& value) const
+{
+    GL_CHECK(glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &value[0][0]));
+}
 
-void Shader::checkCompileError(unsigned shader, const std::string& type)  
-{  
-	GLint success;  
-	GLchar infoLog[1024];  
-	if (type != "PROGRAM")  
-	{  
-		GL_CHECK(glGetShaderiv(shader, GL_COMPILE_STATUS, &success));  
-		if (!success)  
-		{  
-			GL_CHECK(glGetShaderInfoLog(shader, 1024, NULL, infoLog));  
-			std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"  
-				<< infoLog << "\n -- --------------------------------------------------- -- " << '\n';  
-		}  
-	}  
-	else  
-	{  
-		GL_CHECK(glGetProgramiv(shader, GL_LINK_STATUS, &success));  
-		if (!success)  
-		{  
-			GL_CHECK(glGetProgramInfoLog(shader, 1024, NULL, infoLog));  
-			std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n"  
-				<< infoLog << "\n -- --------------------------------------------------- -- " << '\n';  
-		}  
-	}  
+void Shader::setMat3(const std::string& name, const glm::mat3& value) const
+{
+    GL_CHECK(glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, &value[0][0]));
+}
+
+void Shader::setLabel(const std::string& label)
+{
+    mLabel = label;
+    if (mShaderID != 0)
+    {
+        GL_LABEL_OBJECT(GL_PROGRAM, mShaderID, label.c_str());
+    }
+}
+
+void Shader::deleteShader()
+{
+    if (mShaderID != 0)
+    {
+        LOG_DEBUG(logging::gGraphicsLogger, "Deleting shader program (ID: {})", mShaderID);
+        GL_CHECK(glDeleteProgram(mShaderID));
+        mShaderID = 0;
+    }
+}
+
+std::string Shader::loadShaderFile(const std::string& filePath)
+{
+    std::string code;
+    std::ifstream file;
+    
+    if (!CHECK_FILE_EXISTS(filePath)) {
+        throw error_handling::FileSystemException("Shader file not found: " + filePath);
+    }
+    
+    // Ensure ifstream objects can throw exceptions
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    
+    try
+    {
+        file.open(filePath);
+        std::stringstream stream;
+        stream << file.rdbuf();
+        file.close();
+        code = stream.str();
+        LOG_TRACE(logging::gGraphicsLogger, "Loaded shader file: {}, {} bytes", filePath, code.size());
+    }
+    catch (const std::ifstream::failure& e)
+    {
+        LOG_ERROR(logging::gGraphicsLogger, "Failed to read shader file {}: {}", filePath, e.what());
+        throw error_handling::FileSystemException("Failed to read shader file: " + filePath + ", error: " + e.what());
+    }
+    
+    return code;
+}
+
+unsigned int Shader::compileShader(unsigned int type, const std::string& source, const std::string& shaderPath)
+{
+    // Get shader type as string for logging
+    std::string typeStr;
+    switch (type) {
+        case GL_VERTEX_SHADER: typeStr = "VERTEX"; break;
+        case GL_FRAGMENT_SHADER: typeStr = "FRAGMENT"; break;
+        case GL_GEOMETRY_SHADER: typeStr = "GEOMETRY"; break;
+        case GL_COMPUTE_SHADER: typeStr = "COMPUTE"; break;
+        default: typeStr = "UNKNOWN"; break;
+    }
+    
+    LOG_DEBUG(logging::gGraphicsLogger, "Compiling {} shader from {}", typeStr, shaderPath);
+    
+    unsigned int shaderId = glCreateShader(type);
+    if (shaderId == 0) {
+        throw error_handling::GraphicsException("Failed to create shader object");
+    }
+    
+    const char* src = source.c_str();
+    GL_CHECK(glShaderSource(shaderId, 1, &src, nullptr));
+    GL_CHECK(glCompileShader(shaderId));
+    
+    // Check for compilation errors
+    checkCompileError(shaderId, typeStr, shaderPath);
+    
+    return shaderId;
+}
+
+void Shader::checkCompileError(unsigned int shader, const std::string& type, const std::string& filePath)
+{
+    int success;
+    char infoLog[1024];
+    
+    if (type != "PROGRAM")
+    {
+        GL_CHECK(glGetShaderiv(shader, GL_COMPILE_STATUS, &success));
+        if (!success)
+        {
+            GL_CHECK(glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog));
+            std::string errorMessage = "Shader compilation error (" + type + "): " + infoLog;
+            
+            if (!filePath.empty()) {
+                errorMessage += " [File: " + filePath + "]";
+            }
+            
+            LOG_ERROR(logging::gGraphicsLogger, "{}", errorMessage);
+            throw error_handling::GraphicsException(errorMessage);
+        }
+    }
+    else
+    {
+        GL_CHECK(glGetProgramiv(shader, GL_LINK_STATUS, &success));
+        if (!success)
+        {
+            GL_CHECK(glGetProgramInfoLog(shader, sizeof(infoLog), nullptr, infoLog));
+            std::string errorMessage = "Shader program linking error: " + std::string(infoLog);
+            
+            if (!filePath.empty()) {
+                errorMessage += " [Files: " + filePath + "]";
+            }
+            
+            LOG_ERROR(logging::gGraphicsLogger, "{}", errorMessage);
+            throw error_handling::GraphicsException(errorMessage);
+        }
+    }
+}
+
+int Shader::getUniformLocation(const std::string& name) const
+{
+    // Try to find in the cache first for performance
+    auto it = mUniformLocationCache.find(name);
+    if (it != mUniformLocationCache.end()) {
+        return it->second;
+    }
+    
+    // Not found in cache, query OpenGL
+    int location = glGetUniformLocation(mShaderID, name.c_str());
+    
+    if (location == -1) {
+        LOG_WARN(logging::gGraphicsLogger, "Uniform '{}' not found in shader program (ID: {})", name, mShaderID);
+    }
+    
+    // Cache the result (even if -1, to avoid repeated lookups for non-existent uniforms)
+    mUniformLocationCache[name] = location;
+    return location;
 }

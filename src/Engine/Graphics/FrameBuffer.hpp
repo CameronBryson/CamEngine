@@ -2,89 +2,160 @@
 
 #include <memory>
 #include <vector>
+#include <string>
+#include "Engine/Util/Logging.hpp"
 
 class Texture;
 
+/**
+ * @brief Types of attachments that can be added to a framebuffer
+ */
 enum class FrameBufferAttachmentType
 {
-	Color,
-	Depth,
-	Stencil,
-	DepthStencil,
-	DepthCubemap
+	Color,       ///< Color attachment
+	Depth,       ///< Depth-only attachment
+	Stencil,     ///< Stencil-only attachment
+	DepthStencil, ///< Combined depth-stencil attachment
+	DepthCubemap ///< Cubemap depth attachment (for point light shadows)
 };
 
+/**
+ * @brief Texture formats supported for framebuffer attachments
+ */
 enum class FrameBufferTextureFormat
 {
-	None = 0,
-	R16F,
-	R32F,
-	RG16F,
-	RGBA8,
-	RGBA16F,
-	RGB10A2,
-
-	Depth24,
-	Depth32F,
-
-	Stencil8,
-
-	Depth24Stencil8,
-	Depth32FStencil8
+	None = 0,      ///< No format specified
+	
+	// Color formats
+	R16F,          ///< 16-bit float, red channel only
+	R32F,          ///< 32-bit float, red channel only
+	RG16F,         ///< 16-bit float per channel, red and green
+	RGBA8,         ///< 8-bit uint per channel, standard RGBA
+	RGBA16F,       ///< 16-bit float per channel, RGBA (HDR)
+	RGB10A2,       ///< 10 bits RGB + 2 bits alpha (good for HDR with alpha)
+	
+	// Depth formats
+	Depth24,       ///< 24-bit depth
+	Depth32F,      ///< 32-bit float depth
+	
+	// Stencil format
+	Stencil8,      ///< 8-bit stencil
+	
+	// Combined formats
+	Depth24Stencil8,   ///< 24-bit depth + 8-bit stencil
+	Depth32FStencil8   ///< 32-bit float depth + 8-bit stencil
 };
 
+/**
+ * @brief Specification for a framebuffer attachment
+ */
 struct FrameBufferAttachmentSpecification
 {
-	FrameBufferAttachmentType Type;
-	FrameBufferTextureFormat Format;
+	FrameBufferAttachmentType Type;  ///< Type of attachment
+	FrameBufferTextureFormat Format;  ///< Format of the texture
+	std::string Name;                ///< Debug name for the attachment (optional)
 
 	FrameBufferAttachmentSpecification(
 		FrameBufferAttachmentType type = FrameBufferAttachmentType::Color,
-		FrameBufferTextureFormat format = FrameBufferTextureFormat::RGBA8)
-		: Type(type), Format(format)
+		FrameBufferTextureFormat format = FrameBufferTextureFormat::RGBA8,
+		const std::string& name = "")
+		: Type(type), Format(format), Name(name)
 	{
 	}
 };
+
 
 class FrameBuffer
 {
 public:
 
 	FrameBuffer(int width,
-					  int height,
-					  const std::vector<FrameBufferAttachmentSpecification>& attachments,
-					  int samples = 1);
+				int height,
+				const std::vector<FrameBufferAttachmentSpecification>& attachments,
+				int samples = 1,
+				const std::string& label = "");
+				
+	/**
+	 * @brief Destructor - cleans up all GPU resources
+	 */
 	~FrameBuffer();
+	
+	// Prevent copying to avoid double-freeing GPU resources
+	FrameBuffer(const FrameBuffer&) = delete;
+	FrameBuffer& operator=(const FrameBuffer&) = delete;
+	
+	// Allow moving for efficient container usage
+	FrameBuffer(FrameBuffer&& other) noexcept;
+	FrameBuffer& operator=(FrameBuffer&& other) noexcept;
+
 
 	void bind();
+	
+
 	void unbind();
+	
+
 	void bindRead();
+	
+
 	void bindDraw();
 
+
 	void resize(int width, int height);
-	int getWidth() const;
-	int getHeight() const;
+	
+
+	int getWidth() const { return mWidth; }
+	
+
+	int getHeight() const { return mHeight; }
+	
+
 	void setViewport(int x, int y, int width, int height);
+	
+
 	void getViewport(int& x, int& y, int& width, int& height) const;
 
-	void clear(unsigned int mask);
-	void readPixels(int x, int y, int width, int height, void* data);
 
-	void addAttachment(const FrameBufferAttachmentSpecification& attachmentSpec);
-	void removeAttachment(FrameBufferAttachmentType type, int index = 0);
-	const std::vector<FrameBufferAttachmentSpecification>& getAttachments() const;
+	void clear(unsigned int mask);
+	
+
+	void readPixels(int x, int y, int width, int height, void* data, 
+	                unsigned int format = 0x1908, // GL_RGBA
+	                unsigned int type = 0x1401);  // GL_UNSIGNED_BYTE
+
+
+	int addAttachment(const FrameBufferAttachmentSpecification& attachmentSpec);
+	
+
+	bool removeAttachment(FrameBufferAttachmentType type, int index = 0);
+	
+
+	const std::vector<FrameBufferAttachmentSpecification>& getAttachments() const { return mAttachmentSpecs; }
+	
+
 	void invalidate();
 
+
 	void setSamples(int samples);
-	int getSamples() const;
+	
+
+	int getSamples() const { return mSamples; }
+
 
 	bool isComplete() const;
 
+
 	std::shared_ptr<Texture> getColorAttachment(int index = 0) const;
-	std::shared_ptr<Texture> getDepthAttachment() const;
+	
+
+	std::shared_ptr<Texture> getDepthAttachment() const { return mDepthAttachment; }
+
 
 	void setDrawBuffers(const std::vector<unsigned int>& attachments);
+	
+
 	void setReadBuffer(unsigned int attachment);
+
 
 	void blitTo(std::shared_ptr<FrameBuffer> dst,
 				int srcX0, int srcY0, int srcX1, int srcY1,
@@ -92,20 +163,33 @@ public:
 				unsigned int mask,
 				unsigned int filter);
 
+
+	void resolveToFBO(std::shared_ptr<FrameBuffer> dst, unsigned int mask);
+
+
 	unsigned int getRendererID() const { return mRendererID; }
 
-	void attachExternalTexture(unsigned int attachment,
-							   unsigned int target,
-							   unsigned int textureID,
-							   int mipLevel = 0);
+
+	void attachExternalTexture(
+		unsigned int attachment,
+		unsigned int target,
+		unsigned int textureID,
+		int mipLevel = 0);
+		
+	void setLabel(const std::string& label);
+	
+	const std::string& getLabel() const { return mLabel; }
 
 private:
 	void createFramebuffer();
+	
+	void cleanup();
 
 private:
 	unsigned int mRendererID = 0; 
-	int mWidth, mHeight;
-	int mSamples;
+	int mWidth = 0, mHeight = 0;
+	int mSamples = 1;
+	std::string mLabel;
 
 	int mViewportX = 0;
 	int mViewportY = 0;
@@ -113,7 +197,6 @@ private:
 	int mViewportH = 0;
 
 	std::vector<FrameBufferAttachmentSpecification> mAttachmentSpecs;
-
 	std::vector<std::shared_ptr<Texture>> mColorAttachments;
 	std::shared_ptr<Texture> mDepthAttachment;
 };

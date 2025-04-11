@@ -1230,3 +1230,78 @@
 [2025-04-11 13:06:54.062] [info] [engine] Shutdown complete
 [2025-04-11 13:06:54.062] [info] [engine] Shutting down logging system
 [2025-04-11 13:06:54.062] [info] [engine] Shutting down logging system
+[2025-04-11 13:39:35.426] [info] [engine] Logging system initialized
+[2025-04-11 13:39:35.427] [info] [engine] Starting application
+[2025-04-11 13:39:35.427] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 13:39:35.427] [info] [engine] Signal handlers installed
+[2025-04-11 13:39:35.427] [info] [engine] Initializing engine systems
+[2025-04-11 13:39:35.428] [info] [engine] Initializing game engine...
+[2025-04-11 13:39:35.428] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 13:39:35.429] [info] [engine] Error handling system initialized
+[2025-04-11 13:39:35.429] [info] [graphics] Initializing OpenGL...
+[2025-04-11 13:39:35.618] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 13:39:35.619] [info] [engine] OpenGL initialized successfully
+[2025-04-11 13:39:40.213] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 13:39:40.214] [info] [engine] Creating test scene
+[2025-04-11 13:39:40.214] [info] [engine] Initializing scene
+[2025-04-11 13:39:40.214] [info] [engine] Initializing current scene...
+[2025-04-11 13:39:40.265] [info] [engine] Scene initialization complete
+[2025-04-11 13:39:40.266] [info] [engine] Entering main loop
+[2025-04-11 13:39:42.107] [info] [engine] Shutting down
+[2025-04-11 13:39:42.108] [info] [engine] Shutting down current scene...
+[2025-04-11 13:39:42.114] [info] [engine] Performing final shutdown...
+[2025-04-11 13:39:42.117] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 13:39:42.146] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 13:39:42.146] [info] [engine] Shutdown complete
+[2025-04-11 13:39:42.146] [info] [engine] Shutting down logging system
+[2025-04-11 13:39:42.146] [info] [engine] Shutting down logging system
+[2025-04-11 13:49:50.804] [info] [engine] Initializing game engine...
+[2025-04-11 13:49:50.804] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 13:49:50.805] [info] [engine] Error handling system initialized
+[2025-04-11 13:49:50.805] [info] [graphics] Initializing OpenGL...
+[2025-04-11 13:49:50.941] [info] [graphics] OpenGL initialized successfully
+[2025-04-11 13:49:50.941] [info] [engine] OpenGL initialized successfully
+[2025-04-11 13:49:50.942] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-11 13:49:50.942] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-11 13:49:50.943] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-11 13:49:50.943] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-11 13:49:50.944] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-11 13:49:50.944] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-11 13:49:50.945] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-11 13:49:50.946] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-11 13:49:50.946] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-11 13:49:50.947] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-11 13:49:50.948] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-11 13:49:50.948] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-11 13:49:50.949] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-11 13:49:50.949] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-11 13:49:50.950] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-11 13:49:50.950] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-11 13:49:50.951] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-11 13:49:50.951] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-11 13:49:50.951] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-11 13:49:50.952] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-11 13:49:50.953] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-11 13:49:55.648] [info] [engine] Graphics resources loaded successfully
+[2025-04-11 13:49:55.649] [info] [engine] Creating test scene
+[2025-04-11 13:49:55.649] [info] [engine] Initializing scene
+[2025-04-11 13:49:55.649] [info] [engine] Initializing current scene...
+[2025-04-11 13:49:55.699] [info] [engine] Scene initialization complete
+[2025-04-11 13:49:55.700] [info] [engine] Entering main loop
+[2025-04-11 13:49:55.707] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-11 13:49:55.707] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-11 13:49:55.710] [warning] [graphics] Uniform 'depthThereshold' not foun[2025-04-11 13:49:50.802] [info] [engine] Logging system initialized
+[2025-04-11 13:49:50.802] [info] [engine] Starting application
+[2025-04-11 13:49:50.803] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-11 13:49:50.803] [info] [engine] Signal handlers installed
+[2025-04-11 13:49:50.803] [info] [engine] Initializing engine systems
+d in shader program (ID: 31)
+[2025-04-11 13:49:55.715] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-11 13:49:59.810] [info] [engine] Shutting down
+[2025-04-11 13:49:59.810] [info] [engine] Shutting down current scene...
+[2025-04-11 13:49:59.815] [info] [engine] Performing final shutdown...
+[2025-04-11 13:49:59.818] [info] [graphics] Shutting down OpenGL...
+[2025-04-11 13:49:59.848] [info] [graphics] OpenGL shutdown complete
+[2025-04-11 13:49:59.848] [info] [engine] Shutdown complete
+[2025-04-11 13:49:59.848] [info] [engine] Shutting down logging system
+[2025-04-11 13:49:59.849] [info] [engine] Shutting down logging system
