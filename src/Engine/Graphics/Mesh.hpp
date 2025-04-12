@@ -4,14 +4,13 @@
 #include <memory>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <Vertex.hpp>
-
-class VertexArray;
+#include <VertexArray.hpp>
 class Shader;
 class Material;
 class Mesh
 {
 public:
-	Mesh(const std::vector<Vertex>& vertices,const std::vector<unsigned>& indices, const std::shared_ptr<Material>& material);
+	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, std::shared_ptr<Material> material);
 	~Mesh() ;
 
 	// Delete copy operations to prevent accidental resource duplication
@@ -25,19 +24,20 @@ public:
 	void draw(glm::mat4 model) const ;
 	void draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bindMaterial = false) const ;
 
-	void setMaterial(const std::shared_ptr<Material>& material) ;
-	std::shared_ptr<Material> getMaterial() ;
-	std::vector<Vertex>& getVertices() ;
+	void setMaterial(std::shared_ptr<Material> material) ;
+	const Material& getMaterial() const;
+	const std::vector<Vertex>& getVertices() const;
 	glm::vec3 getBoundingSphereCenter() const;
 	float getBoundingSphereRadius() const;
 	void calculateBoundingSphere();
 
-	void setName(const std::string& name)  { mName = name; }
+	void setName(std::string name)  { mName = std::move(name); }
 	const std::string& getName() const  { return mName; }
 
 private:
+	//We want want shared ptrs? Who are we sharing with?
+	VertexArray mVertexArray;
 	std::vector<Vertex> mVertices;
-	std::shared_ptr<VertexArray> mVertexArray;
 	std::shared_ptr<Material> mMaterial;
 	glm::vec3 mBoundingSphereCenter;
 	float mBoundingSphereRadius;
@@ -45,6 +45,10 @@ private:
 };
 struct MeshInstance
 {
-	std::shared_ptr<Mesh> mesh;
+	MeshInstance(Mesh mesh, glm::mat4 localTransform)
+		: mesh(std::move(mesh)), localTransform(std::move(localTransform))
+	{
+	}
+	Mesh mesh;
 	glm::mat4 localTransform;
 };

@@ -188,7 +188,7 @@ private:
 	int mViewportY = 0;
 	int mViewportW = 0;
 	int mViewportH = 0;
-
+	//Do these need to be shared ptrs? Who are we sharing these with?
 	std::vector<FrameBufferAttachmentSpecification> mAttachmentSpecs;
 	std::vector<std::shared_ptr<Texture>> mColorAttachments;
 	std::shared_ptr<Texture> mDepthAttachment;

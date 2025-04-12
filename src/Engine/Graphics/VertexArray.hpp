@@ -18,7 +18,7 @@ public:
     /**
      * @brief Constructor - creates a new vertex array object
      */
-    VertexArray();
+    VertexArray(VertexBuffer vertexBuffer, IndexBuffer indexBuffer);
     
     /**
      * @brief Destructor - cleans up OpenGL resources
@@ -56,28 +56,29 @@ public:
      * @brief Adds a vertex buffer and configures its attributes
      * @param vertexBuffer The vertex buffer to add to this VAO
      */
-    void addVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer);
+    void addVertexBuffer(VertexBuffer vertexBuffer);
     
     /**
      * @brief Gets all attached vertex buffers
      * @return Vector of vertex buffer pointers
      */
-    const std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffers() const;
+    const std::vector<VertexBuffer>& getVertexBuffers() const;
 
     /**
      * @brief Sets the index buffer for this vertex array
      * @param indexBuffer The index buffer to use
      */
-    void setIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer);
+    void setIndexBuffer(IndexBuffer indexBuffer);
     
     /**
      * @brief Gets the current index buffer
      * @return The current index buffer or nullptr if none is set
      */
-    const std::shared_ptr<IndexBuffer>& getIndexBuffer() const;
+    const IndexBuffer& getIndexBuffer() const;
     
 private:
     GLuint mVAO; ///< OpenGL vertex array ID
-    std::vector<std::shared_ptr<VertexBuffer>> mVertexBuffers; ///< Associated vertex buffers
-    std::shared_ptr<IndexBuffer> mIndexBuffer; ///< Associated index buffer
+    //Do we want shared pts? Who are we sharing with?
+    std::vector<VertexBuffer> mVertexBuffers; ///< Associated vertex buffers
+    IndexBuffer mIndexBuffer; ///< Associated index buffer
 };

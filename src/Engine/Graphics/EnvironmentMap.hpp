@@ -41,6 +41,7 @@ protected:
 	static void setGLDepthFunc(unsigned int func);
 	
 private:
+	//Most of this stuff we dont need to store here
 	std::shared_ptr<Texture> mSkyboxCubemap;
 	std::shared_ptr<Texture> mIrradianceCubemap;
 	std::shared_ptr<Texture> mPrefilterCubemap;

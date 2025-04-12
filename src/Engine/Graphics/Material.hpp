@@ -69,7 +69,7 @@ private:
 	float mDisplacementScale = 0.1f;
 	float mReflectivity = 0.2f;
 	std::string mName;
-
+	//Do we want shared ptrs?
 	std::shared_ptr<Texture> mAlbedoTexture = nullptr;
 	std::shared_ptr<Texture> mNormalTexture = nullptr;
 	std::shared_ptr<Texture> mMetallicTexture = nullptr;

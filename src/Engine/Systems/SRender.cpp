@@ -302,7 +302,7 @@ void SRender::calculateSceneBounds()
         {
             auto& mesh = meshInstance.mesh;
             auto& localTransform = meshInstance.localTransform;
-            auto& vertices = mesh->getVertices();
+            auto& vertices = mesh.getVertices();
 
             glm::mat4 finalTransform = transformComp.model_matrix * localTransform;
             for (const auto& vertex : vertices)
@@ -585,8 +585,8 @@ void SRender::buildRenderLists()
         for (const auto& meshInstance : meshes)
         {
             // Get local bounding sphere
-            glm::vec3 localCenter = meshInstance.mesh->getBoundingSphereCenter();
-            float localRadius = meshInstance.mesh->getBoundingSphereRadius();
+            glm::vec3 localCenter = meshInstance.mesh.getBoundingSphereCenter();
+            float localRadius = meshInstance.mesh.getBoundingSphereRadius();
 
             // Calculate world transform
             glm::mat4 finalTransform = transformComp.model_matrix * meshInstance.localTransform;
@@ -617,11 +617,11 @@ void SRender::buildRenderLists()
 
             // Process visible meshes...
             float distanceToCamera = glm::length(worldCenter - camPos);
-            auto material = meshInstance.mesh->getMaterial();
+            auto material = meshInstance.mesh.getMaterial();
             bool isTransparent = false;
-            float opacity = material ? material->getOpacity() : 1.0f;
+            float opacity = material.getOpacity();
 
-            if (opacity < 1.0f || (material && material->getOpacityTexture() != nullptr))
+            if (opacity < 1.0f || (material.getOpacityTexture() != nullptr))
                 isTransparent = true;
 
             RenderItem item{meshInstance.mesh, finalTransform, distanceToCamera};
@@ -1739,7 +1739,7 @@ void SRender::drawImGui()
                     auto& meshInstance = meshes[i];
 
                     // Extract mesh name or use index if no name
-                    std::string meshName = meshInstance.mesh->getName();
+                    std::string meshName = meshInstance.mesh.getName();
                     if (meshName.empty()) {
                         meshName = "Mesh " + std::to_string(i);
                     }
@@ -1789,45 +1789,45 @@ void SRender::drawImGui()
                         }
 
                         // Material editor
-                        auto material = meshInstance.mesh->getMaterial();
-                        if (material && ImGui::TreeNode("Material"))
+                        auto material = meshInstance.mesh.getMaterial();
+                        if (ImGui::TreeNode("Material"))
                         {
-                            ImGui::Text("Material: %s", material->getName().c_str());
+                            ImGui::Text("Material: %s", material.getName().c_str());
 
-                            glm::vec4 albedo = material->getAlbedo();
+                            glm::vec4 albedo = material.getAlbedo();
                             if (ImGui::ColorEdit4("Albedo", glm::value_ptr(albedo)))
                             {
-                                material->setAlbedo(albedo);
+                                material.setAlbedo(albedo);
                             }
 
-                            float opacity = material->getOpacity();
+                            float opacity = material.getOpacity();
                             if (ImGui::SliderFloat("Opacity", &opacity, 0.0f, 1.0f))
                             {
-                                material->setOpacity(opacity);
+                                material.setOpacity(opacity);
                             }
 
-                            float metallic = material->getMetallic();
+                            float metallic = material.getMetallic();
                             if (ImGui::SliderFloat("Metallic", &metallic, 0.0f, 1.0f))
                             {
-                                material->setMetallic(metallic);
+                                material.setMetallic(metallic);
                             }
 
-                            float roughness = material->getRoughness();
+                            float roughness = material.getRoughness();
                             if (ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f))
                             {
-                                material->setRoughness(roughness);
+                                material.setRoughness(roughness);
                             }
 
-                            glm::vec3 emissiveColor = material->getEmissiveColor();
+                            glm::vec3 emissiveColor = material.getEmissiveColor();
                             if (ImGui::ColorEdit3("Emissive Color", glm::value_ptr(emissiveColor)))
                             {
-                                material->setEmissiveColor(emissiveColor);
+                                material.setEmissiveColor(emissiveColor);
                             }
 
-                            float emissiveIntensity = material->getEmissiveIntensity();
+                            float emissiveIntensity = material.getEmissiveIntensity();
                             if (ImGui::SliderFloat("Emissive Intensity", &emissiveIntensity, 0.0f, 10.0f))
                             {
-                                material->setEmissiveIntensity(emissiveIntensity);
+                                material.setEmissiveIntensity(emissiveIntensity);
                             }
 
                             ImGui::TreePop();

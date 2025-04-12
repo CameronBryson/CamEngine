@@ -8,11 +8,8 @@
 #include "OpenGLUtil.hpp"
 #include "Vertex.hpp"
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::shared_ptr<Material>& material) : mMaterial(material), mVertices(vertices)
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, std::shared_ptr<Material> material) : mMaterial(std::move(material)), mVertices(std::move(vertices)), mVertexArray(VertexBuffer(vertices), IndexBuffer(indices))
 {
-	mVertexArray = std::make_shared<VertexArray>();
-	mVertexArray->addVertexBuffer(std::make_shared<VertexBuffer>(vertices));
-	mVertexArray->setIndexBuffer(std::make_shared<IndexBuffer>(indices));
 	calculateBoundingSphere();
 }
 
@@ -59,13 +56,13 @@ void Mesh::draw(glm::mat4 model) const
 	mMaterial->getShader()->setMat4("model", model);
 	mMaterial->bind(mMaterial->getShader());
 
-	mVertexArray->bind();
+	mVertexArray.bind();
 
 
 	// Retrieve index count from IndexBuffer
-	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mVertexArray->getIndexBuffer()->getCount()), GL_UNSIGNED_INT, nullptr));
+	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mVertexArray.getIndexBuffer().getCount()), GL_UNSIGNED_INT, nullptr));
 
-	mVertexArray->unbind();
+	mVertexArray.unbind();
 	mMaterial->unbind();
 }
 
@@ -83,27 +80,27 @@ void Mesh::draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bin
 	if (bindMaterial)
 		mMaterial->bind(shadowShader);
 
-	mVertexArray->bind();
+	mVertexArray.bind();
 
-	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mVertexArray->getIndexBuffer()->getCount()), GL_UNSIGNED_INT, nullptr));
-	mVertexArray->unbind();
+	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mVertexArray.getIndexBuffer().getCount()), GL_UNSIGNED_INT, nullptr));
+	mVertexArray.unbind();
 	if (bindMaterial)
 		mMaterial->unbind();
 }
 
 
 
-void Mesh::setMaterial(const std::shared_ptr<Material>& material)
+void Mesh::setMaterial(std::shared_ptr<Material> material)
 {
-	mMaterial = material;
+	mMaterial = std::move(material);
 }
 
-std::shared_ptr<Material> Mesh::getMaterial()
+const Material& Mesh::getMaterial() const
 {
-	return mMaterial;
+	return *mMaterial;
 }
 
-std::vector<Vertex>& Mesh::getVertices()
+const std::vector<Vertex>& Mesh::getVertices() const 
 {
 	return mVertices;
 }

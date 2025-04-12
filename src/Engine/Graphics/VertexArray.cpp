@@ -6,9 +6,12 @@
 #include "VertexBuffer.hpp"
 #include "OpenGLUtil.hpp"
 
-VertexArray::VertexArray()
+VertexArray::VertexArray(VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
+	: mVAO(0), mVertexBuffers(), mIndexBuffer(std::move(indexBuffer))
 {
+
 	GL_CHECK(glGenVertexArrays(1, &mVAO));
+	addVertexBuffer(std::move(vertexBuffer));
 }
 
 VertexArray::~VertexArray()
@@ -49,8 +52,7 @@ VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
 void VertexArray::bind() const
 {
 	GL_CHECK(glBindVertexArray(mVAO));
-	if (mIndexBuffer)
-		mIndexBuffer->bind();
+	mIndexBuffer.bind();
 }
 
 void VertexArray::unbind() const
@@ -58,10 +60,10 @@ void VertexArray::unbind() const
 	GL_CHECK(glBindVertexArray(0));
 }
 
-void VertexArray::addVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+void VertexArray::addVertexBuffer(VertexBuffer vertexBuffer)
 {
 	bind();
-	vertexBuffer->bind();
+	vertexBuffer.bind();
 
 	// Position Attribute
 	GL_CHECK(glEnableVertexAttribArray(0));
@@ -88,19 +90,19 @@ void VertexArray::addVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuf
 	unbind();
 }
 
-const std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::getVertexBuffers() const
+const std::vector<VertexBuffer>& VertexArray::getVertexBuffers() const
 {
 	return mVertexBuffers;
 }
 
-void VertexArray::setIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+void VertexArray::setIndexBuffer(IndexBuffer indexBuffer)
 {
 	bind();
-	indexBuffer->bind();
-	mIndexBuffer = indexBuffer;
+	indexBuffer.bind();
+	mIndexBuffer = std::move(indexBuffer);
 }
 
-const std::shared_ptr<IndexBuffer>& VertexArray::getIndexBuffer() const
+const IndexBuffer& VertexArray::getIndexBuffer() const
 {
 	return mIndexBuffer;
 }

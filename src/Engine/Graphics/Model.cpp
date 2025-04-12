@@ -16,7 +16,7 @@ void Model::draw(glm::mat4 model) const
 	for (const auto& mesh : mMeshes)
 	{
 		glm::mat4 finalModelMatrix = model * mesh.localTransform;
-		mesh.mesh->draw(finalModelMatrix);
+		mesh.mesh.draw(finalModelMatrix);
 	}
 }
 
@@ -25,7 +25,7 @@ void Model::draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bi
 	for (const auto& mesh : mMeshes)
 	{
 		glm::mat4 finalModelMatrix = model * mesh.localTransform;
-		mesh.mesh->draw(shadowShader, finalModelMatrix,bindMaterial);
+		mesh.mesh.draw(shadowShader, finalModelMatrix,bindMaterial);
 	}
 }
 

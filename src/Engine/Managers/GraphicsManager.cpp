@@ -630,9 +630,7 @@ void GraphicsManager::processNode(aiNode* node, const aiScene* scene, const std:
 		auto mesh = processMesh(ai_mesh, scene, directory);
 		if (mesh)
 		{
-			MeshInstance meshInstance;
-			meshInstance.mesh = mesh;
-			meshInstance.localTransform = nodeTransform;
+			MeshInstance meshInstance(mesh,nodeTransform);
 			meshInstances.push_back(meshInstance);
 		}
 	}
