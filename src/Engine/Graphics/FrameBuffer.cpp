@@ -169,14 +169,14 @@ namespace {
 FrameBuffer::FrameBuffer(
     int width,
     int height,
-    const std::vector<FrameBufferAttachmentSpecification>& attachments,
+    std::vector<FrameBufferAttachmentSpecification> attachments,
     int samples,
-    const std::string& label)
+    std::string label)
     : mWidth(width)
     , mHeight(height)
     , mSamples(samples)
-    , mAttachmentSpecs(attachments)
-    , mLabel(label)
+    , mAttachmentSpecs(std::move(attachments))
+    , mLabel(std::move(label))
 {
     try {
         LOG_DEBUG(logging::gGraphicsLogger, "Creating framebuffer: {0} ({1}x{2}, {3} samples)", 
@@ -417,7 +417,7 @@ void FrameBuffer::readPixels(int x, int y, int width, int height, void* data, un
     readPixelsBuffer(x, y, width, height, format, type, data);
 }
 
-int FrameBuffer::addAttachment(const FrameBufferAttachmentSpecification& attachmentSpec)
+int FrameBuffer::addAttachment(FrameBufferAttachmentSpecification attachmentSpec)
 {
     LOG_DEBUG(logging::gGraphicsLogger, "Adding attachment to framebuffer '{0}'",
              mLabel.empty() ? "unnamed" : mLabel);
@@ -433,7 +433,7 @@ int FrameBuffer::addAttachment(const FrameBufferAttachmentSpecification& attachm
         }
     }
     
-    mAttachmentSpecs.push_back(attachmentSpec);
+    mAttachmentSpecs.push_back(std::move(attachmentSpec));
     invalidate();
     
     return attachmentSpec.Type == FrameBufferAttachmentType::Color ? index : 0;

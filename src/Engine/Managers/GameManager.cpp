@@ -21,14 +21,6 @@ std::unique_ptr<BaseScene> GameManager::mPendingScene = nullptr;
 std::unique_ptr<GraphicsManager> GameManager::mGraphicsManager = nullptr;
 void GameManager::firstInit()
 {
-	// Initialize logging system
-	logging::init();
-	LOG_INFO(logging::gEngineLogger, "Initializing game engine...");
-
-	// Setup error handlers for crash reporting
-	error_handling::setupSignalHandlers();
-	LOG_INFO(logging::gEngineLogger, "Error handling system initialized");
-
 
 	// Initialize OpenGL
 	gl::init();

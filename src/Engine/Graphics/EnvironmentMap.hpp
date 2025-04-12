@@ -4,7 +4,7 @@
 #include <Mesh.hpp>
 #include "Shader.hpp"
 #include <VertexArray.hpp>
-
+#include <string_view>
 /**
  * Manages environment mapping for image-based lighting (IBL)
  * Handles skybox, irradiance, prefiltered environment maps and BRDF LUT
@@ -13,7 +13,7 @@ class EnvironmentMap
 {
 public:
 	// Create an environment map from an HDR equirectangular map
-	EnvironmentMap(const std::string& hdrPath, 
+	EnvironmentMap(std::string_view hdrPath, 
 	              std::shared_ptr<Shader> equirectangularToCubemapShader, 
 	              std::shared_ptr<Shader> irradianceShader, 
 	              std::shared_ptr<Shader> prefilterShader, 

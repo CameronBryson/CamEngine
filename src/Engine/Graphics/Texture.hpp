@@ -5,7 +5,7 @@
 #include "Engine/Util/platform.hpp"
 #include <assimp/texture.h>
 #include <glm/glm.hpp>
-
+#include <string_view>
 class Shader;
 
 /**
@@ -101,10 +101,10 @@ public:
     Texture(int width, int height, Format format);
     
     // Load a 2D texture from a file
-    Texture(const std::string& filePath);
+    Texture(std::string_view filePath);
     
     // Create a cubemap texture from an HDR equirectangular map
-    Texture(const std::string& equirectangularMapPath, const std::shared_ptr<Shader>& equirectShader);
+    Texture(std::string_view equirectangularMapPath, const std::shared_ptr<Shader>& equirectShader);
     
     // Create a texture from an Assimp texture object
     Texture(const aiTexture* aiTex);

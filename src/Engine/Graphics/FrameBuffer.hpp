@@ -58,8 +58,8 @@ struct FrameBufferAttachmentSpecification
 	FrameBufferAttachmentSpecification(
 		FrameBufferAttachmentType type = FrameBufferAttachmentType::Color,
 		FrameBufferTextureFormat format = FrameBufferTextureFormat::RGBA8,
-		const std::string& name = "")
-		: Type(type), Format(format), Name(name)
+		std::string name = "")
+		: Type(type), Format(format), Name(std::move(name))
 	{
 	}
 };
@@ -81,9 +81,9 @@ public:
      */
 	FrameBuffer(int width,
 				int height,
-				const std::vector<FrameBufferAttachmentSpecification>& attachments,
+				std::vector<FrameBufferAttachmentSpecification> attachments,
 				int samples = 1,
-				const std::string& label = "");
+				std::string label = "");
 				
 	/**
 	 * @brief Destructor - cleans up all GPU resources
@@ -119,7 +119,7 @@ public:
 	void getViewport(int& x, int& y, int& width, int& height) const;
 	
 	// Attachment management
-	int addAttachment(const FrameBufferAttachmentSpecification& attachmentSpec);
+	int addAttachment(FrameBufferAttachmentSpecification attachmentSpec);
 	bool removeAttachment(FrameBufferAttachmentType type, int index = 0);
 	const std::vector<FrameBufferAttachmentSpecification>& getAttachments() const { return mAttachmentSpecs; }
 	void invalidate();

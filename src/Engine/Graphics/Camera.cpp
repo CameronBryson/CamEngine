@@ -8,8 +8,8 @@
 Camera::Camera(glm::vec3 position, glm::vec3 up,
 				float yaw , float pitch ) : mFront(glm::vec3(0.0f, 0.0f, -1.0f))
 		{
-			mPosition = position;
-			mWorldUp = up;
+			mPosition = std::move(position);
+			mWorldUp = std::move(up);
 			mYaw = yaw;
 			mPitch = pitch;
 			mFov = FOV;

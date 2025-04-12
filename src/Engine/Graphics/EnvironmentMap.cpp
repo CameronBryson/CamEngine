@@ -38,7 +38,7 @@ void EnvironmentMap::setGLDepthFunc(unsigned int func) {
     GL_CHECK(glDepthFunc(func));
 }
 
-EnvironmentMap::EnvironmentMap(const std::string& hdrPath,
+EnvironmentMap::EnvironmentMap(std::string_view hdrPath,
 							  std::shared_ptr<Shader> equirectangularToCubemapShader,
 							  std::shared_ptr<Shader> irradianceShader,
 							  std::shared_ptr<Shader> prefilterShader,

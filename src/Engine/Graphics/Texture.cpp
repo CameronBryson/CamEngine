@@ -99,7 +99,7 @@ Texture::Texture(int width, int height, Format format)
 }
 
 // Load a 2D texture from a file
-Texture::Texture(const std::string& filePath)
+Texture::Texture(std::string_view filePath)
     : mTextureID(0), mWidth(0), mHeight(0), mType(Type::TEXTURE_2D)
 {
     // Generate and bind the texture
@@ -113,13 +113,12 @@ Texture::Texture(const std::string& filePath)
     // Load the texture data using stb_image
     int nrChannels;
     stbi_set_flip_vertically_on_load(false); // Don't flip, maintain your current convention
-    std::string fullPath = filePath;
-    unsigned char* data = stbi_load(fullPath.c_str(), &mWidth, &mHeight, &nrChannels, 0);
+    unsigned char* data = stbi_load(filePath.data(), &mWidth, &mHeight, &nrChannels, 0);
     if (!data)
     {
         bindTexture(GL_TEXTURE_2D, 0); // Unbind the texture
         deleteTextures(1, &mTextureID);
-        throw std::runtime_error("Failed to load texture: " + filePath);
+        //throw std::runtime_error("Failed to load texture: " + filePath);
     }
     LOG_INFO(logging::gResourceLogger, "Loaded texture: {}", filePath);
 
@@ -178,16 +177,16 @@ Texture::Texture(const std::string& filePath)
 }
 
 // Create a cubemap texture from an HDR equirectangular map
-Texture::Texture(const std::string& equirectangularMapPath, const std::shared_ptr<Shader>& equirectShader)
+Texture::Texture(std::string_view equirectangularMapPath, const std::shared_ptr<Shader>& equirectShader)
     : mTextureID(0), mWidth(0), mHeight(0), mType(Type::CUBEMAP), mFormat(Format::RGB16F)
 {
     stbi_set_flip_vertically_on_load(true);
     int w, h, nrComponents;
-    float* hdrData = stbi_loadf(equirectangularMapPath.c_str(), &w, &h, &nrComponents, 0);
+    float* hdrData = stbi_loadf(equirectangularMapPath.data(), &w, &h, &nrComponents, 0);
     if (!hdrData)
     {
         LOG_ERROR(logging::gResourceLogger, "Failed to load HDR: {}", equirectangularMapPath);
-        throw std::runtime_error("Failed to load HDR: " + equirectangularMapPath);
+        //throw std::runtime_error("Failed to load HDR: " + equirectangularMapPath);
     }
 
     GLuint hdrTexID;
