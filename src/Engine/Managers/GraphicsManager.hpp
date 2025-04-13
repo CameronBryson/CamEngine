@@ -8,6 +8,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
+#include <string_view>
+
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 #include "glm/mat4x4.hpp"
@@ -32,9 +34,9 @@ public:
     void reloadShaders();
 
     // Shader management
-    std::shared_ptr<Shader> loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& name);
-	std::shared_ptr<Shader> loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath, const std::string& name);
-	std::shared_ptr<Shader> loadShader(const std::string& computePath, const std::string& name);
+    std::shared_ptr<Shader> loadShader(const std::string& vertexPath, const std::string& fragmentPath, std::string name);
+	std::shared_ptr<Shader> loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath, std::string name);
+	std::shared_ptr<Shader> loadShader(const std::string& computePath, std::string name);
     std::shared_ptr<Shader> getShader(const std::string& name);
 
     // Texture management
@@ -44,20 +46,13 @@ public:
     // Material management
     std::shared_ptr<Material> getMaterial(const std::string& name);
 
-    // Mesh management
-    std::shared_ptr<Mesh> createMesh(const std::string& name,
-        const std::vector<Vertex>& vertices,
-        const std::vector<unsigned int>& indices,
-        const std::shared_ptr<Material>& material);
-    std::shared_ptr<Mesh> getMesh(const std::string& name);
-
     // Model and Scene management
     std::shared_ptr<Model> getModel(const std::string& name);
-    std::shared_ptr<Model> loadModel(const std::string& path, const std::string& name);
+    std::shared_ptr<Model> loadModel(const std::string& path, std::string name);
 
 
 
-    std::shared_ptr<EnvironmentMap> loadEnvironmentMap(const std::string& name, const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
+    std::shared_ptr<EnvironmentMap> loadEnvironmentMap(std::string name, const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
     std::shared_ptr<EnvironmentMap> getEnvironmentMap(const std::string& name);
 
 
@@ -69,7 +64,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Shader>> mShaderMap;
     std::unordered_map<std::string, std::shared_ptr<Texture>> mTextureMap;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterialMap;
-    std::unordered_map<std::string, std::shared_ptr<Mesh>> mMeshMap;
     std::unordered_map<std::string, std::shared_ptr<Model>> mModelMap;
     std::unordered_map<std::string, std::shared_ptr<EnvironmentMap>> mEnvironmentMap;
 
