@@ -1,22 +1,26 @@
 #pragma once
 #include <string>
 #include <memory>
+#include <string_view>
+#include <vector>
 #include <Shader.hpp>
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
 class Texture;
+class Shader;
+
 class Material
 {
 public:
 	Material();
-	void bind(std::shared_ptr<Shader> shader) ;
+	void bind(Shader& shader);
 	void unbind() ;
 
 	void setShader(std::shared_ptr<Shader> shader)  { this->mShader = shader; }
-	std::shared_ptr<Shader> getShader()  { return mShader; }
+	std::shared_ptr<Shader> getShader() const  { return mShader; }
 
-	void setName(const std::string& name)  { mName = name; }
+	void setName(std::string_view name)  { mName = name; }
 	const std::string& getName() const  { return mName; }
 
 	void setAlbedo(const glm::vec4& color)  { mAlbedo = color; }

@@ -14,16 +14,12 @@ class VertexBuffer
 {
 public:
     /**
-     * @brief Constructs a vertex buffer from vertex data
+     * @brief Constructs a vertex buffer using vertex data.
+     *        Takes the vector by value for optimal handling of both
+     *        lvalues (copy) and rvalues (move).
      * @param vertices Vector of vertices to store in the buffer
      */
-    explicit VertexBuffer(const std::vector<Vertex>& vertices);
-    
-    /**
-     * @brief Constructs a vertex buffer from r-value vertex data (move semantics)
-     * @param vertices Vector of vertices to store in the buffer
-     */
-    explicit VertexBuffer(std::vector<Vertex>&& vertices);
+    explicit VertexBuffer(std::vector<Vertex> vertices);
     
     /**
      * @brief Destructor - cleans up OpenGL resources

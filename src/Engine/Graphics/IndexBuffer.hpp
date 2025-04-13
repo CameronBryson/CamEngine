@@ -14,16 +14,12 @@ class IndexBuffer
 {
 public:
     /**
-     * @brief Constructs an index buffer with provided indices
+     * @brief Constructs an index buffer using index data.
+     *        Takes the vector by value for optimal handling of both
+     *        lvalues (copy) and rvalues (move).
      * @param indices Vector of index data
      */
-    explicit IndexBuffer(const std::vector<unsigned>& indices);
-    
-    /**
-     * @brief Constructs an index buffer with r-value indices (move semantics)
-     * @param indices Vector of index data
-     */
-    explicit IndexBuffer(std::vector<unsigned>&& indices);
+    explicit IndexBuffer(std::vector<unsigned> indices);
     
     /**
      * @brief Destructor - cleans up OpenGL resources

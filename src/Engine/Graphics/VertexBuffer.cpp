@@ -2,20 +2,14 @@
 #include "VertexBuffer.hpp"
 #include "OpenGLUtil.hpp"
 
-VertexBuffer::VertexBuffer(const std::vector<Vertex>& vertices)
+VertexBuffer::VertexBuffer(std::vector<Vertex> vertices)
 {
 	GL_CHECK(glGenBuffers(1, &mVBO));
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, mVBO));
 	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
-}
-
-VertexBuffer::VertexBuffer(std::vector<Vertex>&& vertices)
-{
-	GL_CHECK(glGenBuffers(1, &mVBO));
-	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, mVBO));
-	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
-	// No need to keep the vertices data after uploading to GPU
-	// Let it be destroyed when this function returns
+	// If 'vertices' was an rvalue, it has been moved from and is now empty.
+	// If 'vertices' was an lvalue, a copy was made, and the original remains untouched.
+	// The local 'vertices' vector will be destroyed here, freeing its memory if it was moved.
 }
 
 VertexBuffer::~VertexBuffer()

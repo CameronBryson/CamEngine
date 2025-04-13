@@ -4,143 +4,100 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "TextureSlots.hpp"
-#include <OpenGLUtil.hpp>
+#include "OpenGLUtil.hpp"
+#include "Engine/Util/Logging.hpp"
 
 
 
 Material::Material()
 {
+	// Optionally log creation
+	// LOG_TRACE(logging::gGraphicsLogger, "Material created.");
 }
 
-void Material::bind(std::shared_ptr<Shader> bindShader)
+// Destructor (implicit default is fine)
+// Material::~Material() {
+//     LOG_TRACE(logging::gGraphicsLogger, "Destroying Material '{}'.", mName);
+// }
+
+void Material::bind(Shader& bindShader)
 {
-	bindShader->use();
-	unbind(); // Clear previous bindings
+	LOG_TRACE(logging::gGraphicsLogger, "Binding Material '{}'.", mName);
+	bindShader.use();
+	// unbind(); // Consider if unbinding everything here first is necessary or efficient.
+             // It might be better to only unbind specific slots if textures change.
 
 	// Base Properties
-	bindShader->setVec4("material.albedo", mAlbedo);
-	bindShader->setFloat("material.opacity", mOpacity);
+	bindShader.setVec4("material.albedo", mAlbedo);
+	bindShader.setFloat("material.opacity", mOpacity);
 
 	// PBR Properties
-	bindShader->setFloat("material.metallic", mMetallic);
-	bindShader->setFloat("material.roughness", mRoughness);
+	bindShader.setFloat("material.metallic", mMetallic);
+	bindShader.setFloat("material.roughness", mRoughness);
 
 	// Emission Properties
-	bindShader->setVec3("material.emissiveColor", mEmissiveColor);
-	bindShader->setFloat("material.emissiveIntensity", mEmissiveIntensity);
+	bindShader.setVec3("material.emissiveColor", mEmissiveColor);
+	bindShader.setFloat("material.emissiveIntensity", mEmissiveIntensity);
 
 	// Reflective Properties
-	bindShader->setFloat("material.reflectivity", mReflectivity);
-
+	bindShader.setFloat("material.reflectivity", mReflectivity);
 
 	// Displacement Properties
-	bindShader->setFloat("material.displacementScale", mDisplacementScale);
+	bindShader.setFloat("material.displacementScale", mDisplacementScale);
 
-	// Albedo Texture
-	if (mAlbedoTexture) {
-		bindShader->setInt("material.albedoMap", MaterialSlots::ALBEDO);
-		bindShader->setBool("material.hasAlbedoMap", true);
-		mAlbedoTexture->bind(MaterialSlots::ALBEDO);
-	}
-	else {
-		bindShader->setBool("material.hasAlbedoMap", false);
-	}
+	int currentTextureUnit = MaterialSlots::ALBEDO; // Start with the first slot
 
-	// Normal Map
-	if (mNormalTexture) {
-		bindShader->setInt("material.normalMap", MaterialSlots::NORMAL);
-		bindShader->setBool("material.hasNormalMap", true);
-		mNormalTexture->bind(MaterialSlots::NORMAL);
-	}
-	else {
-		bindShader->setBool("material.hasNormalMap", false);
-	}
+	// Helper lambda to bind texture and set uniforms
+	auto bindTexture = [&](const std::shared_ptr<Texture>& tex, const char* uniformName, const char* hasUniformName, int slot) {
+		if (tex) {
+			bindShader.setInt(uniformName, slot);
+			bindShader.setBool(hasUniformName, true);
+			tex->bind(slot);
+			// LOG_TRACE(logging::gGraphicsLogger, "Material '{}': Bound texture '{}' to slot {}", mName, tex->getName(), slot); // Requires Texture::getName()
+			return true;
+		} else {
+			bindShader.setBool(hasUniformName, false);
+			// Optionally unbind the slot if necessary, though often not needed if shaders check the 'has' flag
+			// GL_CHECK(glActiveTexture(GL_TEXTURE0 + slot));
+			// GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0)); 
+			return false;
+		}
+	};
 
-	// Metallic Map
-	if (mMetallicTexture) {
-		bindShader->setInt("material.metallicMap", MaterialSlots::METALLIC);
-		bindShader->setBool("material.hasMetallicMap", true);
-		mMetallicTexture->bind(MaterialSlots::METALLIC);
-	}
-	else {
-		bindShader->setBool("material.hasMetallicMap", false);
-	}
-
-	// Roughness Map
-	if (mRoughnessTexture) {
-		bindShader->setInt("material.roughnessMap", MaterialSlots::ROUGHNESS);
-		bindShader->setBool("material.hasRoughnessMap", true);
-		mRoughnessTexture->bind(MaterialSlots::ROUGHNESS);
-	}
-	else {
-		bindShader->setBool("material.hasRoughnessMap", false);
-	}
-
-	// AO Map
-	if (mAOTexture) {
-		bindShader->setInt("material.aoMap", MaterialSlots::AO);
-		bindShader->setBool("material.hasAOMap", true);
-		mAOTexture->bind(MaterialSlots::AO);
-	}
-	else {
-		bindShader->setBool("material.hasAOMap", false);
-	}
-
-	// Emissive Map
-	if (mEmissiveTexture) {
-		bindShader->setInt("material.emissiveMap", MaterialSlots::EMISSIVE);
-		bindShader->setBool("material.hasEmissiveMap", true);
-		mEmissiveTexture->bind(MaterialSlots::EMISSIVE);
-	}
-	else {
-		bindShader->setBool("material.hasEmissiveMap", false);
-	}
-
-	// Combined Metal-Rough Map
-	if (mMetalRoughTexture) {
-		bindShader->setInt("material.metalRoughMap", MaterialSlots::METALROUGH);
-		bindShader->setBool("material.hasMetalRoughMap", true);
-		mMetalRoughTexture->bind(MaterialSlots::METALROUGH);
-	}
-	else {
-		bindShader->setBool("material.hasMetalRoughMap", false);
-	}
-
-	// Opacity Map
-	if (mOpacityTexture) {
-		bindShader->setInt("material.opacityMap", MaterialSlots::OPACITY);
-		bindShader->setBool("material.hasOpacityMap", true);
-		mOpacityTexture->bind(MaterialSlots::OPACITY);
-	}
-	else {
-		bindShader->setBool("material.hasOpacityMap", false);
-	}
-
-	// Displacement Map
-	if (mDisplacementTexture) {
-		bindShader->setInt("material.displacementMap", MaterialSlots::DISPLACEMENT);
-		bindShader->setBool("material.hasDisplacementMap", true);
-		mDisplacementTexture->bind(MaterialSlots::DISPLACEMENT);
-	}
-	else {
-		bindShader->setBool("material.hasDisplacementMap", false);
-	}
+	bindTexture(mAlbedoTexture,      "material.albedoMap",       "material.hasAlbedoMap",       currentTextureUnit++);
+	bindTexture(mNormalTexture,      "material.normalMap",       "material.hasNormalMap",       currentTextureUnit++);
+	bindTexture(mMetallicTexture,    "material.metallicMap",     "material.hasMetallicMap",     currentTextureUnit++);
+	bindTexture(mRoughnessTexture,   "material.roughnessMap",    "material.hasRoughnessMap",    currentTextureUnit++);
+	bindTexture(mAOTexture,          "material.aoMap",           "material.hasAOMap",           currentTextureUnit++);
+	bindTexture(mEmissiveTexture,    "material.emissiveMap",     "material.hasEmissiveMap",     currentTextureUnit++);
+	bindTexture(mMetalRoughTexture,  "material.metalRoughMap",   "material.hasMetalRoughMap",   currentTextureUnit++);
+	bindTexture(mOpacityTexture,     "material.opacityMap",      "material.hasOpacityMap",      currentTextureUnit++);
+	bindTexture(mDisplacementTexture,"material.displacementMap", "material.hasDisplacementMap", currentTextureUnit++);
 }
 
 void Material::unbind()
 {
-	// Unbind all textures in reverse order
-	if (mDisplacementTexture) mDisplacementTexture->unbind(MaterialSlots::DISPLACEMENT);
-	if (mOpacityTexture)      mOpacityTexture->unbind(MaterialSlots::OPACITY);
-	if (mMetalRoughTexture)   mMetalRoughTexture->unbind(MaterialSlots::METALROUGH);
-	if (mEmissiveTexture)     mEmissiveTexture->unbind(MaterialSlots::EMISSIVE);
-	if (mAOTexture)           mAOTexture->unbind(MaterialSlots::AO);
-	if (mRoughnessTexture)    mRoughnessTexture->unbind(MaterialSlots::ROUGHNESS);
-	if (mMetallicTexture)     mMetallicTexture->unbind(MaterialSlots::METALLIC);
-	if (mNormalTexture)       mNormalTexture->unbind(MaterialSlots::NORMAL);
-	if (mAlbedoTexture)       mAlbedoTexture->unbind(MaterialSlots::ALBEDO);
+	LOG_TRACE(logging::gGraphicsLogger, "Unbinding Material '{}'.", mName);
 
-	// Reset active texture unit
+	int currentTextureUnit = MaterialSlots::ALBEDO;
+
+	// Define the textures in the order they were bound
+	const std::vector<std::shared_ptr<Texture>> textures = {
+		mAlbedoTexture, mNormalTexture, mMetallicTexture, mRoughnessTexture,
+		mAOTexture, mEmissiveTexture, mMetalRoughTexture, mOpacityTexture,
+		mDisplacementTexture
+	};
+
+	// Unbind textures if they exist
+	for (const auto& tex : textures) {
+		if (tex) {
+			// LOG_TRACE(logging::gGraphicsLogger, "Material '{}': Unbinding texture '{}' from slot {}", mName, tex->getName(), currentTextureUnit); // Requires Texture::getName()
+			tex->unbind(currentTextureUnit);
+		}
+		currentTextureUnit++;
+	}
+
+	// Reset active texture unit to default
 	GL_CHECK(glActiveTexture(GL_TEXTURE0));
 }
 

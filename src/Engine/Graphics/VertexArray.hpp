@@ -53,31 +53,31 @@ public:
     void unbind() const;
     
     /**
-     * @brief Adds a vertex buffer and configures its attributes
-     * @param vertexBuffer The vertex buffer to add to this VAO
+     * @brief Adds a vertex buffer, taking ownership, and configures its attributes.
+     * @param vertexBuffer Rvalue reference to a unique pointer to the vertex buffer.
      */
-    void addVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer);
+    void addVertexBuffer(std::unique_ptr<VertexBuffer>&& vertexBuffer);
     
     /**
-     * @brief Gets all attached vertex buffers
-     * @return Vector of vertex buffer pointers
+     * @brief Gets references to the attached vertex buffers.
+     * @return Const reference to the vector of vertex buffer unique pointers.
      */
-    const std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffers() const;
+    const std::vector<std::unique_ptr<VertexBuffer>>& getVertexBuffers() const;
 
     /**
-     * @brief Sets the index buffer for this vertex array
-     * @param indexBuffer The index buffer to use
+     * @brief Sets the index buffer for this vertex array, taking ownership.
+     * @param indexBuffer Rvalue reference to a unique pointer to the index buffer.
      */
-    void setIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer);
+    void setIndexBuffer(std::unique_ptr<IndexBuffer>&& indexBuffer);
     
     /**
-     * @brief Gets the current index buffer
-     * @return The current index buffer or nullptr if none is set
+     * @brief Gets a reference to the current index buffer.
+     * @return Const reference to the unique pointer of the index buffer (or null if none).
      */
-    const std::shared_ptr<IndexBuffer>& getIndexBuffer() const;
+    const std::unique_ptr<IndexBuffer>& getIndexBuffer() const;
     
 private:
     GLuint mVAO; ///< OpenGL vertex array ID
-    std::vector<std::shared_ptr<VertexBuffer>> mVertexBuffers; ///< Associated vertex buffers
-    std::shared_ptr<IndexBuffer> mIndexBuffer; ///< Associated index buffer
+    std::vector<std::unique_ptr<VertexBuffer>> mVertexBuffers; ///< Owned vertex buffers
+    std::unique_ptr<IndexBuffer> mIndexBuffer; ///< Owned index buffer
 };

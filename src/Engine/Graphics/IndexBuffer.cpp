@@ -2,20 +2,14 @@
 #include "IndexBuffer.hpp"
 #include "OpenGLUtil.hpp" 
 
-IndexBuffer::IndexBuffer(const std::vector<unsigned>& indices) : mCount(indices.size())
+IndexBuffer::IndexBuffer(std::vector<unsigned> indices) : mCount(indices.size())
 {
 	GL_CHECK(glGenBuffers(1, &mEBO));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO));
 	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, mCount * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW));
-}
-
-IndexBuffer::IndexBuffer(std::vector<unsigned>&& indices) : mCount(indices.size())
-{
-	GL_CHECK(glGenBuffers(1, &mEBO));
-	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO));
-	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, mCount * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW));
-	// No need to keep the indices data after uploading to GPU
-	// Let it be destroyed when this function returns
+	// If 'indices' was an rvalue, it has been moved from and is now empty.
+	// If 'indices' was an lvalue, a copy was made, and the original remains untouched.
+	// The local 'indices' vector will be destroyed here, freeing its memory if it was moved.
 }
 
 IndexBuffer::~IndexBuffer()
