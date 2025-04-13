@@ -20,9 +20,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned> indices, std::sha
         throw error_handling::EngineException("Mesh must have vertices and indices.");
     }
 
-	mVertexArray = std::make_unique<VertexArray>();
-	mVertexArray->addVertexBuffer(std::make_unique<VertexBuffer>(mVertices));
-	mVertexArray->setIndexBuffer(std::make_unique<IndexBuffer>(std::move(indices)));
+	mVertexArray = std::make_unique<VertexArray>(VertexBuffer(mVertices), IndexBuffer(indices));
 
 	calculateBoundingSphere();
     LOG_TRACE(logging::gGraphicsLogger, "Mesh '{}' created with {} vertices and {} indices.", mName, mVertices.size(), mVertexArray->getIndexBuffer() ? mVertexArray->getIndexBuffer()->getCount() : 0);
@@ -90,14 +88,14 @@ void Mesh::draw(glm::mat4 model) const
 	mVertexArray->bind();
 
     const auto& ib = mVertexArray->getIndexBuffer();
-    if (!ib) {
-        LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw Mesh '{}', but it has no index buffer.", mName);
-        mVertexArray->unbind();
-        mMaterial->unbind();
-        return;
-    }
+    //if (!ib) {
+    //    LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw Mesh '{}', but it has no index buffer.", mName);
+    //    mVertexArray->unbind();
+    //    mMaterial->unbind();
+    //    return;
+    //}
 
-	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(ib->getCount()), GL_UNSIGNED_INT, nullptr));
+	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(ib.getCount()), GL_UNSIGNED_INT, nullptr));
 
 	mVertexArray->unbind();
 	mMaterial->unbind();
@@ -134,14 +132,14 @@ void Mesh::draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bin
 	mVertexArray->bind();
 
     const auto& ib = mVertexArray->getIndexBuffer();
-    if (!ib) {
-        LOG_ERROR(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}', but it has no index buffer.", mName);
-        mVertexArray->unbind();
-        if (bindMaterial && mMaterial) mMaterial->unbind();
-        return;
-    }
+    //if (!ib) {
+    //    LOG_ERROR(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}', but it has no index buffer.", mName);
+    //    mVertexArray->unbind();
+    //    if (bindMaterial && mMaterial) mMaterial->unbind();
+    //    return;
+    //}
 
-	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(ib->getCount()), GL_UNSIGNED_INT, nullptr));
+	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(ib.getCount()), GL_UNSIGNED_INT, nullptr));
 	mVertexArray->unbind();
 	if (bindMaterial && mMaterial)
     {

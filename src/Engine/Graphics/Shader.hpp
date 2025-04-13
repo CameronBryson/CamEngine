@@ -156,20 +156,6 @@ public:
     bool isComputeShader() const { return mIsComputeShader; }
     
     /**
-     * @brief Set a debug label for the shader
-     * 
-     * @param label Label to assign to the shader
-     */
-    void setLabel(const std::string& label);
-    
-    /**
-     * @brief Get the debug label for the shader
-     * 
-     * @return Current debug label for the shader
-     */
-    const std::string& getLabel() const { return mLabel; }
-    
-    /**
      * @brief Force delete the shader program
      */
     void deleteShader();
@@ -214,6 +200,5 @@ private:
 private:
     unsigned int mShaderID = 0;
     bool mIsComputeShader = false;
-    std::string mLabel;
     mutable std::unordered_map<std::string, int> mUniformLocationCache;
 };

@@ -111,9 +111,12 @@ public:
 	int getWidth() const { return mWidth; }
 	int getHeight() const { return mHeight; }
 	unsigned int getRendererID() const { return mRendererID; }
-	const std::string& getLabel() const { return mLabel; }
-	void setLabel(std::string_view label);
-	bool isComplete() const;
+    
+    /**
+     * @brief Checks if the framebuffer is complete and valid for rendering
+     * @return true if the framebuffer is complete, false otherwise
+     */
+    bool isComplete() const;
 
     // Viewport management
 	void setViewport(int x, int y, int width, int height);
@@ -123,21 +126,16 @@ public:
 	int addAttachment(FrameBufferAttachmentSpecification attachmentSpec);
 	bool removeAttachment(FrameBufferAttachmentType type, int index = 0);
 	const std::vector<FrameBufferAttachmentSpecification>& getAttachments() const { return mAttachmentSpecs; }
-	void invalidate();
-	std::shared_ptr<Texture> getColorAttachment(int index = 0) const;
-	std::shared_ptr<Texture> getDepthAttachment() const { return mDepthAttachment; }
+	Texture& getColorAttachment(int index = 0) const;
+	Texture& getDepthAttachment() const { return *mDepthAttachment; }
 	void attachExternalTexture(unsigned int attachment, unsigned int target, unsigned int textureID, int mipLevel = 0);
 
     // Multisampling
 	void setSamples(int samples);
 	int getSamples() const { return mSamples; }
 	
-	// Buffer operations
 	void setDrawBuffers(const std::vector<unsigned int>& attachments);
 	void setReadBuffer(unsigned int attachment);
-	void readPixels(int x, int y, int width, int height, void* data, 
-	                unsigned int format = 0x1908, // GL_RGBA
-	                unsigned int type = 0x1401);  // GL_UNSIGNED_BYTE
 	
 	// Blit operations
 	void blitTo(std::shared_ptr<FrameBuffer> dst,
@@ -145,7 +143,6 @@ public:
 				int dstX0, int dstY0, int dstX1, int dstY1,
 				unsigned int mask,
 				unsigned int filter);
-	void resolveToFBO(std::shared_ptr<FrameBuffer> dst, unsigned int mask);
 
 protected:
     // OpenGL wrapper methods organized by functionality
@@ -177,13 +174,13 @@ protected:
 
 private:
 	void createFramebuffer();
+	void invalidate(); 
 	void cleanup();
 
 private:
 	unsigned int mRendererID = 0; 
 	int mWidth = 0, mHeight = 0;
 	int mSamples = 1;
-	std::string mLabel;
 
 	int mViewportX = 0;
 	int mViewportY = 0;
@@ -191,6 +188,6 @@ private:
 	int mViewportH = 0;
 
 	std::vector<FrameBufferAttachmentSpecification> mAttachmentSpecs;
-	std::vector<std::shared_ptr<Texture>> mColorAttachments;
-	std::shared_ptr<Texture> mDepthAttachment;
+	std::vector<std::unique_ptr<Texture>> mColorAttachments;
+	std::unique_ptr<Texture> mDepthAttachment;
 };

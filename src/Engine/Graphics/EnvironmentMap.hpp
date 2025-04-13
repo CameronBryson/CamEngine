@@ -1,9 +1,5 @@
 #pragma once
 #include <memory>
-// #include "Texture.hpp" // Forward declare instead
-// #include <Mesh.hpp> // Unused
-// #include "Shader.hpp" // Forward declare instead
-// #include <VertexArray.hpp> // Unused
 #include <string_view>
 
 // Forward declarations

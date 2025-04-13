@@ -18,7 +18,7 @@ public:
     /**
      * @brief Constructor - creates a new vertex array object
      */
-    VertexArray();
+    VertexArray(VertexBuffer vertexBuffer, IndexBuffer indexBuffer);
     
     /**
      * @brief Destructor - cleans up OpenGL resources
@@ -53,31 +53,20 @@ public:
     void unbind() const;
     
     /**
-     * @brief Adds a vertex buffer, taking ownership, and configures its attributes.
-     * @param vertexBuffer Rvalue reference to a unique pointer to the vertex buffer.
-     */
-    void addVertexBuffer(std::unique_ptr<VertexBuffer>&& vertexBuffer);
-    
-    /**
      * @brief Gets references to the attached vertex buffers.
      * @return Const reference to the vector of vertex buffer unique pointers.
      */
-    const std::vector<std::unique_ptr<VertexBuffer>>& getVertexBuffers() const;
+    const VertexBuffer& getVertexBuffer() const;
 
-    /**
-     * @brief Sets the index buffer for this vertex array, taking ownership.
-     * @param indexBuffer Rvalue reference to a unique pointer to the index buffer.
-     */
-    void setIndexBuffer(std::unique_ptr<IndexBuffer>&& indexBuffer);
     
     /**
      * @brief Gets a reference to the current index buffer.
      * @return Const reference to the unique pointer of the index buffer (or null if none).
      */
-    const std::unique_ptr<IndexBuffer>& getIndexBuffer() const;
+    const IndexBuffer& getIndexBuffer() const;
     
 private:
     GLuint mVAO; ///< OpenGL vertex array ID
-    std::vector<std::unique_ptr<VertexBuffer>> mVertexBuffers; ///< Owned vertex buffers
-    std::unique_ptr<IndexBuffer> mIndexBuffer; ///< Owned index buffer
+    VertexBuffer mVertexBuffer; ///< Owned vertex buffer
+    IndexBuffer mIndexBuffer; ///< Owned index buffer
 };

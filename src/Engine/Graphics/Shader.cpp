@@ -42,9 +42,6 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
         LOG_INFO(logging::gGraphicsLogger, "Successfully created shader program (ID: {}) from {} and {}", 
                 mShaderID, vertexPath, fragmentPath);
         
-        // Set debug label for the program
-        std::string label = "Shader_" + std::filesystem::path(vertexPath).stem().string();
-        setLabel(label);
     }
     catch (const std::exception& e)
     {
@@ -89,9 +86,6 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, c
         LOG_INFO(logging::gGraphicsLogger, "Successfully created shader program (ID: {}) with geometry shader", 
                 mShaderID);
         
-        // Set debug label for the program
-        std::string label = "Shader_" + std::filesystem::path(vertexPath).stem().string() + "_GS";
-        setLabel(label);
     }
     catch (const std::exception& e)
     {
@@ -129,9 +123,6 @@ Shader::Shader(const std::string& computePath)
         LOG_INFO(logging::gGraphicsLogger, "Successfully created compute shader program (ID: {}) from {}", 
                 mShaderID, computePath);
         
-        // Set debug label for the program
-        std::string label = "ComputeShader_" + std::filesystem::path(computePath).stem().string();
-        setLabel(label);
     }
     catch (const std::exception& e)
     {
@@ -148,7 +139,6 @@ Shader::~Shader()
 Shader::Shader(Shader&& other) noexcept
     : mShaderID(other.mShaderID)
     , mIsComputeShader(other.mIsComputeShader)
-    , mLabel(std::move(other.mLabel))
     , mUniformLocationCache(std::move(other.mUniformLocationCache))
 {
     // Make sure the other shader doesn't delete our program
@@ -165,7 +155,6 @@ Shader& Shader::operator=(Shader&& other) noexcept
         // Move resources from other
         mShaderID = other.mShaderID;
         mIsComputeShader = other.mIsComputeShader;
-        mLabel = std::move(other.mLabel);
         mUniformLocationCache = std::move(other.mUniformLocationCache);
         
         // Make sure the other shader doesn't delete our program
@@ -249,14 +238,6 @@ void Shader::setMat3(const std::string& name, const glm::mat3& value) const
     GL_CHECK(glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, &value[0][0]));
 }
 
-void Shader::setLabel(const std::string& label)
-{
-    mLabel = label;
-    if (mShaderID != 0)
-    {
-        GL_LABEL_OBJECT(GL_PROGRAM, mShaderID, label.c_str());
-    }
-}
 
 void Shader::deleteShader()
 {

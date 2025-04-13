@@ -122,48 +122,6 @@ namespace {
         }
     }
 
-    // Helper to check framebuffer status and log any issues
-    bool checkFramebufferStatus(GLuint /*fbo*/, const std::string& label)
-    {
-        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if (status != GL_FRAMEBUFFER_COMPLETE)
-        {
-            std::string errorMsg;
-            switch (status)
-            {
-            case GL_FRAMEBUFFER_UNDEFINED:
-                errorMsg = "GL_FRAMEBUFFER_UNDEFINED";
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                errorMsg = "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                errorMsg = "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-                errorMsg = "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-                errorMsg = "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER";
-                break;
-            case GL_FRAMEBUFFER_UNSUPPORTED:
-                errorMsg = "GL_FRAMEBUFFER_UNSUPPORTED";
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-                errorMsg = "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE";
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-                errorMsg = "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
-                break;
-            default:
-                errorMsg = "Unknown framebuffer error: " + std::to_string(status);
-                break;
-            }
-            LOG_ERROR(logging::gGraphicsLogger, "Framebuffer '{0}' is incomplete: {1}", label, errorMsg);
-            return false;
-        }
-        return true;
-    }
 }
 
 FrameBuffer::FrameBuffer(
@@ -176,11 +134,10 @@ FrameBuffer::FrameBuffer(
     , mHeight(height)
     , mSamples(samples)
     , mAttachmentSpecs(std::move(attachments))
-    , mLabel(label)
 {
     try {
-        LOG_DEBUG(logging::gGraphicsLogger, "Creating framebuffer: {0} ({1}x{2}, {3} samples)", 
-                  mLabel.empty() ? "unnamed" : mLabel, width, height, samples);
+        LOG_DEBUG(logging::gGraphicsLogger, "Creating framebuffer: unnamed ({0}x{1}, {2} samples)", 
+                  width, height, samples);
                   
         if (width <= 0 || height <= 0)
             throw error_handling::GraphicsException("Invalid framebuffer dimensions");
@@ -211,7 +168,6 @@ FrameBuffer::FrameBuffer(FrameBuffer&& other) noexcept
     , mWidth(other.mWidth)
     , mHeight(other.mHeight)
     , mSamples(other.mSamples)
-    , mLabel(std::move(other.mLabel))
     , mViewportX(other.mViewportX)
     , mViewportY(other.mViewportY)
     , mViewportW(other.mViewportW)
@@ -236,7 +192,6 @@ FrameBuffer& FrameBuffer::operator=(FrameBuffer&& other) noexcept
         mWidth = other.mWidth;
         mHeight = other.mHeight;
         mSamples = other.mSamples;
-        mLabel = std::move(other.mLabel);
         mViewportX = other.mViewportX;
         mViewportY = other.mViewportY;
         mViewportW = other.mViewportW;
@@ -309,8 +264,8 @@ void FrameBuffer::cleanup()
 {
     if (mRendererID != 0)
     {
-        LOG_DEBUG(logging::gGraphicsLogger, "Deleting framebuffer: {0} (ID: {1})",
-                  mLabel.empty() ? "unnamed" : mLabel, mRendererID);
+        LOG_DEBUG(logging::gGraphicsLogger, "Deleting framebuffer: unnamed (ID: {0})",
+                  mRendererID);
                   
         deleteFramebuffers(1, &mRendererID);
         mRendererID = 0;
@@ -321,11 +276,17 @@ void FrameBuffer::cleanup()
 
 void FrameBuffer::bind()
 {
+    if (mRendererID == 0)
+    {
+        LOG_ERROR(logging::gGraphicsLogger, "Trying to bind invalid framebuffer with ID 0");
+        return;
+    }
+    
     bindFramebuffer(GL_FRAMEBUFFER, mRendererID);
     viewport(mViewportX, mViewportY, mViewportW, mViewportH);
     
-    LOG_TRACE(logging::gGraphicsLogger, "Bound framebuffer: {0} (ID: {1})",
-              mLabel.empty() ? "unnamed" : mLabel, mRendererID);
+    LOG_TRACE(logging::gGraphicsLogger, "Bound framebuffer: unnamed (ID: {0})",
+              mRendererID);
 }
 
 void FrameBuffer::unbind()
@@ -335,11 +296,23 @@ void FrameBuffer::unbind()
 
 void FrameBuffer::bindRead()
 {
+    if (mRendererID == 0)
+    {
+        LOG_ERROR(logging::gGraphicsLogger, "Trying to bind invalid framebuffer with ID 0 for reading");
+        return;
+    }
+    
     bindFramebuffer(GL_READ_FRAMEBUFFER, mRendererID);
 }
 
 void FrameBuffer::bindDraw()
 {
+    if (mRendererID == 0)
+    {
+        LOG_ERROR(logging::gGraphicsLogger, "Trying to bind invalid framebuffer with ID 0 for drawing");
+        return;
+    }
+    
     bindFramebuffer(GL_DRAW_FRAMEBUFFER, mRendererID);
 }
 
@@ -347,20 +320,20 @@ void FrameBuffer::resize(int width, int height)
 {
     if (width <= 0 || height <= 0)
     {
-        LOG_WARN(logging::gGraphicsLogger, "Attempted to resize FBO '{0}' to invalid dimensions: {1}x{2}",
-                mLabel.empty() ? "unnamed" : mLabel, width, height);
+        LOG_WARN(logging::gGraphicsLogger, "Attempted to resize FBO 'unnamed' to invalid dimensions: {0}x{1}",
+                width, height);
         return;
     }
 
     if (width == mWidth && height == mHeight)
     {
-        LOG_DEBUG(logging::gGraphicsLogger, "Skipping resize of FBO '{0}' - dimensions unchanged: {1}x{2}",
-                 mLabel.empty() ? "unnamed" : mLabel, width, height);
+        LOG_DEBUG(logging::gGraphicsLogger, "Skipping resize of FBO 'unnamed' - dimensions unchanged: {0}x{1}",
+                 width, height);
         return;
     }
 
-    LOG_DEBUG(logging::gGraphicsLogger, "Resizing FBO '{0}' from {1}x{2} to {3}x{4}",
-             mLabel.empty() ? "unnamed" : mLabel, mWidth, mHeight, width, height);
+    LOG_DEBUG(logging::gGraphicsLogger, "Resizing FBO 'unnamed' from {0}x{1} to {2}x{3}",
+             mWidth, mHeight, width, height);
 
     mWidth = width;
     mHeight = height;
@@ -372,7 +345,6 @@ void FrameBuffer::resize(int width, int height)
         mViewportH = height;
     }
 
-    invalidate();
 }
 
 void FrameBuffer::setViewport(int x, int y, int width, int height)
@@ -397,30 +369,10 @@ void FrameBuffer::clear(unsigned int mask)
     clearBuffers(mask);
 }
 
-void FrameBuffer::readPixels(int x, int y, int width, int height, void* data, unsigned int format, unsigned int type)
-{
-    if (!data)
-    {
-        LOG_ERROR(logging::gGraphicsLogger, "Cannot read pixels to null data pointer");
-        return;
-    }
-
-    // Validate coordinates are within bounds
-    if (x < 0 || y < 0 || x + width > mWidth || y + height > mHeight)
-    {
-        LOG_WARN(logging::gGraphicsLogger, 
-            "ReadPixels region ({0},{1},{2},{3}) exceeds framebuffer dimensions ({4}x{5})",
-            x, y, width, height, mWidth, mHeight);
-    }
-
-    bindRead();
-    readPixelsBuffer(x, y, width, height, format, type, data);
-}
 
 int FrameBuffer::addAttachment(FrameBufferAttachmentSpecification attachmentSpec)
 {
-    LOG_DEBUG(logging::gGraphicsLogger, "Adding attachment to framebuffer '{0}'",
-             mLabel.empty() ? "unnamed" : mLabel);
+    LOG_DEBUG(logging::gGraphicsLogger, "Adding attachment to framebuffer 'unnamed'");
              
     int index = 0;
     if (attachmentSpec.Type == FrameBufferAttachmentType::Color)
@@ -434,7 +386,6 @@ int FrameBuffer::addAttachment(FrameBufferAttachmentSpecification attachmentSpec
     }
     
     mAttachmentSpecs.push_back(std::move(attachmentSpec));
-    invalidate();
     
     return attachmentSpec.Type == FrameBufferAttachmentType::Color ? index : 0;
 }
@@ -453,8 +404,8 @@ bool FrameBuffer::removeAttachment(FrameBufferAttachmentType type, int index)
             {
                 if (colorIndex == index)
                 {
-                    LOG_DEBUG(logging::gGraphicsLogger, "Removing color attachment {0} from framebuffer '{1}'",
-                             index, mLabel.empty() ? "unnamed" : mLabel);
+                    LOG_DEBUG(logging::gGraphicsLogger, "Removing color attachment {0} from framebuffer 'unnamed'",
+                             index);
                     mAttachmentSpecs.erase(it);
                     removed = true;
                     break;
@@ -470,8 +421,8 @@ bool FrameBuffer::removeAttachment(FrameBufferAttachmentType type, int index)
         {
             if (it->Type == type)
             {
-                LOG_DEBUG(logging::gGraphicsLogger, "Removing attachment of type {0} from framebuffer '{1}'",
-                         static_cast<int>(type), mLabel.empty() ? "unnamed" : mLabel);
+                LOG_DEBUG(logging::gGraphicsLogger, "Removing attachment of type {0} from framebuffer 'unnamed'",
+                         static_cast<int>(type));
                 mAttachmentSpecs.erase(it);
                 removed = true;
                 break;
@@ -485,32 +436,12 @@ bool FrameBuffer::removeAttachment(FrameBufferAttachmentType type, int index)
     }
     else
     {
-        LOG_WARN(logging::gGraphicsLogger, "No matching attachment found to remove from framebuffer '{0}'",
-               mLabel.empty() ? "unnamed" : mLabel);
+        LOG_WARN(logging::gGraphicsLogger, "No matching attachment found to remove from framebuffer 'unnamed'");
     }
     
     return removed;
 }
 
-void FrameBuffer::invalidate()
-{
-    LOG_DEBUG(logging::gGraphicsLogger, "Invalidating framebuffer '{0}' (ID: {1})",
-             mLabel.empty() ? "unnamed" : mLabel, mRendererID);
-             
-    // Clean up existing framebuffer if there is one
-    if (mRendererID != 0)
-    {
-        deleteFramebuffers(1, &mRendererID);
-        mRendererID = 0;
-    }
-
-    // Clear attachment collections (textures will be freed by shared_ptr)
-    mColorAttachments.clear();
-    mDepthAttachment.reset();
-
-    // Recreate with updated specifications
-    createFramebuffer();
-}
 
 void FrameBuffer::setSamples(int samples)
 {
@@ -525,50 +456,26 @@ void FrameBuffer::setSamples(int samples)
         return; // No change needed
     }
     
-    LOG_DEBUG(logging::gGraphicsLogger, "Changing FBO '{0}' samples from {1} to {2}",
-             mLabel.empty() ? "unnamed" : mLabel, mSamples, samples);
+    LOG_DEBUG(logging::gGraphicsLogger, "Changing FBO 'unnamed' samples from {0} to {1}",
+             mSamples, samples);
              
     mSamples = samples;
-    invalidate();
 }
 
-bool FrameBuffer::isComplete() const
-{
-    if (mRendererID == 0)
-    {
-        LOG_ERROR(logging::gGraphicsLogger, "Cannot check completeness of invalid framebuffer");
-        return false;
-    }
 
-    GLint prevFBO;
-    getIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
-    
-    bindFramebuffer(GL_FRAMEBUFFER, mRendererID);
-    bool complete = checkFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-    
-    if (!complete)
-    {
-        // Use our helper function to get detailed error information
-        ::checkFramebufferStatus(mRendererID, mLabel);
-    }
-    
-    bindFramebuffer(GL_FRAMEBUFFER, prevFBO);
-    return complete;
-}
-
-std::shared_ptr<Texture> FrameBuffer::getColorAttachment(int index) const
+Texture& FrameBuffer::getColorAttachment(int index) const
 {
     if (index < 0 || index >= static_cast<int>(mColorAttachments.size()))
     {
         if (!mColorAttachments.empty()) // Only log if there are attachments
         {
             LOG_WARN(logging::gGraphicsLogger, 
-                "Requesting invalid color attachment index {0} (max: {1}) from framebuffer '{2}'", 
-                index, mColorAttachments.size() - 1, mLabel.empty() ? "unnamed" : mLabel);
+                "Requesting invalid color attachment index {0} (max: {1}) from framebuffer 'unnamed'", 
+                index, mColorAttachments.size() - 1);
         }
-        return nullptr;
-    }
-    return mColorAttachments[index];
+        //Throw error
+    } 
+    return *mColorAttachments[index];
 }
 
 void FrameBuffer::setDrawBuffers(const std::vector<unsigned int>& attachments)
@@ -633,30 +540,6 @@ void FrameBuffer::blitTo(
     bindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::resolveToFBO(std::shared_ptr<FrameBuffer> dst, unsigned int mask)
-{
-    if (!dst)
-    {
-        LOG_ERROR(logging::gGraphicsLogger, "Cannot resolve to null framebuffer");
-        return;
-    }
-
-    if (mSamples <= 1)
-    {
-        LOG_WARN(logging::gGraphicsLogger, "Attempting to resolve a non-multisampled framebuffer");
-    }
-
-    if (dst->getSamples() > 1)
-    {
-        LOG_WARN(logging::gGraphicsLogger, "Resolving to a multisampled framebuffer is not recommended");
-    }
-
-    // Use full framebuffer dimensions
-    blitTo(dst, 
-        0, 0, mWidth, mHeight,
-        0, 0, dst->getWidth(), dst->getHeight(),
-        mask, GL_NEAREST);
-}
 
 void FrameBuffer::attachExternalTexture(
     unsigned int attachment,
@@ -686,20 +569,18 @@ void FrameBuffer::attachExternalTexture(
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
         LOG_ERROR(logging::gGraphicsLogger, 
-            "Failed to attach external texture to framebuffer '{0}' (status: 0x{1:x})",
-            mLabel.empty() ? "unnamed" : mLabel, status);
+            "Failed to attach external texture to framebuffer 'unnamed' (status: 0x{0:x})",
+            status);
     }
 }
 
-void FrameBuffer::setLabel(std::string_view label)
+void FrameBuffer::invalidate()
 {
-    mLabel = label;
+    // Clean up existing framebuffer
+    cleanup();
     
-    // Set debug label if supported and ID exists
-    if (mRendererID != 0)
-    {
-        gl::labelObject(GL_FRAMEBUFFER, mRendererID, mLabel.c_str());
-    }
+    // Recreate the framebuffer with current specifications
+    createFramebuffer();
 }
 
 void FrameBuffer::createFramebuffer()
@@ -713,11 +594,6 @@ void FrameBuffer::createFramebuffer()
         throw error_handling::GraphicsException("Failed to generate framebuffer ID");
     }
     
-    // Set debug label if we have one
-    if (!mLabel.empty())
-    {
-        gl::labelObject(GL_FRAMEBUFFER, mRendererID, mLabel.c_str());
-    }
 
     bindFramebuffer(GL_FRAMEBUFFER, mRendererID);
 
@@ -750,29 +626,6 @@ void FrameBuffer::createFramebuffer()
         if (!spec.Name.empty())
         {
             std::string texLabel = spec.Name + " Texture";
-            gl::labelObject(GL_TEXTURE, texID, texLabel.c_str());
-        }
-        else if (!mLabel.empty())
-        {
-            std::string texLabel = mLabel;
-            switch (spec.Type)
-            {
-            case FrameBufferAttachmentType::Color:
-                texLabel += " Color" + std::to_string(colorAttachmentIndex);
-                break;
-            case FrameBufferAttachmentType::Depth:
-                texLabel += " Depth";
-                break;
-            case FrameBufferAttachmentType::Stencil:
-                texLabel += " Stencil";
-                break;
-            case FrameBufferAttachmentType::DepthStencil:
-                texLabel += " DepthStencil";
-                break;
-            case FrameBufferAttachmentType::DepthCubemap:
-                texLabel += " DepthCube";
-                break;
-            }
             gl::labelObject(GL_TEXTURE, texID, texLabel.c_str());
         }
 
@@ -812,9 +665,9 @@ void FrameBuffer::createFramebuffer()
             Texture::framebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texID, 0);
 
             // Wrap in our universal Texture class
-            auto attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::CUBEMAP);
+            auto attachmentTexture = std::make_unique<Texture>(texID, mWidth, mHeight, Texture::Type::CUBEMAP);
             
-            mDepthAttachment = attachmentTexture;
+            mDepthAttachment = std::move(attachmentTexture);
 
             // Disable color buffer for a depth-only cubemap
             drawBuffer(GL_NONE);
@@ -861,13 +714,13 @@ void FrameBuffer::createFramebuffer()
         }
 
         // Create and attach appropriate texture type based on attachment spec
-        std::shared_ptr<Texture> attachmentTexture;
+        std::unique_ptr<Texture> attachmentTexture;
         
         switch (spec.Type)
         {
         case FrameBufferAttachmentType::Color:
             {
-                attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
+                attachmentTexture = std::make_unique<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
                 GLenum attachmentPoint = GL_COLOR_ATTACHMENT0 + colorAttachmentIndex;
                 
                 if (mSamples > 1)
@@ -891,7 +744,7 @@ void FrameBuffer::createFramebuffer()
                     );
                 }
                 
-                mColorAttachments.push_back(attachmentTexture);
+                mColorAttachments.push_back(std::move(attachmentTexture));
                 drawBuffers.push_back(attachmentPoint);
                 colorAttachmentIndex++;
                 break;
@@ -899,7 +752,7 @@ void FrameBuffer::createFramebuffer()
             
         case FrameBufferAttachmentType::Depth:
             {
-                attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
+                attachmentTexture = std::make_unique<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
                 
                 if (mSamples > 1)
                 {
@@ -922,13 +775,13 @@ void FrameBuffer::createFramebuffer()
                     );
                 }
                 
-                mDepthAttachment = attachmentTexture;
+                mDepthAttachment = std::move(attachmentTexture);
                 break;
             }
             
         case FrameBufferAttachmentType::Stencil:
             {
-                attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
+                attachmentTexture = std::make_unique<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
                 
                 if (mSamples > 1)
                 {
@@ -955,7 +808,7 @@ void FrameBuffer::createFramebuffer()
             
         case FrameBufferAttachmentType::DepthStencil:
             {
-                attachmentTexture = std::make_shared<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
+                attachmentTexture = std::make_unique<Texture>(texID, mWidth, mHeight, Texture::Type::TEXTURE_2D);
                 
                 if (mSamples > 1)
                 {
@@ -978,7 +831,7 @@ void FrameBuffer::createFramebuffer()
                     );
                 }
                 
-                mDepthAttachment = attachmentTexture;
+                mDepthAttachment = std::move(attachmentTexture);
                 break;
             }
             
@@ -1004,16 +857,39 @@ void FrameBuffer::createFramebuffer()
         LOG_WARN(logging::gGraphicsLogger, "Creating framebuffer with no attachments");
     }
 
-    // Validate completeness and get any error information
-    bool complete = ::checkFramebufferStatus(mRendererID, mLabel);
+    // Validate completeness
+    GLenum status = checkFramebufferStatus(GL_FRAMEBUFFER);
     
-    if (!complete)
+    if (status != GL_FRAMEBUFFER_COMPLETE)
     {
         throw error_handling::GraphicsException(
-            "Framebuffer " + (mLabel.empty() ? "unnamed" : mLabel) + " is incomplete");
+            fmt::format("Framebuffer is incomplete: status code 0x{:x}", status));
     }
 
     bindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+bool FrameBuffer::isComplete() const
+{
+    if (mRendererID == 0)
+    {
+        return false;
+    }
+    
+    // Save current framebuffer binding to restore it after checking
+    int previousFramebuffer = 0;
+    getIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+    
+    // Bind this framebuffer to check its status
+    bindFramebuffer(GL_FRAMEBUFFER, mRendererID);
+    
+    // Check if the framebuffer is complete
+    unsigned int status = checkFramebufferStatus(GL_FRAMEBUFFER);
+    
+    // Restore previous framebuffer binding
+    bindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
+    
+    return status == GL_FRAMEBUFFER_COMPLETE;
 }
 
 

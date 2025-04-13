@@ -180,14 +180,14 @@ void SRender::initFramebuffers()
 
     mDirectionalShadowMapBuffer = std::make_shared<FrameBuffer>(mShadowMapWidth, mShadowMapHeight, depthAttachment);
     GL_LABEL_OBJECT(GL_FRAMEBUFFER, mDirectionalShadowMapBuffer->getRendererID(), "Directional Shadow FBO");
-    mDirectionalShadowMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
-    if (!mDirectionalShadowMapBuffer->isComplete() || !mDirectionalShadowMapBuffer->getDepthAttachment())
+    mDirectionalShadowMapBuffer->getDepthAttachment().setShadowSamplerParameters();
+    if (!mDirectionalShadowMapBuffer->isComplete())
         throw std::runtime_error("Directional shadow map framebuffer setup failed!");
 
     mSpotShadowMapBuffer = std::make_shared<FrameBuffer>(mShadowMapWidth, mShadowMapHeight, depthAttachment);
     GL_LABEL_OBJECT(GL_FRAMEBUFFER, mSpotShadowMapBuffer->getRendererID(), "Spot Shadow FBO");
-    mSpotShadowMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
-    if (!mSpotShadowMapBuffer->isComplete() || !mSpotShadowMapBuffer->getDepthAttachment())
+    mSpotShadowMapBuffer->getDepthAttachment().setShadowSamplerParameters();
+    if (!mSpotShadowMapBuffer->isComplete())
         throw std::runtime_error("Spot shadow map framebuffer setup failed!");
 
     // Point shadow map FBO (cubemap)
@@ -198,7 +198,7 @@ void SRender::initFramebuffers()
     
     mPointShadwMapBuffer = std::make_shared<FrameBuffer>(mShadowMapWidth, mShadowMapHeight, depthCubemapAttachment);
     GL_LABEL_OBJECT(GL_FRAMEBUFFER, mPointShadwMapBuffer->getRendererID(), "Point Shadow FBO");
-    mPointShadwMapBuffer->getDepthAttachment()->setShadowSamplerParameters();
+    mPointShadwMapBuffer->getDepthAttachment().setShadowSamplerParameters();
     if (!mPointShadwMapBuffer->isComplete())
         throw std::runtime_error("Point shadow map framebuffer setup failed!");
 
@@ -744,8 +744,8 @@ void SRender::ssaoPass()
 	ssaoShader->setFloat("maxDistance", mSSAOMaxDistance);
 
     // Bind G-Buffer textures using proper slots
-    mGBuffer->getColorAttachment(1)->bind(SSAOSlots::NORMAL_METALLIC);
-    mGBuffer->getDepthAttachment()->bind(SSAOSlots::DEPTH);
+    mGBuffer->getColorAttachment(1).bind(SSAOSlots::NORMAL_METALLIC);
+    mGBuffer->getDepthAttachment().bind(SSAOSlots::DEPTH);
     mSSAONoise->bind(SSAOSlots::NOISE);
 
     ssaoShader->setInt("gDepth", SSAOSlots::DEPTH);
@@ -760,8 +760,8 @@ void SRender::ssaoPass()
     mSSAOBuffer->unbind();
 
     // Unbind textures after use
-    mGBuffer->getColorAttachment(1)->unbind(SSAOSlots::NORMAL_METALLIC);
-    mGBuffer->getDepthAttachment()->unbind(SSAOSlots::DEPTH);
+    mGBuffer->getColorAttachment(1).unbind(SSAOSlots::NORMAL_METALLIC);
+    mGBuffer->getDepthAttachment().unbind(SSAOSlots::DEPTH);
     mSSAONoise->unbind(SSAOSlots::NOISE);
 
     // Blur SSAO texture
@@ -773,9 +773,9 @@ void SRender::ssaoPass()
     mSSAOBlurBuffer->clear(GL_COLOR_BUFFER_BIT);
 
     // Bind textures for blur pass
-    mSSAOBuffer->getColorAttachment(0)->bind(SSAOSlots::SSAO);
-    mGBuffer->getColorAttachment(1)->bind(SSAOSlots::NORMAL_METALLIC);
-    mGBuffer->getDepthAttachment()->bind(SSAOSlots::DEPTH);
+    mSSAOBuffer->getColorAttachment(0).bind(SSAOSlots::SSAO);
+    mGBuffer->getColorAttachment(1).bind(SSAOSlots::NORMAL_METALLIC);
+    mGBuffer->getDepthAttachment().bind(SSAOSlots::DEPTH);
 
     blurShader->setInt("ssaoInput", SSAOSlots::SSAO);
     blurShader->setInt("gNormalMetallic", SSAOSlots::NORMAL_METALLIC);
@@ -788,9 +788,9 @@ void SRender::ssaoPass()
     mSSAOBlurBuffer->unbind();
 
     // Unbind textures after blur pass
-    mSSAOBuffer->getColorAttachment(0)->unbind(SSAOSlots::SSAO);
-    mGBuffer->getColorAttachment(1)->unbind(SSAOSlots::NORMAL_METALLIC);
-    mGBuffer->getDepthAttachment()->unbind(SSAOSlots::DEPTH);
+    mSSAOBuffer->getColorAttachment(0).unbind(SSAOSlots::SSAO);
+    mGBuffer->getColorAttachment(1).unbind(SSAOSlots::NORMAL_METALLIC);
+    mGBuffer->getDepthAttachment().unbind(SSAOSlots::DEPTH);
 }
 
 
@@ -828,17 +828,17 @@ void SRender::lightingPass()
     deferredShader->use();
 
     // 4. Bind G-Buffer textures
-    mGBuffer->getColorAttachment(0)->bind(GBufferSlots::ALBEDO_AO);
-    mGBuffer->getColorAttachment(1)->bind(GBufferSlots::NORMAL_METALLIC);
-    mGBuffer->getColorAttachment(2)->bind(GBufferSlots::ROUGH_EMISSIVE);
-    mGBuffer->getDepthAttachment()->bind(GBufferSlots::DEPTH);
+    mGBuffer->getColorAttachment(0).bind(GBufferSlots::ALBEDO_AO);
+    mGBuffer->getColorAttachment(1).bind(GBufferSlots::NORMAL_METALLIC);
+    mGBuffer->getColorAttachment(2).bind(GBufferSlots::ROUGH_EMISSIVE);
+    mGBuffer->getDepthAttachment().bind(GBufferSlots::DEPTH);
 
     // 5. Bind shadow maps and environment maps
     bindSkyboxResources(deferredShader);
 
     // 6. Bind SSAO result if enabled
     if (ssaoEnabled) {
-        mSSAOBlurBuffer->getColorAttachment(0)->bind(SSAOSlots::SSAO_BLUR);
+        mSSAOBlurBuffer->getColorAttachment(0).bind(SSAOSlots::SSAO_BLUR);
         deferredShader->setInt("ssaoTexture", SSAOSlots::SSAO_BLUR);
     }
 
@@ -853,13 +853,13 @@ void SRender::lightingPass()
     gl::drawQuad();
 
     // 9. Unbind G-Buffer textures
-    mGBuffer->getColorAttachment(0)->unbind(GBufferSlots::ALBEDO_AO);
-    mGBuffer->getColorAttachment(1)->unbind(GBufferSlots::NORMAL_METALLIC);
-    mGBuffer->getColorAttachment(2)->unbind(GBufferSlots::ROUGH_EMISSIVE);
-    mGBuffer->getDepthAttachment()->unbind(GBufferSlots::DEPTH);
+    mGBuffer->getColorAttachment(0).unbind(GBufferSlots::ALBEDO_AO);
+    mGBuffer->getColorAttachment(1).unbind(GBufferSlots::NORMAL_METALLIC);
+    mGBuffer->getColorAttachment(2).unbind(GBufferSlots::ROUGH_EMISSIVE);
+    mGBuffer->getDepthAttachment().unbind(GBufferSlots::DEPTH);
 
     if (ssaoEnabled) {
-        mSSAOBlurBuffer->getColorAttachment(0)->unbind(SSAOSlots::SSAO_BLUR);
+        mSSAOBlurBuffer->getColorAttachment(0).unbind(SSAOSlots::SSAO_BLUR);
     }
 
     // 10. Unbind shadow maps and environment maps
@@ -1024,14 +1024,14 @@ void SRender::bloomPass()
     mBloomFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
 
     // Bind HDR buffer as input
-    mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+    mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR);
     bloomExtractShader->setInt("hdrBuffer", PostProcessSlots::HDR);
 
     // Bind G-Buffer textures for physically-based extraction
-    mGBuffer->getColorAttachment(1)->bind(GBufferSlots::NORMAL_METALLIC);  // Normal + Metallic
+    mGBuffer->getColorAttachment(1).bind(GBufferSlots::NORMAL_METALLIC);  // Normal + Metallic
     bloomExtractShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
 
-    mGBuffer->getColorAttachment(2)->bind(GBufferSlots::ROUGH_EMISSIVE);   // Roughness + Emissive
+    mGBuffer->getColorAttachment(2).bind(GBufferSlots::ROUGH_EMISSIVE);   // Roughness + Emissive
     bloomExtractShader->setInt("gRoughEmissive", GBufferSlots::ROUGH_EMISSIVE);
 
     // Set extraction parameters
@@ -1041,9 +1041,9 @@ void SRender::bloomPass()
     gl::drawQuad();
 
     // Unbind textures before moving to blur stage
-    mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
-    mGBuffer->getColorAttachment(1)->unbind(GBufferSlots::NORMAL_METALLIC);
-    mGBuffer->getColorAttachment(2)->unbind(GBufferSlots::ROUGH_EMISSIVE);
+    mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR);
+    mGBuffer->getColorAttachment(1).unbind(GBufferSlots::NORMAL_METALLIC);
+    mGBuffer->getColorAttachment(2).unbind(GBufferSlots::ROUGH_EMISSIVE);
     mBloomFrameBuffer->unbind();
 
     // 2. Apply physically-based blur to the extracted bright areas
@@ -1068,13 +1068,13 @@ void SRender::bloomPass()
 
         if (firstIteration)
         {
-            mBloomFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
+            mBloomFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::BLOOM);
             blurShader->setInt("image", PostProcessSlots::BLOOM);
             firstIteration = false;
         }
         else
         {
-            mPingPongFBO[!horizontal]->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
+            mPingPongFBO[!horizontal]->getColorAttachment(0).bind(PostProcessSlots::BLOOM);
             blurShader->setInt("image", PostProcessSlots::BLOOM);
         }
 
@@ -1082,9 +1082,9 @@ void SRender::bloomPass()
 
         // Unbind texture
         if (firstIteration)
-            mBloomFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::BLOOM);
+            mBloomFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::BLOOM);
         else
-            mPingPongFBO[!horizontal]->getColorAttachment(0)->unbind(PostProcessSlots::BLOOM);
+            mPingPongFBO[!horizontal]->getColorAttachment(0).unbind(PostProcessSlots::BLOOM);
 
         horizontal = !horizontal;
     }
@@ -1136,17 +1136,17 @@ void SRender::hdrPass()
 
 
     // HDR color
-    mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+    mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR);
     hdrShader->setInt("hdrBuffer", PostProcessSlots::HDR);
 
     // Bloom color
     int finalPingPongIndex = (bloomBlurPasses % 2 == 0) ? 1 : 0;
-    mPingPongFBO[finalPingPongIndex]->getColorAttachment(0)->bind(PostProcessSlots::BLOOM);
+    mPingPongFBO[finalPingPongIndex]->getColorAttachment(0).bind(PostProcessSlots::BLOOM);
     hdrShader->setInt("bloomBuffer", PostProcessSlots::BLOOM);
 
     gl::drawQuad();
-    mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
-    mPingPongFBO[0]->getColorAttachment(0)->unbind(PostProcessSlots::BLOOM);
+    mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR);
+    mPingPongFBO[0]->getColorAttachment(0).unbind(PostProcessSlots::BLOOM);
     mHDRFrameBuffer->unbind();
 
 }
@@ -1164,23 +1164,23 @@ void SRender::taaPass() {
     if (mFirstFrame) {
         mTAACurrentFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
         mTAAPreviousFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
-        mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+        mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR);
         taaShader->setInt("currentFrame", PostProcessSlots::HDR);
         taaShader->setInt("previousFrame", PostProcessSlots::HDR);
         mFirstFrame = false;
     } else {
         // Normal TAA pass bindings
 
-        mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+        mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR);
         taaShader->setInt("currentFrame", PostProcessSlots::HDR);
-        mTAAPreviousFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::TAA_HISTORY);
+        mTAAPreviousFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::TAA_HISTORY);
         taaShader->setInt("previousFrame", PostProcessSlots::TAA_HISTORY);
     }
 
     taaShader->setFloat("blendFactor", mTAABlendFactor);
     taaShader->setVec2("resolution", glm::vec2(settings::window_width, settings::window_height));
 
-    mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY_REFLECTIVE);
+    mGBuffer->getColorAttachment(3).bind(GBufferSlots::VELOCITY_REFLECTIVE);
     taaShader->setInt("velocityReflectiveMap", GBufferSlots::VELOCITY_REFLECTIVE);
 
 	taaShader->setBool("showEdges", mShowEdges);
@@ -1190,7 +1190,7 @@ void SRender::taaPass() {
 
 
     gl::drawQuad();
-    mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
+    mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR);
     mBloomFrameBuffer->unbind();
     // Copy to HDR buffer and swap 
     mTAACurrentFrameBuffer->blitTo(mHDRFrameBuffer,
@@ -1215,11 +1215,11 @@ void SRender::motionBlurPass()
 	mMotionBlurFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
 
     // Bind HDR color buffer (contains the current frame)
-    mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+    mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR);
     motionBlurShader->setInt("colorTexture", PostProcessSlots::HDR);
 
     // Bind velocity buffer from G-Buffer
-    mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY_REFLECTIVE);
+    mGBuffer->getColorAttachment(3).bind(GBufferSlots::VELOCITY_REFLECTIVE);
     motionBlurShader->setInt("velocityReflectiveTexture", GBufferSlots::VELOCITY_REFLECTIVE);
 
     // Set motion blur parameters
@@ -1253,7 +1253,7 @@ void SRender::motionBlurPass()
        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
        
        // Use HDR framebuffer as input (which now contains the tonemapped result)
-       mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+       mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR);
        fxaaShader->setInt("screenTexture", PostProcessSlots::HDR);
 	   fxaaShader->setBool("fxaaEnabled",mFXAAEnabled);
 
@@ -1266,7 +1266,7 @@ void SRender::motionBlurPass()
 
        // Draw fullscreen quad to apply FXAA directly to the screen
        gl::drawQuad();
-       mHDRFrameBuffer->getColorAttachment(0)->unbind(PostProcessSlots::HDR);
+       mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR);
    }
 
    void SRender::autoExposurePass(float dt)
@@ -1285,7 +1285,7 @@ void SRender::motionBlurPass()
        luminanceComputeShader->use();
 
        // Bind HDR input texture
-       mHDRFrameBuffer->getColorAttachment(0)->bind(0);
+       mHDRFrameBuffer->getColorAttachment(0).bind(0);
 
        // Setup histogram parameters
        LuminanceHistogramData histogramData;
@@ -1344,16 +1344,16 @@ void SRender::motionBlurPass()
 	   auto ssrShader = GameManager::mGraphicsManager->getShader("SSR");
 	   ssrShader->use();
 
-	   mGBuffer->getColorAttachment(1)->bind(GBufferSlots::NORMAL_METALLIC);
+	   mGBuffer->getColorAttachment(1).bind(GBufferSlots::NORMAL_METALLIC);
 	   ssrShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
 
-	   mGBuffer->getColorAttachment(3)->bind(GBufferSlots::VELOCITY_REFLECTIVE);
+	   mGBuffer->getColorAttachment(3).bind(GBufferSlots::VELOCITY_REFLECTIVE);
 	   ssrShader->setInt("gVelocityReflective", GBufferSlots::VELOCITY_REFLECTIVE);
 
-	   mGBuffer->getDepthAttachment()->bind(GBufferSlots::DEPTH);
+	   mGBuffer->getDepthAttachment().bind(GBufferSlots::DEPTH);
 	   ssrShader->setInt("gDepth", GBufferSlots::DEPTH);
 
-	   mHDRFrameBuffer->getColorAttachment(0)->bind(PostProcessSlots::HDR);
+	   mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR);
 	   ssrShader->setInt("gSceneColor", PostProcessSlots::HDR);
 
        ssrShader->setBool("test", test);
@@ -1411,20 +1411,20 @@ void SRender::unbindSkyboxResources()
     skybox->unbindBRDFLUT(IBLSlots::BRDFLUT);
 
     // Unbind shadow maps
-    mDirectionalShadowMapBuffer->getDepthAttachment()->unbind(ShadowSlots::DIRECTIONAL);
-    mSpotShadowMapBuffer->getDepthAttachment()->unbind(ShadowSlots::SPOT);
-    mPointShadwMapBuffer->getDepthAttachment()->unbind(ShadowSlots::POINT);
+    mDirectionalShadowMapBuffer->getDepthAttachment().unbind(ShadowSlots::DIRECTIONAL);
+    mSpotShadowMapBuffer->getDepthAttachment().unbind(ShadowSlots::SPOT);
+    mPointShadwMapBuffer->getDepthAttachment().unbind(ShadowSlots::POINT);
 }
 
 void SRender::bindShadowMaps(std::shared_ptr<Shader>& shader)
 {
-    mDirectionalShadowMapBuffer->getDepthAttachment()->bind(ShadowSlots::DIRECTIONAL);
+    mDirectionalShadowMapBuffer->getDepthAttachment().bind(ShadowSlots::DIRECTIONAL);
     shader->setInt("directionalShadowMap", ShadowSlots::DIRECTIONAL);
 
-    mSpotShadowMapBuffer->getDepthAttachment()->bind(ShadowSlots::SPOT);
+    mSpotShadowMapBuffer->getDepthAttachment().bind(ShadowSlots::SPOT);
     shader->setInt("spotShadowMap", ShadowSlots::SPOT);
 
-    mPointShadwMapBuffer->getDepthAttachment()->bind(ShadowSlots::POINT);
+    mPointShadwMapBuffer->getDepthAttachment().bind(ShadowSlots::POINT);
     shader->setInt("pointShadowMap", ShadowSlots::POINT);
 }
 
