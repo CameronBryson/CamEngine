@@ -41,9 +41,9 @@ private:
 	// OpenGL wrapper methods - Keep static
 	static void setGLDepthFunc(unsigned int func);
 	
-	std::shared_ptr<Texture> mSkyboxCubemap;
-	std::shared_ptr<Texture> mIrradianceCubemap;
-	std::shared_ptr<Texture> mPrefilterCubemap;
-	std::shared_ptr<Texture> mBRDFLUT;
+	std::unique_ptr<Texture> mSkyboxCubemap;
+	std::unique_ptr<Texture> mIrradianceCubemap;
+	std::unique_ptr<Texture> mPrefilterCubemap;
+	std::unique_ptr<Texture> mBRDFLUT;
 };
 

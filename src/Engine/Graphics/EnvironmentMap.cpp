@@ -73,7 +73,7 @@ EnvironmentMap::EnvironmentMap(std::string_view hdrPath,
 	GL_CHECK(glGetIntegerv(GL_VIEWPORT, oldViewport));
 
 	// Create cubemap from HDR environment map
-	mSkyboxCubemap = std::make_shared<Texture>(hdrPath, equirectangularToCubemapShader);
+	mSkyboxCubemap = std::make_unique<Texture>(hdrPath, equirectangularToCubemapShader);
 
 	// Generate all PBR related maps
 	generateIrradianceMap(irradianceShader);
@@ -104,7 +104,7 @@ void EnvironmentMap::generateIrradianceMap(std::shared_ptr<Shader> irradianceSha
 
 	// Create empty cubemap and texture object
 	GLuint irradianceCubemapID = Texture::createEmptyCubemap(IRRADIANCE_MAP_SIZE, Texture::Format::RGB16F);
-	mIrradianceCubemap = std::make_shared<Texture>(irradianceCubemapID, IRRADIANCE_MAP_SIZE, IRRADIANCE_MAP_SIZE, Texture::Type::CUBEMAP);
+	mIrradianceCubemap = std::make_unique<Texture>(irradianceCubemapID, IRRADIANCE_MAP_SIZE, IRRADIANCE_MAP_SIZE, Texture::Type::CUBEMAP);
 	
 	// Set texture parameters
 	mIrradianceCubemap->setWrapMode(Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge);
@@ -162,7 +162,7 @@ void EnvironmentMap::generatePrefilterMap(std::shared_ptr<Shader> prefilterShade
 
 	// Create empty cubemap with mipmaps
 	GLuint prefilterCubemapID = Texture::createEmptyCubemap(PREFILTER_MAP_SIZE, Texture::Format::RGB16F);
-	mPrefilterCubemap = std::make_shared<Texture>(prefilterCubemapID, PREFILTER_MAP_SIZE, PREFILTER_MAP_SIZE, Texture::Type::CUBEMAP);
+	mPrefilterCubemap = std::make_unique<Texture>(prefilterCubemapID, PREFILTER_MAP_SIZE, PREFILTER_MAP_SIZE, Texture::Type::CUBEMAP);
 	
 	// Set parameters and generate mipmaps
 	mPrefilterCubemap->setWrapMode(Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge);
@@ -231,7 +231,7 @@ void EnvironmentMap::generateBRDFLUT(std::shared_ptr<Shader> brdfShader)
 
 	// Create empty 2D texture for the BRDF lookup table
 	GLuint brdfLUTID = Texture::createEmptyTexture2D(BRDF_LUT_SIZE, BRDF_LUT_SIZE, Texture::Format::RG);
-	mBRDFLUT = std::make_shared<Texture>(brdfLUTID, BRDF_LUT_SIZE, BRDF_LUT_SIZE, Texture::Type::TEXTURE_2D);
+	mBRDFLUT = std::make_unique<Texture>(brdfLUTID, BRDF_LUT_SIZE, BRDF_LUT_SIZE, Texture::Type::TEXTURE_2D);
 	
 	// Set appropriate texture parameters
 	mBRDFLUT->setWrapMode(Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge);
