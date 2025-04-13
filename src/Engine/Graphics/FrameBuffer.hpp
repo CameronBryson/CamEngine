@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <string_view>
 #include "Engine/Util/Logging.hpp"
 
 class Texture;
@@ -77,13 +78,13 @@ public:
      * @param height Height of the framebuffer
      * @param attachments Specifications for each attachment
      * @param samples Number of multisamples (1 = no multisampling)
-     * @param label Debug label for the framebuffer
+     * @param label Debug label for the framebuffer (takes string_view)
      */
 	FrameBuffer(int width,
 				int height,
 				std::vector<FrameBufferAttachmentSpecification> attachments,
 				int samples = 1,
-				std::string label = "");
+				std::string_view label = "");
 				
 	/**
 	 * @brief Destructor - cleans up all GPU resources
@@ -111,7 +112,7 @@ public:
 	int getHeight() const { return mHeight; }
 	unsigned int getRendererID() const { return mRendererID; }
 	const std::string& getLabel() const { return mLabel; }
-	void setLabel(const std::string& label);
+	void setLabel(std::string_view label);
 	bool isComplete() const;
 
     // Viewport management

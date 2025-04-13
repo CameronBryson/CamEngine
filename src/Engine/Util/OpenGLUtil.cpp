@@ -235,7 +235,7 @@ namespace gl {
 #ifdef _DEBUG
         if (GLAD_GL_VERSION_4_3)
         {
-            glObjectLabel(type, object, -1, label);
+            //glObjectLabel(type, object, -1, label);
         }
 #endif
     }

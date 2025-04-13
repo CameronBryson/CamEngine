@@ -1,37 +1,37 @@
-[2025-04-12 22:44:51.522] [info] [engine] Logging system initialized
-[2025-04-12 22:44:51.523] [info] [engine] Starting application
-[2025-04-12 22:44:51.523] [info] [engine] Setting up signal handlers for crash reporting
-[2025-04-12 22:44:51.523] [info] [engine] Signal handlers installed
-[2025-04-12 22:44:51.523] [info] [engine] Initializing engine systems
-[2025-04-12 22:44:51.523] [info] [graphics] Initializing OpenGL...
-[2025-04-12 22:44:51.696] [info] [graphics] OpenGL initialized successfully
-[2025-04-12 22:44:51.696] [info] [engine] OpenGL initialized successfully
-[2025-04-12 22:44:51.697] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
-[2025-04-12 22:44:51.697] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
-[2025-04-12 22:44:51.698] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
-[2025-04-12 22:44:51.698] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
-[2025-04-12 22:44:51.699] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
-[2025-04-12 22:44:51.700] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
-[2025-04-12 22:44:51.700] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
-[2025-04-12 22:44:51.701] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
-[2025-04-12 22:44:51.702] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
-[2025-04-12 22:44:51.703] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
-[2025-04-12 22:44:51.703] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
-[2025-04-12 22:44:51.704] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
-[2025-04-12 22:44:51.704] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
-[2025-04-12 22:44:51.705] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
-[2025-04-12 22:44:51.705] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
-[2025-04-12 22:44:51.705] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
-[2025-04-12 22:44:51.706] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
-[2025-04-12 22:44:51.706] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
-[2025-04-12 22:44:51.707] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
-[2025-04-12 22:44:51.707] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
-[2025-04-12 22:44:51.708] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
-[2025-04-12 22:44:56.395] [info] [engine] Graphics resources loaded successfully
-[2025-04-12 22:44:56.396] [info] [engine] Creating test scene
-[2025-04-12 22:44:56.396] [info] [engine] Initializing scene
-[2025-04-12 22:44:56.396] [info] [engine] Initializing current scene...
-[2025-04-12 22:44:56.448] [info] [engine] Scene initialization complete
-[2025-04-12 22:44:56.448] [info] [engine] Entering main loop
-[2025-04-12 22:44:56.456] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
-[2025-04-12 22:44:56.456] [warning] [graphics] Uniform 'material.hasDisplaceme
+[2025-04-12 22:56:23.429] [info] [engine] Logging system initialized
+[2025-04-12 22:56:23.429] [info] [engine] Starting application
+[2025-04-12 22:56:23.429] [info] [engine] Setting up signal handlers for crash reporting
+[2025-04-12 22:56:23.430] [info] [engine] Signal handlers installed
+[2025-04-12 22:56:23.430] [info] [engine] Initializing engine systems
+[2025-04-12 22:56:23.430] [info] [graphics] Initializing OpenGL...
+[2025-04-12 22:56:23.583] [info] [graphics] OpenGL initialized successfully
+[2025-04-12 22:56:23.583] [info] [engine] OpenGL initialized successfully
+[2025-04-12 22:56:23.584] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-12 22:56:23.585] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-12 22:56:23.585] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-12 22:56:23.586] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-12 22:56:23.586] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-12 22:56:23.587] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-12 22:56:23.587] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-12 22:56:23.588] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-12 22:56:23.589] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-12 22:56:23.590] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-12 22:56:23.591] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-12 22:56:23.592] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-12 22:56:23.592] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-12 22:56:23.593] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-12 22:56:23.593] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-12 22:56:23.594] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-12 22:56:23.594] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-12 22:56:23.595] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-12 22:56:23.595] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-12 22:56:23.596] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-12 22:56:23.596] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-12 22:56:27.036] [info] [graphics] Creating EnvironmentMap from HDR: ../assets/8ksky.hdr
+[2025-04-12 22:56:28.257] [info] [engine] Graphics resources loaded successfully
+[2025-04-12 22:56:28.257] [info] [engine] Creating test scene
+[2025-04-12 22:56:28.258] [info] [engine] Initializing scene
+[2025-04-12 22:56:28.258] [info] [engine] Initializing current scene...
+[2025-04-12 22:56:28.307] [info] [engine] Scene initialization complete
+[2025-04-12 22:56:28.308] [info] [engine] Entering main loop
+[2025-04-12 22:56:28.313] [warning] [graphics] Uniform 'material.displacementScale' not found in shad

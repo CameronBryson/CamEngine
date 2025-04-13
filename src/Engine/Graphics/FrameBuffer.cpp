@@ -171,16 +171,16 @@ FrameBuffer::FrameBuffer(
     int height,
     std::vector<FrameBufferAttachmentSpecification> attachments,
     int samples,
-    std::string label)
+    std::string_view label)
     : mWidth(width)
     , mHeight(height)
     , mSamples(samples)
     , mAttachmentSpecs(std::move(attachments))
-    , mLabel(std::move(label))
+    , mLabel(label)
 {
     try {
         LOG_DEBUG(logging::gGraphicsLogger, "Creating framebuffer: {0} ({1}x{2}, {3} samples)", 
-                  label.empty() ? "unnamed" : label, width, height, samples);
+                  mLabel.empty() ? "unnamed" : mLabel, width, height, samples);
                   
         if (width <= 0 || height <= 0)
             throw error_handling::GraphicsException("Invalid framebuffer dimensions");
@@ -691,14 +691,14 @@ void FrameBuffer::attachExternalTexture(
     }
 }
 
-void FrameBuffer::setLabel(const std::string& label)
+void FrameBuffer::setLabel(std::string_view label)
 {
     mLabel = label;
     
     // Set debug label if supported and ID exists
     if (mRendererID != 0)
     {
-        gl::labelObject(GL_FRAMEBUFFER, mRendererID, label.c_str());
+        gl::labelObject(GL_FRAMEBUFFER, mRendererID, mLabel.c_str());
     }
 }
 

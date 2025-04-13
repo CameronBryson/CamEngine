@@ -1,10 +1,15 @@
 #pragma once
 #include <memory>
-#include "Texture.hpp"
-#include <Mesh.hpp>
-#include "Shader.hpp"
-#include <VertexArray.hpp>
+// #include "Texture.hpp" // Forward declare instead
+// #include <Mesh.hpp> // Unused
+// #include "Shader.hpp" // Forward declare instead
+// #include <VertexArray.hpp> // Unused
 #include <string_view>
+
+// Forward declarations
+class Texture;
+class Shader;
+
 /**
  * Manages environment mapping for image-based lighting (IBL)
  * Handles skybox, irradiance, prefiltered environment maps and BRDF LUT
@@ -36,11 +41,10 @@ public:
 	// Draw the skybox
 	void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
 
-protected:
-	// OpenGL wrapper methods
+private:
+	// OpenGL wrapper methods - Keep static
 	static void setGLDepthFunc(unsigned int func);
 	
-private:
 	std::shared_ptr<Texture> mSkyboxCubemap;
 	std::shared_ptr<Texture> mIrradianceCubemap;
 	std::shared_ptr<Texture> mPrefilterCubemap;
