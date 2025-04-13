@@ -26,9 +26,9 @@ public:
 	~EnvironmentMap();
 
 	// Generate different maps for PBR rendering
-	void generateIrradianceMap();
-	void generatePrefilterMap();
-	void generateBRDFLUT();
+	void generateIrradianceMap(std::shared_ptr<Shader> irradianceShader);
+	void generatePrefilterMap(std::shared_ptr<Shader> prefilterShader);
+	void generateBRDFLUT(std::shared_ptr<Shader> brdfShader);
 
 	// Texture binding utilities
 	void bindIrradiance(int slot);
@@ -49,10 +49,5 @@ private:
 	std::shared_ptr<Texture> mIrradianceCubemap;
 	std::shared_ptr<Texture> mPrefilterCubemap;
 	std::shared_ptr<Texture> mBRDFLUT;
-
-	std::shared_ptr<Shader> mEquirectangularToCubemapShader;
-	std::shared_ptr<Shader> mIrradianceShader;
-	std::shared_ptr<Shader> mPrefilterShader;
-	std::shared_ptr<Shader> mBRDFShader;
 };
 

@@ -52,23 +52,19 @@ EnvironmentMap::EnvironmentMap(std::string_view hdrPath,
 							  std::shared_ptr<Shader> irradianceShader,
 							  std::shared_ptr<Shader> prefilterShader,
 							  std::shared_ptr<Shader> brdfShader)
-	: mEquirectangularToCubemapShader(std::move(equirectangularToCubemapShader))
-	, mIrradianceShader(std::move(irradianceShader))
-	, mPrefilterShader(std::move(prefilterShader))
-	, mBRDFShader(std::move(brdfShader))
 {
     LOG_INFO(logging::gGraphicsLogger, "Creating EnvironmentMap from HDR: {}", hdrPath);
     // --- Error Checking for Shaders ---
-    if (!mEquirectangularToCubemapShader) {
+    if (!equirectangularToCubemapShader) {
         throw error_handling::GraphicsException("EnvironmentMap requires a valid EquirectangularToCubemap shader.");
     }
-    if (!mIrradianceShader) {
+    if (!irradianceShader) {
         throw error_handling::GraphicsException("EnvironmentMap requires a valid Irradiance shader.");
     }
-    if (!mPrefilterShader) {
+    if (!prefilterShader) {
         throw error_handling::GraphicsException("EnvironmentMap requires a valid Prefilter shader.");
     }
-    if (!mBRDFShader) {
+    if (!brdfShader) {
         throw error_handling::GraphicsException("EnvironmentMap requires a valid BRDF shader.");
     }
 
@@ -77,12 +73,12 @@ EnvironmentMap::EnvironmentMap(std::string_view hdrPath,
 	GL_CHECK(glGetIntegerv(GL_VIEWPORT, oldViewport));
 
 	// Create cubemap from HDR environment map
-	mSkyboxCubemap = std::make_shared<Texture>(hdrPath, mEquirectangularToCubemapShader);
+	mSkyboxCubemap = std::make_shared<Texture>(hdrPath, equirectangularToCubemapShader);
 
 	// Generate all PBR related maps
-	generateIrradianceMap();
-	generatePrefilterMap();
-	generateBRDFLUT();
+	generateIrradianceMap(irradianceShader);
+	generatePrefilterMap(prefilterShader);
+	generateBRDFLUT(brdfShader);
 
 	// Restore original viewport
 	GL_CHECK(glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]));
@@ -93,11 +89,11 @@ EnvironmentMap::~EnvironmentMap()
 	// Resources are automatically cleaned up by shared_ptr
 }
 
-void EnvironmentMap::generateIrradianceMap()
+void EnvironmentMap::generateIrradianceMap(std::shared_ptr<Shader> irradianceShader)
 {
 	LOG_DEBUG(logging::gGraphicsLogger, "Generating Irradiance Map ({}x{})...", IRRADIANCE_MAP_SIZE, IRRADIANCE_MAP_SIZE);
 
-    if (!mIrradianceShader) {
+    if (!irradianceShader) {
         LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Irradiance Map: Irradiance shader is missing.");
         return;
     }
@@ -127,16 +123,16 @@ void EnvironmentMap::generateIrradianceMap()
 	
 	// Setup for irradiance convolution
 	fbo->bind();
-	mIrradianceShader->use();
-	mIrradianceShader->setMat4("projection", captureProjection);
-	mIrradianceShader->setInt("environmentMap", IBLSlots::IRRADIANCE);
+	irradianceShader->use();
+	irradianceShader->setMat4("projection", captureProjection);
+	irradianceShader->setInt("environmentMap", IBLSlots::IRRADIANCE);
 	mSkyboxCubemap->bind(IBLSlots::IRRADIANCE);
 	GL_CHECK(glViewport(0, 0, IRRADIANCE_MAP_SIZE, IRRADIANCE_MAP_SIZE));
 
 	// Render to all six cubemap faces
 	for (unsigned int i = 0; i < 6; ++i)
 	{
-		mIrradianceShader->setMat4("view", captureViews[i]);
+		irradianceShader->setMat4("view", captureViews[i]);
 		fbo->attachExternalTexture(
 			GL_COLOR_ATTACHMENT0,
 			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -151,11 +147,11 @@ void EnvironmentMap::generateIrradianceMap()
 	fbo->unbind();
 }
 
-void EnvironmentMap::generatePrefilterMap()
+void EnvironmentMap::generatePrefilterMap(std::shared_ptr<Shader> prefilterShader)
 {
 	LOG_DEBUG(logging::gGraphicsLogger, "Generating Prefilter Map ({}x{}, {} mips)...", PREFILTER_MAP_SIZE, PREFILTER_MAP_SIZE, PREFILTER_MAX_MIP_LEVELS);
 
-    if (!mPrefilterShader) {
+    if (!prefilterShader) {
         LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Prefilter Map: Prefilter shader is missing.");
         return;
     }
@@ -185,9 +181,9 @@ void EnvironmentMap::generatePrefilterMap()
 	);
 
 	// Setup shader uniforms
-	mPrefilterShader->use();
-	mPrefilterShader->setMat4("projection", captureProjection);
-	mPrefilterShader->setInt("environmentMap", IBLSlots::PREFILTER);
+	prefilterShader->use();
+	prefilterShader->setMat4("projection", captureProjection);
+	prefilterShader->setInt("environmentMap", IBLSlots::PREFILTER);
 	mSkyboxCubemap->bind(IBLSlots::PREFILTER);
 
 	// Process each mip level
@@ -202,14 +198,14 @@ void EnvironmentMap::generatePrefilterMap()
 		
 		// Calculate roughness for this mip level
 		float roughness = (float)mip / (float)(PREFILTER_MAX_MIP_LEVELS - 1);
-		mPrefilterShader->setFloat("roughness", roughness);
+		prefilterShader->setFloat("roughness", roughness);
 		
 		fbo->bind();
 
 		// Render to all six faces for this mip level
 		for (unsigned int i = 0; i < 6; ++i)
 		{
-			mPrefilterShader->setMat4("view", captureViews[i]);
+			prefilterShader->setMat4("view", captureViews[i]);
 			fbo->attachExternalTexture(
 				GL_COLOR_ATTACHMENT0,
 				GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -225,10 +221,10 @@ void EnvironmentMap::generatePrefilterMap()
 	}
 }
 
-void EnvironmentMap::generateBRDFLUT()
+void EnvironmentMap::generateBRDFLUT(std::shared_ptr<Shader> brdfShader)
 {
 	LOG_DEBUG(logging::gGraphicsLogger, "Generating BRDF LUT ({}x{})...", BRDF_LUT_SIZE, BRDF_LUT_SIZE);
-    if (!mBRDFShader) {
+    if (!brdfShader) {
         LOG_ERROR(logging::gGraphicsLogger, "Cannot generate BRDF LUT: BRDF shader is missing.");
         return;
     }
@@ -259,7 +255,7 @@ void EnvironmentMap::generateBRDFLUT()
 	fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
 	fbo->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	mBRDFShader->use();
+	brdfShader->use();
 	gl::drawQuad();
 	fbo->unbind();
 }
