@@ -53,6 +53,7 @@ private:
     void geometryPass();
     void ssaoPass();
     void lightingPass();
+    void forwardPass(); // New forward rendering pass for transparent objects
     void postProcessPass(float dt);
 
 

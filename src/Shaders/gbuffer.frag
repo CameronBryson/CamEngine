@@ -63,9 +63,6 @@ vec3 getNormalFromMap()
     return normalize(TBN[2]);
 }
 
-
-
-
 void main()
 {
     
@@ -82,7 +79,7 @@ void main()
     }
     
     if (alpha < 0.1) {
-        discard;
+        discard;  // Discard semi-transparent pixels in the gbuffer pass
     }
 
     // 1. Albedo and AO

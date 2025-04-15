@@ -33,6 +33,7 @@ void GraphicsManager::loadResources()
 	loadShader("Shaders/taa.vert", "Shaders/taa.frag", "TAA");
 	loadShader("Shaders/bloomextract.vert", "Shaders/bloomextract.frag", "BloomExtract");
 	loadShader("Shaders/ssr.vert", "Shaders/ssr.frag", "SSR");
+	loadShader("Shaders/forward.vert", "Shaders/forward.frag", "Forward");
 	auto equirectCubemapShader = loadShader("Shaders/cubemap.vert", "Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
 	auto irradianceShader = loadShader("Shaders/cubemap.vert", "Shaders/irradiance.frag", "irradiance");
 	auto prefilterShader = loadShader("Shaders/cubemap.vert", "Shaders/prefilter.frag", "prefilter");
@@ -40,6 +41,7 @@ void GraphicsManager::loadResources()
 
 	loadModel("../assets/Helmet/DamagedHelmet.gltf", "Helmet");
 	loadModel("../assets/Sponza/Sponza.gltf", "Sponza");
+	loadModel("../assets/scene.gltf", "Glass");
 	loadEnvironmentMap("default", "../assets/8ksky.hdr", equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
 	
 
@@ -68,6 +70,7 @@ void GraphicsManager::reloadShaders()
 	loadShader("Shaders/taa.vert", "Shaders/taa.frag", "TAA");
 	loadShader("Shaders/bloomextract.vert", "Shaders/bloomextract.frag", "BloomExtract");
 	loadShader("Shaders/ssr.vert", "Shaders/ssr.frag", "SSR");
+	loadShader("Shaders/forward.vert", "Shaders/forward.frag", "Forward");
 }
 
 void GraphicsManager::clear()

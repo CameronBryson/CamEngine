@@ -98,6 +98,12 @@ void SRender::render(float dt)
         mLightUBO->setData(&lightData, sizeof(LightData));
         lightingPass();
     }
+    
+    {
+        GL_SCOPED_MARKER("Forward Pass");
+        GL_SCOPED_TIMER("Forward Transparency");
+        forwardPass();
+    }
 
     {
         GL_SCOPED_MARKER("Post Process");
@@ -1929,6 +1935,50 @@ void SRender::generateHaltonSequence() {
         mHaltonPattern[i] = glm::vec2(u, v);
     }
 
+}
+
+void SRender::forwardPass()
+{
+    if (mTransparentRenderList.empty()) return;
+
+    GL_SCOPED_MARKER("Transparent Forward Pass");
+    GL_SCOPED_TIMER("Forward Transparency");
+
+    auto forwardShader = GameManager::mGraphicsManager->getShader("Forward");
+    forwardShader->use();
+    
+    // We need to render to the HDR buffer since we've already done the lighting pass
+    mHDRFrameBuffer->bind();
+    mHDRFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
+    
+    // Enable depth test but don't update depth buffer (we want transparent objects to sort correctly)
+    GL_CHECK(glEnable(GL_DEPTH_TEST));
+    GL_CHECK(glDepthFunc(GL_LESS));
+    GL_CHECK(glDepthMask(GL_FALSE)); // Don't write to depth buffer
+    
+    // Setup blending for transparency
+    GL_CHECK(glEnable(GL_BLEND));
+    GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); // Standard alpha blending
+    
+    // Enable backface culling
+    GL_CHECK(glEnable(GL_CULL_FACE));
+    GL_CHECK(glCullFace(GL_BACK));
+    
+    // Set shader uniforms
+    forwardShader->setBool("normalmapping", normalMapping);
+    
+    // Bind environment maps and shadow maps for PBR lighting
+    bindSkyboxResources(forwardShader);
+    
+    // Draw transparent objects (already sorted back-to-front)
+    drawRenderList(mTransparentRenderList, forwardShader, true);
+    
+    // Cleanup state
+    GL_CHECK(glDisable(GL_BLEND));
+    GL_CHECK(glDepthMask(GL_TRUE)); // Re-enable depth writes for subsequent passes
+    
+    mHDRFrameBuffer->unbind();
+    unbindSkyboxResources();
 }
 
 
