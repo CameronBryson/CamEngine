@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <glm/fwd.hpp>
 #include "Engine/Util/Logging.hpp"
-#include "Engine/Util/ErrorHandler.hpp"
 #include "platform.hpp"
 #include <string_view>
 /**

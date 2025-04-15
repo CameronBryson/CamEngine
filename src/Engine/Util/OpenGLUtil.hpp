@@ -2,28 +2,22 @@
 #include <string>
 #include <vector>
 #include "Engine/Util/platform.hpp"
-#include "Engine/Util/ErrorHandler.hpp"
 #include "Engine/Util/Logging.hpp"
 #include <glm/fwd.hpp>
 #include <unordered_map>
+#include <cassert>
+#include <glad/glad.h>
 
 // Macro definitions for OpenGL error checking with our error handling system
-#define GL_CHECK(stmt)                                                       \
-    do {                                                                     \
-        stmt;                                                                \
-        GLenum err;                                                          \
-        while ((err = glGetError()) != GL_NO_ERROR) {                        \
-            std::string errorMsg = std::string("[OpenGL Error] 0x") +        \
-                                   std::to_string(err) +                      \
-                                   " at " + __FILE__ + ":" +                 \
-                                   std::to_string(__LINE__) +                \
-                                   " for call: " + #stmt;                    \
-            LOG_ERROR(logging::gGraphicsLogger, "{}", errorMsg);             \
-            if (gl::detail::g_BreakOnError) {                               \
-                error_handling::reportFatalError(errorMsg);                  \
-            }                                                                \
-        }                                                                    \
-    } while (0)
+#undef GL_CHECK
+#define GL_CHECK(stmt) do { \
+    stmt; \
+    GLenum err; \
+    while ((err = glGetError()) != GL_NO_ERROR) { \
+        LOG_CRITICAL(logging::gGraphicsLogger, "OpenGL Error: 0x{:x} at {}:{} - Statement: {}", err, __FILE__, __LINE__, #stmt); \
+        assert(false && "OpenGL Error occurred!"); \
+    } \
+} while(0)
 
 // Macro for validating OpenGL objects with our error handling system
 #define GL_VALIDATE(expr, msg)                                               \

@@ -8,12 +8,12 @@
 
 #include <Engine/Util/OpenGLUtil.hpp>
 #include <Engine/Util/Logging.hpp>
-#include <Engine/Util/ErrorHandler.hpp>
 
 #include <BaseScene.hpp>
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <GameSettings.hpp>
+#include <cassert>
 GLFWwindow * GameManager::mGameWindow = nullptr;
 std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
 std::unique_ptr<BaseScene> GameManager::mPendingScene = nullptr;
@@ -35,66 +35,41 @@ void GameManager::firstInit()
 void GameManager::init()
 {
 	LOG_INFO(logging::gEngineLogger, "Initializing current scene...");
-	try {
-		mCurrentScene->init();
-		mCurrentScene->lateInit();
-		LOG_INFO(logging::gEngineLogger, "Scene initialization complete");
-	} catch (const std::exception& e) {
-		LOG_ERROR(logging::gEngineLogger, "Scene initialization failed: {}", e.what());
-		error_handling::reportException(e);
-	}
+	mCurrentScene->init();
+	mCurrentScene->lateInit();
+	LOG_INFO(logging::gEngineLogger, "Scene initialization complete");
 }
 
 void GameManager::update(float dt)
 {
-	try {
-		mCurrentScene->update(dt);
-		mCurrentScene->lateUpdate(dt);
-	} catch (const std::exception& e) {
-		LOG_ERROR(logging::gEngineLogger, "Error during update: {}", e.what());
-		error_handling::reportException(e);
-	}
+	mCurrentScene->update(dt);
+	mCurrentScene->lateUpdate(dt);
 }
 
 void GameManager::render(float dt)
 {
-	try {
-		mCurrentScene->render(dt);
-		mCurrentScene->lateRender();
-	} catch (const std::exception& e) {
-		LOG_ERROR(logging::gEngineLogger, "Error during render: {}", e.what());
-		error_handling::reportException(e);
-	}
+	mCurrentScene->render(dt);
+	mCurrentScene->lateRender();
 }
 
 void GameManager::shutdown()
 {
 	LOG_INFO(logging::gEngineLogger, "Shutting down current scene...");
-	try {
-		if (mCurrentScene) {
-			mCurrentScene->shutdown();
-			mCurrentScene->lateShutdown();
-			mCurrentScene = nullptr;
-		}
-	} catch (const std::exception& e) {
-		LOG_ERROR(logging::gEngineLogger, "Error during shutdown: {}", e.what());
-		error_handling::reportException(e);
+	if (mCurrentScene) {
+		mCurrentScene->shutdown();
+		mCurrentScene->lateShutdown();
+		mCurrentScene = nullptr;
 	}
 }
 
 void GameManager::finalShutdown() 
 {
 	LOG_INFO(logging::gEngineLogger, "Performing final shutdown...");
-	try {
-		if (mGraphicsManager) {
-			mGraphicsManager->unloadResources();
-		}
-		gl::shutdown();
-		LOG_INFO(logging::gEngineLogger, "Shutdown complete");
-	} catch (const std::exception& e) {
-		LOG_ERROR(logging::gEngineLogger, "Error during final shutdown: {}", e.what());
-		error_handling::reportException(e);
+	if (mGraphicsManager) {
+		mGraphicsManager->unloadResources();
 	}
+	gl::shutdown();
+	LOG_INFO(logging::gEngineLogger, "Shutdown complete");
 }
 
 
@@ -153,36 +128,31 @@ void GameManager::gameLoop()
 
 	while (!glfwWindowShouldClose(mGameWindow))
 	{
-		try {
-			gl::beginFrame();
-			auto loopStart = std::chrono::high_resolution_clock::now();
-			double deltaTime = std::chrono::duration<double>(loopStart - previousTime).count();
-			previousTime = loopStart;
+		gl::beginFrame();
+		auto loopStart = std::chrono::high_resolution_clock::now();
+		double deltaTime = std::chrono::duration<double>(loopStart - previousTime).count();
+		previousTime = loopStart;
 
-			glfwPollEvents();
-			update(static_cast<float>(deltaTime));
-			render(static_cast<float>(deltaTime));
-			gl::endFrame();
-			
-			// End frame
-			glfwSwapBuffers(mGameWindow);
+		glfwPollEvents();
+		update(static_cast<float>(deltaTime));
+		render(static_cast<float>(deltaTime));
+		gl::endFrame();
+		
+		// End frame
+		glfwSwapBuffers(mGameWindow);
 
-			// Measure loop time once, right after swap
-			auto loopEnd = std::chrono::high_resolution_clock::now();
-			double frameDuration = std::chrono::duration<double>(loopEnd - loopStart).count();
-			double sleepTime = targetFrameTime - frameDuration;
-			if (sleepTime > 0.0)
-				std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
+		// Measure loop time once, right after swap
+		auto loopEnd = std::chrono::high_resolution_clock::now();
+		double frameDuration = std::chrono::duration<double>(loopEnd - loopStart).count();
+		double sleepTime = targetFrameTime - frameDuration;
+		if (sleepTime > 0.0)
+			std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
 
-			if (mPendingScene)
-			{
-				shutdown();
-				mCurrentScene = std::move(mPendingScene);
-				init();
-			}
-		} catch (const std::exception& e) {
-			LOG_ERROR(logging::gEngineLogger, "Error in game loop: {}", e.what());
-			error_handling::reportException(e);
+		if (mPendingScene)
+		{
+			shutdown();
+			mCurrentScene = std::move(mPendingScene);
+			init();
 		}
 	}
 }

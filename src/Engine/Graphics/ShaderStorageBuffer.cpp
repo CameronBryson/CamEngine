@@ -3,19 +3,20 @@
 #include "platform.hpp"
 #include "OpenGLUtil.hpp"
 #include "Engine/Util/Logging.hpp"
-#include "Engine/Util/ErrorHandler.hpp"
+#include <cassert>
 
 ShaderStorageBuffer::ShaderStorageBuffer(unsigned int size, unsigned int binding)
 	: mSize(size)
 {
 	if (size == 0) {
-		LOG_ERROR(logging::gGraphicsLogger, "Attempted to create ShaderStorageBuffer with size 0.");
-		throw error_handling::GraphicsException("ShaderStorageBuffer size cannot be zero.");
+		LOG_CRITICAL(logging::gGraphicsLogger, "Attempted to create ShaderStorageBuffer with size 0.");
+		assert(false && "ShaderStorageBuffer size cannot be zero.");
 	}
 	// Generate the SSBO
 	GL_CHECK(glGenBuffers(1, &mID));
 	if (mID == 0) {
-		throw error_handling::GraphicsException("Failed to generate ShaderStorageBuffer ID.");
+		LOG_CRITICAL(logging::gGraphicsLogger, "Failed to generate ShaderStorageBuffer ID.");
+		assert(false && "Failed to generate ShaderStorageBuffer ID.");
 	}
 	GL_CHECK(glBindBuffer(GL_SHADER_STORAGE_BUFFER, mID));
 	GL_CHECK(glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW));

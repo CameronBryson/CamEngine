@@ -7,7 +7,6 @@
 #include "OpenGLUtil.hpp"
 #include "FrameBuffer.hpp"
 #include "Engine/Util/Logging.hpp"
-#include "Engine/Util/ErrorHandler.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -15,6 +14,7 @@
 #include <cmath>
 #include <stb_image.h>
 #include <memory>
+#include <cassert>
 
 namespace {
     // Constants for generated map resolutions and mip levels
@@ -52,16 +52,20 @@ EnvironmentMap::EnvironmentMap(std::string_view hdrPath,
     LOG_INFO(logging::gGraphicsLogger, "Creating EnvironmentMap from HDR: {}", hdrPath);
     // --- Error Checking for Shaders ---
     if (!equirectangularToCubemapShader) {
-        throw error_handling::GraphicsException("EnvironmentMap requires a valid EquirectangularToCubemap shader.");
+        LOG_CRITICAL(logging::gGraphicsLogger, "EnvironmentMap requires a valid EquirectangularToCubemap shader.");
+        assert(false && "EquirectangularToCubemap shader is null!");
     }
     if (!irradianceShader) {
-        throw error_handling::GraphicsException("EnvironmentMap requires a valid Irradiance shader.");
+        LOG_CRITICAL(logging::gGraphicsLogger, "EnvironmentMap requires a valid Irradiance shader.");
+        assert(false && "Irradiance shader is null!");
     }
     if (!prefilterShader) {
-        throw error_handling::GraphicsException("EnvironmentMap requires a valid Prefilter shader.");
+        LOG_CRITICAL(logging::gGraphicsLogger, "EnvironmentMap requires a valid Prefilter shader.");
+        assert(false && "Prefilter shader is null!");
     }
     if (!brdfShader) {
-        throw error_handling::GraphicsException("EnvironmentMap requires a valid BRDF shader.");
+        LOG_CRITICAL(logging::gGraphicsLogger, "EnvironmentMap requires a valid BRDF shader.");
+        assert(false && "BRDF shader is null!");
     }
 
 	// Save current viewport to restore it later

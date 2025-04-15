@@ -6,7 +6,6 @@
 #include "Texture.hpp"
 #include <OpenGLUtil.hpp>
 #include "Engine/Util/Logging.hpp"
-#include "Engine/Util/ErrorHandler.hpp"
 
 namespace {
     // Helper function to convert FrameBufferTextureFormat to OpenGL internal format
@@ -135,27 +134,25 @@ FrameBuffer::FrameBuffer(
     , mSamples(samples)
     , mAttachmentSpecs(std::move(attachments))
 {
-    try {
-        LOG_DEBUG(logging::gGraphicsLogger, "Creating framebuffer: unnamed ({0}x{1}, {2} samples)", 
-                  width, height, samples);
-                  
-        if (width <= 0 || height <= 0)
-            throw error_handling::GraphicsException("Invalid framebuffer dimensions");
-            
-        if (samples < 1)
-            throw error_handling::GraphicsException("Invalid sample count");
-            
-        mViewportX = 0;
-        mViewportY = 0;
-        mViewportW = width;
-        mViewportH = height;
+    LOG_DEBUG(logging::gGraphicsLogger, "Creating framebuffer: unnamed ({0}x{1}, {2} samples)", 
+              width, height, samples);
+              
+    if (width <= 0 || height <= 0) {
+        LOG_CRITICAL(logging::gGraphicsLogger, "Invalid framebuffer dimensions: {}x{}", width, height);
+        assert(false && "Invalid framebuffer dimensions");
+    }
         
-        createFramebuffer();
+    if (samples < 1) {
+        LOG_CRITICAL(logging::gGraphicsLogger, "Invalid sample count: {}", samples);
+        assert(false && "Invalid sample count");
     }
-    catch (const std::exception& e) {
-        LOG_ERROR(logging::gGraphicsLogger, "Failed to create framebuffer: {0}", e.what());
-        throw;
-    }
+        
+    mViewportX = 0;
+    mViewportY = 0;
+    mViewportW = width;
+    mViewportH = height;
+    
+    createFramebuffer();
 }
 
 FrameBuffer::~FrameBuffer()
@@ -591,7 +588,8 @@ void FrameBuffer::createFramebuffer()
     genFramebuffers(1, &mRendererID);
     if (mRendererID == 0)
     {
-        throw error_handling::GraphicsException("Failed to generate framebuffer ID");
+        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to generate framebuffer ID");
+        assert(false && "Failed to generate framebuffer ID");
     }
     
 
@@ -862,8 +860,8 @@ void FrameBuffer::createFramebuffer()
     
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        throw error_handling::GraphicsException(
-            fmt::format("Framebuffer is incomplete: status code 0x{:x}", status));
+        LOG_CRITICAL(logging::gGraphicsLogger, "Framebuffer is incomplete: status code 0x{:x}", status);
+        assert(false && "Framebuffer incomplete!");
     }
 
     bindFramebuffer(GL_FRAMEBUFFER, 0);

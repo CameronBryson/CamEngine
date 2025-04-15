@@ -12,6 +12,7 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <iostream>
+#include <cassert>
 namespace gl {
     namespace detail {
         bool g_GLDebugOutput = true;
@@ -218,14 +219,13 @@ namespace gl {
         bool hasError = false;
         while ((error = glGetError()) != GL_NO_ERROR)
         {
-            std::cerr << "OpenGL Error at " << location << ": 0x" 
-                << std::hex << error << std::dec << std::endl;
+            LOG_ERROR(logging::gGraphicsLogger, "OpenGL Error at {}: 0x{:x}", location, error);
             hasError = true;
         }
 
-        if (hasError && detail::g_BreakOnError)
+        if (hasError)
         {
-            __debugbreak();
+            assert(!detail::g_BreakOnError && "OpenGL Error occurred!");
         }
 #endif
     }
@@ -498,28 +498,40 @@ void APIENTRY gl::detail::debugMessageCallback(GLenum source, GLenum type, GLuin
     if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
 
     // Filter out notification severity unless explicitly enabled
-    if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) return;
+    if (severity == GL_DEBUG_SEVERITY_NOTIFICATION && !g_GLDebugOutput) return;
 
-    const char* severityStr = "";
+    std::string severityStr;
+    spdlog::level::level_enum logLevel = spdlog::level::info;
+
     switch (severity)
     {
-    case GL_DEBUG_SEVERITY_HIGH: severityStr = "HIGH"; break;
-    case GL_DEBUG_SEVERITY_MEDIUM: severityStr = "MEDIUM"; break;
-    case GL_DEBUG_SEVERITY_LOW: severityStr = "LOW"; break;
-    default: return;
+    case GL_DEBUG_SEVERITY_HIGH: 
+        severityStr = "HIGH"; 
+        logLevel = spdlog::level::critical; 
+        break;
+    case GL_DEBUG_SEVERITY_MEDIUM: 
+        severityStr = "MEDIUM"; 
+        logLevel = spdlog::level::warn; 
+        break;
+    case GL_DEBUG_SEVERITY_LOW: 
+        severityStr = "LOW"; 
+        logLevel = spdlog::level::debug; 
+        break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION: 
+        severityStr = "NOTIFICATION"; 
+        logLevel = spdlog::level::trace; 
+        break;
+    default: 
+        severityStr = "UNKNOWN"; 
+        logLevel = spdlog::level::info;
+        break;
     }
 
-    if (severity == GL_DEBUG_SEVERITY_HIGH ||
-        (severity == GL_DEBUG_SEVERITY_MEDIUM && g_GLDebugOutput) ||
-        (severity == GL_DEBUG_SEVERITY_LOW && g_GLDebugOutput))
-    {
-        std::cerr << "OpenGL Debug [" << severityStr << "] (" << id << "): " 
-            << message << std::endl;
+    logging::gGraphicsLogger->log(logLevel, "OpenGL Debug [{}]: ({}) {}", severityStr, id, message);
 
-        if (severity == GL_DEBUG_SEVERITY_HIGH && g_BreakOnError)
-        {
-            __debugbreak();
-        }
+    if (severity == GL_DEBUG_SEVERITY_HIGH)
+    {
+         assert(!g_BreakOnError && "High severity OpenGL error occurred!");
     }
 }
 // Define the ScopedTimer and ScopedLabel implementations

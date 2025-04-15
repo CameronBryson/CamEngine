@@ -8,16 +8,16 @@
 #include "OpenGLUtil.hpp"
 #include "Vertex.hpp"
 #include "Engine/Util/Logging.hpp"
-#include "Engine/Util/ErrorHandler.hpp"
 #include "Shader.hpp"
+#include <cassert>
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned> indices, std::shared_ptr<Material> material)
     : mMaterial(std::move(material)),
       mVertices(std::move(vertices))
 {
     if (mVertices.empty() || indices.empty()) {
-        LOG_ERROR(logging::gGraphicsLogger, "Attempted to create Mesh '{}' with empty vertices or indices.", mName);
-        throw error_handling::EngineException("Mesh must have vertices and indices.");
+        LOG_CRITICAL(logging::gGraphicsLogger, "Attempted to create Mesh '{}' with empty vertices or indices.", mName);
+        assert(false && "Mesh must have vertices and indices.");
     }
 
 	mVertexArray = std::make_unique<VertexArray>(VertexBuffer(mVertices), IndexBuffer(indices));

@@ -10,9 +10,9 @@
 #include "Shader.hpp"
 #include "FrameBuffer.hpp"
 #include "Engine/Util/Logging.hpp"
-#include "Engine/Util/ErrorHandler.hpp"
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <cassert>
 
 // Constants for cubemap generation
 static const unsigned int ENV_MAP_SIZE = 512;
@@ -106,7 +106,8 @@ Texture::Texture(std::string_view filePath)
     genTextures(1, &mTextureID);
     if (mTextureID == 0)
     {
-        throw std::runtime_error("Failed to generate texture ID.");
+        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to generate texture ID.");
+        assert(false && "Failed to generate texture ID.");
     }
     bindTexture(GL_TEXTURE_2D, mTextureID);
 
@@ -118,7 +119,8 @@ Texture::Texture(std::string_view filePath)
     {
         bindTexture(GL_TEXTURE_2D, 0); // Unbind the texture
         deleteTextures(1, &mTextureID);
-        //throw std::runtime_error("Failed to load texture: " + filePath);
+        LOG_CRITICAL(logging::gResourceLogger, "Failed to load texture: {}", filePath);
+        assert(false && "Failed to load texture!");
     }
     LOG_INFO(logging::gResourceLogger, "Loaded texture: {}", filePath);
 
@@ -185,8 +187,8 @@ Texture::Texture(std::string_view equirectangularMapPath, const std::shared_ptr<
     float* hdrData = stbi_loadf(equirectangularMapPath.data(), &w, &h, &nrComponents, 0);
     if (!hdrData)
     {
-        LOG_ERROR(logging::gResourceLogger, "Failed to load HDR: {}", equirectangularMapPath);
-        //throw std::runtime_error("Failed to load HDR: " + equirectangularMapPath);
+        LOG_CRITICAL(logging::gResourceLogger, "Failed to load HDR: {}", equirectangularMapPath);
+        assert(false && "Failed to load HDR image!");
     }
 
     GLuint hdrTexID;
@@ -255,7 +257,8 @@ Texture::Texture(const aiTexture* aiTex)
     genTextures(1, &mTextureID);
     if (mTextureID == 0)
     {
-        throw std::runtime_error("Failed to generate texture ID.");
+        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to generate texture ID.");
+        assert(false && "Failed to generate texture ID.");
     }
     bindTexture(GL_TEXTURE_2D, mTextureID);
 
@@ -324,9 +327,9 @@ Texture::Texture(const aiTexture* aiTex)
         }
         else
         {
-            LOG_ERROR(logging::gGraphicsLogger, "Failed to load embedded compressed texture.");
+            LOG_CRITICAL(logging::gGraphicsLogger, "Failed to load embedded compressed texture.");
             bindTexture(GL_TEXTURE_2D, 0); // Unbind the texture
-            throw std::runtime_error("Failed to load embedded compressed texture.");
+            assert(false && "Failed to load embedded compressed texture!");
         }
     }
     else
