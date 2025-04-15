@@ -42,10 +42,6 @@ static const glm::mat4 captureViews[] =
 	glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f,  0.0f, -1.0f),  glm::vec3(0.0f, -1.0f,  0.0f))
 };
 
-// Implementation of the OpenGL wrapper method
-void EnvironmentMap::setGLDepthFunc(unsigned int func) {
-    GL_CHECK(glDepthFunc(func));
-}
 
 EnvironmentMap::EnvironmentMap(std::string_view hdrPath,
 							  std::shared_ptr<Shader> equirectangularToCubemapShader,
@@ -304,11 +300,12 @@ void EnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
         LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw null skybox cubemap.");
         return;
     }
-	setGLDepthFunc(GL_LEQUAL); // Ensure depth test passes when fragments are at maximum depth
+	GL_CHECK(glDepthFunc(GL_LEQUAL));
 	skyboxShader->use();
 	skyboxShader->setInt("skybox", IBLSlots::SKYBOX); // Use defined slot
 	mSkyboxCubemap->bind(IBLSlots::SKYBOX);
 	gl::drawCube();
 	mSkyboxCubemap->unbind(IBLSlots::SKYBOX); // Unbind after drawing
-	setGLDepthFunc(GL_LESS); // Reset depth function to default
+	GL_CHECK(glDepthFunc(GL_LESS));
+
 }

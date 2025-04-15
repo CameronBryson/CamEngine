@@ -82,7 +82,7 @@ void GraphicsManager::clear()
 	mEnvironmentMap.clear();
 }
 
-std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPath, const std::string& fragmentPath, std::string name)
+std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string name)
 {
 	// Load and compile shader
 	auto shader = std::make_shared<Shader>(vertexPath, fragmentPath);
@@ -97,7 +97,7 @@ std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPat
 	return shader;
 }
 
-std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath, std::string name)
+std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath, std::string name)
 {
 	// Load and compile shader
 	auto shader = std::make_shared<Shader>(vertexPath, fragmentPath, geometryPath);
@@ -112,7 +112,7 @@ std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& vertexPat
 	return shader;
 }
 
-std::shared_ptr<Shader> GraphicsManager::loadShader(const std::string& computePath, std::string name)
+std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view computePath, std::string name)
 {
 	// Load and compile shader
 	auto shader = std::make_shared<Shader>(computePath);
@@ -253,18 +253,6 @@ std::shared_ptr<Texture> GraphicsManager::getTexture(const std::string& path)
 	}
 	else
 	{
-		// Attempt lookup by canonical path as a fallback (potential performance hit)
-		std::error_code ec;
-		if (std::filesystem::exists(path, ec) && !ec) {
-			std::string canonicalPathStr = std::filesystem::canonical(path, ec).string();
-			if (!ec) {
-				it = mTextureMap.find(canonicalPathStr);
-				if (it != mTextureMap.end()) {
-					return it->second;
-				}
-			}
-		}
-		// Log if still not found
 		std::cerr << "GraphicsManager::getTexture: Texture not found by path or canonical path: '" << path << "'" << std::endl;
 		return nullptr;
 	}
@@ -305,7 +293,7 @@ std::shared_ptr<Model> GraphicsManager::getModel(const std::string& name)
 	}
 }
 
-std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& path, std::string name)
+std::shared_ptr<Model> GraphicsManager::loadModel(std::string_view path, std::string name)
 {
 	// Check if model already loaded
 	auto it = mModelMap.find(name);
@@ -318,7 +306,7 @@ std::shared_ptr<Model> GraphicsManager::loadModel(const std::string& path, std::
 	// Load model using Assimp
 	Assimp::Importer importer;
 	// Consider adding aiProcess_JoinIdenticalVertices for optimization
-	const aiScene* scene = importer.ReadFile(path,
+	const aiScene* scene = importer.ReadFile(path.data(),
 		aiProcess_Triangulate |
 		aiProcess_FlipUVs |
 		aiProcess_CalcTangentSpace |
@@ -719,7 +707,7 @@ std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
 	return textures; // Return vector (potentially empty)
 }
 
-std::shared_ptr<EnvironmentMap> GraphicsManager::loadEnvironmentMap(std::string name, const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader)
+std::shared_ptr<EnvironmentMap> GraphicsManager::loadEnvironmentMap(std::string name, std::string_view hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader)
 {
 	auto it = mEnvironmentMap.find(name);
 	if (it != mEnvironmentMap.end())

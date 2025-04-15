@@ -5,7 +5,8 @@
 #include <glm/fwd.hpp>
 #include "Engine/Util/Logging.hpp"
 #include "Engine/Util/ErrorHandler.hpp"
-
+#include "platform.hpp"
+#include <string_view>
 /**
  * @brief Represents an OpenGL shader program
  * 
@@ -22,7 +23,7 @@ public:
      * @param vertexPath Path to the vertex shader file
      * @param fragmentPath Path to the fragment shader file
      */
-    Shader(const std::string& vertexPath, const std::string& fragmentPath);
+    Shader(std::string_view vertexPath, std::string_view fragmentPath);
     
     /**
      * @brief Creates a shader program from vertex, fragment and geometry shader files
@@ -31,14 +32,14 @@ public:
      * @param fragmentPath Path to the fragment shader file
      * @param geometryPath Path to the geometry shader file
      */
-    Shader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
+    Shader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath);
     
     /**
      * @brief Creates a compute shader program from a compute shader file
      * 
      * @param computePath Path to the compute shader file
      */
-    Shader(const std::string& computePath);
+    Shader(std::string_view computePath);
     
     /**
      * @brief Destructor cleans up OpenGL resources
@@ -169,7 +170,7 @@ private:
      * @param shaderPath Path to the shader file (for error reporting)
      * @return Compiled shader ID
      */
-    unsigned int compileShader(unsigned int type, const std::string& source, const std::string& shaderPath);
+    unsigned int compileShader(unsigned int type, std::string_view source, std::string_view shaderPath);
     
     /**
      * @brief Checks for shader compilation or program linking errors
@@ -187,7 +188,7 @@ private:
      * @param filePath Path to the shader file
      * @return String containing shader source code
      */
-    std::string loadShaderFile(const std::string& filePath);
+    std::string loadShaderFile(std::string_view filePath);
     
     /**
      * @brief Gets cached location of a uniform
@@ -198,7 +199,7 @@ private:
     int getUniformLocation(const std::string& name) const;
 
 private:
-    unsigned int mShaderID = 0;
+    GLuint mShaderID = 0;
     bool mIsComputeShader = false;
     mutable std::unordered_map<std::string, int> mUniformLocationCache;
 };

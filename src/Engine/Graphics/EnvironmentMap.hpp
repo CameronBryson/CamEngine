@@ -38,8 +38,6 @@ public:
 	void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
 
 private:
-	// OpenGL wrapper methods - Keep static
-	static void setGLDepthFunc(unsigned int func);
 	
 	std::unique_ptr<Texture> mSkyboxCubemap;
 	std::unique_ptr<Texture> mIrradianceCubemap;

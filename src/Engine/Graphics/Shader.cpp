@@ -12,7 +12,7 @@
 #include "glm/vec4.hpp"
 #include <glad/glad.h>
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
+Shader::Shader(std::string_view vertexPath, std::string_view fragmentPath)
 {
     try
     {
@@ -33,7 +33,7 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
         GL_CHECK(glAttachShader(mShaderID, vertex));
         GL_CHECK(glAttachShader(mShaderID, fragment));
         GL_CHECK(glLinkProgram(mShaderID));
-        checkCompileError(mShaderID, "PROGRAM", vertexPath + " + " + fragmentPath);
+        checkCompileError(mShaderID, "PROGRAM", std::string(vertexPath) + " + " + std::string(fragmentPath));
         
         // Delete the shaders as they're linked into our program now and no longer necessary
         GL_CHECK(glDeleteShader(vertex));
@@ -47,11 +47,11 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
     {
         LOG_ERROR(logging::gGraphicsLogger, "Failed to create shader: {}", e.what());
         throw error_handling::GraphicsException(
-            "Failed to create shader from " + vertexPath + " and " + fragmentPath + ": " + e.what());
+            "Failed to create shader from " + std::string(vertexPath) + " and " + std::string(fragmentPath) + ": " + e.what());
     }
 }
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
+Shader::Shader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath)
 {
     try
     {
@@ -76,7 +76,7 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, c
         GL_CHECK(glAttachShader(mShaderID, fragment));
         GL_CHECK(glAttachShader(mShaderID, geometry));
         GL_CHECK(glLinkProgram(mShaderID));
-        checkCompileError(mShaderID, "PROGRAM", vertexPath + " + " + fragmentPath + " + " + geometryPath);
+        checkCompileError(mShaderID, "PROGRAM", std::string(vertexPath) + " + " + std::string(fragmentPath) + " + " + std::string(geometryPath));
         
         // Delete the shaders as they're linked into our program now and no longer necessary
         GL_CHECK(glDeleteShader(vertex));
@@ -91,12 +91,12 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, c
     {
         LOG_ERROR(logging::gGraphicsLogger, "Failed to create shader with geometry: {}", e.what());
         throw error_handling::GraphicsException(
-            "Failed to create shader from " + vertexPath + ", " + fragmentPath + 
-            ", and " + geometryPath + ": " + e.what());
+            "Failed to create shader from " + std::string(vertexPath) + ", " + std::string(fragmentPath) + 
+            ", and " + std::string(geometryPath) + ": " + e.what());
     }
 }
 
-Shader::Shader(const std::string& computePath)
+Shader::Shader(std::string_view computePath)
 {
     try
     {
@@ -113,7 +113,7 @@ Shader::Shader(const std::string& computePath)
         
         GL_CHECK(glAttachShader(mShaderID, compute));
         GL_CHECK(glLinkProgram(mShaderID));
-        checkCompileError(mShaderID, "PROGRAM", computePath);
+        checkCompileError(mShaderID, "PROGRAM", std::string(computePath));
         
         // Delete the shader as it's linked into our program now and no longer necessary
         GL_CHECK(glDeleteShader(compute));
@@ -127,7 +127,7 @@ Shader::Shader(const std::string& computePath)
     catch (const std::exception& e)
     {
         LOG_ERROR(logging::gGraphicsLogger, "Failed to create compute shader: {}", e.what());
-        throw error_handling::GraphicsException("Failed to create compute shader from " + computePath + ": " + e.what());
+        throw error_handling::GraphicsException("Failed to create compute shader from " + std::string(computePath) + ": " + e.what());
     }
 }
 
@@ -249,13 +249,13 @@ void Shader::deleteShader()
     }
 }
 
-std::string Shader::loadShaderFile(const std::string& filePath)
+std::string Shader::loadShaderFile(std::string_view filePath)
 {
     std::string code;
     std::ifstream file;
     
-    if (!CHECK_FILE_EXISTS(filePath)) {
-        throw error_handling::FileSystemException("Shader file not found: " + filePath);
+    if (!CHECK_FILE_EXISTS(std::string(filePath))) {
+        throw error_handling::FileSystemException("Shader file not found: " + std::string(filePath));
     }
     
     // Ensure ifstream objects can throw exceptions
@@ -273,13 +273,13 @@ std::string Shader::loadShaderFile(const std::string& filePath)
     catch (const std::ifstream::failure& e)
     {
         LOG_ERROR(logging::gGraphicsLogger, "Failed to read shader file {}: {}", filePath, e.what());
-        throw error_handling::FileSystemException("Failed to read shader file: " + filePath + ", error: " + e.what());
+        throw error_handling::FileSystemException("Failed to read shader file: " + std::string(filePath) + ", error: " + e.what());
     }
     
     return code;
 }
 
-unsigned int Shader::compileShader(unsigned int type, const std::string& source, const std::string& shaderPath)
+unsigned int Shader::compileShader(unsigned int type, std::string_view source, std::string_view shaderPath)
 {
     // Get shader type as string for logging
     std::string typeStr;
@@ -298,12 +298,12 @@ unsigned int Shader::compileShader(unsigned int type, const std::string& source,
         throw error_handling::GraphicsException("Failed to create shader object");
     }
     
-    const char* src = source.c_str();
+    const char* src = source.data();
     GL_CHECK(glShaderSource(shaderId, 1, &src, nullptr));
     GL_CHECK(glCompileShader(shaderId));
     
     // Check for compilation errors
-    checkCompileError(shaderId, typeStr, shaderPath);
+    checkCompileError(shaderId, typeStr, std::string(shaderPath));
     
     return shaderId;
 }

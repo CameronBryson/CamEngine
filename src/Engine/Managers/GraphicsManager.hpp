@@ -21,7 +21,7 @@
 #include "Material.hpp"
 #include "Model.hpp"
 #include "EnvironmentMap.hpp"
-
+#include <string_view>
 class GraphicsManager
 {
 public:
@@ -34,9 +34,9 @@ public:
     void reloadShaders();
 
     // Shader management
-    std::shared_ptr<Shader> loadShader(const std::string& vertexPath, const std::string& fragmentPath, std::string name);
-	std::shared_ptr<Shader> loadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath, std::string name);
-	std::shared_ptr<Shader> loadShader(const std::string& computePath, std::string name);
+    std::shared_ptr<Shader> loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string name);
+	std::shared_ptr<Shader> loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath, std::string name);
+	std::shared_ptr<Shader> loadShader(std::string_view computePath, std::string name);
     std::shared_ptr<Shader> getShader(const std::string& name);
 
     // Texture management
@@ -48,11 +48,11 @@ public:
 
     // Model and Scene management
     std::shared_ptr<Model> getModel(const std::string& name);
-    std::shared_ptr<Model> loadModel(const std::string& path, std::string name);
+    std::shared_ptr<Model> loadModel(std::string_view path, std::string name);
 
 
 
-    std::shared_ptr<EnvironmentMap> loadEnvironmentMap(std::string name, const std::string& hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
+    std::shared_ptr<EnvironmentMap> loadEnvironmentMap(std::string name, std::string_view hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
     std::shared_ptr<EnvironmentMap> getEnvironmentMap(const std::string& name);
 
 
