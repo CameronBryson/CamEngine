@@ -5577,3 +5577,1214 @@ d in shader program (ID: 31)
 [2025-04-15 14:39:55.421] [info] [engine] Shutdown complete
 [2025-04-15 14:39:55.421] [info] [engine] Shutting down logging system
 [2025-04-15 14:39:55.422] [info] [engine] Shutting down logging system
+[2025-04-15 14:51:36.423] [info] [engine] Logging system initialized
+[2025-04-15 14:51:36.424] [info] [engine] Starting application
+[2025-04-15 14:51:36.424] [info] [engine] Initializing engine systems
+[2025-04-15 14:51:36.425] [info] [graphics] Initializing OpenGL...
+[2025-04-15 14:51:36.575] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 14:51:36.575] [info] [engine] OpenGL initialized successfully
+[2025-04-15 14:51:36.576] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 14:51:36.576] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 14:51:36.576] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 14:51:36.577] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 14:51:36.577] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 14:51:36.578] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 14:51:36.578] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 14:51:36.579] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 14:51:36.580] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 14:51:36.581] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 14:51:36.581] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 14:51:36.581] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 14:51:36.582] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 14:51:36.582] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 14:51:36.583] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 14:51:36.583] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 14:51:36.584] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 14:51:36.584] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 14:51:36.584] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 14:51:36.585] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 14:51:36.585] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 14:51:37.274] [warning] [resource] Material has no name. Generating unique name: material_2565964173440
+[2025-04-15 14:51:45.467] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964173440'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:45.472] [warning] [resource] Material has no name. Generating unique name: material_2565964174800
+[2025-04-15 14:51:47.566] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964174800'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:47.572] [warning] [resource] Material has no name. Generating unique name: material_2565964177280
+[2025-04-15 14:51:49.221] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964177280'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:49.224] [warning] [resource] Material has no name. Generating unique name: material_2565964175040
+[2025-04-15 14:51:50.838] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964175040'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:50.839] [warning] [resource] Material has no name. Generating unique name: material_2565964178240
+[2025-04-15 14:51:52.531] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964178240'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:52.535] [warning] [resource] Material has no name. Generating unique name: material_2565964179760
+[2025-04-15 14:51:54.088] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964179760'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:54.091] [warning] [resource] Material has no name. Generating unique name: material_2565964180960
+[2025-04-15 14:51:55.659] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964180960'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:55.661] [warning] [resource] Material has no name. Generating unique name: material_2565964099440
+[2025-04-15 14:51:56.883] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964099440'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:56.891] [warning] [resource] Material has no name. Generating unique name: material_2565964679456
+[2025-04-15 14:51:57.853] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964679456'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:57.855] [warning] [resource] Material has no name. Generating unique name: material_2565964663296
+[2025-04-15 14:51:58.808] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964663296'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:58.811] [warning] [resource] Material has no name. Generating unique name: material_2565964672256
+[2025-04-15 14:51:59.775] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964672256'. Ignoring UNKNOWN texture.
+[2025-04-15 14:51:59.776] [warning] [resource] Material has no name. Generating unique name: material_2565964679216
+[2025-04-15 14:52:00.778] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964679216'. Ignoring UNKNOWN texture.
+[2025-04-15 14:52:00.781] [warning] [resource] Material has no name. Generating unique name: material_2565964660656
+[2025-04-15 14:52:01.769] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964660656'. Ignoring UNKNOWN texture.
+[2025-04-15 14:52:01.772] [warning] [resource] Material has no name. Generating unique name: material_2565964684496
+[2025-04-15 14:52:02.734] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964684496'. Ignoring UNKNOWN texture.
+[2025-04-15 14:52:02.740] [warning] [resource] Material has no name. Generating unique name: material_2565964668736
+[2025-04-15 14:52:03.750] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964668736'. Ignoring UNKNOWN texture.
+[2025-04-15 14:52:03.759] [warning] [resource] Material has no name. Generating unique name: material_2565964660576
+[2025-04-15 14:52:04.703] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2565964660576'. Ignoring UNKNOWN texture.
+[2025-04-15 14:52:04.711] [warning] [resource] Material has no name. Generating unique name: material_2565964674176
+[2025-04-15 14:52:05.655] [warning] [resource] Found UNKNOWN texture type but als[2025-04-15 14:53:21.493] [info] [engine] Logging system initialized
+[2025-04-15 14:53:21.493] [info] [engine] Starting application
+[2025-04-15 14:53:21.494] [info] [engine] Initializing engine systems
+[2025-04-15 14:53:21.494] [info] [graphics] Initializing OpenGL...
+[2025-04-15 14:53:21.662] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 14:53:21.663] [info] [engine] OpenGL initialized successfully
+[2025-04-15 14:53:21.663] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 14:53:21.664] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 14:53:21.664] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 14:53:21.665] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 14:53:21.665] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 14:53:21.666] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 14:53:21.666] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 14:53:21.667] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 14:53:21.668] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 14:53:21.668] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 14:53:21.669] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 14:53:21.669] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 14:53:21.670] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 14:53:21.670] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 14:53:21.671] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 14:53:21.671] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 14:53:21.672] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 14:53:21.672] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 14:53:21.673] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 14:53:21.673] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 14:53:21.673] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 14:53:22.234] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 14:53:22.439] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:22.441] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 14:53:23.127] [warning] [resource] Material has no name. Generating unique name: material_1658201740032
+[2025-04-15 14:53:23.320] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658201740032'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:23.325] [warning] [resource] Material has no name. Generating unique name: material_1658201748192
+[2025-04-15 14:53:23.457] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658201748192'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:23.463] [warning] [resource] Material has no name. Generating unique name: material_1658201745152
+[2025-04-15 14:53:23.548] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658201745152'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:23.551] [warning] [resource] Material has no name. Generating unique name: material_1658201744592
+[2025-04-15 14:53:23.631] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658201744592'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:23.632] [warning] [resource] Material has no name. Generating unique name: material_1658201746752
+[2025-04-15 14:53:23.750] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658201746752'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:23.754] [warning] [resource] Material has no name. Generating unique name: material_1658203681168
+[2025-04-15 14:53:23.868] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658203681168'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:23.872] [warning] [resource] Material has no name. Generating unique name: material_1658202041728
+[2025-04-15 14:53:24.002] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658202041728'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:24.004] [warning] [resource] Material has no name. Generating unique name: material_1658202041408
+[2025-04-15 14:53:24.116] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658202041408'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:24.123] [warning] [resource] Material has no name. Generating unique name: material_1658202062288
+[2025-04-15 14:53:24.239] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658202062288'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:24.241] [warning] [resource] Material has no name. Generating unique name: material_1658202040928
+[2025-04-15 14:53:24.355] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658202040928'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:24.359] [warning] [resource] Material has no name. Generating unique name: material_1658202051728
+[2025-04-15 14:53:24.496] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658202051728'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:24.497] [warning] [resource] Material has no name. Generating unique name: material_1658202057008
+[2025-04-15 14:53:24.635] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658202057008'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:24.639] [warning] [resource] Material has no name. Generating unique name: material_1658202048928
+[2025-04-15 14:53:24.746] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658202048928'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:24.748] [warning] [resource] Material has no name. Generating unique name: material_1658202062848
+[2025-04-15 14:53:24.854] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658202062848'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:24.860] [warning] [resource] Material has no name. Generating unique name: material_1658202055088
+[2025-04-15 14:53:24.991] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1658202055088'. Ignoring UNKNOWN texture.
+[2025-04-15 14:53:25.000] [warning] [resource] Material has no name. Generating unique name: materi[2025-04-15 14:54:02.472] [info] [engine] Logging system initialized
+[2025-04-15 14:54:02.472] [info] [engine] Starting application
+[2025-04-15 14:54:02.472] [info] [engine] Initializing engine systems
+[2025-04-15 14:54:02.472] [info] [graphics] Initializing OpenGL...
+[2025-04-15 14:54:02.623] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 14:54:02.623] [info] [engine] OpenGL initialized successfully
+[2025-04-15 14:54:02.624] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 14:54:02.625] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 14:54:02.625] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 14:54:02.626] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 14:54:02.626] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 14:54:02.627] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 14:54:02.627] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 14:54:02.628] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 14:54:02.628] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 14:54:02.629] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 14:54:02.630] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 14:54:02.630] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 14:54:02.631] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 14:54:02.631] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 14:54:02.631] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 14:54:02.632] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 14:54:02.632] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 14:54:02.633] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 14:54:02.633] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 14:54:02.633] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 14:54:02.634] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 14:54:03.191] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 14:54:03.390] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:03.392] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 14:54:04.076] [warning] [resource] Material has no name. Generating unique name: material_2563477380272
+[2025-04-15 14:54:04.269] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477380272'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:04.273] [warning] [resource] Material has no name. Generating unique name: material_2563477384752
+[2025-04-15 14:54:04.404] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477384752'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:04.410] [warning] [resource] Material has no name. Generating unique name: material_2563477383632
+[2025-04-15 14:54:04.494] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477383632'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:04.497] [warning] [resource] Material has no name. Generating unique name: material_2563477381232
+[2025-04-15 14:54:04.573] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477381232'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:04.574] [warning] [resource] Material has no name. Generating unique name: material_2563477381472
+[2025-04-15 14:54:04.689] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477381472'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:04.694] [warning] [resource] Material has no name. Generating unique name: material_2563477388432
+[2025-04-15 14:54:04.807] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477388432'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:04.811] [warning] [resource] Material has no name. Generating unique name: material_2563477390112
+[2025-04-15 14:54:04.940] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477390112'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:04.942] [warning] [resource] Material has no name. Generating unique name: material_2563477388512
+[2025-04-15 14:54:05.049] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477388512'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:05.056] [warning] [resource] Material has no name. Generating unique name: material_2563477275232
+[2025-04-15 14:54:05.171] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477275232'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:05.172] [warning] [resource] Material has no name. Generating unique name: material_2563477394832
+[2025-04-15 14:54:05.285] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477394832'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:05.290] [warning] [resource] Material has no name. Generating unique name: material_2563477263552
+[2025-04-15 14:54:05.420] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477263552'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:05.421] [warning] [resource] Material has no name. Generating unique name: material_2563477268672
+[2025-04-15 14:54:05.559] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477268672'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:05.563] [warning] [resource] Material has no name. Generating unique name: material_2563477395792
+[2025-04-15 14:54:05.672] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477395792'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:05.675] [warning] [resource] Material has no name. Generating unique name: material_2563477274912
+[2025-04-15 14:54:05.779] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477274912'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:05.785] [warning] [resource] Material has no name. Generating unique name: material_2563477263632
+[2025-04-15 14:54:05.914] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2563477263632'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:05.923] [warning] [resource] Material has no name. Generating unique name: materi[2025-04-15 14:54:42.841] [info] [engine] Logging system initialized
+[2025-04-15 14:54:42.842] [info] [engine] Starting application
+[2025-04-15 14:54:42.842] [info] [engine] Initializing engine systems
+[2025-04-15 14:54:42.842] [info] [graphics] Initializing OpenGL...
+[2025-04-15 14:54:42.992] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 14:54:42.992] [info] [engine] OpenGL initialized successfully
+[2025-04-15 14:54:42.993] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 14:54:42.994] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 14:54:42.994] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 14:54:42.994] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 14:54:42.995] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 14:54:42.996] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 14:54:42.996] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 14:54:42.997] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 14:54:42.997] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 14:54:42.998] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 14:54:42.999] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 14:54:42.999] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 14:54:43.000] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 14:54:43.000] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 14:54:43.000] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 14:54:43.001] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 14:54:43.001] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 14:54:43.002] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 14:54:43.002] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 14:54:43.002] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 14:54:43.003] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 14:54:43.562] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 14:54:43.764] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:43.766] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 14:54:44.453] [warning] [resource] Material has no name. Generating unique name: material_2356664583808
+[2025-04-15 14:54:44.646] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664583808'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:44.650] [warning] [resource] Material has no name. Generating unique name: material_2356664588288
+[2025-04-15 14:54:44.782] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664588288'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:44.788] [warning] [resource] Material has no name. Generating unique name: material_2356664591408
+[2025-04-15 14:54:44.873] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664591408'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:44.876] [warning] [resource] Material has no name. Generating unique name: material_2356664588768
+[2025-04-15 14:54:44.953] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664588768'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:44.954] [warning] [resource] Material has no name. Generating unique name: material_2356664589408
+[2025-04-15 14:54:45.070] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664589408'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:45.075] [warning] [resource] Material has no name. Generating unique name: material_2356664594448
+[2025-04-15 14:54:45.187] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664594448'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:45.191] [warning] [resource] Material has no name. Generating unique name: material_2356664594528
+[2025-04-15 14:54:45.321] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664594528'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:45.323] [warning] [resource] Material has no name. Generating unique name: material_2356664596128
+[2025-04-15 14:54:45.432] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664596128'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:45.439] [warning] [resource] Material has no name. Generating unique name: material_2356664614208
+[2025-04-15 14:54:45.556] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664614208'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:45.557] [warning] [resource] Material has no name. Generating unique name: material_2356664599728
+[2025-04-15 14:54:45.670] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664599728'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:45.674] [warning] [resource] Material has no name. Generating unique name: material_2356664611008
+[2025-04-15 14:54:45.802] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664611008'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:45.803] [warning] [resource] Material has no name. Generating unique name: material_2356664613008
+[2025-04-15 14:54:45.954] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664613008'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:45.958] [warning] [resource] Material has no name. Generating unique name: material_2356664597968
+[2025-04-15 14:54:46.062] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664597968'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:46.065] [warning] [resource] Material has no name. Generating unique name: material_2356664613648
+[2025-04-15 14:54:46.169] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664613648'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:46.175] [warning] [resource] Material has no name. Generating unique name: material_2356664603888
+[2025-04-15 14:54:46.306] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2356664603888'. Ignoring UNKNOWN texture.
+[2025-04-15 14:54:46.316] [warning] [resource] Material has no name. Generating unique name: materi[2025-04-15 14:55:09.301] [info] [engine] Logging system initialized
+[2025-04-15 14:55:09.302] [info] [engine] Starting application
+[2025-04-15 14:55:09.302] [info] [engine] Initializing engine systems
+[2025-04-15 14:55:09.302] [info] [graphics] Initializing OpenGL...
+[2025-04-15 14:55:09.459] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 14:55:09.459] [info] [engine] OpenGL initialized successfully
+[2025-04-15 14:55:09.460] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 14:55:09.460] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 14:55:09.461] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 14:55:09.461] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 14:55:09.462] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 14:55:09.462] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 14:55:09.462] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 14:55:09.463] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 14:55:09.464] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 14:55:09.465] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 14:55:09.465] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 14:55:09.466] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 14:55:09.466] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 14:55:09.466] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 14:55:09.467] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 14:55:09.467] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 14:55:09.468] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 14:55:09.468] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 14:55:09.468] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 14:55:09.469] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 14:55:09.469] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 14:55:10.024] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 14:55:10.222] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:10.225] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 14:55:10.904] [warning] [resource] Material has no name. Generating unique name: material_2399639595424
+[2025-04-15 14:55:11.097] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639595424'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:11.102] [warning] [resource] Material has no name. Generating unique name: material_2399639601424
+[2025-04-15 14:55:11.234] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639601424'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:11.240] [warning] [resource] Material has no name. Generating unique name: material_2399639599344
+[2025-04-15 14:55:11.326] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639599344'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:11.330] [warning] [resource] Material has no name. Generating unique name: material_2399639600624
+[2025-04-15 14:55:11.409] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639600624'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:11.410] [warning] [resource] Material has no name. Generating unique name: material_2399639600944
+[2025-04-15 14:55:11.527] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639600944'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:11.531] [warning] [resource] Material has no name. Generating unique name: material_2399639602384
+[2025-04-15 14:55:11.648] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639602384'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:11.651] [warning] [resource] Material has no name. Generating unique name: material_2399639603584
+[2025-04-15 14:55:11.783] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639603584'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:11.785] [warning] [resource] Material has no name. Generating unique name: material_2399639606464
+[2025-04-15 14:55:11.893] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639606464'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:11.901] [warning] [resource] Material has no name. Generating unique name: material_2399639493184
+[2025-04-15 14:55:12.018] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639493184'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:12.020] [warning] [resource] Material has no name. Generating unique name: material_2399639609744
+[2025-04-15 14:55:12.135] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639609744'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:12.138] [warning] [resource] Material has no name. Generating unique name: material_2399639479744
+[2025-04-15 14:55:12.270] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639479744'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:12.271] [warning] [resource] Material has no name. Generating unique name: material_2399639486864
+[2025-04-15 14:55:12.412] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639486864'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:12.416] [warning] [resource] Material has no name. Generating unique name: material_2399639606944
+[2025-04-15 14:55:12.522] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639606944'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:12.525] [warning] [resource] Material has no name. Generating unique name: material_2399639491584
+[2025-04-15 14:55:12.630] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639491584'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:12.636] [warning] [resource] Material has no name. Generating unique name: material_2399639479184
+[2025-04-15 14:55:12.765] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2399639479184'. Ignoring UNKNOWN texture.
+[2025-04-15 14:55:12.775] [warning] [resource] Material has no name. Generating unique name: materi[2025-04-15 15:02:10.484] [info] [engine] Logging system initialized
+[2025-04-15 15:02:10.485] [info] [engine] Starting application
+[2025-04-15 15:02:10.485] [info] [engine] Initializing engine systems
+[2025-04-15 15:02:10.485] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:02:10.649] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:02:10.649] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:02:10.650] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:02:10.650] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:02:10.650] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:02:10.651] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:02:10.651] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:02:10.652] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:02:10.652] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:02:10.653] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:02:10.654] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:02:10.655] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:02:10.655] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:02:10.656] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:02:10.656] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:02:10.657] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:02:10.657] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:02:10.657] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:02:10.658] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:02:10.658] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:02:10.659] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:02:10.659] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:02:10.659] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:02:10.660] [info] [resource] Loading model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:02:11.445] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:11.447] [info] [resource] Successfully loaded model 'Helmet'. 0 mesh instance(s).
+[2025-04-15 15:02:11.450] [info] [resource] Loading model 'Sponza' from '../assets/Sponza/Sponza.gltf'
+[2025-04-15 15:02:12.614] [warning] [resource] Material has no name. Generating unique name: material_1916932595088
+[2025-04-15 15:02:12.807] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932595088'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:12.811] [warning] [resource] Material has no name. Generating unique name: material_1916932595728
+[2025-04-15 15:02:12.942] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932595728'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:12.948] [warning] [resource] Material has no name. Generating unique name: material_1916932594368
+[2025-04-15 15:02:13.033] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932594368'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:13.035] [warning] [resource] Material has no name. Generating unique name: material_1916932600928
+[2025-04-15 15:02:13.113] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932600928'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:13.114] [warning] [resource] Material has no name. Generating unique name: material_1916932598688
+[2025-04-15 15:02:13.230] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932598688'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:13.234] [warning] [resource] Material has no name. Generating unique name: material_1916932598368
+[2025-04-15 15:02:13.346] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932598368'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:13.349] [warning] [resource] Material has no name. Generating unique name: material_1916932605648
+[2025-04-15 15:02:13.481] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932605648'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:13.482] [warning] [resource] Material has no name. Generating unique name: material_1916932602848
+[2025-04-15 15:02:13.598] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932602848'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:13.605] [warning] [resource] Material has no name. Generating unique name: material_1916932619328
+[2025-04-15 15:02:13.720] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932619328'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:13.722] [warning] [resource] Material has no name. Generating unique name: material_1916932602288
+[2025-04-15 15:02:13.837] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932602288'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:13.840] [warning] [resource] Material has no name. Generating unique name: material_1916932617168
+[2025-04-15 15:02:13.969] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932617168'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:13.970] [warning] [resource] Material has no name. Generating unique name: material_1916932617728
+[2025-04-15 15:02:14.108] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932617728'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:14.111] [warning] [resource] Material has no name. Generating unique name: material_1916932606368
+[2025-04-15 15:02:14.217] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932606368'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:14.220] [warning] [resource] Material has no name. Generating unique name: material_1916932491648
+[2025-04-15 15:02:14.325] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932491648'. Ignoring UNKNOWN texture.
+[2025-04-15 15:02:14.330] [warning] [resource] Material has no name. Generating unique name: material_1916932613248
+[2025-04-15 15:02:14.463] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1916932613248'. Ignoring UNKNOWN texture.
+[2025-04-1[2025-04-15 15:03:50.085] [info] [engine] Logging system initialized
+[2025-04-15 15:03:50.086] [info] [engine] Starting application
+[2025-04-15 15:03:50.086] [info] [engine] Initializing engine systems
+[2025-04-15 15:03:50.086] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:03:50.253] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:03:50.253] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:03:50.254] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:03:50.254] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:03:50.255] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:03:50.255] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:03:50.256] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:03:50.257] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:03:50.257] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:03:50.258] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:03:50.258] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:03:50.259] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:03:50.260] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:03:50.260] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:03:50.261] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:03:50.261] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:03:50.261] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:03:50.262] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:03:50.262] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:03:50.263] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:03:50.263] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:03:50.263] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:03:50.264] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:03:50.818] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 15:03:51.018] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:51.020] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:03:51.712] [warning] [resource] Material has no name. Generating unique name: material_2473524876704
+[2025-04-15 15:03:51.902] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524876704'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:51.906] [warning] [resource] Material has no name. Generating unique name: material_2473524873984
+[2025-04-15 15:03:52.039] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524873984'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:52.045] [warning] [resource] Material has no name. Generating unique name: material_2473524873184
+[2025-04-15 15:03:52.133] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524873184'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:52.136] [warning] [resource] Material has no name. Generating unique name: material_2473524880544
+[2025-04-15 15:03:52.214] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524880544'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:52.215] [warning] [resource] Material has no name. Generating unique name: material_2473524881344
+[2025-04-15 15:03:52.334] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524881344'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:52.338] [warning] [resource] Material has no name. Generating unique name: material_2473524877904
+[2025-04-15 15:03:52.453] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524877904'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:52.457] [warning] [resource] Material has no name. Generating unique name: material_2473524882944
+[2025-04-15 15:03:52.588] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524882944'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:52.590] [warning] [resource] Material has no name. Generating unique name: material_2473524884384
+[2025-04-15 15:03:52.699] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524884384'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:52.706] [warning] [resource] Material has no name. Generating unique name: material_2473524769264
+[2025-04-15 15:03:52.823] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524769264'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:52.825] [warning] [resource] Material has no name. Generating unique name: material_2473524885504
+[2025-04-15 15:03:52.942] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524885504'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:52.946] [warning] [resource] Material has no name. Generating unique name: material_2473524897664
+[2025-04-15 15:03:53.075] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524897664'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:53.076] [warning] [resource] Material has no name. Generating unique name: material_2473524767824
+[2025-04-15 15:03:53.215] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524767824'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:53.218] [warning] [resource] Material has no name. Generating unique name: material_2473524887104
+[2025-04-15 15:03:53.325] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524887104'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:53.327] [warning] [resource] Material has no name. Generating unique name: material_2473524773744
+[2025-04-15 15:03:53.431] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524773744'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:53.437] [warning] [resource] Material has no name. Generating unique name: material_2473524894624
+[2025-04-15 15:03:53.568] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524894624'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:53.578] [warning] [resource] Material has no name. Generating unique name: material_2473524890944
+[2025-04-15 15:03:53.697] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524890944'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:53.704] [warning] [resource] Material has no name. Generating unique name: material_2473524893984
+[2025-04-15 15:03:53.827] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524893984'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:53.834] [warning] [resource] Material has no name. Generating unique name: material_2473524896224
+[2025-04-15 15:03:53.968] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524896224'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:53.975] [warning] [resource] Material has no name. Generating unique name: material_2473524899184
+[2025-04-15 15:03:54.099] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524899184'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:54.100] [warning] [resource] Material has no name. Generating unique name: material_2473524890784
+[2025-04-15 15:03:54.222] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524890784'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:54.226] [warning] [resource] Material has no name. Generating unique name: material_2473524767184
+[2025-04-15 15:03:54.350] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524767184'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:54.357] [warning] [resource] Material has no name. Generating unique name: material_2473524889264
+[2025-04-15 15:03:54.485] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524889264'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:54.491] [warning] [resource] Material has no name. Generating unique name: material_2473524774544
+[2025-04-15 15:03:54.646] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524774544'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:54.650] [warning] [resource] Material has no name. Generating unique name: material_2473524765984
+[2025-04-15 15:03:54.768] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2473524765984'. Ignoring UNKNOWN texture.
+[2025-04-15 15:03:54.769] [warning] [resource] Material has no name. Generating unique name: material_2473524888704
+[2025-04-15 15:03:54.770] [info] [resource] Successfully loaded model 'Sponza' from '../assets/Sponza/Sponza.gltf'
+[2025-04-15 15:03:54.798] [info] [graphics] Creating EnvironmentMap from HDR: ../assets/8ksky.hdr
+[2025-04-15 15:03:56.013] [info] [resource] Successfully loaded environment map 'default' from '../assets/8ksky.hdr'
+[2025-04-15 15:03:56.013] [info] [engine] Graphics resources loaded successfully
+[2025-04-15 15:03:56.013] [info] [engine] Creating test scene
+[2025-04-15 15:03:56.013] [info] [engine] Initializing scene
+[2025-04-15 15:03:56.013] [info] [engine] Initializing current scene...
+[2025-04-15 15:03:56.068] [info] [engine] Scene initialization complete
+[2025-04-15 15:03:56.068] [info] [engine] Entering main loop
+[2025-04-15 15:03:56.088] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-15 15:03:56.088] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-15 15:03:56.089] [warning] [graphics] Uniform 'material.aoMap' not found in shader program (ID: 19)
+[2025-04-15 15:03:56.096] [warning] [graphics] Uniform 'depthThereshold' not found in shader program (ID: 31)
+[2025-04-15 15:03:56.111] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-15 15:04:55.574] [info] [engine] Shutting down
+[2025-04-15 15:04:55.574] [info] [engine] Shutting down current scene...
+[2025-04-15 15:04:55.577] [info] [engine] Performing final shutdown...
+[2025-04-15 15:04:55.581] [info] [graphics] Shutting down OpenGL...
+[2025-04-15 15:04:55.603] [info] [graphics] OpenGL shutdown complete
+[2025-04-15 15:04:55.604] [info] [engine] Shutdown complete
+[2025-04-15 15:04:55.604] [info] [engine] Shutting down logging system
+[2025-04-15 15:04:55.604] [info] [engine] Shutting down logging system
+[2025-04-15 15:08:53.617] [info] [engine] Logging system initialized
+[2025-04-15 15:08:53.618] [info] [engine] Starting application
+[2025-04-15 15:08:53.618] [info] [engine] Initializing engine systems
+[2025-04-15 15:08:53.618] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:08:53.764] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:08:53.764] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:08:53.765] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:08:53.765] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:08:53.766] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:08:53.766] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:08:53.767] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:08:53.767] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:08:53.768] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:08:53.768] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:08:53.769] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:08:53.770] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:08:53.770] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:08:53.771] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:08:53.771] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:08:53.772] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:08:53.772] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:08:53.772] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:08:53.773] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:08:53.774] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:08:53.774] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:08:53.775] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:08:53.775] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:08:54.333] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 15:08:54.530] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:54.532] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:08:55.225] [warning] [resource] Material has no name. Generating unique name: material_1826505945088
+[2025-04-15 15:08:55.226] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505945088'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:55.230] [warning] [resource] Material has no name. Generating unique name: material_1826505943088
+[2025-04-15 15:08:55.342] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505943088'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:55.348] [warning] [resource] Material has no name. Generating unique name: material_1826505943728
+[2025-04-15 15:08:55.434] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505943728'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:55.436] [warning] [resource] Material has no name. Generating unique name: material_1826505946448
+[2025-04-15 15:08:55.514] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505946448'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:55.514] [warning] [resource] Material has no name. Generating unique name: material_1826505952048
+[2025-04-15 15:08:55.632] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505952048'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:55.636] [warning] [resource] Material has no name. Generating unique name: material_1826505950288
+[2025-04-15 15:08:55.749] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505950288'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:55.753] [warning] [resource] Material has no name. Generating unique name: material_1826505948288
+[2025-04-15 15:08:55.883] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505948288'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:55.885] [warning] [resource] Material has no name. Generating unique name: material_1826505955328
+[2025-04-15 15:08:55.995] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505955328'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:56.001] [warning] [resource] Material has no name. Generating unique name: material_1826505838288
+[2025-04-15 15:08:56.117] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505838288'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:56.118] [warning] [resource] Material has no name. Generating unique name: material_1826505957408
+[2025-04-15 15:08:56.232] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505957408'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:56.235] [warning] [resource] Material has no name. Generating unique name: material_1826505965168
+[2025-04-15 15:08:56.365] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505965168'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:56.366] [warning] [resource] Material has no name. Generating unique name: material_1826505838768
+[2025-04-15 15:08:56.504] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505838768'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:56.508] [warning] [resource] Material has no name. Generating unique name: material_1826505954768
+[2025-04-15 15:08:56.612] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505954768'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:56.615] [warning] [resource] Material has no name. Generating unique name: material_1826505839968
+[2025-04-15 15:08:56.719] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505839968'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:56.724] [warning] [resource] Material has no name. Generating unique name: material_1826505958688
+[2025-04-15 15:08:56.856] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1826505958688'. Ignoring UNKNOWN texture.
+[2025-04-15 15:08:56.865] [warning] [resource] Material has no name. Generating unique name: materi[2025-04-15 15:10:11.159] [info] [engine] Logging system initialized
+[2025-04-15 15:10:11.160] [info] [engine] Starting application
+[2025-04-15 15:10:11.160] [info] [engine] Initializing engine systems
+[2025-04-15 15:10:11.160] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:10:11.326] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:10:11.327] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:10:11.330] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:10:11.330] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:10:11.332] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:10:11.343] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:10:11.346] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:10:11.347] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:10:11.347] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:10:11.348] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:10:11.350] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:10:11.352] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:10:11.359] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:10:11.362] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:10:11.364] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:10:11.367] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:10:11.370] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:10:11.373] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:10:11.376] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:10:11.376] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:10:11.377] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:10:11.379] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:10:11.380] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:10:11.934] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 15:10:12.134] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:12.137] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:10:12.821] [warning] [resource] Material has no name. Generating unique name: material_1476961911120
+[2025-04-15 15:10:13.011] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961911120'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:13.019] [warning] [resource] Material has no name. Generating unique name: material_1476961909040
+[2025-04-15 15:10:13.153] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961909040'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:13.162] [warning] [resource] Material has no name. Generating unique name: material_1476961907520
+[2025-04-15 15:10:13.250] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961907520'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:13.254] [warning] [resource] Material has no name. Generating unique name: material_1476961914960
+[2025-04-15 15:10:13.332] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961914960'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:13.333] [warning] [resource] Material has no name. Generating unique name: material_1476961915200
+[2025-04-15 15:10:13.454] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961915200'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:13.458] [warning] [resource] Material has no name. Generating unique name: material_1476961912960
+[2025-04-15 15:10:13.572] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961912960'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:13.576] [warning] [resource] Material has no name. Generating unique name: material_1476961921760
+[2025-04-15 15:10:13.709] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961921760'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:13.711] [warning] [resource] Material has no name. Generating unique name: material_1476961918480
+[2025-04-15 15:10:13.821] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961918480'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:13.829] [warning] [resource] Material has no name. Generating unique name: material_1476961935600
+[2025-04-15 15:10:13.945] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961935600'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:13.947] [warning] [resource] Material has no name. Generating unique name: material_1476961919760
+[2025-04-15 15:10:14.063] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961919760'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:14.066] [warning] [resource] Material has no name. Generating unique name: material_1476961928400
+[2025-04-15 15:10:14.199] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961928400'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:14.200] [warning] [resource] Material has no name. Generating unique name: material_1476961935760
+[2025-04-15 15:10:14.338] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961935760'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:14.342] [warning] [resource] Material has no name. Generating unique name: material_1476961921440
+[2025-04-15 15:10:14.448] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961921440'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:14.451] [warning] [resource] Material has no name. Generating unique name: material_1476961805440
+[2025-04-15 15:10:14.557] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961805440'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:14.562] [warning] [resource] Material has no name. Generating unique name: material_1476961928480
+[2025-04-15 15:10:14.695] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1476961928480'. Ignoring UNKNOWN texture.
+[2025-04-15 15:10:14.704] [warning] [resource] Material has no name. Generating unique name: materi[2025-04-15 15:12:40.953] [info] [engine] Logging system initialized
+[2025-04-15 15:12:40.954] [info] [engine] Starting application
+[2025-04-15 15:12:40.954] [info] [engine] Initializing engine systems
+[2025-04-15 15:12:40.954] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:12:41.117] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:12:41.119] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:12:41.121] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:12:41.121] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:12:41.122] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:12:41.123] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:12:41.123] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:12:41.124] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:12:41.125] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:12:41.126] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:12:41.126] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:12:41.127] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:12:41.128] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:12:41.128] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:12:41.129] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:12:41.129] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:12:41.130] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:12:41.131] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:12:41.131] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:12:41.132] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:12:41.133] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:12:41.133] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:12:41.134] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:12:41.688] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 15:12:41.886] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:41.888] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:12:42.572] [warning] [resource] Material has no name. Generating unique name: material_2294780053008
+[2025-04-15 15:12:42.760] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780053008'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:42.764] [warning] [resource] Material has no name. Generating unique name: material_2294780054128
+[2025-04-15 15:12:42.895] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780054128'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:42.901] [warning] [resource] Material has no name. Generating unique name: material_2294780053168
+[2025-04-15 15:12:42.986] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780053168'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:42.989] [warning] [resource] Material has no name. Generating unique name: material_2294780055408
+[2025-04-15 15:12:43.066] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780055408'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:43.067] [warning] [resource] Material has no name. Generating unique name: material_2294780058448
+[2025-04-15 15:12:43.185] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780058448'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:43.196] [warning] [resource] Material has no name. Generating unique name: material_2294780058048
+[2025-04-15 15:12:43.311] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780058048'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:43.314] [warning] [resource] Material has no name. Generating unique name: material_2294780061168
+[2025-04-15 15:12:43.443] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780061168'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:43.445] [warning] [resource] Material has no name. Generating unique name: material_2294780066448
+[2025-04-15 15:12:43.552] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780066448'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:43.559] [warning] [resource] Material has no name. Generating unique name: material_2294779950448
+[2025-04-15 15:12:43.674] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294779950448'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:43.675] [warning] [resource] Material has no name. Generating unique name: material_2294780067968
+[2025-04-15 15:12:43.790] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780067968'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:43.794] [warning] [resource] Material has no name. Generating unique name: material_2294780074928
+[2025-04-15 15:12:43.924] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780074928'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:43.924] [warning] [resource] Material has no name. Generating unique name: material_2294779945648
+[2025-04-15 15:12:44.065] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294779945648'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:44.069] [warning] [resource] Material has no name. Generating unique name: material_2294780065248
+[2025-04-15 15:12:44.174] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780065248'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:44.177] [warning] [resource] Material has no name. Generating unique name: material_2294779947488
+[2025-04-15 15:12:44.281] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294779947488'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:44.287] [warning] [resource] Material has no name. Generating unique name: material_2294780070528
+[2025-04-15 15:12:44.418] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2294780070528'. Ignoring UNKNOWN texture.
+[2025-04-15 15:12:44.428] [warning] [resource] Material has no name. Generating unique name: materi[2025-04-15 15:16:01.615] [info] [engine] Logging system initialized
+[2025-04-15 15:16:01.616] [info] [engine] Starting application
+[2025-04-15 15:16:01.616] [info] [engine] Initializing engine systems
+[2025-04-15 15:16:01.617] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:16:01.782] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:16:01.782] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:16:01.782] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:16:01.783] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:16:01.783] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:16:01.784] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:16:01.785] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:16:01.785] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:16:01.785] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:16:01.786] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:16:01.787] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:16:01.788] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:16:01.788] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:16:01.789] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:16:01.789] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:16:01.790] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:16:01.790] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:16:01.790] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:16:01.791] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:16:01.792] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:16:01.792] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:16:01.792] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:16:01.793] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:16:02.496] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:02.498] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:16:03.180] [warning] [resource] Material has no name. Generating unique name: material_2317291599776
+[2025-04-15 15:16:03.371] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291599776'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:03.375] [warning] [resource] Material has no name. Generating unique name: material_2317291608016
+[2025-04-15 15:16:03.504] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291608016'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:03.510] [warning] [resource] Material has no name. Generating unique name: material_2317291604336
+[2025-04-15 15:16:03.595] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291604336'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:03.598] [warning] [resource] Material has no name. Generating unique name: material_2317291603616
+[2025-04-15 15:16:03.675] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291603616'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:03.676] [warning] [resource] Material has no name. Generating unique name: material_2317291606176
+[2025-04-15 15:16:03.792] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291606176'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:03.797] [warning] [resource] Material has no name. Generating unique name: material_2317291612896
+[2025-04-15 15:16:03.911] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291612896'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:03.914] [warning] [resource] Material has no name. Generating unique name: material_2317291613136
+[2025-04-15 15:16:04.045] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291613136'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:04.048] [warning] [resource] Material has no name. Generating unique name: material_2317291611936
+[2025-04-15 15:16:04.156] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291611936'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:04.163] [warning] [resource] Material has no name. Generating unique name: material_2317291499216
+[2025-04-15 15:16:04.279] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291499216'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:04.280] [warning] [resource] Material has no name. Generating unique name: material_2317291614656
+[2025-04-15 15:16:04.394] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291614656'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:04.398] [warning] [resource] Material has no name. Generating unique name: material_2317291624016
+[2025-04-15 15:16:04.527] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291624016'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:04.528] [warning] [resource] Material has no name. Generating unique name: material_2317291629376
+[2025-04-15 15:16:04.664] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291629376'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:04.667] [warning] [resource] Material has no name. Generating unique name: material_2317291617936
+[2025-04-15 15:16:04.772] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291617936'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:04.775] [warning] [resource] Material has no name. Generating unique name: material_2317291496976
+[2025-04-15 15:16:04.877] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291496976'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:04.883] [warning] [resource] Material has no name. Generating unique name: material_2317291621376
+[2025-04-15 15:16:05.014] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2317291621376'. Ignoring UNKNOWN texture.
+[2025-04-15 15:16:05.023] [warning] [resource] Material has no name. Generating unique name: material_2317291614336
+[2025-04-15 15:16:05.141] [warning] [resource] Found UNKNOWN texture type but also sep[2025-04-15 15:18:25.797] [info] [engine] Logging system initialized
+[2025-04-15 15:18:25.799] [info] [engine] Starting application
+[2025-04-15 15:18:25.800] [info] [engine] Initializing engine systems
+[2025-04-15 15:18:25.801] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:18:25.954] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:18:25.954] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:18:25.955] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:18:25.955] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:18:25.956] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:18:25.956] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:18:25.957] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:18:25.958] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:18:25.958] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:18:25.959] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:18:25.959] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:18:25.960] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:18:25.961] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:18:25.961] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:18:25.962] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:18:25.962] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:18:25.962] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:18:25.963] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:18:25.963] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:18:25.964] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:18:25.964] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:18:25.965] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:18:25.965] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:18:26.661] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:26.663] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:18:27.336] [warning] [resource] Material has no name. Generating unique name: material_2249648096368
+[2025-04-15 15:18:27.524] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648096368'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:27.529] [warning] [resource] Material has no name. Generating unique name: material_2249648095008
+[2025-04-15 15:18:27.661] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648095008'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:27.672] [warning] [resource] Material has no name. Generating unique name: material_2249648093968
+[2025-04-15 15:18:27.761] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648093968'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:27.764] [warning] [resource] Material has no name. Generating unique name: material_2249648094688
+[2025-04-15 15:18:27.841] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648094688'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:27.841] [warning] [resource] Material has no name. Generating unique name: material_2249648098608
+[2025-04-15 15:18:27.958] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648098608'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:27.962] [warning] [resource] Material has no name. Generating unique name: material_2249648101408
+[2025-04-15 15:18:28.076] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648101408'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:28.079] [warning] [resource] Material has no name. Generating unique name: material_2249648097968
+[2025-04-15 15:18:28.208] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648097968'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:28.210] [warning] [resource] Material has no name. Generating unique name: material_2249648106528
+[2025-04-15 15:18:28.317] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648106528'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:28.323] [warning] [resource] Material has no name. Generating unique name: material_2249648118608
+[2025-04-15 15:18:28.438] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648118608'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:28.439] [warning] [resource] Material has no name. Generating unique name: material_2249648102288
+[2025-04-15 15:18:28.552] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648102288'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:28.556] [warning] [resource] Material has no name. Generating unique name: material_2249648115088
+[2025-04-15 15:18:28.686] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648115088'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:28.687] [warning] [resource] Material has no name. Generating unique name: material_2249648121888
+[2025-04-15 15:18:28.823] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648121888'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:28.826] [warning] [resource] Material has no name. Generating unique name: material_2249648106848
+[2025-04-15 15:18:28.934] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648106848'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:28.937] [warning] [resource] Material has no name. Generating unique name: material_2249648123648
+[2025-04-15 15:18:29.040] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648123648'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:29.045] [warning] [resource] Material has no name. Generating unique name: material_2249648107168
+[2025-04-15 15:18:29.176] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648107168'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:29.185] [warning] [resource] Material has no name. Generating unique name: material_2249648107008
+[2025-04-15 15:18:29.302] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648107008'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:29.309] [warning] [resource] Material has no name. Generating unique name: material_2249648116048
+[2025-04-15 15:18:29.431] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648116048'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:29.437] [warning] [resource] Material has no name. Generating unique name: material_2249648116928
+[2025-04-15 15:18:29.567] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648116928'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:29.574] [warning] [resource] Material has no name. Generating unique name: material_2249648115568
+[2025-04-15 15:18:29.697] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648115568'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:29.698] [warning] [resource] Material has no name. Generating unique name: material_2249648104448
+[2025-04-15 15:18:29.819] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648104448'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:29.824] [warning] [resource] Material has no name. Generating unique name: material_2249648117808
+[2025-04-15 15:18:29.958] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648117808'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:29.964] [warning] [resource] Material has no name. Generating unique name: material_2249648110768
+[2025-04-15 15:18:30.092] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648110768'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:30.098] [warning] [resource] Material has no name. Generating unique name: material_2249648055728
+[2025-04-15 15:18:30.251] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648055728'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:30.255] [warning] [resource] Material has no name. Generating unique name: material_2249648121328
+[2025-04-15 15:18:30.373] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2249648121328'. Ignoring UNKNOWN texture.
+[2025-04-15 15:18:30.373] [warning] [resource] Material has no name. Generating unique name: material_2249648109808
+[2025-04-15 15:18:30.375] [info] [resource] Successfully loaded model 'Sponza' from '../assets/Sponza/Sponza.gltf'
+[2025-04-15 15:18:30.402] [info] [graphics] Creating EnvironmentMap from HDR: ../assets/8ksky.hdr
+[2025-04-15 15:18:31.612] [info] [resource] Successfully loaded environment map 'default' from '../assets/8ksky.hdr'
+[2025-04-15 15:18:31.613] [info] [engine] Graphics resources loaded successfully
+[2025-04-15 15:18:31.615] [info] [engine] Creating test scene
+[2025-04-15 15:18:31.615] [info] [engine] Initializing scene
+[2025-04-15 15:18:31.615] [info] [engine] Initializing current scene...
+[2025-04-15 15:18:31.670] [info] [engine] Scene initialization complete
+[2025-04-15 15:18:31.670] [info] [engine] Entering main loop
+[2025-04-15 15:18:31.676] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-15 15:18:31.676] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-15 15:18:31.678] [warning] [graphics] Uniform 'depthThereshold' not found in shader program (ID: 31)
+[2025-04-15 15:18:31.680] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-15 15:19:43.367] [info] [engine] Shutting down
+[2025-04-15 15:19:43.368] [info] [engine] Shutting down current scene...
+[2025-04-15 15:19:43.371] [info] [engine] Performing final shutdown...
+[2025-04-15 15:19:43.384] [info] [graphics] Shutting down OpenGL...
+[2025-04-15 15:19:43.412] [info] [graphics] OpenGL shutdown complete
+[2025-04-15 15:19:43.412] [info] [engine] Shutdown complete
+[2025-04-15 15:19:43.412] [info] [engine] Shutting down logging system
+[2025-04-15 15:19:43.412] [info] [engine] Shutting down logging system
+[2025-04-15 15:21:27.765] [info] [engine] Logging system initialized
+[2025-04-15 15:21:27.765] [info] [engine] Starting application
+[2025-04-15 15:21:27.766] [info] [engine] Initializing engine systems
+[2025-04-15 15:21:27.766] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:21:27.925] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:21:27.925] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:21:27.926] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:21:27.926] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:21:27.927] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:21:27.927] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:21:27.928] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:21:27.928] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:21:27.929] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:21:27.930] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:21:27.930] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:21:27.931] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:21:27.932] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:21:27.932] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:21:27.933] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:21:27.933] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:21:27.934] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:21:27.934] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:21:27.935] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:21:27.935] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:21:27.935] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:21:27.936] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:21:27.936] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:21:28.593] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:32.448] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:21:33.142] [warning] [resource] Material has no name. Generating unique name: material_2304667087376
+[2025-04-15 15:21:33.191] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667087376'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:33.195] [warning] [resource] Material has no name. Generating unique name: material_2304667087856
+[2025-04-15 15:21:33.313] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667087856'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:33.320] [warning] [resource] Material has no name. Generating unique name: material_2304667090816
+[2025-04-15 15:21:33.417] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667090816'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:33.420] [warning] [resource] Material has no name. Generating unique name: material_2304667089536
+[2025-04-15 15:21:33.509] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667089536'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:33.510] [warning] [resource] Material has no name. Generating unique name: material_2304667095216
+[2025-04-15 15:21:33.641] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667095216'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:33.645] [warning] [resource] Material has no name. Generating unique name: material_2304667094336
+[2025-04-15 15:21:33.770] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667094336'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:33.774] [warning] [resource] Material has no name. Generating unique name: material_2304667093296
+[2025-04-15 15:21:33.913] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667093296'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:33.915] [warning] [resource] Material has no name. Generating unique name: material_2304667101216
+[2025-04-15 15:21:34.044] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667101216'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:34.051] [warning] [resource] Material has no name. Generating unique name: material_2304666980096
+[2025-04-15 15:21:34.182] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304666980096'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:34.184] [warning] [resource] Material has no name. Generating unique name: material_2304667099536
+[2025-04-15 15:21:34.311] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667099536'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:34.315] [warning] [resource] Material has no name. Generating unique name: material_2304666976256
+[2025-04-15 15:21:34.465] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304666976256'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:34.466] [warning] [resource] Material has no name. Generating unique name: material_2304666982336
+[2025-04-15 15:21:34.629] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304666982336'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:34.632] [warning] [resource] Material has no name. Generating unique name: material_2304667098976
+[2025-04-15 15:21:34.757] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304667098976'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:34.760] [warning] [resource] Material has no name. Generating unique name: material_2304666980976
+[2025-04-15 15:21:34.883] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304666980976'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:34.888] [warning] [resource] Material has no name. Generating unique name: material_2304666971376
+[2025-04-15 15:21:35.036] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_2304666971376'. Ignoring UNKNOWN texture.
+[2025-04-15 15:21:35.046] [warning] [resource] Material has no name. Generating unique name: material_2304667102416
+[2025-04-15 15:21:35.180] [warning] [resource] Found UNKNOWN texture type but also sep[2025-04-15 15:22:53.188] [info] [engine] Logging system initialized
+[2025-04-15 15:22:53.188] [info] [engine] Starting application
+[2025-04-15 15:22:53.189] [info] [engine] Initializing engine systems
+[2025-04-15 15:22:53.189] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:22:53.345] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:22:53.345] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:22:53.346] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:22:53.346] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:22:53.347] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:22:53.347] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:22:53.348] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:22:53.348] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:22:53.349] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:22:53.350] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:22:53.350] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:22:53.351] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:22:53.352] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:22:53.352] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:22:53.353] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:22:53.353] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:22:53.353] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:22:53.354] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:22:53.354] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:22:53.355] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:22:53.355] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:22:53.356] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:22:53.356] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:22:53.750] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'Material_MR'
+[2025-04-15 15:22:53.752] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:22:54.436] [warning] [resource] Material has no name. Generating unique name: material_1363209012736
+[2025-04-15 15:22:54.572] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209012736'
+[2025-04-15 15:22:54.576] [warning] [resource] Material has no name. Generating unique name: material_1363209015696
+[2025-04-15 15:22:54.668] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209015696'
+[2025-04-15 15:22:54.674] [warning] [resource] Material has no name. Generating unique name: material_1363209014016
+[2025-04-15 15:22:54.728] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209014016'
+[2025-04-15 15:22:54.730] [warning] [resource] Material has no name. Generating unique name: material_1363209019616
+[2025-04-15 15:22:54.781] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209019616'
+[2025-04-15 15:22:54.782] [warning] [resource] Material has no name. Generating unique name: material_1363209018816
+[2025-04-15 15:22:54.848] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209018816'
+[2025-04-15 15:22:54.852] [warning] [resource] Material has no name. Generating unique name: material_1363209020736
+[2025-04-15 15:22:54.915] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209020736'
+[2025-04-15 15:22:54.918] [warning] [resource] Material has no name. Generating unique name: material_1363209018656
+[2025-04-15 15:22:54.996] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209018656'
+[2025-04-15 15:22:54.998] [warning] [resource] Material has no name. Generating unique name: material_1363209024416
+[2025-04-15 15:22:55.064] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209024416'
+[2025-04-15 15:22:55.071] [warning] [resource] Material has no name. Generating unique name: material_1363208905296
+[2025-04-15 15:22:55.139] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363208905296'
+[2025-04-15 15:22:55.140] [warning] [resource] Material has no name. Generating unique name: material_1363209026976
+[2025-04-15 15:22:55.211] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209026976'
+[2025-04-15 15:22:55.215] [warning] [resource] Material has no name. Generating unique name: material_1363209034816
+[2025-04-15 15:22:55.295] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209034816'
+[2025-04-15 15:22:55.296] [warning] [resource] Material has no name. Generating unique name: material_1363208908016
+[2025-04-15 15:22:55.393] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363208908016'
+[2025-04-15 15:22:55.397] [warning] [resource] Material has no name. Generating unique name: material_1363209026496
+[2025-04-15 15:22:55.463] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209026496'
+[2025-04-15 15:22:55.466] [warning] [resource] Material has no name. Generating unique name: material_1363208910576
+[2025-04-15 15:22:55.529] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363208910576'
+[2025-04-15 15:22:55.535] [warning] [resource] Material has no name. Generating unique name: material_1363209030976
+[2025-04-15 15:22:55.614] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209030976'
+[2025-04-15 15:22:55.623] [warning] [resource] Material has no name. Generating unique name: material_1363209032096
+[2025-04-15 15:22:55.694] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209032096'
+[2025-04-15 15:22:55.701] [warning] [resource] Material has no name. Generating unique name: material_1363209035216
+[2025-04-15 15:22:55.782] [info] [resource] Using UNKNOWN texture type as potential packed Metal/Rough map for material 'material_1363209035216'
+[2025-04-15 15:22:55.788] [warning] [resource] Material has no name. Generating unique name: material_1363209036736
+[2025-04-15 15:22:55.866[2025-04-15 15:26:54.179] [info] [engine] Logging system initialized
+[2025-04-15 15:26:54.180] [info] [engine] Starting application
+[2025-04-15 15:26:54.180] [info] [engine] Initializing engine systems
+[2025-04-15 15:26:54.180] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:26:54.339] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:26:54.340] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:26:54.340] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:26:54.341] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:26:54.341] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:26:54.342] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:26:54.342] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:26:54.343] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:26:54.343] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:26:54.344] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:26:54.345] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:26:54.346] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:26:54.346] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:26:54.347] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:26:54.347] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:26:54.348] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:26:54.348] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:26:54.348] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:26:54.349] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:26:54.349] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:26:54.350] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:26:54.351] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:26:54.351] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:26:55.056] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'Material_MR'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:55.058] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:26:55.741] [warning] [resource] Material has no name. Generating unique name: material_1695919050080
+[2025-04-15 15:26:55.770] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919050080'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:55.774] [warning] [resource] Material has no name. Generating unique name: material_1695919052480
+[2025-04-15 15:26:55.885] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919052480'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:55.891] [warning] [resource] Material has no name. Generating unique name: material_1695919058400
+[2025-04-15 15:26:55.976] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919058400'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:55.979] [warning] [resource] Material has no name. Generating unique name: material_1695919053680
+[2025-04-15 15:26:56.056] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919053680'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:56.057] [warning] [resource] Material has no name. Generating unique name: material_1695919053600
+[2025-04-15 15:26:56.175] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919053600'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:56.183] [warning] [resource] Material has no name. Generating unique name: material_1695919057920
+[2025-04-15 15:26:56.298] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919057920'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:56.306] [warning] [resource] Material has no name. Generating unique name: material_1695919058960
+[2025-04-15 15:26:56.440] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919058960'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:56.442] [warning] [resource] Material has no name. Generating unique name: material_1695919062800
+[2025-04-15 15:26:56.549] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919062800'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:56.556] [warning] [resource] Material has no name. Generating unique name: material_1695919076400
+[2025-04-15 15:26:56.671] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919076400'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:56.673] [warning] [resource] Material has no name. Generating unique name: material_1695919060640
+[2025-04-15 15:26:56.788] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919060640'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:56.792] [warning] [resource] Material has no name. Generating unique name: material_1695919071600
+[2025-04-15 15:26:56.921] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919071600'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:56.922] [warning] [resource] Material has no name. Generating unique name: material_1695919077680
+[2025-04-15 15:26:57.059] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919077680'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:57.063] [warning] [resource] Material has no name. Generating unique name: material_1695919061200
+[2025-04-15 15:26:57.167] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919061200'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:57.170] [warning] [resource] Material has no name. Generating unique name: material_1695919079600
+[2025-04-15 15:26:57.274] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919079600'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:57.279] [warning] [resource] Material has no name. Generating unique name: material_1695919072480
+[2025-04-15 15:26:57.418] [warning] [resource] Found UNKNOWN texture type but also separate Metal/Rough maps for material 'material_1695919072480'. Ignoring UNKNOWN texture.
+[2025-04-15 15:26:57.427] [warning] [resource] Material has no name. Generating unique name: material_1695919063760
+[2025-04-15 15:26:57.546] [warning] [resource] Found UNKNOWN texture type but also sep[2025-04-15 15:28:40.996] [info] [engine] Logging system initialized
+[2025-04-15 15:28:40.996] [info] [engine] Starting application
+[2025-04-15 15:28:40.996] [info] [engine] Initializing engine systems
+[2025-04-15 15:28:40.997] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:28:41.158] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:28:41.158] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:28:41.159] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:28:41.160] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:28:41.160] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:28:41.161] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:28:41.161] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:28:41.162] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:28:41.162] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:28:41.163] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:28:41.164] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:28:41.165] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:28:41.165] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:28:41.166] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:28:41.166] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:28:41.167] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:28:41.167] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:28:41.167] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:28:41.168] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:28:41.168] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:28:41.169] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:28:41.169] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:28:41.170] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:28:41.566] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:28:42.263] [warning] [resource] Material has no name. Generating unique name: material_1812228880032
+[2025-04-15 15:28:42.400] [warning] [resource] Material has no name. Generating unique name: material_1812228878992
+[2025-04-15 15:28:42.498] [warning] [resource] Material has no name. Generating unique name: material_1812228880592
+[2025-04-15 15:28:42.556] [warning] [resource] Material has no name. Generating unique name: material_1812228881872
+[2025-04-15 15:28:42.607] [warning] [resource] Material has no name. Generating unique name: material_1812228885152
+[2025-04-15 15:28:42.677] [warning] [resource] Material has no name. Generating unique name: material_1812228887632
+[2025-04-15 15:28:42.742] [warning] [resource] Material has no name. Generating unique name: material_1812228884192
+[2025-04-15 15:28:42.819] [warning] [resource] Material has no name. Generating unique name: material_1812228889312
+[2025-04-15 15:28:42.890] [warning] [resource] Material has no name. Generating unique name: material_1812228906352
+[2025-04-15 15:28:42.958] [warning] [resource] Material has no name. Generating unique name: material_1812228893872
+[2025-04-15 15:28:43.031] [warning] [resource] Material has no name. Generating unique name: material_1812228903392
+[2025-04-15 15:28:43.109] [warning] [resource] Material has no name. Generating unique name: material_1812228905792
+[2025-04-15 15:28:43.208] [warning] [resource] Material has no name. Generating unique name: material_1812228890272
+[2025-04-15 15:28:43.276] [warning] [resource] Material has no name. Generating unique name: material_1812228909552
+[2025-04-15 15:28:43.346] [warning] [resource] Material has no name. Generating unique name: material_1812228897632
+[2025-04-15 15:28:43.432] [warning] [resource] Material has no name. Generating unique name: material_1812228898192
+[2025-04-15 15:28:43.509] [warning] [resource] Material has no name. Generating unique name: material_1812228903872
+[2025-04-15 15:28:43.596] [warning] [resource] Material has no name. Generating unique name: material_1812228899552
+[2025-04-15 15:28:43.681] [warning] [resource] Material has no name. Generating unique name: material_1812228900192
+[2025-04-15 15:28:43.761] [warning] [resource] Material has no name. Generating unique name: material_1812228892752
+[2025-04-15 15:28:43.833] [warning] [resource] Material has no name. Generating unique name: material_1812228906912
+[2025-04-15 15:28:43.918] [warning] [resource] Material has no name. Generating unique name: material_1812228895072
+[2025-04-15 15:28:43.998] [warning] [resource] Material has no name. Generating unique name: material_1812228778592
+[2025-04-15 15:28:44.094] [warning] [resource] Material has no name. Generating unique name: material_1812228904592
+[2025-04-15 15:28:44.165] [warning] [resource] Material has no name. Generating unique name: material_1812228895792
+[2025-04-15 15:28:44.166] [info] [resource] Successfully loaded model 'Sponza' from '../assets/Sponza/Sponza.gltf'
+[2025-04-15 15:28:44.196] [info] [graphics] Creating EnvironmentMap from HDR: ../assets/8ksky.hdr
+[2025-04-15 15:28:45.364] [info] [resource] Successfully loaded environment map 'default' from '../assets/8ksky.hdr'
+[2025-04-15 15:28:45.364] [info] [engine] Graphics resources loaded successfully
+[2025-04-15 15:28:45.364] [info] [engine] Creating test scene
+[2025-04-15 15:28:45.364] [info] [engine] Initializing scene
+[2025-04-15 15:28:45.364] [info] [engine] Initializing current scene...
+[2025-04-15 15:28:45.420] [info] [engine] Scene initialization complete
+[2025-04-15 15:28:45.420] [info] [engine] Entering main loop
+[2025-04-15 15:28:45.428] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-15 15:28:45.428] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-15 15:28:45.431] [warning] [graphics] Uniform 'depthThereshold' not found in shader program (ID: 31)
+[2025-04-15 15:28:45.436] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-15 15:29:45.992] [info] [engine] Shutting down
+[2025-04-15 15:29:45.992] [info] [engine] Shutting down current scene...
+[2025-04-15 15:29:45.997] [info] [engine] Performing final shutdown...
+[2025-04-15 15:29:46.001] [info] [graphics] Shutting down OpenGL...
+[2025-04-15 15:29:46.024] [info] [graphics] OpenGL shutdown complete
+[2025-04-15 15:29:46.024] [info] [engine] Shutdown complete
+[2025-04-15 15:29:46.024] [info] [engine] Shutting down logging system
+[2025-04-15 15:29:46.024] [info] [engine] Shutting down logging system
+[2025-04-15 15:30:27.544] [info] [engine] Logging system initialized
+[2025-04-15 15:30:27.545] [info] [engine] Starting application
+[2025-04-15 15:30:27.545] [info] [engine] Initializing engine systems
+[2025-04-15 15:30:27.547] [info] [graphics] Initializing OpenGL...
+[2025-04-15 15:30:27.698] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 15:30:27.698] [info] [engine] OpenGL initialized successfully
+[2025-04-15 15:30:27.699] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 15:30:27.699] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 15:30:27.700] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 15:30:27.700] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 15:30:27.701] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 15:30:27.701] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 15:30:27.702] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 15:30:27.703] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 15:30:27.703] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 15:30:27.704] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 15:30:27.705] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 15:30:27.705] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 15:30:27.706] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 15:30:27.706] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 15:30:27.706] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 15:30:27.707] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 15:30:27.707] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 15:30:27.708] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 15:30:27.708] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 15:30:27.709] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 15:30:27.709] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 15:30:27.959] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 15:30:28.157] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 15:30:28.844] [warning] [resource] Material has no name. Generating unique name: material_1925366761536
+[2025-04-15 15:30:28.876] [warning] [resource] Material has no name. Generating unique name: material_1925366766496
+[2025-04-15 15:30:28.953] [warning] [resource] Material has no name. Generating unique name: material_1925366770176
+[2025-04-15 15:30:29.009] [warning] [resource] Material has no name. Generating unique name: material_1925366770016
+[2025-04-15 15:30:29.061] [warning] [resource] Material has no name. Generating unique name: material_1925366768736
+[2025-04-15 15:30:29.130] [warning] [resource] Material has no name. Generating unique name: material_1925366772896
+[2025-04-15 15:30:29.196] [warning] [resource] Material has no name. Generating unique name: material_1925366773856
+[2025-04-15 15:30:29.273] [warning] [resource] Material has no name. Generating unique name: material_1925366773936
+[2025-04-15 15:30:29.343] [warning] [resource] Material has no name. Generating unique name: material_1925366660256
+[2025-04-15 15:30:29.411] [warning] [resource] Material has no name. Generating unique name: material_1925366773296
+[2025-04-15 15:30:29.483] [warning] [resource] Material has no name. Generating unique name: material_1925366787056
+[2025-04-15 15:30:29.562] [warning] [resource] Material has no name. Generating unique name: material_1925366653376
+[2025-04-15 15:30:29.661] [warning] [resource] Material has no name. Generating unique name: material_1925366780336
+[2025-04-15 15:30:29.730] [warning] [resource] Material has no name. Generating unique name: material_1925366659776
+[2025-04-15 15:30:29.798] [warning] [resource] Material has no name. Generating unique name: material_1925366785536
+[2025-04-15 15:30:29.884] [warning] [resource] Material has no name. Generating unique name: material_1925366778416
+[2025-04-15 15:30:29.961] [warning] [resource] Material has no name. Generating unique name: material_1925366787616
+[2025-04-15 15:30:30.047] [warning] [resource] Material has no name. Generating unique name: material_1925366782336
+[2025-04-15 15:30:30.130] [warning] [resource] Material has no name. Generating unique name: material_1925366654016
+[2025-04-15 15:30:30.213] [warning] [resource] Material has no name. Generating unique name: material_1925366780656
+[2025-04-15 15:30:30.285] [warning] [resource] Material has no name. Generating unique name: material_1925366657136
+[2025-04-15 15:30:30.371] [warning] [resource] Material has no name. Generating unique name: material_1925366783536
+[2025-04-15 15:30:30.449] [warning] [resource] Material has no name. Generating unique name: material_1925366658896
+[2025-04-15 15:30:30.543] [warning] [resource] Material has no name. Generating unique name: material_1925366659616
+[2025-04-15 15:30:30.619] [warning] [resource] Material has no name. Generating unique name: material_1925366784256
+[2025-04-15 15:30:30.621] [info] [resource] Successfully loaded model 'Sponza' from '../assets/Sponza/Sponza.gltf'
+[2025-04-15 15:30:30.650] [info] [graphics] Creating EnvironmentMap from HDR: ../assets/8ksky.hdr
+[2025-04-15 15:30:31.790] [info] [resource] Successfully loaded environment map 'default' from '../assets/8ksky.hdr'
+[2025-04-15 15:30:31.790] [info] [engine] Graphics resources loaded successfully
+[2025-04-15 15:30:31.790] [info] [engine] Creating test scene
+[2025-04-15 15:30:31.790] [info] [engine] Initializing scene
+[2025-04-15 15:30:31.791] [info] [engine] Initializing current scene...
+[2025-04-15 15:30:31.846] [info] [engine] Scene initialization complete
+[2025-04-15 15:30:31.846] [info] [engine] Entering main loop
+[2025-04-15 15:30:31.853] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-15 15:30:31.853] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-15 15:30:31.854] [warning] [graphics] Uniform 'material.aoMap' not found in shader program (ID: 19)
+[2025-04-15 15:30:31.856] [warning] [graphics] Uniform 'depthThereshold' not found in shader program (ID: 31)
+[2025-04-15 15:30:31.859] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-15 15:34:54.587] [info] [engine] Shutting down
+[2025-04-15 15:34:54.587] [info] [engine] Shutting down current scene...
+[2025-04-15 15:34:54.592] [info] [engine] Performing final shutdown...
+[2025-04-15 15:34:54.597] [info] [graphics] Shutting down OpenGL...
+[2025-04-15 15:34:54.621] [info] [graphics] OpenGL shutdown complete
+[2025-04-15 15:34:54.621] [info] [engine] Shutdown complete
+[2025-04-15 15:34:54.621] [info] [engine] Shutting down logging system
+[2025-04-15 15:34:54.622] [info] [engine] Shutting down logging system
+[2025-04-15 16:10:44.852] [info] [engine] Logging system initialized
+[2025-04-15 16:10:44.853] [info] [engine] Starting application
+[2025-04-15 16:10:44.853] [info] [engine] Initializing engine systems
+[2025-04-15 16:10:44.853] [info] [graphics] Initializing OpenGL...
+[2025-04-15 16:10:45.006] [info] [graphics] OpenGL initialized successfully
+[2025-04-15 16:10:45.006] [info] [engine] OpenGL initialized successfully
+[2025-04-15 16:10:45.007] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-15 16:10:45.007] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-15 16:10:45.008] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-15 16:10:45.009] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-15 16:10:45.009] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-15 16:10:45.010] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-15 16:10:45.010] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/depth.vert and Shaders/depth.frag
+[2025-04-15 16:10:45.011] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-15 16:10:45.012] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-15 16:10:45.013] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-15 16:10:45.014] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-15 16:10:45.014] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/motionblur.vert and Shaders/motionblur.frag
+[2025-04-15 16:10:45.015] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-15 16:10:45.015] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-15 16:10:45.015] [info] [graphics] Successfully created compute shader program (ID: 45) from Shaders/luminance.comp
+[2025-04-15 16:10:45.016] [info] [graphics] Successfully created compute shader program (ID: 47) from Shaders/adaptation.comp
+[2025-04-15 16:10:45.017] [info] [graphics] Successfully created shader program (ID: 50) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-15 16:10:45.017] [info] [graphics] Successfully created shader program (ID: 53) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-15 16:10:45.017] [info] [graphics] Successfully created shader program (ID: 56) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-15 16:10:45.018] [info] [graphics] Successfully created shader program (ID: 59) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-15 16:10:45.018] [info] [graphics] Successfully created shader program (ID: 62) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-15 16:10:45.267] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-15 16:10:45.466] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-15 16:10:46.153] [warning] [resource] Material has no name. Generating unique name: material_2708549395984
+[2025-04-15 16:10:46.290] [warning] [resource] Material has no name. Generating unique name: material_2708549396224
+[2025-04-15 16:10:46.386] [warning] [resource] Material has no name. Generating unique name: material_2708549398384
+[2025-04-15 16:10:46.442] [warning] [resource] Material has no name. Generating unique name: material_2708549400944
+[2025-04-15 16:10:46.492] [warning] [resource] Material has no name. Generating unique name: material_2708549403904
+[2025-04-15 16:10:46.562] [warning] [resource] Material has no name. Generating unique name: material_2708549403424
+[2025-04-15 16:10:46.627] [warning] [resource] Material has no name. Generating unique name: material_2708549404224
+[2025-04-15 16:10:46.705] [warning] [resource] Material has no name. Generating unique name: material_2708549406304
+[2025-04-15 16:10:46.776] [warning] [resource] Material has no name. Generating unique name: material_2708549292944
+[2025-04-15 16:10:46.844] [warning] [resource] Material has no name. Generating unique name: material_2708549409344
+[2025-04-15 16:10:46.916] [warning] [resource] Material has no name. Generating unique name: material_2708549416784
+[2025-04-15 16:10:46.994] [warning] [resource] Material has no name. Generating unique name: material_2708549288384
+[2025-04-15 16:10:47.094] [warning] [resource] Material has no name. Generating unique name: material_2708549408304
+[2025-04-15 16:10:47.163] [warning] [resource] Material has no name. Generating unique name: material_2708549289584
+[2025-04-15 16:10:47.231] [warning] [resource] Material has no name. Generating unique name: material_2708549413664
+[2025-04-15 16:10:47.319] [warning] [resource] Material has no name. Generating unique name: material_2708549412144
+[2025-04-15 16:10:47.396] [warning] [resource] Material has no name. Generating unique name: material_2708549416464
+[2025-04-15 16:10:47.482] [warning] [resource] Material has no name. Generating unique name: material_2708549418544
+[2025-04-15 16:10:47.567] [warning] [resource] Material has no name. Generating unique name: material_2708549418064
+[2025-04-15 16:10:47.649] [warning] [resource] Material has no name. Generating unique name: material_2708549407104
+[2025-04-15 16:10:47.721] [warning] [resource] Material has no name. Generating unique name: material_2708549422624
+[2025-04-15 16:10:47.807] [warning] [resource] Material has no name. Generating unique name: material_2708549413504
+[2025-04-15 16:10:47.885] [warning] [resource] Material has no name. Generating unique name: material_2708549365104
+[2025-04-15 16:10:47.982] [warning] [resource] Material has no name. Generating unique name: material_2708549293344
+[2025-04-15 16:10:48.053] [warning] [resource] Material has no name. Generating unique name: material_2708549414384
+[2025-04-15 16:10:48.054] [info] [resource] Successfully loaded model 'Sponza' from '../assets/Sponza/Sponza.gltf'
+[2025-04-15 16:10:48.082] [info] [graphics] Creating EnvironmentMap from HDR: ../assets/8ksky.hdr
+[2025-04-15 16:10:49.249] [info] [resource] Successfully loaded environment map 'default' from '../assets/8ksky.hdr'
+[2025-04-15 16:10:49.249] [info] [engine] Graphics resources loaded successfully
+[2025-04-15 16:10:49.249] [info] [engine] Creating test scene
+[2025-04-15 16:10:49.249] [info] [engine] Initializing scene
+[2025-04-15 16:10:49.249] [info] [engine] Initializing current scene...
+[2025-04-15 16:10:49.303] [info] [engine] Scene initialization complete
+[2025-04-15 16:10:49.303] [info] [engine] Entering main loop
+[2025-04-15 16:10:49.314] [warning] [graphics] Uniform 'material.displacementScale' not found in shader program (ID: 19)
+[2025-04-15 16:10:49.314] [warning] [graphics] Uniform 'material.hasDisplacementMap' not found in shader program (ID: 19)
+[2025-04-15 16:10:49.315] [warning] [graphics] Uniform 'material.aoMap' not found in shader program (ID: 19)
+[2025-04-15 16:10:49.320] [warning] [graphics] Uniform 'depthThereshold' not found in shader program (ID: 31)
+[2025-04-15 16:10:49.330] [warning] [graphics] Uniform 'test' not found in shader program (ID: 50)
+[2025-04-15 16:16:37.377] [info] [engine] Shutting down
+[2025-04-15 16:16:37.378] [info] [engine] Shutting down current scene...
+[2025-04-15 16:16:37.382] [info] [engine] Performing final shutdown...
+[2025-04-15 16:16:37.386] [info] [graphics] Shutting down OpenGL...
+[2025-04-15 16:16:37.413] [info] [graphics] OpenGL shutdown complete
+[2025-04-15 16:16:37.413] [info] [engine] Shutdown complete
+[2025-04-15 16:16:37.413] [info] [engine] Shutting down logging system
+[2025-04-15 16:16:37.414] [info] [engine] Shutting down logging system

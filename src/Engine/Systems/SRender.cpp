@@ -1298,7 +1298,7 @@ void SRender::motionBlurPass()
        mLuminanceHistogramUBO->setData(&histogramData, sizeof(LuminanceHistogramData));
 
        // Bind SSBO (shader storage buffer object)
-       //mLuminanceSSBO->bind(LUMINANCE_SSBO_BINDING);
+       mLuminanceSSBO->bind(LUMINANCE_SSBO_BINDING);
 
        // Dispatch compute shader with appropriate group count
        // Each group is 16x16 threads, so we divide the screen dimensions by 16 (with ceiling)
@@ -1325,7 +1325,7 @@ void SRender::motionBlurPass()
        mAdaptationDataUBO->setData(&adaptationData, sizeof(LuminanceHistogramAverageData));
 
        // Bind SSBO and adapted luminance texture
-       //mLuminanceSSBO->bind(LUMINANCE_SSBO_BINDING);
+       mLuminanceSSBO->bind(LUMINANCE_SSBO_BINDING);
        GL_CHECK(glBindImageTexture(1, mAdaptedLuminance->getTextureID(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F));
 
        // Dispatch a single workgroup (16x16x1) for reduction/adaptation

@@ -65,6 +65,11 @@ ShaderStorageBuffer& ShaderStorageBuffer::operator=(ShaderStorageBuffer&& other)
 	return *this;
 }
 
+void ShaderStorageBuffer::bind(unsigned int binding) const
+{
+	GL_CHECK(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, mID));
+}
+
 void ShaderStorageBuffer::unbind() const
 {
 	// Unbind the generic target, not a specific index

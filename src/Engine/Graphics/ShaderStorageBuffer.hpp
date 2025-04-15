@@ -13,6 +13,7 @@ public:
 	ShaderStorageBuffer(ShaderStorageBuffer&& other) noexcept;
 	ShaderStorageBuffer& operator=(ShaderStorageBuffer&& other) noexcept;
 
+	void bind(unsigned int binding) const;
 	void unbind() const;
 	void setData(const void* data, unsigned int size, unsigned int offset = 0);
 	void clear() ;

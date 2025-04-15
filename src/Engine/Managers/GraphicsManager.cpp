@@ -8,8 +8,7 @@
 #include <functional>
 #include <Material.hpp>
 #include <Texture.hpp>
-#include <string_view> // Include for potential future use
-#include "Engine/Util/Logging.hpp" // For ASSERT_LOG
+#include "Engine/Util/Logging.hpp"
 
 
 GraphicsManager::~GraphicsManager()
@@ -41,6 +40,7 @@ void GraphicsManager::loadResources()
 	auto prefilterShader = loadShader("Shaders/cubemap.vert", "Shaders/prefilter.frag", "prefilter");
 	auto brdfShader = loadShader("Shaders/brdf.vert", "Shaders/brdf.frag", "brdf");
 
+	loadModel("../assets/Helmet/DamagedHelmet.gltf", "Helmet");
 	loadModel("../assets/Sponza/Sponza.gltf", "Sponza");
 	loadEnvironmentMap("default", "../assets/8ksky.hdr", equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
 	
@@ -85,27 +85,21 @@ void GraphicsManager::clear()
 
 std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string name)
 {
-	// Load and compile shader - Constructor should log errors if compilation fails
 	auto shader = std::make_shared<Shader>(vertexPath, fragmentPath);
-	// Cache the shader regardless of compilation status; let renderer handle invalid shaders.
 	mShaderMap[name] = shader;
 	return shader;
 }
 
 std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath, std::string name)
 {
-	// Load and compile shader - Constructor should log errors if compilation fails
 	auto shader = std::make_shared<Shader>(vertexPath, fragmentPath, geometryPath);
-	// Cache the shader regardless of compilation status; let renderer handle invalid shaders.
 	mShaderMap.emplace(name, shader);
 	return shader;
 }
 
 std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view computePath, std::string name)
 {
-	// Load and compile shader - Constructor should log errors if compilation fails
 	auto shader = std::make_shared<Shader>(computePath);
-	// Cache the shader regardless of compilation status; let renderer handle invalid shaders.
 	mShaderMap.emplace(name, shader);
 	return shader;
 }
@@ -124,7 +118,6 @@ std::shared_ptr<Shader> GraphicsManager::getShader(const std::string& name)
 	}
 }
 
-// Texture management
 
 std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
 	aiTextureType type,
@@ -245,9 +238,6 @@ std::shared_ptr<Material> GraphicsManager::getMaterial(const std::string& name)
 	}
 }
 
-// Mesh management
-
-// Model and Scene management
 
 
 std::shared_ptr<Model> GraphicsManager::getModel(const std::string& name)
@@ -308,11 +298,8 @@ std::shared_ptr<Model> GraphicsManager::loadModel(std::string_view path, std::st
 
 	if (meshInstances.empty()) {
 		LOG_WARN(logging::gResourceLogger, "No meshes processed for model '{}' from path '{}'. Check model file or processing logic.", name, path);
-		// Return an empty model instead of nullptr? Depends on desired behavior.
-        // For now, continue and create an empty model.
 	}
 
-	// Create the model with mesh instances
 	auto model = std::make_shared<Model>(std::move(meshInstances));
 	model->setName(name);
 	mModelMap.emplace(std::move(name), model); // Use emplace and move name
@@ -438,11 +425,9 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
 	auto material = std::make_shared<Material>();
 	material->setName(material_name_str); // Set name early
 
-	// --- Extract Material Properties ---
 	aiColor4D color;
 	float float_val;
 
-	// Base color/albedo (PBR primary)
 	if (aiGetMaterialColor(mat, AI_MATKEY_BASE_COLOR, &color) == AI_SUCCESS) {
 		material->setAlbedo(glm::vec4(color.r, color.g, color.b, color.a));
 	} // Fallback to legacy diffuse
@@ -508,7 +493,6 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
          material->setReflectivity(0.0f); // Default reflectivity
     }
 
-	// --- Load Textures ---
 	auto loadTextureType = [&](aiTextureType texType) -> std::shared_ptr<Texture> {
         auto textures = loadMaterialTextures(mat, texType, directory, scene);
         if (!textures.empty()) {
@@ -539,9 +523,7 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
          }
     }
 
-    // PBR Textures
-	material->setMetallicTexture(loadTextureType(aiTextureType_METALNESS));
-	material->setRoughnessTexture(loadTextureType(aiTextureType_DIFFUSE_ROUGHNESS)); // Correct Assimp type for roughness
+
 
 	// AO Texture (Check standard AO then Lightmap as fallback common in glTF)
 	material->setAOTexture(loadTextureType(aiTextureType_AMBIENT_OCCLUSION));
@@ -561,17 +543,17 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
     // Displacement Texture
 	material->setDisplacementTexture(loadTextureType(aiTextureType_DISPLACEMENT));
 
-	// Handle combined metallic-roughness texture (often aiTextureType_UNKNOWN for glTF ORM)
-	auto metalRoughTexture = loadTextureType(aiTextureType_UNKNOWN);
-    if (metalRoughTexture) {
-        // Heuristic: If separate metallic/roughness maps weren't loaded, assume this is packed ORM.
-        if (!material->getMetallicTexture() && !material->getRoughnessTexture()) {
-            material->setMetalRoughTexture(metalRoughTexture);
-             LOG_INFO(logging::gResourceLogger, "Using UNKNOWN texture type as potential packed Metal/Rough map for material '{}'", material_name_str);
-        } else {
-            LOG_WARN(logging::gResourceLogger, "Found UNKNOWN texture type but also separate Metal/Rough maps for material '{}'. Ignoring UNKNOWN texture.", material_name_str);
-        }
-    }
+
+	material->setMetalRoughTexture(loadTextureType(aiTextureType_UNKNOWN));
+
+
+	// PBR Textures
+	if (!material->getMetalRoughTexture())
+	{
+		material->setMetallicTexture(loadTextureType(aiTextureType_METALNESS));
+		material->setRoughnessTexture(loadTextureType(aiTextureType_DIFFUSE_ROUGHNESS)); // Correct Assimp type for roughness
+	}
+
 
 
 	// Store in material map
@@ -641,16 +623,10 @@ std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
 
 		if (texture)
 		{
-            // Apply specific sampler parameters based on texture type AFTER loading/retrieval
-            // This ensures parameters are set even if the texture was cached.
-            // Example: Set normal maps to use appropriate sampler settings
             if (type == aiTextureType_NORMALS || type == aiTextureType_HEIGHT || type == aiTextureType_DISPLACEMENT)
             {
-                // Assuming Texture class has this method to set sampler parameters
                 texture->setNormalSamplerParameters();
             }
-            // Add more parameter settings for other types if needed
-
 			textures.push_back(texture);
 		}
 		else
@@ -749,5 +725,3 @@ glm::mat4 GraphicsManager::aiMatrixToGlm(const aiMatrix4x4& aiMat)
 	mat[0][3] = aiMat.a4; mat[1][3] = aiMat.b4; mat[2][3] = aiMat.c4; mat[3][3] = aiMat.d4;
 	return mat;
 }
-
-// Removed placeholder comments about isLoaded/isCompiled and MeshInstance constructor
