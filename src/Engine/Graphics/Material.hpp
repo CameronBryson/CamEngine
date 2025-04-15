@@ -38,8 +38,6 @@ public:
 	void setEmissiveIntensity(float value)  { mEmissiveIntensity = value; }
 	float getEmissiveIntensity() const  { return mEmissiveIntensity; }
 
-	void setDisplacementScale(float value)  { mDisplacementScale = value; }
-	float getDisplacementScale() const  { return mDisplacementScale; }
 
 	void setReflectivity(float value)  { mReflectivity = value; }
 	float getReflectivity() const  { return mReflectivity; }
@@ -60,8 +58,6 @@ public:
 	std::shared_ptr<Texture> getMetalRoughTexture() const  { return mMetalRoughTexture; }
 	void setOpacityTexture(std::shared_ptr<Texture> texture)  { mOpacityTexture = texture; }
 	std::shared_ptr<Texture> getOpacityTexture() const  { return mOpacityTexture; }
-	void setDisplacementTexture(std::shared_ptr<Texture> texture)  { mDisplacementTexture = texture; }
-	std::shared_ptr<Texture> getDisplacementTexture() const  { return mDisplacementTexture; }
 
 private:
 	glm::vec4 mAlbedo = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
@@ -70,7 +66,6 @@ private:
 	float mRoughness = 0.5f;
 	glm::vec3 mEmissiveColor = glm::vec3(0.0f);
 	float mEmissiveIntensity = 0.0f;
-	float mDisplacementScale = 0.1f;
 	float mReflectivity = 0.2f;
 	std::string mName;
 
@@ -82,7 +77,6 @@ private:
 	std::shared_ptr<Texture> mEmissiveTexture = nullptr;
 	std::shared_ptr<Texture> mMetalRoughTexture = nullptr;
 	std::shared_ptr<Texture> mOpacityTexture = nullptr;
-	std::shared_ptr<Texture> mDisplacementTexture = nullptr;
 	std::shared_ptr<Shader> mShader = nullptr;
 };
 

@@ -24,7 +24,6 @@ struct Material {
     bool hasAOMap;
     bool hasEmissiveMap;
     bool hasOpacityMap;
-    bool hasDisplacementMap;
 
     sampler2D albedoMap;
     sampler2D normalMap;
@@ -34,7 +33,6 @@ struct Material {
     sampler2D AOMap;
     sampler2D emissiveMap;
     sampler2D opacityMap;
-    sampler2D displacementMap;
 
     vec4  albedo;
     float metallic;
@@ -42,7 +40,6 @@ struct Material {
     float opacity;
     vec3  emissiveColor;
     float emissiveIntensity;
-    float displacementScale;
     float reflectivity;
 };
 

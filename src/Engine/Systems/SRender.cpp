@@ -756,7 +756,7 @@ void SRender::ssaoPass()
     blurShader->setInt("gNormalMetallic", SSAOSlots::NORMAL_METALLIC);
     blurShader->setInt("gDepth", SSAOSlots::DEPTH);
     blurShader->setFloat("blurRadius", mSSAOBlurRadius);
-    blurShader->setFloat("depthThereshold", mSSAOBlurDepthThreshold);
+    blurShader->setFloat("depthThreshold", mSSAOBlurDepthThreshold);
     blurShader->setFloat("normalThreshold", mSSAOBlurNormalThreshold);
 
     gl::drawQuad();
@@ -1241,7 +1241,6 @@ void SRender::motionBlurPass()
 	   mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR);
 	   ssrShader->setInt("gSceneColor", PostProcessSlots::HDR);
 
-       ssrShader->setBool("test", test);
        ssrShader->setFloat("uReflectionIntensity", mSSRReflectionIntensity);
 	   ssrShader->setFloat("uRayThickness", mSSRRayThickness);
 	   ssrShader->setInt("uMaxRaySteps", mSSRMaxRaySteps);
@@ -1746,7 +1745,6 @@ void SRender::drawImGui()
 
     ImGui::Separator();
     ImGui::Checkbox("Enable normalmaps", &normalMapping);
-	ImGui::Checkbox("Test", &test);
     ImGui::End();
     // Performance Statistics Window
     // Performance Statistics Window

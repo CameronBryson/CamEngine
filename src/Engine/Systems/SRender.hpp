@@ -186,6 +186,5 @@ private:
 
 
     bool normalMapping = true;
-    bool test = true;
 
 };

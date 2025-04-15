@@ -223,7 +223,7 @@ vec3 computeIBL(vec3 N, vec3 V, vec3 R, vec3 F0, vec3 albedo, float metallic, fl
     
     // Get SSAO value and combine with material AO
     float ssaoValue = ssaoEnabled ? texture(ssaoTexture, TexCoord).r : 1.0;
-    float finalAO = (ao + ssaoValue)/2;
+    float finalAO = (ao + ssaoValue)/2; //Not sure if this is good
     
     // Diffuse IBL
     vec3 irradiance = texture(irradianceMap, N).rgb;

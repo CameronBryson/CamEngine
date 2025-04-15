@@ -29,7 +29,6 @@ layout(std140, binding = 0) uniform CameraBlock {
     mat4 previousProjection;
     mat4 previousViewProjection;
 };
-uniform bool test;
 
 bool isRayOnScreen(vec2 ray)
 {

@@ -42,8 +42,6 @@ void Material::bind(Shader& bindShader)
 	// Reflective Properties
 	bindShader.setFloat("material.reflectivity", mReflectivity);
 
-	// Displacement Properties
-	bindShader.setFloat("material.displacementScale", mDisplacementScale);
 
 	int currentTextureUnit = MaterialSlots::ALBEDO; // Start with the first slot
 
@@ -68,11 +66,10 @@ void Material::bind(Shader& bindShader)
 	bindTexture(mNormalTexture,      "material.normalMap",       "material.hasNormalMap",       currentTextureUnit++);
 	bindTexture(mMetallicTexture,    "material.metallicMap",     "material.hasMetallicMap",     currentTextureUnit++);
 	bindTexture(mRoughnessTexture,   "material.roughnessMap",    "material.hasRoughnessMap",    currentTextureUnit++);
-	bindTexture(mAOTexture,          "material.aoMap",           "material.hasAOMap",           currentTextureUnit++);
+	bindTexture(mAOTexture,          "material.AOMap",           "material.hasAOMap",           currentTextureUnit++);
 	bindTexture(mEmissiveTexture,    "material.emissiveMap",     "material.hasEmissiveMap",     currentTextureUnit++);
 	bindTexture(mMetalRoughTexture,  "material.metalRoughMap",   "material.hasMetalRoughMap",   currentTextureUnit++);
 	bindTexture(mOpacityTexture,     "material.opacityMap",      "material.hasOpacityMap",      currentTextureUnit++);
-	bindTexture(mDisplacementTexture,"material.displacementMap", "material.hasDisplacementMap", currentTextureUnit++);
 }
 
 void Material::unbind()
@@ -84,8 +81,7 @@ void Material::unbind()
 	// Define the textures in the order they were bound
 	const std::vector<std::shared_ptr<Texture>> textures = {
 		mAlbedoTexture, mNormalTexture, mMetallicTexture, mRoughnessTexture,
-		mAOTexture, mEmissiveTexture, mMetalRoughTexture, mOpacityTexture,
-		mDisplacementTexture
+		mAOTexture, mEmissiveTexture, mMetalRoughTexture, mOpacityTexture
 	};
 
 	// Unbind textures if they exist

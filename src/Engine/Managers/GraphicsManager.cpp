@@ -469,13 +469,6 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
         material->setEmissiveIntensity(material->getEmissiveColor() == glm::vec3(0.0f) ? 0.0f : 1.0f); // Default intensity (1.0 if color is set, else 0.0)
     }
 
-	// Displacement/Bump Scale (Common)
-	if (aiGetMaterialFloat(mat, AI_MATKEY_BUMPSCALING, &float_val) == AI_SUCCESS) {
-		material->setDisplacementScale(float_val);
-	} else {
-        material->setDisplacementScale(0.1f); // Default displacement scale
-    }
-
 	// Reflectivity (Legacy, less common in PBR)
 	if (aiGetMaterialFloat(mat, AI_MATKEY_REFLECTIVITY, &float_val) == AI_SUCCESS) {
 		material->setReflectivity(float_val);
@@ -530,8 +523,6 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
          material->setEmissiveTexture(loadTextureType(aiTextureType_EMISSION_COLOR));
     }
 
-    // Displacement Texture
-	material->setDisplacementTexture(loadTextureType(aiTextureType_DISPLACEMENT));
 
 
 	material->setMetalRoughTexture(loadTextureType(aiTextureType_UNKNOWN));
