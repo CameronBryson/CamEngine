@@ -155,6 +155,7 @@ public:
      */
     bool isComputeShader() const { return mIsComputeShader; }
     
+	bool isCompiled() const { return mShaderID != 0; }
     /**
      * @brief Force delete the shader program
      */

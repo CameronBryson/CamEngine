@@ -85,46 +85,28 @@ void GraphicsManager::clear()
 
 std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string name)
 {
-	// Load and compile shader
+	// Load and compile shader - Constructor should log errors if compilation fails
 	auto shader = std::make_shared<Shader>(vertexPath, fragmentPath);
-	if (shader)
-	{
-		mShaderMap[name] = shader;
-	}
-	else
-	{
-		std::cerr << "GraphicsManager::loadShader: Failed to load shader '" << name << "' from " << vertexPath << ", " << fragmentPath << std::endl;
-	}
+	// Cache the shader regardless of compilation status; let renderer handle invalid shaders.
+	mShaderMap[name] = shader;
 	return shader;
 }
 
 std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath, std::string name)
 {
-	// Load and compile shader
+	// Load and compile shader - Constructor should log errors if compilation fails
 	auto shader = std::make_shared<Shader>(vertexPath, fragmentPath, geometryPath);
-	if (shader)
-	{
-		mShaderMap.emplace(std::move(name), shader);
-	}
-	else
-	{
-		std::cerr << "GraphicsManager::loadShader: Failed to load shader '" << name << "' from " << vertexPath << ", " << fragmentPath << ", " << geometryPath << std::endl;
-	}
+	// Cache the shader regardless of compilation status; let renderer handle invalid shaders.
+	mShaderMap.emplace(name, shader);
 	return shader;
 }
 
 std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view computePath, std::string name)
 {
-	// Load and compile shader
+	// Load and compile shader - Constructor should log errors if compilation fails
 	auto shader = std::make_shared<Shader>(computePath);
-	if (shader)
-	{
-		mShaderMap.emplace(std::move(name), shader);
-	}
-	else
-	{
-		std::cerr << "GraphicsManager::loadShader: Failed to load compute shader '" << name << "' from " << computePath << std::endl;
-	}
+	// Cache the shader regardless of compilation status; let renderer handle invalid shaders.
+	mShaderMap.emplace(name, shader);
 	return shader;
 }
 
@@ -137,7 +119,7 @@ std::shared_ptr<Shader> GraphicsManager::getShader(const std::string& name)
 	}
 	else
 	{
-		std::cerr << "GraphicsManager::getShader: Shader not found: '" << name << "'" << std::endl;
+		LOG_WARN(logging::gResourceLogger, "Shader not found: '{}'", name);
 		return nullptr;
 	}
 }
@@ -148,30 +130,24 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
 	aiTextureType type,
 	const aiScene* scene)
 {
-	// We'll build a unique key for texture_map_.
 	std::string uniqueKey;
 	bool isEmbedded = (!path.empty() && path[0] == '*');
 
 	if (isEmbedded)
 	{
-		// Example: embedded textures often show up as "*0", "*1", etc.
-		unsigned int textureIndex = 0;
-		// Remove try-catch, use ASSERT_LOG for stoi validation
-		// ASSERT_LOG requires a condition. We need to check if the conversion *would* be valid.
-		// A simple check: is the substring after '*' composed only of digits?
+		// Embedded textures often show up as "*0", "*1", etc.
 		std::string indexStr = path.substr(1);
-		bool isValidIndexFormat = !indexStr.empty() && 
+		bool isValidIndexFormat = !indexStr.empty() &&
 		                          std::all_of(indexStr.begin(), indexStr.end(), ::isdigit);
 
 		ASSERT_LOG(logging::gResourceLogger, isValidIndexFormat,
 		           "Invalid embedded texture index format: {}", path);
-
-		// If the format is valid, proceed with stoi (which should now succeed)
-		textureIndex = std::stoi(indexStr);
-
+        // If assert continues, format is valid.
+		unsigned int textureIndex = std::stoi(indexStr);
 
 		// Construct a unique key: e.g., "Embedded_140535221312672_*0"
 		uintptr_t scenePtrVal = reinterpret_cast<uintptr_t>(scene);
+        // Consider using std::format for potentially better performance if available (C++20)
 		uniqueKey = "Embedded_" + std::to_string(scenePtrVal) + "_" + path;
 
 		// Check cache first
@@ -181,47 +157,45 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
 		}
 
 		// Validate scene and index before accessing
+		ASSERT_LOG(logging::gResourceLogger, scene != nullptr, "Scene pointer is null for embedded texture: {}", path);
 		if (!scene || textureIndex >= scene->mNumTextures) {
-			std::cerr << "GraphicsManager::loadTexture: Invalid scene or texture index for embedded texture: " << path << std::endl;
-			return nullptr;
+			LOG_ERROR(logging::gResourceLogger, "Invalid scene or texture index for embedded texture: {}. Scene Texture Count: {}", path, scene ? scene->mNumTextures : 0);
+			return nullptr; // Return nullptr here, can't proceed without valid scene/index
 		}
 
-		// Load embedded texture from Assimp
+		// Load embedded texture from Assimp - Texture constructor should log errors
 		aiTexture* aiTex = scene->mTextures[textureIndex];
 		auto texture = std::make_shared<Texture>(aiTex);
-		if (texture) // Check if texture pointer is valid (basic check)
-		{
-			mTextureMap.emplace(uniqueKey, texture); // Use emplace
-		}
-		else
-		{
-			std::cerr << "GraphicsManager::loadTexture: Failed to load embedded texture at index: " << textureIndex << " (key: " << uniqueKey << ")" << std::endl;
-			return nullptr; // Return null if loading failed
-		}
-		return texture;
+        // Cache texture even if loading failed internally; renderer handles invalid textures
+        mTextureMap.emplace(uniqueKey, texture);
+        return texture;
 	}
 	else // External file path
 	{
 		std::filesystem::path fsPath(path);
 		std::string canonicalPathStr;
 
-		// Use canonical path if the file exists for uniqueness
 		std::error_code ec;
-		if (std::filesystem::exists(fsPath, ec) && !ec)
+		bool fileExists = std::filesystem::exists(fsPath, ec);
+		if (ec) {
+			LOG_WARN(logging::gResourceLogger, "Error checking existence for '{}': {}. Using original path as key.", path, ec.message());
+			canonicalPathStr = path; // Use original path on error
+		}
+		else if (fileExists)
 		{
-			canonicalPathStr = std::filesystem::canonical(fsPath, ec).string();
+			std::filesystem::path canonicalPath = std::filesystem::canonical(fsPath, ec);
 			if (ec) {
-				std::cerr << "GraphicsManager::loadTexture: Error getting canonical path for '" << path << "': " << ec.message() << ". Using original path as key." << std::endl;
+				LOG_WARN(logging::gResourceLogger, "Error getting canonical path for '{}': {}. Using original path as key.", path, ec.message());
 				canonicalPathStr = path; // Fallback to original path
+			} else {
+				canonicalPathStr = canonicalPath.string();
 			}
 		}
 		else {
-			// File doesn't exist or error checking existence, use the provided path directly.
-			// Assimp might still find it relative to the model file.
+			// File doesn't exist according to std::filesystem::exists.
+			// Assimp might still find it relative to the model file. Use the provided path.
 			canonicalPathStr = path;
-			if(ec) { // Log existence check error if any
-				std::cerr << "GraphicsManager::loadTexture: Error checking existence for '" << path << "': " << ec.message() << ". Using original path as key." << std::endl;
-			}
+            LOG_TRACE(logging::gResourceLogger, "Texture file '{}' not found via filesystem check. Proceeding with path for Assimp.", path);
 		}
 
 		uniqueKey = canonicalPathStr; // Use canonical (or original if failed/not found) path as key
@@ -232,18 +206,11 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
 			return it->second;
 		}
 
-		// Load from file
-		auto texture = std::make_shared<Texture>(uniqueKey); // Load using the determined key (path)
-		if (texture) // Check if texture pointer is valid (basic check)
-		{
-			mTextureMap.emplace(uniqueKey, texture); // Use emplace
-		}
-		else
-		{
-			std::cerr << "GraphicsManager::loadTexture: Failed to load texture from file: '" << uniqueKey << "'" << std::endl;
-			return nullptr; // Return null if loading failed
-		}
-		return texture;
+		// Load from file - Texture constructor should log errors
+		auto texture = std::make_shared<Texture>(uniqueKey);
+        // Cache texture even if loading failed internally; renderer handles invalid textures
+        mTextureMap.emplace(uniqueKey, texture);
+        return texture;
 	}
 }
 
@@ -257,7 +224,7 @@ std::shared_ptr<Texture> GraphicsManager::getTexture(const std::string& path)
 	}
 	else
 	{
-		std::cerr << "GraphicsManager::getTexture: Texture not found by path or canonical path: '" << path << "'" << std::endl;
+		LOG_WARN(logging::gResourceLogger, "Texture not found by path: '{}'", path);
 		return nullptr;
 	}
 }
@@ -273,7 +240,7 @@ std::shared_ptr<Material> GraphicsManager::getMaterial(const std::string& name)
 	}
 	else
 	{
-		std::cerr << "GraphicsManager::getMaterial: Material not found: '" << name << "'" << std::endl;
+		LOG_WARN(logging::gResourceLogger, "Material not found: '{}'", name);
 		return nullptr;
 	}
 }
@@ -292,7 +259,7 @@ std::shared_ptr<Model> GraphicsManager::getModel(const std::string& name)
 	}
 	else
 	{
-		std::cerr << "GraphicsManager::getModel: Model not found: '" << name << "'" << std::endl;
+		LOG_WARN(logging::gResourceLogger, "Model not found: '{}'", name);
 		return nullptr;
 	}
 }
@@ -303,49 +270,54 @@ std::shared_ptr<Model> GraphicsManager::loadModel(std::string_view path, std::st
 	auto it = mModelMap.find(name);
 	if (it != mModelMap.end())
 	{
-		std::cout << "GraphicsManager::loadModel: Model '" << name << "' already loaded. Returning cached version." << std::endl; // Info level log
+		LOG_INFO(logging::gResourceLogger, "Model '{}' already loaded. Returning cached version.", name);
 		return it->second;
 	}
 
 	// Load model using Assimp
 	Assimp::Importer importer;
-	// Consider adding aiProcess_JoinIdenticalVertices for optimization
+	// Optimize mesh data and structure
 	const aiScene* scene = importer.ReadFile(path.data(),
-		aiProcess_Triangulate |
-		aiProcess_FlipUVs |
-		aiProcess_CalcTangentSpace |
-		aiProcess_GenSmoothNormals |
-		aiProcess_OptimizeMeshes |
-		aiProcess_ValidateDataStructure |
-		aiProcess_EmbedTextures
-		// | aiProcess_JoinIdenticalVertices // Optional optimization
+		aiProcess_Triangulate |           // Ensure models are triangles
+		aiProcess_FlipUVs |               // Flip UVs to match OpenGL convention
+		aiProcess_CalcTangentSpace |      // Calculate tangents and bitangents
+		aiProcess_GenSmoothNormals |      // Generate smooth normals if not present
+		aiProcess_JoinIdenticalVertices | // Optimize vertex count
+		aiProcess_OptimizeMeshes |        // Reduce draw calls by merging meshes
+		aiProcess_RemoveRedundantMaterials | // Remove unused materials
+        aiProcess_ValidateDataStructure | // Validate the imported data
+		aiProcess_EmbedTextures         // Load embedded textures if possible (handled in loadTexture)
 		);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		std::cerr << "GraphicsManager::loadModel: Assimp error loading '" << path << "': " << importer.GetErrorString() << std::endl;
+		LOG_ERROR(logging::gResourceLogger, "Assimp error loading '{}': {}", path, importer.GetErrorString());
 		return nullptr;
 	}
 
     // Use std::filesystem for robust path handling
     std::filesystem::path modelPath(path);
     std::string directory = modelPath.parent_path().string();
+    if (directory.empty()) {
+        directory = "."; // Use current directory if path has no parent
+    }
 
 	// Process the root node recursively
 	std::vector<MeshInstance> meshInstances;
 	processNode(scene->mRootNode, scene, directory, glm::mat4(1.0f), meshInstances);
 
 	if (meshInstances.empty()) {
-		std::cerr << "GraphicsManager::loadModel: No meshes processed for model '" << name << "' from path '" << path << "'. Check model file or processing logic." << std::endl;
-		// Optionally return nullptr or an empty model depending on desired behavior
+		LOG_WARN(logging::gResourceLogger, "No meshes processed for model '{}' from path '{}'. Check model file or processing logic.", name, path);
+		// Return an empty model instead of nullptr? Depends on desired behavior.
+        // For now, continue and create an empty model.
 	}
 
 	// Create the model with mesh instances
-	auto model = std::make_shared<Model>(std::move(meshInstances)); // Move mesh instances into the model
-	model->setName(name); // Set the name on the model object itself
-	mModelMap.emplace(std::move(name), model); // Move name into the map key
+	auto model = std::make_shared<Model>(std::move(meshInstances));
+	model->setName(name);
+	mModelMap.emplace(std::move(name), model); // Use emplace and move name
 
-	std::cout << "GraphicsManager::loadModel: Successfully loaded model '" << model->getName() << "' from '" << path << "'" << std::endl; // Info log
+	LOG_INFO(logging::gResourceLogger, "Successfully loaded model '{}' from '{}'", model->getName(), path);
 	return model;
 }
 
@@ -353,68 +325,50 @@ std::shared_ptr<Model> GraphicsManager::loadModel(std::string_view path, std::st
 
 std::shared_ptr<Mesh> GraphicsManager::processMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory)
 {
-	if (!mesh) {
-		std::cerr << "GraphicsManager::processMesh: Received null aiMesh pointer." << std::endl;
-		return nullptr;
-	}
+	ASSERT_LOG(logging::gResourceLogger, mesh != nullptr, "Received null aiMesh pointer in processMesh.");
+    if (!mesh) return nullptr; // Defensive return after assert
 
-	// Process vertices
 	std::vector<Vertex> vertices;
-	vertices.reserve(mesh->mNumVertices); // Pre-allocate memory
+	vertices.reserve(mesh->mNumVertices);
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
-		Vertex vertex{}; // Value initialize
+		Vertex vertex{};
 
-		// Positions (Required)
-		vertex.position = glm::vec3(mesh->mVertices[i].x,
-			mesh->mVertices[i].y,
-			mesh->mVertices[i].z);
+		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 
-		// Normals
 		if (mesh->HasNormals())
 		{
-			vertex.normal = glm::vec3(mesh->mNormals[i].x,
-				mesh->mNormals[i].y,
-				mesh->mNormals[i].z);
+			vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
 		}
 		else {
-			// Consider logging a warning if normals are expected but missing
-			// std::cerr << "GraphicsManager::processMesh: Warning: Mesh '" << mesh->mName.C_Str() << "' missing normals." << std::endl;
+			// Normals will be zero vector due to value initialization
+            LOG_TRACE(logging::gResourceLogger, "Mesh '{}' missing normals at vertex {}.", mesh->mName.C_Str(), i);
 		}
 
-		// Texture Coordinates
 		if (mesh->HasTextureCoords(0)) // Assumes only one UV channel
 		{
-			vertex.texture_coordinates = glm::vec2(mesh->mTextureCoords[0][i].x,
-				mesh->mTextureCoords[0][i].y);
+			vertex.texture_coordinates = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 		}
-		// else: texture_coordinates remains (0.0f, 0.0f) due to value initialization
+		// else: texture_coordinates remains (0.0f, 0.0f)
 
-		// Tangents and Bitangents
 		if (mesh->HasTangentsAndBitangents())
 		{
-			vertex.tangent = glm::vec3(mesh->mTangents[i].x,
-				mesh->mTangents[i].y,
-				mesh->mTangents[i].z);
-
-			vertex.bitangent = glm::vec3(mesh->mBitangents[i].x,
-				mesh->mBitangents[i].y,
-				mesh->mBitangents[i].z);
+			vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+			vertex.bitangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
 		}
 		// else: tangent/bitangent remain zero vectors
 
 		vertices.push_back(vertex);
 	}
 
-	// Process indices
 	std::vector<unsigned int> indices;
-	indices.reserve(mesh->mNumFaces * 3); // Estimate index count (assuming triangles)
+	indices.reserve(mesh->mNumFaces * 3);
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
 		if (face.mNumIndices != 3) {
-			std::cerr << "GraphicsManager::processMesh: Warning: Non-triangular face encountered in mesh '" << mesh->mName.C_Str() << "'. Index count: " << face.mNumIndices << ". Skipping face." << std::endl;
-			continue; // Skip non-triangles if aiProcess_Triangulate didn't handle it
+			LOG_WARN(logging::gResourceLogger, "Non-triangular face encountered in mesh '{}'. Index count: {}. Skipping face.", mesh->mName.C_Str(), face.mNumIndices);
+			continue; // Skip non-triangles
 		}
 		for (unsigned int j = 0; j < face.mNumIndices; j++)
 		{
@@ -426,27 +380,32 @@ std::shared_ptr<Mesh> GraphicsManager::processMesh(aiMesh* mesh, const aiScene* 
 	std::shared_ptr<Material> material = nullptr;
 	if (mesh->mMaterialIndex >= 0 && scene->HasMaterials()) // Check if material index is valid and materials exist
 	{
-		aiMaterial* ai_material = scene->mMaterials[mesh->mMaterialIndex];
-		material = loadMaterial(ai_material, directory, scene);
-		if (!material) {
-			std::cerr << "GraphicsManager::processMesh: Warning: Failed to load material for mesh '" << mesh->mName.C_Str() << "' (Material Index: " << mesh->mMaterialIndex << "). Mesh will have no material." << std::endl;
-			// Assign a default material or handle appropriately
-		}
-	} else {
-		std::cerr << "GraphicsManager::processMesh: Warning: Mesh '" << mesh->mName.C_Str() << "' has invalid material index (" << mesh->mMaterialIndex << ") or scene has no materials." << std::endl;
-		// Assign a default material or handle appropriately
-	}
+		// Ensure index is within bounds
+        if (mesh->mMaterialIndex < scene->mNumMaterials) {
+            aiMaterial* ai_material = scene->mMaterials[mesh->mMaterialIndex];
+            material = loadMaterial(ai_material, directory, scene);
+            if (!material) {
+                LOG_WARN(logging::gResourceLogger, "Failed to load material for mesh '{}' (Material Index: {}). Mesh will have no material.", mesh->mName.C_Str(), mesh->mMaterialIndex);
+                // Assign a default material or handle appropriately? For now, it remains nullptr.
+            }
+        } else {
+             LOG_ERROR(logging::gResourceLogger, "Mesh '{}' has out-of-bounds material index ({}), scene has {} materials.", mesh->mName.C_Str(), mesh->mMaterialIndex, scene->mNumMaterials);
+        }
+	} else if (mesh->mMaterialIndex < 0) {
+        LOG_TRACE(logging::gResourceLogger, "Mesh '{}' has no assigned material (Index: {}).", mesh->mName.C_Str(), mesh->mMaterialIndex);
+	} else if (!scene->HasMaterials()) {
+        LOG_WARN(logging::gResourceLogger, "Mesh '{}' references material index {} but scene has no materials.", mesh->mName.C_Str(), mesh->mMaterialIndex);
+    }
 
 
-	// Create the mesh - No longer stored in GraphicsManager's map
 	auto new_mesh = std::make_shared<Mesh>(std::move(vertices), std::move(indices), material);
 
-	// Set mesh name (optional, useful for debugging)
 	std::string mesh_name = mesh->mName.C_Str();
 	if (mesh_name.empty())
 	{
 		// Generate a placeholder name if Assimp didn't provide one
 		mesh_name = "unnamed_mesh_" + std::to_string(reinterpret_cast<uintptr_t>(mesh));
+        LOG_TRACE(logging::gResourceLogger, "Assigning generated name to unnamed mesh: {}", mesh_name);
 	}
 	new_mesh->setName(mesh_name);
 
@@ -456,181 +415,167 @@ std::shared_ptr<Mesh> GraphicsManager::processMesh(aiMesh* mesh, const aiScene* 
 
 std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const std::string& directory, const aiScene* scene)
 {
-	if (!mat) {
-		std::cerr << "GraphicsManager::loadMaterial: Received null aiMaterial pointer." << std::endl;
-		return nullptr;
-	}
-	// Get material name
+    ASSERT_LOG(logging::gResourceLogger, mat != nullptr, "Received null aiMaterial pointer in loadMaterial.");
+	if (!mat) return nullptr;
+
 	aiString name;
 	mat->Get(AI_MATKEY_NAME, name);
-	std::string material_name_str = name.C_Str(); // Convert aiString to std::string
+	std::string material_name_str = name.C_Str();
 
-	// Use pointer address for uniqueness if name is empty, as size() is unreliable now.
-	// Or simply ensure all materials have names in the asset pipeline.
 	if (material_name_str.empty())
 	{
 		uintptr_t matPtrVal = reinterpret_cast<uintptr_t>(mat);
 		material_name_str = "material_" + std::to_string(matPtrVal);
-		// Log a warning about the unnamed material
-        std::cout << "GraphicsManager::loadMaterial: Warning: Material has no name. Generating unique name: " << material_name_str << std::endl;
+		LOG_WARN(logging::gResourceLogger, "Material has no name. Generating unique name: {}", material_name_str);
 	}
 
-	// Check if material already exists in the cache
-	auto it = mMaterialMap.find(material_name_str);
-	if (it != mMaterialMap.end())
+	// Check cache
+	if (auto it = mMaterialMap.find(material_name_str); it != mMaterialMap.end())
 	{
 		return it->second;
 	}
 
-	// Create new material
 	auto material = std::make_shared<Material>();
-	// material->setShader(getShader("PBR")); // Consider making shader assignment more flexible or data-driven
+	material->setName(material_name_str); // Set name early
 
 	// --- Extract Material Properties ---
-    // Removed helper lambda - handle properties directly
+	aiColor4D color;
+	float float_val;
 
-	aiColor4D color; // Use aiColor4D for aiGetMaterialColor
-	// Base color/albedo (PBR primary) - Use aiGetMaterialColor
+	// Base color/albedo (PBR primary)
 	if (aiGetMaterialColor(mat, AI_MATKEY_BASE_COLOR, &color) == AI_SUCCESS) {
 		material->setAlbedo(glm::vec4(color.r, color.g, color.b, color.a));
-	} // Fallback to legacy diffuse (check if BASE_COLOR wasn't found) - Use aiGetMaterialColor
+	} // Fallback to legacy diffuse
 	else if (aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &color) == AI_SUCCESS) {
 		material->setAlbedo(glm::vec4(color.r, color.g, color.b, color.a));
-		std::cout << "GraphicsManager::loadMaterial: Info: Using legacy diffuse color for albedo in material '" << material_name_str << "'" << std::endl;
+		LOG_INFO(logging::gResourceLogger, "Using legacy diffuse color for albedo in material '{}'", material_name_str);
 	} else {
-        // Default albedo if neither is found
-        material->setAlbedo(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        material->setAlbedo(glm::vec4(1.0f)); // Default albedo
     }
-
-	// --- Use aiGetMaterialProperty for float values ---
-	const aiMaterialProperty* prop = nullptr;
 
 	// Metallic factor (PBR)
-    float metallic = 0.0f; // Default value
-	if (aiGetMaterialProperty(mat, AI_MATKEY_METALLIC_FACTOR, &prop) == AI_SUCCESS && prop && prop->mType == aiPTI_Float && prop->mDataLength >= sizeof(float)) {
-        metallic = *reinterpret_cast<float*>(prop->mData);
+	if (aiGetMaterialFloat(mat, AI_MATKEY_METALLIC_FACTOR, &float_val) == AI_SUCCESS) {
+		material->setMetallic(float_val);
+	} else {
+        material->setMetallic(0.0f); // Default metallic
     }
-	material->setMetallic(metallic);
-    prop = nullptr; // Reset prop for next property
 
 	// Roughness factor (PBR)
-    float roughness = 0.5f; // Default value
-    if (aiGetMaterialProperty(mat, AI_MATKEY_ROUGHNESS_FACTOR, &prop) == AI_SUCCESS && prop && prop->mType == aiPTI_Float && prop->mDataLength >= sizeof(float)) {
-        roughness = *reinterpret_cast<float*>(prop->mData);
+	if (aiGetMaterialFloat(mat, AI_MATKEY_ROUGHNESS_FACTOR, &float_val) == AI_SUCCESS) {
+		material->setRoughness(float_val);
+	} else {
+         material->setRoughness(0.5f); // Default roughness
     }
-	material->setRoughness(roughness);
-    prop = nullptr;
 
 	// Opacity (Common)
-    float opacity = 1.0f; // Default value
-    if (aiGetMaterialProperty(mat, AI_MATKEY_OPACITY, &prop) == AI_SUCCESS && prop && prop->mType == aiPTI_Float && prop->mDataLength >= sizeof(float)) {
-        opacity = *reinterpret_cast<float*>(prop->mData);
-    }
-	material->setOpacity(opacity);
-    prop = nullptr;
-
-	// Emissive properties (Common) - Use aiGetMaterialColor
-	aiColor4D emissiveColor4D; // aiGetMaterialColor outputs aiColor4D
-	if (aiGetMaterialColor(mat, AI_MATKEY_COLOR_EMISSIVE, &emissiveColor4D) == AI_SUCCESS) {
-		// Extract RGB from aiColor4D for setEmissiveColor (which takes vec3)
-		material->setEmissiveColor(glm::vec3(emissiveColor4D.r, emissiveColor4D.g, emissiveColor4D.b));
+	if (aiGetMaterialFloat(mat, AI_MATKEY_OPACITY, &float_val) == AI_SUCCESS) {
+		material->setOpacity(float_val);
+        // Update albedo alpha if opacity differs from base color alpha
+        if (material->getAlbedo().a != float_val) {
+             glm::vec4 currentAlbedo = material->getAlbedo();
+             material->setAlbedo(glm::vec4(currentAlbedo.r, currentAlbedo.g, currentAlbedo.b, float_val));
+             LOG_TRACE(logging::gResourceLogger, "Updating material '{}' albedo alpha based on opacity property.", material_name_str);
+        }
 	} else {
-        material->setEmissiveColor(glm::vec3(0.0f)); // Set default if Get fails
+         // If opacity key isn't present, assume albedo alpha is the intended opacity
+         material->setOpacity(material->getAlbedo().a);
     }
 
-    float emissiveIntensity = 0.0f; // Default
-    if (aiGetMaterialProperty(mat, AI_MATKEY_EMISSIVE_INTENSITY, &prop) == AI_SUCCESS && prop && prop->mType == aiPTI_Float && prop->mDataLength >= sizeof(float)) {
-        emissiveIntensity = *reinterpret_cast<float*>(prop->mData);
+	// Emissive properties (Common)
+	if (aiGetMaterialColor(mat, AI_MATKEY_COLOR_EMISSIVE, &color) == AI_SUCCESS) {
+		material->setEmissiveColor(glm::vec3(color.r, color.g, color.b));
+	} else {
+        material->setEmissiveColor(glm::vec3(0.0f)); // Default emissive color
     }
-	material->setEmissiveIntensity(emissiveIntensity);
-    prop = nullptr;
 
+    if (aiGetMaterialFloat(mat, AI_MATKEY_EMISSIVE_INTENSITY, &float_val) == AI_SUCCESS) {
+		material->setEmissiveIntensity(float_val);
+	} else {
+        material->setEmissiveIntensity(material->getEmissiveColor() == glm::vec3(0.0f) ? 0.0f : 1.0f); // Default intensity (1.0 if color is set, else 0.0)
+    }
 
 	// Displacement/Bump Scale (Common)
-    float displacementScale = 0.1f; // Default
-    if (aiGetMaterialProperty(mat, AI_MATKEY_BUMPSCALING, &prop) == AI_SUCCESS && prop && prop->mType == aiPTI_Float && prop->mDataLength >= sizeof(float)) {
-        displacementScale = *reinterpret_cast<float*>(prop->mData);
+	if (aiGetMaterialFloat(mat, AI_MATKEY_BUMPSCALING, &float_val) == AI_SUCCESS) {
+		material->setDisplacementScale(float_val);
+	} else {
+        material->setDisplacementScale(0.1f); // Default displacement scale
     }
-	material->setDisplacementScale(displacementScale);
-    prop = nullptr;
 
 	// Reflectivity (Legacy, less common in PBR)
-    float reflectivity = 0.0f; // Default
-    if (aiGetMaterialProperty(mat, AI_MATKEY_REFLECTIVITY, &prop) == AI_SUCCESS && prop && prop->mType == aiPTI_Float && prop->mDataLength >= sizeof(float)) {
-        reflectivity = *reinterpret_cast<float*>(prop->mData);
+	if (aiGetMaterialFloat(mat, AI_MATKEY_REFLECTIVITY, &float_val) == AI_SUCCESS) {
+		material->setReflectivity(float_val);
+	} else {
+         material->setReflectivity(0.0f); // Default reflectivity
     }
-	material->setReflectivity(reflectivity);
-    prop = nullptr;
 
 	// --- Load Textures ---
-	// Define a helper lambda for texture loading to reduce repetition
-    auto loadTextureType = [&](aiTextureType texType) -> std::shared_ptr<Texture> {
+	auto loadTextureType = [&](aiTextureType texType) -> std::shared_ptr<Texture> {
         auto textures = loadMaterialTextures(mat, texType, directory, scene);
         if (!textures.empty()) {
             if (textures.size() > 1) {
-                std::cout << "GraphicsManager::loadMaterial: Warning: Material '" << material_name_str
-                          << "' has multiple textures of type " << texType << ". Using the first one." << std::endl;
+                // Cast texType to int for logging
+                LOG_WARN(logging::gResourceLogger, "Material '{}' has multiple textures of type {}. Using the first one.", material_name_str, static_cast<int>(texType));
             }
-            return textures[0];
+            return textures[0]; // Return first loaded texture of this type
         }
         return nullptr;
     };
 
+	// Albedo/Base Color Texture
 	material->setAlbedoTexture(loadTextureType(aiTextureType_BASE_COLOR));
-	// Fallback for albedo if BASE_COLOR texture not found
-    if (!material->getAlbedoTexture()) {
+	if (!material->getAlbedoTexture()) { // Fallback to Diffuse
         material->setAlbedoTexture(loadTextureType(aiTextureType_DIFFUSE));
          if (material->getAlbedoTexture()) {
-             std::cout << "GraphicsManager::loadMaterial: Info: Using legacy diffuse texture for albedo in material '" << material_name_str << "'" << std::endl;
+             LOG_INFO(logging::gResourceLogger, "Using legacy diffuse texture for albedo in material '{}'", material_name_str);
          }
     }
 
+	// Normal Map Texture
 	material->setNormalTexture(loadTextureType(aiTextureType_NORMALS));
-    // Some exporters might use height maps for normals
-    if (!material->getNormalTexture()) {
+    if (!material->getNormalTexture()) { // Fallback to Height Map (some exporters use this)
         material->setNormalTexture(loadTextureType(aiTextureType_HEIGHT));
          if (material->getNormalTexture()) {
-             std::cout << "GraphicsManager::loadMaterial: Info: Using height texture as normal map in material '" << material_name_str << "'" << std::endl;
+             LOG_INFO(logging::gResourceLogger, "Using height texture as normal map in material '{}'", material_name_str);
          }
     }
 
+    // PBR Textures
 	material->setMetallicTexture(loadTextureType(aiTextureType_METALNESS));
-	material->setRoughnessTexture(loadTextureType(aiTextureType_DIFFUSE_ROUGHNESS));
-	material->setAOTexture(loadTextureType(aiTextureType_AMBIENT_OCCLUSION)); // Often stored in LIGHTMAP channel in glTF
+	material->setRoughnessTexture(loadTextureType(aiTextureType_DIFFUSE_ROUGHNESS)); // Correct Assimp type for roughness
+
+	// AO Texture (Check standard AO then Lightmap as fallback common in glTF)
+	material->setAOTexture(loadTextureType(aiTextureType_AMBIENT_OCCLUSION));
     if (!material->getAOTexture()) {
          material->setAOTexture(loadTextureType(aiTextureType_LIGHTMAP));
          if (material->getAOTexture()) {
-             std::cout << "GraphicsManager::loadMaterial: Info: Using lightmap texture as AO map in material '" << material_name_str << "'" << std::endl;
+             LOG_INFO(logging::gResourceLogger, "Using lightmap texture as AO map in material '{}'", material_name_str);
          }
     }
 
-
-	material->setEmissiveTexture(loadTextureType(aiTextureType_EMISSIVE)); // Check AI_MATKEY_USE_EMISSIVE_MAP?
-    if (!material->getEmissiveTexture()) {
+    // Emissive Texture
+	material->setEmissiveTexture(loadTextureType(aiTextureType_EMISSIVE));
+    if (!material->getEmissiveTexture()) { // Fallback
          material->setEmissiveTexture(loadTextureType(aiTextureType_EMISSION_COLOR));
     }
 
-
+    // Displacement Texture
 	material->setDisplacementTexture(loadTextureType(aiTextureType_DISPLACEMENT));
 
-	// Handle combined metallic-roughness texture (common in glTF packed as ORM or similar)
-	// Assimp maps this to aiTextureType_UNKNOWN for glTF. Need specific channel checks if loading raw glTF data.
-    // For standard Assimp import, metallic and roughness maps are usually separate if available.
-	auto metalRoughTexture = loadTextureType(aiTextureType_UNKNOWN); // Check if Assimp loads packed textures this way
+	// Handle combined metallic-roughness texture (often aiTextureType_UNKNOWN for glTF ORM)
+	auto metalRoughTexture = loadTextureType(aiTextureType_UNKNOWN);
     if (metalRoughTexture) {
-        // Heuristic: If separate metallic/roughness maps weren't loaded, assume this is packed.
+        // Heuristic: If separate metallic/roughness maps weren't loaded, assume this is packed ORM.
         if (!material->getMetallicTexture() && !material->getRoughnessTexture()) {
             material->setMetalRoughTexture(metalRoughTexture);
-             std::cout << "GraphicsManager::loadMaterial: Info: Using UNKNOWN texture type as potential packed Metal/Rough map for material '" << material_name_str << "'" << std::endl;
+             LOG_INFO(logging::gResourceLogger, "Using UNKNOWN texture type as potential packed Metal/Rough map for material '{}'", material_name_str);
         } else {
-            std::cout << "GraphicsManager::loadMaterial: Warning: Found UNKNOWN texture type but also separate Metal/Rough maps for material '" << material_name_str << "'. Ignoring UNKNOWN texture." << std::endl;
+            LOG_WARN(logging::gResourceLogger, "Found UNKNOWN texture type but also separate Metal/Rough maps for material '{}'. Ignoring UNKNOWN texture.", material_name_str);
         }
     }
 
 
 	// Store in material map
-	material->setName(material_name_str); // Set name on the material object
-	mMaterialMap.emplace(std::move(material_name_str), material); // Move name string into map
+	mMaterialMap.emplace(material_name_str, material); // Use the original string key
 
 	return material;
 }
@@ -645,70 +590,77 @@ std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
 {
 	std::vector<std::shared_ptr<Texture>> textures;
 	unsigned int textureCount = mat->GetTextureCount(type);
-    textures.reserve(textureCount); // Pre-allocate space
+    if (textureCount == 0) return textures; // Early exit if no textures of this type
+
+    textures.reserve(textureCount);
 
 	for (unsigned int i = 0; i < textureCount; i++)
 	{
-		aiString ai_str;
-		if (mat->GetTexture(type, i, &ai_str) != AI_SUCCESS) {
-            std::cerr << "GraphicsManager::loadMaterialTextures: Failed to get texture path for type " << type << " at index " << i << std::endl;
+		aiString ai_path;
+		// Get texture path/embedded ID
+		if (mat->GetTexture(type, i, &ai_path) != AI_SUCCESS) {
+            // Cast type to int for logging
+            LOG_WARN(logging::gResourceLogger, "Failed to get texture path for type {} at index {} in material '{}'", static_cast<int>(type), i, mat->GetName().C_Str());
             continue; // Skip this texture
         }
 
-		std::string texture_path_str = ai_str.C_Str();
-		std::string full_path_or_key; // Will hold either the embedded key or the full file path
+		std::string texture_path_str = ai_path.C_Str();
+		std::string full_path_or_key;
 
-		// Determine if the texture is embedded or external
 		bool isEmbedded = (!texture_path_str.empty() && texture_path_str[0] == '*');
 
 		if (isEmbedded)
 		{
-			// Embedded texture: Use the texture path string directly as the *initial* lookup key part
-			// The actual unique key generation happens inside loadTexture
+			// Embedded texture: Pass the "*" identifier directly to loadTexture
 			full_path_or_key = texture_path_str;
 		}
 		else
 		{
-			// External texture: Construct the full path relative to the model directory
-			std::filesystem::path dirPath(directory);
-			std::filesystem::path texPath(texture_path_str);
-            std::filesystem::path combinedPath;
+			// External texture: Construct full path relative to model directory
+			try {
+                std::filesystem::path dirPath(directory);
+                std::filesystem::path texPath(texture_path_str);
+                std::filesystem::path combinedPath;
 
-            // Handle cases where texture_path_str might be absolute already
-            if (texPath.is_absolute()) {
-                combinedPath = texPath;
-            } else {
-			    combinedPath = dirPath / texPath;
+                if (texPath.is_absolute()) {
+                    combinedPath = texPath;
+                } else {
+                    // Handle potential ..\\.. paths by normalizing
+                    combinedPath = (dirPath / texPath).lexically_normal();
+                }
+                // Use the normalized path string
+                full_path_or_key = combinedPath.string();
+            } catch (const std::exception& e) {
+                 LOG_ERROR(logging::gResourceLogger, "Filesystem error processing texture path '{}' in directory '{}': {}", texture_path_str, directory, e.what());
+                 continue; // Skip this texture on path error
             }
-
-			// Normalize the path for consistency (optional but recommended)
-			// full_path_or_key = std::filesystem::weakly_canonical(combinedPath).string(); // Use weakly_canonical to handle non-existent paths gracefully
-            full_path_or_key = combinedPath.lexically_normal().string(); // Simpler normalization
-
 		}
 
-        // Use the central loadTexture function which handles caching and path resolution
+        // Use the central loadTexture function (handles caching, embedded/external logic)
 		auto texture = loadTexture(full_path_or_key, type, scene);
 
-		if (texture) // Check if loadTexture returned a valid texture
+		if (texture)
 		{
             // Apply specific sampler parameters based on texture type AFTER loading/retrieval
             // This ensures parameters are set even if the texture was cached.
+            // Example: Set normal maps to use appropriate sampler settings
             if (type == aiTextureType_NORMALS || type == aiTextureType_HEIGHT || type == aiTextureType_DISPLACEMENT)
             {
-                texture->setNormalSamplerParameters(); // Assuming this sets things like clamp to edge, etc.
+                // Assuming Texture class has this method to set sampler parameters
+                texture->setNormalSamplerParameters();
             }
-            // Add more parameter settings for other types if needed (e.g., linear vs nearest for certain maps)
+            // Add more parameter settings for other types if needed
 
 			textures.push_back(texture);
 		}
 		else
 		{
-			// loadTexture already prints an error, but we can add context
-			std::cerr << "GraphicsManager::loadMaterialTextures: Failed attempt to load texture (type " << type << ", index " << i << ") with path/key: '" << full_path_or_key << "'" << std::endl;
+			// loadTexture already logs errors, but add context
+            // Cast type to int for logging
+			LOG_WARN(logging::gResourceLogger, "Failed attempt to load/retrieve texture (type {}, index {}) with path/key: '{}' for material '{}'", static_cast<int>(type), i, full_path_or_key, mat->GetName().C_Str());
 		}
 	}
-	return textures; // Return vector (potentially empty)
+	return textures;
 }
 
 std::shared_ptr<EnvironmentMap> GraphicsManager::loadEnvironmentMap(std::string name, std::string_view hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader)
@@ -716,26 +668,23 @@ std::shared_ptr<EnvironmentMap> GraphicsManager::loadEnvironmentMap(std::string 
 	auto it = mEnvironmentMap.find(name);
 	if (it != mEnvironmentMap.end())
 	{
-        std::cout << "GraphicsManager::loadEnvironmentMap: Environment map '" << name << "' already loaded. Returning cached version." << std::endl;
+        LOG_INFO(logging::gResourceLogger, "Environment map '{}' already loaded. Returning cached version.", name);
 		return it->second;
 	}
 
-    // Validate required shaders
+    // Validate required shaders (check for null pointers)
+    // relies on Shader constructor logging errors if compilation fails
     if (!equirectangularToCubemapShader || !irradianceShader || !prefilterShader || !brdfShader) {
-        std::cerr << "GraphicsManager::loadEnvironmentMap: Error loading environment map '" << name << "'. One or more required shaders are missing." << std::endl;
+        LOG_ERROR(logging::gResourceLogger, "Cannot load environment map '{}'. One or more required shaders are null.", name);
         return nullptr;
     }
 
+    // EnvironmentMap constructor should log errors if it fails internally
 	auto environmentMap = std::make_shared<EnvironmentMap>(hdrPath, equirectangularToCubemapShader, irradianceShader, prefilterShader, brdfShader);
 
-    // Check if the environment map loaded successfully (assuming EnvironmentMap has a way to check, e.g., isLoaded())
-    // if (!environmentMap || !environmentMap->isLoaded()) { // Example check
-    //     std::cerr << "GraphicsManager::loadEnvironmentMap: Failed to create or load environment map '" << name << "' from HDR path '" << hdrPath << "'." << std::endl;
-    //     return nullptr;
-    // }
-
-	mEnvironmentMap.emplace(std::move(name), environmentMap); // Move name into map
-	std::cout << "GraphicsManager::loadEnvironmentMap: Successfully loaded environment map '" << name << "' from '" << hdrPath << "'" << std::endl;
+    // Cache the map regardless of internal loading status; renderer handles invalid maps
+	mEnvironmentMap.emplace(name, environmentMap); // Use name directly for caching
+	LOG_INFO(logging::gResourceLogger, "Successfully loaded environment map '{}' from '{}'", name, hdrPath);
 	return environmentMap;
 }
 
@@ -748,58 +697,57 @@ std::shared_ptr<EnvironmentMap> GraphicsManager::getEnvironmentMap(const std::st
 	}
 	else
 	{
-		std::cerr << "GraphicsManager::getEnvironmentMap: EnvironmentMap not found: '" << name << "'" << std::endl;
+		LOG_WARN(logging::gResourceLogger, "EnvironmentMap not found: '{}'", name);
 		return nullptr;
 	}
 }
 
 void GraphicsManager::processNode(aiNode* node, const aiScene* scene, const std::string& directory, const glm::mat4& parentTransform, std::vector<MeshInstance>& meshInstances)
 {
-    if (!node || !scene) {
-        std::cerr << "GraphicsManager::processNode: Received null node or scene pointer." << std::endl;
-        return;
-    }
-	// Convert aiMatrix4x4 to glm::mat4 and combine with parent transform
+    ASSERT_LOG(logging::gResourceLogger, node != nullptr, "Received null aiNode pointer in processNode.");
+    ASSERT_LOG(logging::gResourceLogger, scene != nullptr, "Received null aiScene pointer in processNode.");
+    if (!node || !scene) return; // Defensive return after assert
+
 	glm::mat4 nodeTransform = parentTransform * aiMatrixToGlm(node->mTransformation);
 
-	// Process all the node's meshes
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
         unsigned int meshIndex = node->mMeshes[i];
+        // Validate mesh index
         if (meshIndex >= scene->mNumMeshes) {
-            std::cerr << "GraphicsManager::processNode: Node '" << node->mName.C_Str() << "' contains invalid mesh index: " << meshIndex << ". Skipping mesh." << std::endl;
+            LOG_ERROR(logging::gResourceLogger, "Node '{}' contains invalid mesh index: {}. Scene mesh count: {}. Skipping mesh.", node->mName.C_Str(), meshIndex, scene->mNumMeshes);
             continue;
         }
 
 		aiMesh* ai_mesh = scene->mMeshes[meshIndex];
-		auto mesh = processMesh(ai_mesh, scene, directory); // Process mesh directly
-		if (mesh) // Check if mesh processing was successful
+		auto mesh = processMesh(ai_mesh, scene, directory);
+		if (mesh)
 		{
-			MeshInstance meshInstance;
-			meshInstance.mesh = mesh; // Assign the returned mesh shared_ptr
-			meshInstance.localTransform = nodeTransform; // Store the combined transform for this instance
-			meshInstances.push_back(std::move(meshInstance)); // Move the instance into the vector
+			meshInstances.emplace_back(mesh, nodeTransform); // Use emplace_back with constructor
 		}
         else {
-            std::cerr << "GraphicsManager::processNode: Failed to process mesh at index " << meshIndex << " in node '" << node->mName.C_Str() << "'. Skipping mesh instance." << std::endl;
+            LOG_WARN(logging::gResourceLogger, "Failed to process mesh at index {} referenced by node '{}'. Skipping mesh instance.", meshIndex, node->mName.C_Str());
         }
 	}
 
-	// Recursively process each child node
+	// Recursively process children
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
-		processNode(node->mChildren[i], scene, directory, nodeTransform, meshInstances); // Pass nodeTransform (this node's world transform) as parentTransform to children
+        // Pass current node's combined transform to children
+		processNode(node->mChildren[i], scene, directory, nodeTransform, meshInstances);
 	}
 }
 
 glm::mat4 GraphicsManager::aiMatrixToGlm(const aiMatrix4x4& aiMat)
 {
 	glm::mat4 mat;
-	// Direct mapping (assuming glm::mat4 is column-major like OpenGL)
-	// aiMatrix4x4 is row-major
-	mat[0][0] = aiMat.a1; mat[1][0] = aiMat.a2; mat[2][0] = aiMat.a3; mat[3][0] = aiMat.a4;
-	mat[0][1] = aiMat.b1; mat[1][1] = aiMat.b2; mat[2][1] = aiMat.b3; mat[3][1] = aiMat.b4;
-	mat[0][2] = aiMat.c1; mat[1][2] = aiMat.c2; mat[2][2] = aiMat.c3; mat[3][2] = aiMat.c4;
-	mat[0][3] = aiMat.d1; mat[1][3] = aiMat.d2; mat[2][3] = aiMat.d3; mat[3][3] = aiMat.d4;
+	// aiMatrix4x4 is row-major, glm::mat4 is column-major.
+	// Transpose during conversion.
+	mat[0][0] = aiMat.a1; mat[1][0] = aiMat.b1; mat[2][0] = aiMat.c1; mat[3][0] = aiMat.d1;
+	mat[0][1] = aiMat.a2; mat[1][1] = aiMat.b2; mat[2][1] = aiMat.c2; mat[3][1] = aiMat.d2;
+	mat[0][2] = aiMat.a3; mat[1][2] = aiMat.b3; mat[2][2] = aiMat.c3; mat[3][2] = aiMat.d3;
+	mat[0][3] = aiMat.a4; mat[1][3] = aiMat.b4; mat[2][3] = aiMat.c4; mat[3][3] = aiMat.d4;
 	return mat;
 }
+
+// Removed placeholder comments about isLoaded/isCompiled and MeshInstance constructor

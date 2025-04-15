@@ -34,6 +34,10 @@ public:
 	void unbindPrefilter(int slot);
 	void unbindBRDFLUT(int slot);
 
+	bool isLoaded() const
+	{
+		return mSkyboxCubemap && mIrradianceCubemap && mPrefilterCubemap && mBRDFLUT;
+	}
 	// Draw the skybox
 	void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
 

@@ -124,6 +124,8 @@ public:
     // Core functionality
     void bind(unsigned int slot = 0);
     void unbind(unsigned int slot = 0);
+
+	bool isLoaded() const { return mTextureID != 0; }
     
     // Getters
     int getWidth() const { return mWidth; }
