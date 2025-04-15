@@ -9,6 +9,7 @@
 #include <Material.hpp>
 #include <Texture.hpp>
 #include <string_view> // Include for potential future use
+#include "Engine/Util/Logging.hpp" // For ASSERT_LOG
 
 
 GraphicsManager::~GraphicsManager()
@@ -155,15 +156,18 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
 	{
 		// Example: embedded textures often show up as "*0", "*1", etc.
 		unsigned int textureIndex = 0;
-		try {
-			textureIndex = std::stoi(path.substr(1)); // e.g. from "*0"
-		} catch (const std::invalid_argument& ia) {
-			std::cerr << "GraphicsManager::loadTexture: Invalid embedded texture index format: " << path << std::endl;
-			return nullptr;
-		} catch (const std::out_of_range& oor) {
-			 std::cerr << "GraphicsManager::loadTexture: Embedded texture index out of range: " << path << std::endl;
-			return nullptr;
-		}
+		// Remove try-catch, use ASSERT_LOG for stoi validation
+		// ASSERT_LOG requires a condition. We need to check if the conversion *would* be valid.
+		// A simple check: is the substring after '*' composed only of digits?
+		std::string indexStr = path.substr(1);
+		bool isValidIndexFormat = !indexStr.empty() && 
+		                          std::all_of(indexStr.begin(), indexStr.end(), ::isdigit);
+
+		ASSERT_LOG(logging::gResourceLogger, isValidIndexFormat,
+		           "Invalid embedded texture index format: {}", path);
+
+		// If the format is valid, proceed with stoi (which should now succeed)
+		textureIndex = std::stoi(indexStr);
 
 
 		// Construct a unique key: e.g., "Embedded_140535221312672_*0"

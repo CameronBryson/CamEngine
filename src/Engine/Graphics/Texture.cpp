@@ -12,7 +12,6 @@
 #include "Engine/Util/Logging.hpp"
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
-#include <cassert>
 
 // Constants for cubemap generation
 static const unsigned int ENV_MAP_SIZE = 512;
@@ -104,11 +103,8 @@ Texture::Texture(std::string_view filePath)
 {
     // Generate and bind the texture
     genTextures(1, &mTextureID);
-    if (mTextureID == 0)
-    {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to generate texture ID.");
-        assert(false && "Failed to generate texture ID.");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, mTextureID != 0, "Failed to generate texture ID.");
+
     bindTexture(GL_TEXTURE_2D, mTextureID);
 
     // Load the texture data using stb_image
@@ -119,8 +115,7 @@ Texture::Texture(std::string_view filePath)
     {
         bindTexture(GL_TEXTURE_2D, 0); // Unbind the texture
         deleteTextures(1, &mTextureID);
-        LOG_CRITICAL(logging::gResourceLogger, "Failed to load texture: {}", filePath);
-        assert(false && "Failed to load texture!");
+        ASSERT_LOG(logging::gResourceLogger, false, "Failed to load texture: {}", filePath);
     }
     LOG_INFO(logging::gResourceLogger, "Loaded texture: {}", filePath);
 
@@ -185,11 +180,7 @@ Texture::Texture(std::string_view equirectangularMapPath, const std::shared_ptr<
     stbi_set_flip_vertically_on_load(true);
     int w, h, nrComponents;
     float* hdrData = stbi_loadf(equirectangularMapPath.data(), &w, &h, &nrComponents, 0);
-    if (!hdrData)
-    {
-        LOG_CRITICAL(logging::gResourceLogger, "Failed to load HDR: {}", equirectangularMapPath);
-        assert(false && "Failed to load HDR image!");
-    }
+    ASSERT_LOG(logging::gResourceLogger, hdrData != nullptr, "Failed to load HDR: {}", equirectangularMapPath);
 
     GLuint hdrTexID;
     genTextures(1, &hdrTexID);
@@ -255,11 +246,8 @@ Texture::Texture(const aiTexture* aiTex)
 {
     // Generate and bind the texture
     genTextures(1, &mTextureID);
-    if (mTextureID == 0)
-    {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to generate texture ID.");
-        assert(false && "Failed to generate texture ID.");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, mTextureID != 0, "Failed to generate texture ID.");
+
     bindTexture(GL_TEXTURE_2D, mTextureID);
 
     unsigned char* data = nullptr;
@@ -329,7 +317,7 @@ Texture::Texture(const aiTexture* aiTex)
         {
             LOG_CRITICAL(logging::gGraphicsLogger, "Failed to load embedded compressed texture.");
             bindTexture(GL_TEXTURE_2D, 0); // Unbind the texture
-            assert(false && "Failed to load embedded compressed texture!");
+            ASSERT_LOG(logging::gGraphicsLogger, false, "Failed to load embedded compressed texture!");
         }
     }
     else

@@ -13,7 +13,6 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <GameSettings.hpp>
-#include <cassert>
 GLFWwindow * GameManager::mGameWindow = nullptr;
 std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
 std::unique_ptr<BaseScene> GameManager::mPendingScene = nullptr;

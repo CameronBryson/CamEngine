@@ -3,22 +3,15 @@
 #include "platform.hpp"
 #include "OpenGLUtil.hpp"
 #include "Engine/Util/Logging.hpp"
-#include <cassert>
 
 UniformBuffer::UniformBuffer(unsigned int size, unsigned int binding) : mSize(size), mBinding(binding)
 {
-	if (size == 0) {
-		// Handle error: UBO size cannot be zero
-		LOG_CRITICAL(logging::gGraphicsLogger, "Attempted to create UniformBuffer with size 0.");
-		assert(false && "UniformBuffer size cannot be zero.");
-	}
+	ASSERT_LOG(logging::gGraphicsLogger, size > 0, "Attempted to create UniformBuffer with size 0.");
+
 	// Generate the UBO
 	GL_CHECK(glGenBuffers(1, &mRendererID));
-	if (mRendererID == 0) {
-		// Handle error: Failed to generate buffer ID
-		LOG_CRITICAL(logging::gGraphicsLogger, "Failed to generate UniformBuffer ID.");
-		assert(false && "Failed to generate UniformBuffer ID.");
-	}
+	ASSERT_LOG(logging::gGraphicsLogger, mRendererID != 0, "Failed to generate UniformBuffer ID.");
+
 	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, mRendererID));
 	GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW)); // Use GL_DYNAMIC_DRAW if data changes often
 

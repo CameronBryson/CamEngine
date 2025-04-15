@@ -11,7 +11,6 @@
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 #include <glad/glad.h>
-#include <cassert>
 #include "Engine/Util/Logging.hpp"
 
 Shader::Shader(std::string_view vertexPath, std::string_view fragmentPath)
@@ -26,10 +25,7 @@ Shader::Shader(std::string_view vertexPath, std::string_view fragmentPath)
     
     // Link the program
     mShaderID = glCreateProgram();
-    if (mShaderID == 0) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to create shader program");
-        assert(false && "Failed to create shader program");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, mShaderID != 0, "Failed to create shader program");
     
     GL_CHECK(glAttachShader(mShaderID, vertex));
     GL_CHECK(glAttachShader(mShaderID, fragment));
@@ -59,10 +55,7 @@ Shader::Shader(std::string_view vertexPath, std::string_view fragmentPath, std::
     
     // Link the program
     mShaderID = glCreateProgram();
-    if (mShaderID == 0) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to create shader program");
-        assert(false && "Failed to create shader program");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, mShaderID != 0, "Failed to create shader program");
     
     GL_CHECK(glAttachShader(mShaderID, vertex));
     GL_CHECK(glAttachShader(mShaderID, fragment));
@@ -88,10 +81,7 @@ Shader::Shader(std::string_view computePath)
     
     // Link the program
     mShaderID = glCreateProgram();
-    if (mShaderID == 0) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to create compute shader program");
-        assert(false && "Failed to create compute shader program");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, mShaderID != 0, "Failed to create compute shader program");
     
     GL_CHECK(glAttachShader(mShaderID, compute));
     GL_CHECK(glLinkProgram(mShaderID));
@@ -145,10 +135,7 @@ void Shader::use() const
 
 void Shader::dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ) const
 {
-    if (!mIsComputeShader) {
-        LOG_ERROR(logging::gGraphicsLogger, "Cannot dispatch non-compute shader (ID: {})", mShaderID);
-        assert(false && "Cannot dispatch a non-compute shader");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, mIsComputeShader, "Cannot dispatch non-compute shader (ID: {})", mShaderID);
     
     use();
     GL_CHECK(glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ));
@@ -221,11 +208,26 @@ std::string Shader::loadShaderFile(std::string_view filePath)
 {
     std::string code;
     std::ifstream file;
+
+    // Open the file and check if it was successful
     file.open(filePath);
+    ASSERT_LOG(logging::gGraphicsLogger, file.is_open(), "Failed to open shader file: {}", filePath);
+
+    // Set exception mask to not throw on badbit (we'll handle errors manually)
+    file.exceptions(std::ifstream::goodbit);
+
+    // Read the file content
     std::stringstream stream;
     stream << file.rdbuf();
-    file.close();
+    
+    // Check for any read errors
+    ASSERT_LOG(logging::gGraphicsLogger, !file.bad(), "Error occurred while reading shader file: {}", filePath);
+    
     code = stream.str();
+    // Verify we actually got content
+    ASSERT_LOG(logging::gGraphicsLogger, !code.empty(), "Shader file is empty: {}", filePath);
+    
+    file.close();
     return code;
 }
 
@@ -244,10 +246,7 @@ unsigned int Shader::compileShader(unsigned int type, std::string_view source, s
     LOG_DEBUG(logging::gGraphicsLogger, "Compiling {} shader from {}", typeStr, shaderPath);
     
     unsigned int shaderId = glCreateShader(type);
-    if (shaderId == 0) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to create shader object");
-        assert(false && "Failed to create shader object");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, shaderId != 0, "Failed to create shader object");
     
     const char* src = source.data();
     GL_CHECK(glShaderSource(shaderId, 1, &src, nullptr));
@@ -276,8 +275,7 @@ void Shader::checkCompileError(unsigned int shader, const std::string& type, con
                 errorMessage += " [File: " + filePath + "]";
             }
             
-            LOG_CRITICAL(logging::gGraphicsLogger, "{}", errorMessage);
-            assert(false && "Shader compilation failed!");
+            ASSERT_LOG(logging::gGraphicsLogger, false, "{}", errorMessage);
         }
     }
     else
@@ -292,8 +290,7 @@ void Shader::checkCompileError(unsigned int shader, const std::string& type, con
                 errorMessage += " [Files: " + filePath + "]";
             }
             
-            LOG_CRITICAL(logging::gGraphicsLogger, "{}", errorMessage);
-            assert(false && "Shader linking failed!");
+            ASSERT_LOG(logging::gGraphicsLogger, false, "{}", errorMessage);
         }
     }
 }

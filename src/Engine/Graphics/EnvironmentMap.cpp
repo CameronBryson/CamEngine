@@ -14,7 +14,6 @@
 #include <cmath>
 #include <stb_image.h>
 #include <memory>
-#include <cassert>
 
 namespace {
     // Constants for generated map resolutions and mip levels
@@ -50,23 +49,11 @@ EnvironmentMap::EnvironmentMap(std::string_view hdrPath,
 							  std::shared_ptr<Shader> brdfShader)
 {
     LOG_INFO(logging::gGraphicsLogger, "Creating EnvironmentMap from HDR: {}", hdrPath);
-    // --- Error Checking for Shaders ---
-    if (!equirectangularToCubemapShader) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "EnvironmentMap requires a valid EquirectangularToCubemap shader.");
-        assert(false && "EquirectangularToCubemap shader is null!");
-    }
-    if (!irradianceShader) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "EnvironmentMap requires a valid Irradiance shader.");
-        assert(false && "Irradiance shader is null!");
-    }
-    if (!prefilterShader) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "EnvironmentMap requires a valid Prefilter shader.");
-        assert(false && "Prefilter shader is null!");
-    }
-    if (!brdfShader) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "EnvironmentMap requires a valid BRDF shader.");
-        assert(false && "BRDF shader is null!");
-    }
+    // --- Error Checking for Shaders --- Use ASSERT_LOG ---
+    ASSERT_LOG(logging::gGraphicsLogger, equirectangularToCubemapShader != nullptr, "EnvironmentMap requires a valid EquirectangularToCubemap shader.");
+    ASSERT_LOG(logging::gGraphicsLogger, irradianceShader != nullptr, "EnvironmentMap requires a valid Irradiance shader.");
+    ASSERT_LOG(logging::gGraphicsLogger, prefilterShader != nullptr, "EnvironmentMap requires a valid Prefilter shader.");
+    ASSERT_LOG(logging::gGraphicsLogger, brdfShader != nullptr, "EnvironmentMap requires a valid BRDF shader.");
 
 	// Save current viewport to restore it later
 	GLint oldViewport[4];

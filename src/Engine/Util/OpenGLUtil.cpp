@@ -12,7 +12,6 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <iostream>
-#include <cassert>
 namespace gl {
     namespace detail {
         bool g_GLDebugOutput = true;
@@ -225,7 +224,9 @@ namespace gl {
 
         if (hasError)
         {
-            assert(!detail::g_BreakOnError && "OpenGL Error occurred!");
+            if(detail::g_BreakOnError) {
+                ASSERT_LOG(logging::gGraphicsLogger, false, "OpenGL Error occurred! Check logs.");
+            }
         }
 #endif
     }
@@ -531,7 +532,9 @@ void APIENTRY gl::detail::debugMessageCallback(GLenum source, GLenum type, GLuin
 
     if (severity == GL_DEBUG_SEVERITY_HIGH)
     {
-         assert(!g_BreakOnError && "High severity OpenGL error occurred!");
+         if(g_BreakOnError) {
+            ASSERT_LOG(logging::gGraphicsLogger, false, "High severity OpenGL error occurred! Check logs.");
+         }
     }
 }
 // Define the ScopedTimer and ScopedLabel implementations

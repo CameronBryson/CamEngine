@@ -1,7 +1,6 @@
 #include "pch.hpp"
 #include "FrameBuffer.hpp"
 #include <iostream>
-#include <cassert>
 #include <glad/glad.h>
 #include "Texture.hpp"
 #include <OpenGLUtil.hpp>
@@ -137,15 +136,8 @@ FrameBuffer::FrameBuffer(
     LOG_DEBUG(logging::gGraphicsLogger, "Creating framebuffer: unnamed ({0}x{1}, {2} samples)", 
               width, height, samples);
               
-    if (width <= 0 || height <= 0) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Invalid framebuffer dimensions: {}x{}", width, height);
-        assert(false && "Invalid framebuffer dimensions");
-    }
-        
-    if (samples < 1) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Invalid sample count: {}", samples);
-        assert(false && "Invalid sample count");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, width > 0 && height > 0, "Invalid framebuffer dimensions: {}x{}", width, height);
+    ASSERT_LOG(logging::gGraphicsLogger, samples >= 1, "Invalid sample count: {}", samples);
         
     mViewportX = 0;
     mViewportY = 0;
@@ -586,11 +578,7 @@ void FrameBuffer::createFramebuffer()
               mAttachmentSpecs.size());
 
     genFramebuffers(1, &mRendererID);
-    if (mRendererID == 0)
-    {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Failed to generate framebuffer ID");
-        assert(false && "Failed to generate framebuffer ID");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, mRendererID != 0, "Failed to generate framebuffer ID");
     
 
     bindFramebuffer(GL_FRAMEBUFFER, mRendererID);
@@ -858,11 +846,7 @@ void FrameBuffer::createFramebuffer()
     // Validate completeness
     GLenum status = checkFramebufferStatus(GL_FRAMEBUFFER);
     
-    if (status != GL_FRAMEBUFFER_COMPLETE)
-    {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Framebuffer is incomplete: status code 0x{:x}", status);
-        assert(false && "Framebuffer incomplete!");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, status == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete: status code 0x{:x}", status);
 
     bindFramebuffer(GL_FRAMEBUFFER, 0);
 }

@@ -7,6 +7,7 @@
 #include <spdlog/cfg/env.h>
 #include <memory>
 #include <string>
+#include <cassert> // Include for assert
 
 namespace logging {
 
@@ -66,6 +67,14 @@ std::shared_ptr<spdlog::logger> getLogger(const std::string& name);
 #define LOG_WARN(logger, ...) SPDLOG_LOGGER_WARN(logger, __VA_ARGS__)
 #define LOG_ERROR(logger, ...) SPDLOG_LOGGER_ERROR(logger, __VA_ARGS__)
 #define LOG_CRITICAL(logger, ...) SPDLOG_LOGGER_CRITICAL(logger, __VA_ARGS__)
+
+// Custom assert macro combining logging and assertion
+#define ASSERT_LOG(logger, condition, ...) do { \
+    if (!(condition)) { \
+        LOG_CRITICAL(logger, __VA_ARGS__); \
+        assert(false && "Assertion failed! See log for details."); \
+    } \
+} while(0)
 
 // Global loggers for different subsystems
 extern std::shared_ptr<spdlog::logger> gEngineLogger;

@@ -9,16 +9,13 @@
 #include "Vertex.hpp"
 #include "Engine/Util/Logging.hpp"
 #include "Shader.hpp"
-#include <cassert>
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned> indices, std::shared_ptr<Material> material)
     : mMaterial(std::move(material)),
       mVertices(std::move(vertices))
 {
-    if (mVertices.empty() || indices.empty()) {
-        LOG_CRITICAL(logging::gGraphicsLogger, "Attempted to create Mesh '{}' with empty vertices or indices.", mName);
-        assert(false && "Mesh must have vertices and indices.");
-    }
+    ASSERT_LOG(logging::gGraphicsLogger, !mVertices.empty() && !indices.empty(),
+               "Attempted to create Mesh '{}' with empty vertices or indices.", mName);
 
 	mVertexArray = std::make_unique<VertexArray>(VertexBuffer(mVertices), IndexBuffer(indices));
 
