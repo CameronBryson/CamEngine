@@ -32,8 +32,6 @@ void GraphicsManager::loadResources()
 	loadShader("Shaders/motionblur.vert", "Shaders/motionblur.frag", "MotionBlur");
 	loadShader("Shaders/taa.vert", "Shaders/taa.frag", "TAA");
 	loadShader("Shaders/bloomextract.vert", "Shaders/bloomextract.frag", "BloomExtract");
-	loadShader("Shaders/luminance.comp", "Luminance");
-	loadShader("Shaders/adaptation.comp", "Adaptation");
 	loadShader("Shaders/ssr.vert", "Shaders/ssr.frag", "SSR");
 	auto equirectCubemapShader = loadShader("Shaders/cubemap.vert", "Shaders/equirect_to_cubemap.frag", "equirectangularToCubemap");
 	auto irradianceShader = loadShader("Shaders/cubemap.vert", "Shaders/irradiance.frag", "irradiance");
@@ -69,8 +67,6 @@ void GraphicsManager::reloadShaders()
 	loadShader("Shaders/motionblur.vert", "Shaders/motionblur.frag", "MotionBlur");
 	loadShader("Shaders/taa.vert", "Shaders/taa.frag", "TAA");
 	loadShader("Shaders/bloomextract.vert", "Shaders/bloomextract.frag", "BloomExtract");
-	loadShader("Shaders/luminance.comp", "Luminance");
-	loadShader("Shaders/adaptation.comp", "Adaptation");
 	loadShader("Shaders/ssr.vert", "Shaders/ssr.frag", "SSR");
 }
 
@@ -97,12 +93,6 @@ std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath,
 	return shader;
 }
 
-std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view computePath, std::string name)
-{
-	auto shader = std::make_shared<Shader>(computePath);
-	mShaderMap.emplace(name, shader);
-	return shader;
-}
 
 std::shared_ptr<Shader> GraphicsManager::getShader(const std::string& name)
 {

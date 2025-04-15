@@ -72,30 +72,6 @@ Shader::Shader(std::string_view vertexPath, std::string_view fragmentPath, std::
             mShaderID);
 }
 
-Shader::Shader(std::string_view computePath)
-{
-    LOG_DEBUG(logging::gGraphicsLogger, "Creating compute shader from: {}", computePath);
-    
-    std::string computeCode = loadShaderFile(computePath);
-    unsigned int compute = compileShader(GL_COMPUTE_SHADER, computeCode, computePath);
-    
-    // Link the program
-    mShaderID = glCreateProgram();
-    ASSERT_LOG(logging::gGraphicsLogger, mShaderID != 0, "Failed to create compute shader program");
-    
-    GL_CHECK(glAttachShader(mShaderID, compute));
-    GL_CHECK(glLinkProgram(mShaderID));
-    checkCompileError(mShaderID, "PROGRAM", std::string(computePath));
-    
-    // Delete the shader as it's linked into our program now and no longer necessary
-    GL_CHECK(glDeleteShader(compute));
-    
-    mIsComputeShader = true;
-    
-    LOG_INFO(logging::gGraphicsLogger, "Successfully created compute shader program (ID: {}) from {}", 
-            mShaderID, computePath);
-}
-
 Shader::~Shader() 
 {
     deleteShader();
@@ -103,7 +79,6 @@ Shader::~Shader()
 
 Shader::Shader(Shader&& other) noexcept
     : mShaderID(other.mShaderID)
-    , mIsComputeShader(other.mIsComputeShader)
     , mUniformLocationCache(std::move(other.mUniformLocationCache))
 {
     // Make sure the other shader doesn't delete our program
@@ -119,7 +94,6 @@ Shader& Shader::operator=(Shader&& other) noexcept
         
         // Move resources from other
         mShaderID = other.mShaderID;
-        mIsComputeShader = other.mIsComputeShader;
         mUniformLocationCache = std::move(other.mUniformLocationCache);
         
         // Make sure the other shader doesn't delete our program
@@ -133,25 +107,6 @@ void Shader::use() const
     GL_CHECK(glUseProgram(mShaderID));
 }
 
-void Shader::dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ) const
-{
-    ASSERT_LOG(logging::gGraphicsLogger, mIsComputeShader, "Cannot dispatch non-compute shader (ID: {})", mShaderID);
-    
-    use();
-    GL_CHECK(glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ));
-    LOG_DEBUG(logging::gGraphicsLogger, "Dispatched compute shader with groups: {}x{}x{}", 
-             numGroupsX, numGroupsY, numGroupsZ);
-}
-
-void Shader::memoryBarrier(unsigned int barriers) const
-{
-    if (!mIsComputeShader) {
-        LOG_WARN(logging::gGraphicsLogger, "Memory barrier called on non-compute shader (ID: {})", mShaderID);
-    }
-    
-    GL_CHECK(glMemoryBarrier(barriers));
-    LOG_TRACE(logging::gGraphicsLogger, "Memory barrier established with flags: 0x{:x}", barriers);
-}
 
 void Shader::setBool(const std::string& name, bool value) const
 {

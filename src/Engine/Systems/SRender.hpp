@@ -8,7 +8,6 @@
 #include <FrameBuffer.hpp>
 #include <Texture.hpp>
 #include "Mesh.hpp"
-#include "ShaderStorageBuffer.hpp"
 class BaseScene;
 class Shader;
 struct RenderItem {
@@ -68,7 +67,6 @@ private:
     void taaPass();
 	void motionBlurPass();
 	void fxaaPass();
-	void autoExposurePass(float dt);
     void ssrPass();
     // Resource binding
     void bindSkyboxResources(std::shared_ptr<Shader>& shader);
@@ -90,8 +88,6 @@ private:
     // Uniform buffers
     std::shared_ptr<UniformBuffer> mCameraUBO;
     std::shared_ptr<UniformBuffer> mLightUBO;
-	std::shared_ptr<UniformBuffer> mLuminanceHistogramUBO;
-	std::shared_ptr<UniformBuffer> mAdaptationDataUBO;
 
     // Framebuffers
     std::shared_ptr<FrameBuffer> mGBuffer;
@@ -107,9 +103,6 @@ private:
 	std::shared_ptr<FrameBuffer> mTAAPreviousFrameBuffer;
     std::shared_ptr<FrameBuffer> mSSRBuffer;
 
-
-    std::shared_ptr<Texture> mAdaptedLuminance;
-    std::shared_ptr<ShaderStorageBuffer> mLuminanceSSBO;
 
 
 
@@ -155,15 +148,7 @@ private:
     glm::vec2 mPreviousJitter{0.0f};
     float mJitterScale = 0.2f;
     bool mFirstFrame = true;
-    bool mCurrentLuminanceIndex = 0;
-
-    bool mAutoExposureEnabled = true;
-	float mAdaptationSpeed = 1.0f;
-	float mMinLogLuminance = -4.5f;
-	float mLogLuminanceRange = 8.0f;
-	float mMinAdaptedLuminance = 0.05f;
-	float mMaxAdaptedLuminance = 4.0f;
-	float mTargetMiddleGray = 0.1f;
+   
 
     // SSAO data
     std::shared_ptr<FrameBuffer> mSSAOBuffer;

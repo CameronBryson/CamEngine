@@ -34,13 +34,6 @@ public:
     Shader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath);
     
     /**
-     * @brief Creates a compute shader program from a compute shader file
-     * 
-     * @param computePath Path to the compute shader file
-     */
-    Shader(std::string_view computePath);
-    
-    /**
      * @brief Destructor cleans up OpenGL resources
      */
     ~Shader();
@@ -58,24 +51,6 @@ public:
      */
     void use() const;
     
-    /**
-     * @brief Dispatches a compute shader with the specified work group counts
-     * 
-     * @param numGroupsX X dimension of work groups
-     * @param numGroupsY Y dimension of work groups
-     * @param numGroupsZ Z dimension of work groups
-     * @throws GraphicsException if this is not a compute shader
-     */
-    void dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ) const;
-    
-    /**
-     * @brief Waits for all memory operations from the compute shader to finish
-     * 
-     * @param barriers Bitwise OR of memory barrier flags (GL_SHADER_STORAGE_BARRIER_BIT, etc.)
-     */
-    void memoryBarrier(unsigned int barriers) const;
-
-    // Uniform setter methods
     
     /**
      * @brief Set a boolean uniform value
@@ -148,12 +123,6 @@ public:
      */
     unsigned int getID() const { return mShaderID; }
     
-    /**
-     * @brief Checks if this is a compute shader
-     * 
-     * @return True if this is a compute shader
-     */
-    bool isComputeShader() const { return mIsComputeShader; }
     
 	bool isCompiled() const { return mShaderID != 0; }
     /**
@@ -200,6 +169,5 @@ private:
 
 private:
     GLuint mShaderID = 0;
-    bool mIsComputeShader = false;
     mutable std::unordered_map<std::string, int> mUniformLocationCache;
 };

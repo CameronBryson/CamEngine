@@ -145,32 +145,7 @@ void SRender::initFramebuffers()
     GL_LABEL_OBJECT(GL_BUFFER, mCameraUBO->getID(), "Camera UBO");
     mLightUBO = std::make_shared<UniformBuffer>(sizeof(LightData), LIGHT_BINDING);
     GL_LABEL_OBJECT(GL_BUFFER, mLightUBO->getID(), "Light UBO");
-    mLuminanceHistogramUBO = std::make_shared<UniformBuffer>(sizeof(LuminanceHistogramData), LUMINANCE_HISTOGRAM_BINDING);
-    GL_LABEL_OBJECT(GL_BUFFER, mLuminanceHistogramUBO->getID(), "Luminance Histogram UBO");
-
-    mAdaptationDataUBO = std::make_shared<UniformBuffer>(sizeof(LuminanceHistogramAverageData), LUMINANCE_HISTOGRAM_AVERAGE_BINDING);
-    GL_LABEL_OBJECT(GL_BUFFER, mAdaptationDataUBO->getID(), "Adaptation Data UBO");
-
-    //INIT LUMINANCE SSBO HERE
-    mLuminanceSSBO = std::make_shared<ShaderStorageBuffer>(256 * sizeof(uint32_t), LUMINANCE_SSBO_BINDING);
-    GL_LABEL_OBJECT(GL_BUFFER, mLuminanceSSBO->getID(), "Luminance Histogram SSBO");
-	//CREATE 1x1 TEXTURE FOR LUMINANCE ADAPTAION
-    GLuint luminanceTexID;
-    GL_CHECK(glGenTextures(1, &luminanceTexID));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, luminanceTexID));
-    GL_CHECK(glTexStorage2D(GL_TEXTURE_2D, 1, GL_R32F, 1, 1));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-
-    // Initialize with middle-gray value (0.18)
-    float initialValue = mTargetMiddleGray;
-    GL_CHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialValue));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
-
-    mAdaptedLuminance = std::make_shared<Texture>(luminanceTexID, 1, 1);
-    GL_LABEL_OBJECT(GL_TEXTURE, mAdaptedLuminance->getTextureID(), "Adapted Luminance Texture");
+    
 
     // Directional & Spot shadow map FBO
     auto depthAttachment =
@@ -900,11 +875,6 @@ void SRender::postProcessPass(float dt)
         ssrPass();
     }
     {
-        GL_SCOPED_MARKER("Auto Exposure");
-        GL_SCOPED_TIMER("Auto Exposure");
-        autoExposurePass(dt);
-    }
-    {
         GL_SCOPED_MARKER("TAA Process");
         GL_SCOPED_TIMER("TAA Process");
         taaPass();
@@ -1105,23 +1075,6 @@ void SRender::hdrPass()
     hdrShader->use();
     mHDRFrameBuffer->bind();
 
-	float exposure = mExposure;
-    if (mAutoExposureEnabled)
-    {
-        float adaptedLuminance = mTargetMiddleGray;
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, mAdaptedLuminance->getTextureID()));
-        GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, &adaptedLuminance));
-
-        if (adaptedLuminance > 0.0001f) {
-            // Use middle gray key value (0.18) divided by luminance
-            // This is the standard formula for auto-exposure
-            exposure = mTargetMiddleGray / adaptedLuminance;
-
-            // Apply exposure limits to prevent extreme values
-            exposure = glm::clamp(exposure, mMinAdaptedLuminance, mMaxAdaptedLuminance);
-        }
-    }
-	mExposure = exposure;
 
     hdrShader->setFloat("exposure", mExposure);
     hdrShader->setBool("hdr", mHDR);
@@ -1269,74 +1222,6 @@ void SRender::motionBlurPass()
        mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR);
    }
 
-   void SRender::autoExposurePass(float dt)
-   {
-       if (!mAutoExposureEnabled) return;
-
-       GL_SCOPED_MARKER("Auto Exposure");
-       GL_SCOPED_TIMER("Auto Exposure");
-
-       // Reset histogram to zero
-       uint32_t zeros[256] = {0};
-       mLuminanceSSBO->setData(zeros, sizeof(zeros));
-
-       // 1. First pass: Build the luminance histogram
-       auto luminanceComputeShader = GameManager::mGraphicsManager->getShader("Luminance");
-       luminanceComputeShader->use();
-
-       // Bind HDR input texture
-       mHDRFrameBuffer->getColorAttachment(0).bind(0);
-
-       // Setup histogram parameters
-       LuminanceHistogramData histogramData;
-       histogramData.inputWidth = settings::window_width;
-       histogramData.inputHeight = settings::window_height;
-       histogramData.minLogLuminance = mMinLogLuminance;
-       histogramData.oneOverLogLuminanceRange = 1.0f / mLogLuminanceRange;
-
-       // Update uniform buffer
-       mLuminanceHistogramUBO->setData(&histogramData, sizeof(LuminanceHistogramData));
-
-       // Bind SSBO (shader storage buffer object)
-       mLuminanceSSBO->bind(LUMINANCE_SSBO_BINDING);
-
-       // Dispatch compute shader with appropriate group count
-       // Each group is 16x16 threads, so we divide the screen dimensions by 16 (with ceiling)
-       uint32_t dispatchX = (settings::window_width + 15) / 16;
-       uint32_t dispatchY = (settings::window_height + 15) / 16;
-       luminanceComputeShader->dispatch(dispatchX, dispatchY, 1);
-
-       // Add memory barrier to ensure histogram is fully written before adaptation pass
-       GL_CHECK(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT));
-
-       // 2. Second pass: Calculate the adapted luminance
-       auto adaptationComputeShader = GameManager::mGraphicsManager->getShader("Adaptation");
-       adaptationComputeShader->use();
-
-       // Setup adaptation parameters
-       LuminanceHistogramAverageData adaptationData;
-       adaptationData.pixelCount = settings::window_width * settings::window_height;
-       adaptationData.minLogLuminance = mMinLogLuminance;
-       adaptationData.logLuminanceRange = mLogLuminanceRange;
-       adaptationData.timeDelta = dt;
-       adaptationData.tau = mAdaptationSpeed;
-
-       // Update uniform buffer
-       mAdaptationDataUBO->setData(&adaptationData, sizeof(LuminanceHistogramAverageData));
-
-       // Bind SSBO and adapted luminance texture
-       mLuminanceSSBO->bind(LUMINANCE_SSBO_BINDING);
-       GL_CHECK(glBindImageTexture(1, mAdaptedLuminance->getTextureID(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F));
-
-       // Dispatch a single workgroup (16x16x1) for reduction/adaptation
-       adaptationComputeShader->dispatch(1, 1, 1);
-
-       // Memory barrier to ensure results are visible for HDR pass
-       GL_CHECK(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
-
-       // Unbind resources
-       mLuminanceSSBO->unbind();
-   }
 
    void SRender::ssrPass()
    {
@@ -1464,27 +1349,6 @@ void SRender::drawImGui()
 		ImGui::SliderFloat("Brightness", &mBrightness, 0.0f, 2.0f);
 		ImGui::SliderFloat("Contrast", &mContrast, 0.0f, 2.0f);
 		ImGui::SliderFloat("Saturation", &mSaturation, 0.0f, 2.0f);
-        // Auto Exposure Settings
-        ImGui::Separator();
-        ImGui::Checkbox("Enable Auto Exposure", &mAutoExposureEnabled);
-        if (mAutoExposureEnabled)
-        {
-            ImGui::SliderFloat("Adaptation Speed", &mAdaptationSpeed, 0.1f, 5.0f);
-            ImGui::SliderFloat("Min Log Luminance", &mMinLogLuminance, -20.0f, 0.0f);
-            ImGui::SliderFloat("Log Luminance Range", &mLogLuminanceRange, 1.0f, 20.0f);
-			ImGui::SliderFloat("Min Adapted Luminance", &mMinAdaptedLuminance, 0.0f, 1.0f);
-			ImGui::SliderFloat("Max Adapted Luminance", &mMaxAdaptedLuminance, 0.0f, 10.0f);
-			ImGui::SliderFloat("Middle Gray", &mTargetMiddleGray, 0.0f, 2.0f);
-
-            if (ImGui::Button("Reset Adaptation"))
-            {
-                // Reset to middle gray (0.18)
-                float initialValue = mTargetMiddleGray;
-                GL_CHECK(glBindTexture(GL_TEXTURE_2D, mAdaptedLuminance->getTextureID()));
-                GL_CHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialValue));
-                GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
-            }
-        }
 
 
         // Bloom Settings
