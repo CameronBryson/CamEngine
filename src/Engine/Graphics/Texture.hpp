@@ -126,7 +126,7 @@ public:
     void unbind(unsigned int slot = 0);
 
 	bool isLoaded() const { return mTextureID != 0; }
-    
+    bool hasAlpha() const;
     // Getters
     int getWidth() const { return mWidth; }
     int getHeight() const { return mHeight; }

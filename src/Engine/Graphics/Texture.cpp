@@ -456,6 +456,57 @@ void Texture::unbind(unsigned int slot)
     bindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
+bool Texture::hasAlpha() const
+{
+    // Check if the format contains an alpha channel
+    switch (mFormat)
+    {
+    case Format::RGBA:
+    case Format::RGBA16F:
+        return true;
+
+        // Special case for sRGB formats that might be set during loading
+        // Check the texture format at the OpenGL level
+    case Format::RGB:
+    case Format::RGB16F:
+    {
+        // For textures loaded from files, we might have an sRGB format with alpha
+        // Bind the texture to check its actual format
+        if (mTextureID != 0)
+        {
+            // Use a temporary binding to query the format
+            GLenum target = toGLTextureTarget(mType);
+            GL_CHECK(glActiveTexture(GL_TEXTURE31)); // Use a consistent slot for querying
+            GL_CHECK(glBindTexture(target, mTextureID));
+
+            // Query the internal format
+            GLint internalFormat;
+            GL_CHECK(glGetTexLevelParameteriv(target, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat));
+
+            // Unbind
+            GL_CHECK(glBindTexture(target, 0));
+
+            // Check if the actual format has alpha
+            return (internalFormat == GL_RGBA8 || 
+                    internalFormat == GL_RGBA16F || 
+                    internalFormat == GL_SRGB_ALPHA || 
+                    internalFormat == GL_SRGB8_ALPHA8);
+        }
+        return false;
+    }
+
+    // Other formats that don't have alpha
+    case Format::R:
+    case Format::RG:
+    case Format::R32F:
+    case Format::Depth:
+    case Format::DepthStencil:
+    default:
+        return false;
+    }
+}
+
+
 // Configure texture as a shadow sampler
 void Texture::setShadowSamplerParameters()
 {

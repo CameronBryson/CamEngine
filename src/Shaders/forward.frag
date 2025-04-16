@@ -110,6 +110,10 @@ uniform bool normalmapping;
 uniform bool enableShadows;
 uniform float farPlane;
 
+// Add SSAO texture and enable flag to match deferred shader
+uniform sampler2D ssaoTexture;
+uniform bool ssaoEnabled;
+
 // Function declarations
 float calculatePointShadow(vec3 FragPos, vec3 lightPos);
 float calculateShadow(vec3 worldPos, vec3 normal, vec3 lightDir, mat4 lightSpaceMatrix, sampler2DShadow shadowMap);
@@ -247,6 +251,11 @@ vec3 computeIBL(vec3 N, vec3 V, vec3 R, vec3 F0, vec3 albedo, float metallic, fl
     vec3 kS = F;
     vec3 kD = (vec3(1.0) - kS) * (1.0 - metallic);
     
+    // Get SSAO value and combine with material AO - UPDATED to match deferred.frag
+    float ssaoValue = ssaoEnabled ? texture(ssaoTexture, TexCoord).r : 1.0;
+    // Use min instead of averaging - this matches deferred shader
+    float finalAO = min(ao, ssaoValue);
+    
     // Diffuse IBL
     vec3 irradiance = texture(irradianceMap, N).rgb;
     vec3 diffuse = irradiance * albedo;
@@ -258,8 +267,8 @@ vec3 computeIBL(vec3 N, vec3 V, vec3 R, vec3 F0, vec3 albedo, float metallic, fl
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
     
     // Apply AO to both diffuse and specular IBL
-    vec3 ambient = (kD * diffuse + specular) * ao;
-    return ambient * 0.7;
+    vec3 ambient = (kD * diffuse + specular) * finalAO;
+    return ambient * 0.7; // Keep the 0.7 multiplier as it's in deferred.frag
 }
 
 void main() {
@@ -297,6 +306,11 @@ void main() {
     
     float ao = material.hasAOMap ? texture(material.AOMap, TexCoord).r : 1.0;
     
+    // Get SSAO value early - NEW addition to match deferred.frag
+    float ssaoValue = ssaoEnabled ? texture(ssaoTexture, TexCoord).r : 1.0;
+    // Combine material AO with SSAO using min instead of average
+    ao = min(ao, ssaoValue);
+    
     vec3 emissive = material.emissiveColor * material.emissiveIntensity;
     if (material.hasEmissiveMap) {
         emissive *= texture(material.emissiveMap, TexCoord).rgb;
@@ -317,7 +331,7 @@ void main() {
     // Combine all lighting contributions
     vec3 color = direct + ibl + emissive;
     
-    // Add ambient term
+    // Add ambient term with AO - now using ao directly which includes SSAO
     color += albedo * 0.01 * ao; // Small ambient term affected by AO
     
     // Output final color with alpha

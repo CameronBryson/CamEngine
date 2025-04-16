@@ -555,6 +555,9 @@ void SRender::buildRenderLists()
     auto& registry = mScene->mEnttRegistry;
     auto modelView = registry.view<CModel, CTransform>();
 
+    // Debug info for transparency
+    int totalMeshes = 0;
+    int transparentMeshes = 0;
 
     for (auto entity : modelView)
     {
@@ -565,13 +568,13 @@ void SRender::buildRenderLists()
 
         for (const auto& meshInstance : meshes)
         {
+            totalMeshes++;
             // Get local bounding sphere
             glm::vec3 localCenter = meshInstance.mesh->getBoundingSphereCenter();
             float localRadius = meshInstance.mesh->getBoundingSphereRadius();
 
             // Calculate world transform
             glm::mat4 finalTransform = transformComp.model_matrix * meshInstance.localTransform;
-
 
             // Extract scale without decomposing full matrix
             glm::vec3 scale(
@@ -587,8 +590,6 @@ void SRender::buildRenderLists()
             // Transform center directly
             glm::vec3 worldCenter = glm::vec3(finalTransform * glm::vec4(localCenter, 1.0f));
 
-            
-
             // Perform frustum test
             if (!mScene->mCurrentCamera.isSphereInFrustum(worldCenter, worldRadius))
             {
@@ -600,10 +601,29 @@ void SRender::buildRenderLists()
             float distanceToCamera = glm::length(worldCenter - camPos);
             auto material = meshInstance.mesh->getMaterial();
             bool isTransparent = false;
-            float opacity = material ? material->getOpacity() : 1.0f;
 
-            if (opacity < 1.0f || (material && material->getOpacityTexture() != nullptr))
-                isTransparent = true;
+            // More robust transparency detection
+            if (material) {
+                // Check opacity value first
+                float opacity = material->getOpacity();
+
+                // Check if opacity texture exists - this always makes it transparent
+                auto opacityTexture = material->getOpacityTexture();
+
+                // Check if albedo texture has alpha channel
+                auto albedoTexture = material->getAlbedoTexture();
+
+                // Determine if transparent based on all criteria
+                if (opacity < 0.999f || opacityTexture != nullptr) {
+                    isTransparent = true;
+                    transparentMeshes++;
+                }
+                // Check if material has albedo texture with alpha channel
+                else if (albedoTexture && albedoTexture->hasAlpha()) {
+                    isTransparent = true;
+                    transparentMeshes++;
+                }
+            }
 
             RenderItem item{meshInstance.mesh, finalTransform, distanceToCamera};
 
@@ -619,7 +639,13 @@ void SRender::buildRenderLists()
               [](const RenderItem& a, const RenderItem& b) {
                   return a.distance > b.distance;
               });
+
+    // Log transparency statistics for debugging
+    //std::cout << "Total meshes: " << totalMeshes 
+    //    << ", Transparent: " << transparentMeshes 
+    //    << ", Culled: " << mCulledMeshes << std::endl;
 }
+
 
 
 
@@ -1939,47 +1965,66 @@ void SRender::generateHaltonSequence() {
 
 void SRender::forwardPass()
 {
-    if (mTransparentRenderList.empty()) return;
+    if (mTransparentRenderList.empty()) {
+        // Skip if no transparent objects
+        return;
+    }
 
     GL_SCOPED_MARKER("Transparent Forward Pass");
     GL_SCOPED_TIMER("Forward Transparency");
 
+    // Log number of transparent objects for debugging
+    //std::cout << "Rendering " << mTransparentRenderList.size() << " transparent objects" << std::endl;
+
     auto forwardShader = GameManager::mGraphicsManager->getShader("Forward");
     forwardShader->use();
-    
+
     // We need to render to the HDR buffer since we've already done the lighting pass
     mHDRFrameBuffer->bind();
     mHDRFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
-    
-    // Enable depth test but don't update depth buffer (we want transparent objects to sort correctly)
+
+    // Enable depth test but don't update depth buffer for transparent objects
     GL_CHECK(glEnable(GL_DEPTH_TEST));
-    GL_CHECK(glDepthFunc(GL_LESS));
-    GL_CHECK(glDepthMask(GL_FALSE)); // Don't write to depth buffer
-    
+    GL_CHECK(glDepthFunc(GL_LESS)); // Use LESS for transparent objects
+    GL_CHECK(glDepthMask(GL_FALSE)); // Don't write to depth buffer for transparent objects
+
     // Setup blending for transparency
     GL_CHECK(glEnable(GL_BLEND));
     GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); // Standard alpha blending
-    
+
     // Enable backface culling
     GL_CHECK(glEnable(GL_CULL_FACE));
     GL_CHECK(glCullFace(GL_BACK));
-    
+
     // Set shader uniforms
     forwardShader->setBool("normalmapping", normalMapping);
-    
+
+    // Add SSAO if enabled
+    if (ssaoEnabled) {
+        mSSAOBlurBuffer->getColorAttachment(0).bind(SSAOSlots::SSAO_BLUR);
+        forwardShader->setInt("ssaoTexture", SSAOSlots::SSAO_BLUR);
+        forwardShader->setBool("ssaoEnabled", true);
+    }
+
     // Bind environment maps and shadow maps for PBR lighting
     bindSkyboxResources(forwardShader);
-    
+
     // Draw transparent objects (already sorted back-to-front)
     drawRenderList(mTransparentRenderList, forwardShader, true);
-    
+
     // Cleanup state
+    if (ssaoEnabled) {
+        mSSAOBlurBuffer->getColorAttachment(0).unbind(SSAOSlots::SSAO_BLUR);
+    }
+
     GL_CHECK(glDisable(GL_BLEND));
     GL_CHECK(glDepthMask(GL_TRUE)); // Re-enable depth writes for subsequent passes
-    
+
     mHDRFrameBuffer->unbind();
     unbindSkyboxResources();
 }
+
+
 
 
 

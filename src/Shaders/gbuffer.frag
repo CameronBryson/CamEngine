@@ -65,7 +65,7 @@ vec3 getNormalFromMap()
 
 void main()
 {
-    
+    //discard;
     // Early discard for transparent pixels
     float alpha = material.opacity;
     if (material.hasOpacityMap) {

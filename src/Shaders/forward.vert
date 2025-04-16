@@ -19,7 +19,7 @@ layout(std140, binding = 0) uniform CameraBlock {
     mat4 previousViewProjection;
 };
 
-uniform mat4 model;
+uniform mat4 model; // Per-object transform still remains a normal uniform
 
 out vec2 TexCoord;
 out vec3 FragPos;
@@ -48,5 +48,9 @@ void main()
     // Calculate clip positions for current and previous frames
     ClipPos = viewProjection * vec4(FragPos, 1.0);
     PrevClipPos = previousViewProjection * vec4(FragPos, 1.0);
+    //gl_Position goes through automatic perspective division
     gl_Position = ClipPos;
 }
+
+
+
