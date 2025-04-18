@@ -40,11 +40,13 @@ void SRender::init()
     generateSSAOKernel();
     generateSSAONoise();
     generateHaltonSequence();
+
 }
 
 void SRender::lateInit()
 {
     calculateSceneBounds();
+  
 }
 
 void SRender::render(float dt)
@@ -53,6 +55,14 @@ void SRender::render(float dt)
     mCurrentJitter = mHaltonPattern[mJitterIndex] * mJitterScale;
     mJitterIndex = (mJitterIndex + 1) % HALTON_SAMPLES;
     GL_SCOPED_MARKER("Frame");
+	GL_CHECK(glEnable(GL_DEPTH_TEST));
+	GL_CHECK(glEnable(GL_CULL_FACE));
+	GL_CHECK(glCullFace(GL_BACK));
+	GL_CHECK(glFrontFace(GL_CCW));
+	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+	GL_CHECK(glDepthFunc(GL_LESS));
+	GL_CHECK(glDepthMask(GL_TRUE));
+
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -96,7 +106,7 @@ void SRender::render(float dt)
     {
         GL_SCOPED_MARKER("Forward Pass");
         GL_SCOPED_TIMER("Forward Transparency");
-        //forwardPass();
+        forwardPass();
     }
 
     {
@@ -525,9 +535,6 @@ void SRender::updateCameraUniforms()
     mScene->mCurrentCamera.storePreviousMatrices();
 }
 
-
-
-
 void SRender::buildRenderLists()
 {
     mOpaqueRenderList.clear();
@@ -640,6 +647,7 @@ void SRender::shadowPass(const LightData& lightData)
     GL_SCOPED_TIMER("Shadow Pass");
     // Front-face culling for shadow rendering
     GL_CHECK(glCullFace(GL_FRONT));
+    GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
     
     // Render directional, spot, and point shadows
     {
@@ -661,6 +669,7 @@ void SRender::shadowPass(const LightData& lightData)
     
     // Restore back-face culling
     GL_CHECK(glCullFace(GL_BACK));
+    GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
     
 
 }
@@ -669,23 +678,17 @@ void SRender::geometryPass()
 {
 	auto gBufferShader = GameManager::mGraphicsManager->getShader("GBuffer");
 	gBufferShader->use();
-	mGBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
 	mGBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 });
 	mGBuffer->bind();
 	gBufferShader->setBool("normalmapping", normalMapping);
 
     GL_CHECK(glEnable(GL_DEPTH_TEST));
-    GL_CHECK(glDepthFunc(GL_LESS));  // Use LEQUAL to render fragments at same depth
-    GL_CHECK(glDepthMask(GL_TRUE));
     GL_CHECK(glClear(GL_DEPTH_BUFFER_BIT));
 	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
     //We dont want to clear depth pass
     GL_CHECK(glDisable(GL_BLEND)); // Disable blending for G-Buffer pass
 	drawRenderList(mOpaqueRenderList, gBufferShader, true);
 
-    //GL_CHECK(glDepthMask(GL_TRUE));
-    GL_CHECK(glDepthFunc(GL_LESS));
-    GL_CHECK(glDepthMask(GL_TRUE));
 	mGBuffer->unbind();
 
 }
@@ -723,7 +726,6 @@ void SRender::ssaoPass()
 
     // Render SSAO texture
     mSSAOBuffer->bind();
-    mSSAOBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
     mSSAOBuffer->clear(GL_COLOR_BUFFER_BIT);
     gl::drawQuad();
     mSSAOBuffer->unbind();
@@ -738,7 +740,6 @@ void SRender::ssaoPass()
     blurShader->use();
 
     mSSAOBlurBuffer->bind();
-    mSSAOBlurBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
     mSSAOBlurBuffer->clear(GL_COLOR_BUFFER_BIT);
 
     // Bind textures for blur pass
@@ -783,7 +784,6 @@ void SRender::lightingPass()
     );
 
     // 2. Bind HDR framebuffer and clear
-    mHDRFrameBuffer->setViewport(0, 0, width, height);
     mHDRFrameBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
     mHDRFrameBuffer->bind();
     mHDRFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
@@ -913,12 +913,11 @@ void SRender::renderDirectionalShadows(const LightData& lightData)
         shadowMapShader->use();
         shadowMapShader->setMat4("lightSpaceMatrix", lightData.directionalLights[0].lightSpaceMatrix);
 
-        mDirectionalShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
         mDirectionalShadowMapBuffer->bind();
         mDirectionalShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
-        GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
+        
 		drawRenderList(mOpaqueRenderList, shadowMapShader);
-        GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
+        
         mDirectionalShadowMapBuffer->unbind();
     }
 }
@@ -932,12 +931,9 @@ void SRender::renderSpotShadows(const LightData& lightData)
         shadowMapShader->use();
         shadowMapShader->setMat4("lightSpaceMatrix", lightData.spotLights[0].lightSpaceMatrix);
 
-        mSpotShadowMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
         mSpotShadowMapBuffer->bind();
         mSpotShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
-        GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
 		drawRenderList(mOpaqueRenderList, shadowMapShader);
-        GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
         mSpotShadowMapBuffer->unbind();
     }
 }
@@ -960,12 +956,9 @@ void SRender::renderPointShadows(const LightData& lightData)
             );
         }
 
-        mPointShadwMapBuffer->setViewport(0, 0, mShadowMapWidth, mShadowMapHeight);
         mPointShadwMapBuffer->bind();
         mPointShadwMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
-        GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
 		drawRenderList(mOpaqueRenderList, pointShadowMapShader);
-        GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
         mPointShadwMapBuffer->unbind();
     }
 }
@@ -984,7 +977,6 @@ void SRender::bloomPass()
     bloomExtractShader->use();
 
     mBloomFrameBuffer->bind();
-    mBloomFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
     mBloomFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
 
     // Bind HDR buffer as input
@@ -1025,7 +1017,6 @@ void SRender::bloomPass()
     for (int i = 0; i < bloomBlurPasses; i++)
     {
         mPingPongFBO[horizontal]->bind();
-        mPingPongFBO[horizontal]->setViewport(0, 0, settings::window_width, settings::window_height);
         mPingPongFBO[horizontal]->clear(GL_COLOR_BUFFER_BIT);
 
         blurShader->setBool("horizontal", horizontal);
@@ -1060,10 +1051,6 @@ void SRender::bloomPass()
 
 void SRender::hdrPass()
 {
-    int width, height;
-    glfwGetFramebufferSize(GameManager::getGLFWWindow(), &width, &height);
-    GL_CHECK(glViewport(0, 0, width, height));
-    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
     auto hdrShader = GameManager::mGraphicsManager->getShader("HDR");
     hdrShader->use();
@@ -1104,7 +1091,6 @@ void SRender::taaPass() {
     auto taaShader = GameManager::mGraphicsManager->getShader("TAA");
     taaShader->use();
 
-    mTAACurrentFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
     mTAACurrentFrameBuffer->bind();
 
     // Init history buffer on first frame
@@ -1139,7 +1125,6 @@ void SRender::taaPass() {
     gl::drawQuad();
     mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR_INPUT_OUTPUT);
     mBloomFrameBuffer->unbind();
-    // Copy to HDR buffer and swap 
     mTAACurrentFrameBuffer->blitTo(mHDRFrameBuffer,
                                    0, 0, settings::window_width, settings::window_height,
                                    0, 0, settings::window_width, settings::window_height,
@@ -1159,7 +1144,6 @@ void SRender::motionBlurPass()
     auto motionBlurShader = GameManager::mGraphicsManager->getShader("MotionBlur");
     motionBlurShader->use();
 	mMotionBlurFrameBuffer->bind();
-	mMotionBlurFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
 
     // Bind HDR color buffer (contains the current frame)
     mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR_INPUT_OUTPUT);
@@ -1191,13 +1175,6 @@ void SRender::motionBlurPass()
        auto fxaaShader = GameManager::mGraphicsManager->getShader("FXAA");
        fxaaShader->use();
 
-       // Set viewport to screen dimensions 
-       int width, height;
-       glfwGetFramebufferSize(GameManager::getGLFWWindow(), &width, &height);
-       GL_CHECK(glViewport(0, 0, width, height));
-       
-       // Bind the default framebuffer (0) for final output to screen
-       GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
        
        // Use HDR framebuffer as input (which now contains the tonemapped result)
        mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR_INPUT_OUTPUT);
@@ -1206,7 +1183,7 @@ void SRender::motionBlurPass()
 
        // Set FXAA parameters
        fxaaShader->setVec2("inverseScreenSize", 
-                          glm::vec2(1.0f / width, 1.0f / height));
+                          glm::vec2(1.0f / settings::window_width, 1.0f / settings::window_height));
        fxaaShader->setFloat("EDGE_THRESHOLD_MIN", mFXAAEdgeThreshholdMin);
        fxaaShader->setFloat("EDGE_THRESHOLD_MAX", mFXAAEdgeThreshholdMax);
        fxaaShader->setFloat("SUBPIXEL_QUALITY", mFXAASubPixelQuality);
@@ -1244,7 +1221,6 @@ void SRender::motionBlurPass()
 
 
 	   mSSRBuffer->bind();
-	   mSSRBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
 	   mSSRBuffer->clear(GL_COLOR_BUFFER_BIT);
        gl::drawQuad();
 	   mSSRBuffer->blitTo(mHDRFrameBuffer,
@@ -1932,10 +1908,6 @@ void SRender::forwardPass()
         return;
     }
 
-    GL_VALIDATE_STATE(); // Check state before starting
-    GL_SCOPED_MARKER("Transparent Forward Pass");
-    GL_SCOPED_TIMER("Forward Transparency");
-
     auto forwardShader = GameManager::mGraphicsManager->getShader("Forward");
     forwardShader->use();
 
@@ -1943,8 +1915,6 @@ void SRender::forwardPass()
     forwardShader->setBool("normalmapping", normalMapping);
     forwardShader->setBool("ssaoEnabled", ssaoEnabled); // Set once if SSAO state doesn't change per object
 
-    // Bind resources needed for all transparent objects *before* the loop
-    // (Ensure these slots DON'T conflict with material slots used in Mesh::draw)
     bindSkyboxResources(forwardShader); // Binds IBL + Shadows, sets uniforms
 
     if (ssaoEnabled) {
@@ -1954,31 +1924,16 @@ void SRender::forwardPass()
 
     // --- Render to HDR buffer ---
     mHDRFrameBuffer->bind();
-    mHDRFrameBuffer->setViewport(0, 0, settings::window_width, settings::window_height);
 
-    // --- Setup GL State for Transparency ---
-    GL_CHECK(glEnable(GL_DEPTH_TEST));
-    GL_CHECK(glDepthFunc(GL_LESS));
-    GL_CHECK(glDepthMask(GL_FALSE)); // Don't write depth
 
     GL_CHECK(glEnable(GL_BLEND));
     GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); // Standard alpha blending
 
-    GL_CHECK(glEnable(GL_CULL_FACE));
-    GL_CHECK(glCullFace(GL_BACK));
 
-    // --- Draw the transparent objects ---
-    // The critical part: Mesh::draw needs to bind its *own* textures to
-    // *different* slots than IBL/Shadows/SSAO and MUST unbind them afterwards.
 	drawRenderList(mTransparentRenderList, forwardShader, true);
 
-    // --- Restore GL State ---
     GL_CHECK(glDisable(GL_BLEND));
-    GL_CHECK(glDepthMask(GL_TRUE)); // Re-enable depth writes
-    // GL_CHECK(glDisable(GL_DEPTH_TEST)); // Optional: depends if subsequent passes need it disabled initially
-    // GL_CHECK(glDisable(GL_CULL_FACE)); // Optional: depends on default state needed
 
-    // --- Unbind resources ---
     mHDRFrameBuffer->unbind();
 
     if (ssaoEnabled) {
@@ -1987,7 +1942,6 @@ void SRender::forwardPass()
     }
     unbindSkyboxResources(); // Unbinds IBL + Shadows from their slots
 
-    //GL_VALIDATE_STATE(); // Check state after finishing
 }
 
 
