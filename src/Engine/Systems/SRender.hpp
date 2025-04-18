@@ -49,7 +49,6 @@ private:
     void updateCameraUniforms();
     void buildRenderLists();
     void shadowPass(const LightData& lightData);
-    void depthPass();
     void geometryPass();
     void ssaoPass();
     void lightingPass();
@@ -108,8 +107,8 @@ private:
 
 
     // Shadow mapping settings
-    const int mShadowMapWidth = 1024;
-    const int mShadowMapHeight = 1024;
+    const int mShadowMapWidth = 512;
+    const int mShadowMapHeight = 512;
     bool mEnableShadows = true;
     float nearPlane = 1.0f;
     float farPlane = 25.0f;
@@ -125,7 +124,7 @@ private:
 	bool ssaoEnabled = true;
     float bloomThreshold = 1.0f;
     float bloomStrength = 0.6f;
-    int bloomBlurPasses = 4;
+    int bloomBlurPasses = 3;
     float mBloomScatteringCoefficient = 1.0f;  
     int mBloomKernelSize = 15;                
     float mBloomSoftThreshold = 0.4f;   
@@ -180,7 +179,7 @@ private:
 	bool mSSREnabled = true;
     float mSSRReflectionIntensity = 1.2f;
     float mSSRRayThickness = 0.05;
-    int mSSRMaxRaySteps = 128;
+    int mSSRMaxRaySteps = 96;
 	float mSSRMinReflectivity = 0.0f;
     float mSSRReflectionFalloffDistance = 500.0f;
     float mSSRRayOffset = 1.0f;

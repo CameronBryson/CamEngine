@@ -31,7 +31,7 @@ void TestScene::init()
 	mEnttRegistry.get<CChildren>(sceneRoot).children.push_back(testParent);
 
 	auto testModel = mEnttRegistry.create();
-	mEnttRegistry.emplace<CModel>(testModel, "Glass");
+	mEnttRegistry.emplace<CModel>(testModel, "Helmet");
 	glm::vec3 rotationEulerAngles = glm::radians(glm::vec3(0.0f, 0.0f, 180.0f)); // Adjust angles as needed
 	glm::quat rotationQuat = glm::quat(rotationEulerAngles);
 	mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -0.5}, rotationQuat, glm::vec3{1, 1, 1});

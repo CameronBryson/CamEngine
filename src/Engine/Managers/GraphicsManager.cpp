@@ -42,7 +42,7 @@ void GraphicsManager::loadResources()
 	loadModel("../assets/Helmet/DamagedHelmet.gltf", "Helmet");
 	loadModel("../assets/Sponza/Sponza.gltf", "Sponza");
 	loadModel("../assets/scene.gltf", "Glass");
-	loadEnvironmentMap("default", "../assets/8ksky.hdr", equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
+	loadEnvironmentMap("default", "../assets/night.hdr", equirectCubemapShader, irradianceShader, prefilterShader, brdfShader);
 	
 
 }
