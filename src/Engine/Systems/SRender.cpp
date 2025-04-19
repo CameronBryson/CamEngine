@@ -767,12 +767,8 @@ void SRender::ssaoPass()
 
 void SRender::lightingPass()
 {
-    GL_VALIDATE_STATE();
-    GL_SCOPED_MARKER("Lighting");
-    GL_SCOPED_TIMER("Deferred Lighting");
     int width, height;
     glfwGetFramebufferSize(GameManager::getGLFWWindow(), &width, &height);
-    GL_CHECK(glViewport(0, 0, width, height));
 
     // 1. Copy depth buffer from G-Buffer to HDR framebuffer
     mGBuffer->blitTo(
@@ -790,7 +786,6 @@ void SRender::lightingPass()
 
     GL_CHECK(glDisable(GL_DEPTH_TEST));
     GL_CHECK(glDisable(GL_CULL_FACE));
-    GL_CHECK(glDisable(GL_BLEND));
 
     // 3. Setup deferred shader
     auto deferredShader = GameManager::mGraphicsManager->getShader("Deferred");
@@ -1763,6 +1758,7 @@ void SRender::drawImGui()
             displayTiming("G-Buffer", gl::timer::getLastDuration("G-Buffer"));
             displayTiming("SSAO", gl::timer::getLastDuration("SSAO"));
             displayTiming("Deferred Lighting", gl::timer::getLastDuration("Deferred Lighting"));
+            displayTiming("Forward Transparency", gl::timer::getLastDuration("Forward Transparency"));
             displayTiming("Post Processing", gl::timer::getLastDuration("Post Processing"));
 
             // Shadow sub-passes
@@ -1911,6 +1907,8 @@ void SRender::forwardPass()
     auto forwardShader = GameManager::mGraphicsManager->getShader("Forward");
     forwardShader->use();
 
+
+
     // Set shader uniforms that don't change per object
     forwardShader->setBool("normalmapping", normalMapping);
     forwardShader->setBool("ssaoEnabled", ssaoEnabled); // Set once if SSAO state doesn't change per object
@@ -1924,6 +1922,7 @@ void SRender::forwardPass()
 
     // --- Render to HDR buffer ---
     mHDRFrameBuffer->bind();
+
 
 
     GL_CHECK(glEnable(GL_BLEND));
