@@ -13,7 +13,6 @@ class Shader;
 struct RenderItem {
     std::shared_ptr<Mesh> mesh;
     glm::mat4 transform;
-    // Distance from camera (used to sort transparent objects)
     float distance;
 };
 struct SceneBounds
@@ -128,9 +127,6 @@ private:
     float mFXAAEdgeThreshholdMin = 0.1f;
 	float mFXAAEdgeThreshholdMax = 0.2f;
 	float mFXAASubPixelQuality = 0.75f;
-	bool mMotionBlurEnabled = true;
-	float mMotionBlurStrength = 0.8f;
-	int mMotionBlurSamples = 8;
 	bool mTAAEnabled = true;
     bool mShowEdges = false;
 	float mTAABlendFactor = 0.7f;

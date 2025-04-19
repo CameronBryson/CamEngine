@@ -3,12 +3,11 @@ out vec4 FragColor;
 in vec2 TexCoords;
 
 uniform sampler2D hdrBuffer;
-uniform sampler2D gNormalMetallic; // RGB: Normal, A: Metallic
-uniform sampler2D gRoughEmissive;  // R: Roughness, GBA: Emissive
+uniform sampler2D gNormalMetallic;
+uniform sampler2D gRoughEmissive;
 uniform float threshold;
 uniform float softThreshold;
 
-// Convert RGB to luminance using perceptual weights
 float getLuminance(vec3 color)
 {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
@@ -20,12 +19,9 @@ void main()
     float roughness = texture(gRoughEmissive, TexCoords).r;
     vec3 normal = texture(gNormalMetallic, TexCoords).rgb;
     
-    // Calculate brightness using luminance
     float brightness = getLuminance(hdrColor);
     
-    // Ensure we have valid normal data before calculations
     if (length(normal) < 0.1) {
-        // Default to simple threshold for skybox or areas without geometry
         float softness = smoothstep(threshold, threshold + softThreshold, brightness);
         FragColor = vec4(hdrColor * softness, 1.0);
         return;

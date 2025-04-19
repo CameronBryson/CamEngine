@@ -1,6 +1,6 @@
 #version 460 core
 precision highp float;
-
+//https://sugulee.wordpress.com/2021/01/16/performance-optimizations-for-screen-space-reflections-technique-part-1-linear-tracing-method/
 out vec4 FragColor;
 in vec2 TexCoord;
 
