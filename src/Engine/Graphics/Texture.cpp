@@ -375,7 +375,6 @@ Texture::Texture(const aiTexture* aiTex)
 Texture::Texture(GLuint textureID, int width, int height, Type type)
     : mTextureID(textureID), mWidth(width), mHeight(height), mType(type)
 {
-    // We're just wrapping an existing texture, no need to initialize anything
 }
 
 // Destructor - clean up GL resources

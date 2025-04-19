@@ -51,6 +51,10 @@ void SRender::lateInit()
 
 void SRender::render(float dt)
 {
+	buildRenderLists();
+	LightData lightData;
+	buildLightData(lightData);
+	updateCameraUniforms();
 	mPreviousJitter = mCurrentJitter;
 	mCurrentJitter = mHaltonPattern[mJitterIndex] * mJitterScale;
 	mJitterIndex = (mJitterIndex + 1) % HALTON_SAMPLES;
@@ -67,16 +71,6 @@ void SRender::render(float dt)
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	buildRenderLists();
-
-	LightData lightData;
-	// Build and upload light data
-	{
-		GL_SCOPED_MARKER("Light Data Update");
-		GL_SCOPED_TIMER("Light Data");
-		buildLightData(lightData);
-		updateCameraUniforms();
-	}
 
 	// Execute the main render pipeline
 	{
@@ -189,10 +183,10 @@ void SRender::initFramebuffers()
 
 	// G-Buffer FBO
 	std::vector<FrameBufferAttachmentSpecification> gBufferAttachments = {
-		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
-		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
-		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
-		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA16F },
+		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA8 },
+		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA8 },
+		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA8 },
+		{ FrameBufferAttachmentType::Color,  FrameBufferTextureFormat::RGBA8 },
 		{ FrameBufferAttachmentType::Depth,  FrameBufferTextureFormat::Depth32F }
 	};
 	mGBuffer = std::make_shared<FrameBuffer>(settings::window_width, settings::window_height, gBufferAttachments);
@@ -216,7 +210,7 @@ void SRender::initFramebuffers()
 	// Ping-pong FBOs for bloom blur
 	auto colorAttachment =
 		std::vector<FrameBufferAttachmentSpecification>{
-			{ FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F }
+			{ FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA8 }
 	};
 	mBloomFrameBuffer = std::make_shared<FrameBuffer>(settings::window_width/2, settings::window_height/2, colorAttachment);
 	for (int i = 0; i < 2; i++)
@@ -1115,6 +1109,9 @@ void SRender::taaPass() {
 								   GL_LINEAR);
 
 	std::swap(mTAACurrentFrameBuffer, mTAAPreviousFrameBuffer);
+	mTAAPreviousFrameBuffer->unbind();
+	mGBuffer->getColorAttachment(3).unbind(GBufferSlots::VELOCITY_REFLECTIVE);
+
 }
 
 
@@ -1181,6 +1178,12 @@ void SRender::taaPass() {
 						  GL_COLOR_BUFFER_BIT,
 						  GL_LINEAR);
 	   mSSRBuffer->unbind();
+	   mGBuffer->getColorAttachment(1).unbind(GBufferSlots::NORMAL_METALLIC);
+	   mGBuffer->getColorAttachment(3).unbind(GBufferSlots::VELOCITY_REFLECTIVE);
+	   mGBuffer->getDepthAttachment().unbind(GBufferSlots::DEPTH);
+	   mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR_INPUT_OUTPUT);
+
+
 
    }
 
@@ -1318,7 +1321,6 @@ void SRender::drawImGui()
 			ImGui::SliderFloat("FXAA Subpixel Quality", &mFXAASubPixelQuality, 0.0f, 1.0f);
 		}
 		ImGui::Separator();
-		// In drawImGui(), inside the Post-Processing section where TAA is handled:
 		ImGui::Separator();
 		ImGui::Checkbox("Enable TAA", &mTAAEnabled);
 		if (mTAAEnabled)
