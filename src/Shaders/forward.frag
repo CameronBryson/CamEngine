@@ -1,8 +1,4 @@
 #version 460 core
-precision mediump float;
-precision mediump sampler2DShadow;
-precision mediump samplerCubeShadow;
-
 layout (location = 0) out vec4 FragColor;
 
 in vec2 TexCoord;
@@ -94,19 +90,18 @@ struct Material {
 };
 
 uniform Material material;
+// Environment maps for PBR image-based lighting
+uniform samplerCube irradianceMap;
+uniform samplerCube prefilterMap;
+uniform sampler2D brdfLUT;
 
 // Shadow maps
 uniform sampler2DShadow directionalShadowMap;
 uniform sampler2DShadow spotShadowMap;
 uniform samplerCubeShadow pointShadowMap;
 
-// Environment maps for PBR image-based lighting
-uniform samplerCube irradianceMap;
-uniform samplerCube prefilterMap;
-uniform sampler2D brdfLUT;
 
-// Other uniforms
-uniform bool normalmapping;
+
 uniform bool enableShadows;
 uniform float farPlane;
 
@@ -126,7 +121,7 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
 
 // Get normal from normal map or calculate from TBN
 vec3 getNormalFromMap() {
-    if(material.hasNormalMap && normalmapping) {
+    if(material.hasNormalMap) {
         // Sample normal from texture
         vec3 tangentNormal = texture(material.normalMap, TexCoord).rgb;
         tangentNormal = tangentNormal * 2.0 - 1.0;

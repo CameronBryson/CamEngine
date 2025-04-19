@@ -24,12 +24,10 @@ void GraphicsManager::loadResources()
 	loadShader("Shaders/hdr.vert", "Shaders/hdr.frag", "HDR");
 	loadShader("Shaders/bloomblur.vert", "Shaders/bloomblur.frag", "BloomBlur");
 	loadShader("Shaders/gbuffer.vert", "Shaders/gbuffer.frag", "GBuffer");
-	loadShader("Shaders/depth.vert", "Shaders/depth.frag", "Depth");
 	loadShader("Shaders/deferred.vert", "Shaders/deferred.frag", "Deferred");
 	loadShader("Shaders/ssao.vert", "Shaders/ssao.frag", "SSAO");
 	loadShader("Shaders/ssaoblur.vert", "Shaders/ssaoblur.frag", "SSAOBlur");
 	loadShader("Shaders/fxaa.vert", "Shaders/fxaa.frag", "FXAA");
-	loadShader("Shaders/motionblur.vert", "Shaders/motionblur.frag", "MotionBlur");
 	loadShader("Shaders/taa.vert", "Shaders/taa.frag", "TAA");
 	loadShader("Shaders/bloomextract.vert", "Shaders/bloomextract.frag", "BloomExtract");
 	loadShader("Shaders/ssr.vert", "Shaders/ssr.frag", "SSR");

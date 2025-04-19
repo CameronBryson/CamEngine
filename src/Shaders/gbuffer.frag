@@ -44,11 +44,10 @@ struct Material {
 };
 
 uniform Material material;
-uniform bool normalmapping;
 
 vec3 getNormalFromMap()
 {
-    if(material.hasNormalMap && normalmapping) {
+    if(material.hasNormalMap) {
         // Sample normal from texture
 
         vec3 tangentNormal = texture(material.normalMap, TexCoord).rgb;
@@ -120,12 +119,7 @@ void main()
     vec2 prevPosNDC = (PrevClipPos.xy / PrevClipPos.w);
     
     vec2 velocity = currentPosNDC - prevPosNDC;
-    float velocityLength = length(velocity);
-    //Account for jittering
-    if(velocityLength < 0.001)
-    {
-        velocity = vec2(0.0);
-    }
+
     // Calculate reflectivity based on Fresnel equation approximation
     float F0 = material.reflectivity; // Base reflectivity at normal incidence
     float dielectricReflectivity = F0;

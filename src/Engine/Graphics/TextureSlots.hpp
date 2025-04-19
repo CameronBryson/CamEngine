@@ -4,9 +4,9 @@
 // (especially the lighting and forward passes) do not overlap.
 
 namespace ShadowSlots {
-    constexpr unsigned int DIRECTIONAL = 0;
-    constexpr unsigned int SPOT = 1;
-    constexpr unsigned int POINT = 2;
+    constexpr unsigned int DIRECTIONAL = 18;
+    constexpr unsigned int SPOT        = 19;
+    constexpr unsigned int POINT       = 20;
 }
 
 namespace MaterialSlots {  

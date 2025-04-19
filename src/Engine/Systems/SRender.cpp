@@ -243,11 +243,6 @@ void SRender::initFramebuffers()
 		settings::window_height,
         colorAttachment
 	);
-	mMotionBlurFrameBuffer = std::make_shared<FrameBuffer>(
-		settings::window_width,
-		settings::window_height,
-		colorAttachment
-	);
 	mTAACurrentFrameBuffer = std::make_shared<FrameBuffer>(
 		settings::window_width,
 		settings::window_height,
@@ -680,7 +675,6 @@ void SRender::geometryPass()
 	gBufferShader->use();
 	mGBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 });
 	mGBuffer->bind();
-	gBufferShader->setBool("normalmapping", normalMapping);
 
     GL_CHECK(glEnable(GL_DEPTH_TEST));
     GL_CHECK(glClear(GL_DEPTH_BUFFER_BIT));
@@ -867,12 +861,6 @@ void SRender::postProcessPass(float dt)
         GL_SCOPED_MARKER("TAA Process");
         GL_SCOPED_TIMER("TAA Process");
         taaPass();
-    }
-    //Moved blur to after image is stabilized
-    {
-        GL_SCOPED_MARKER("Motion Blur Process");
-        GL_SCOPED_TIMER("Motion Blur");
-        motionBlurPass();
     }
 
     //Extract bright lights after image is stabilized
@@ -1132,37 +1120,6 @@ void SRender::taaPass() {
 
 
 
-void SRender::motionBlurPass()
-{
-    if (!mMotionBlurEnabled) return;
-
-    auto motionBlurShader = GameManager::mGraphicsManager->getShader("MotionBlur");
-    motionBlurShader->use();
-	mMotionBlurFrameBuffer->bind();
-
-    // Bind HDR color buffer (contains the current frame)
-    mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR_INPUT_OUTPUT);
-    motionBlurShader->setInt("colorTexture", PostProcessSlots::HDR_INPUT_OUTPUT);
-
-    // Bind velocity buffer from G-Buffer
-    mGBuffer->getColorAttachment(3).bind(GBufferSlots::VELOCITY_REFLECTIVE);
-    motionBlurShader->setInt("velocityReflectiveTexture", GBufferSlots::VELOCITY_REFLECTIVE);
-
-    // Set motion blur parameters
-    motionBlurShader->setFloat("blurStrength", mMotionBlurStrength);
-    motionBlurShader->setInt("numSamples", mMotionBlurSamples);
-
-    gl::drawQuad();
-    mMotionBlurFrameBuffer->unbind();
-
-    // Copy result back to HDR buffer for next pass
-	mMotionBlurFrameBuffer->blitTo(mHDRFrameBuffer,
-								   0, 0, settings::window_width, settings::window_height,
-								   0, 0, settings::window_width, settings::window_height,
-								   GL_COLOR_BUFFER_BIT,
-								   GL_LINEAR
-	);
-}
 
 
    void SRender::fxaaPass()
@@ -1351,12 +1308,6 @@ void SRender::drawImGui()
             ImGui::SliderFloat("FXAA Subpixel Quality", &mFXAASubPixelQuality, 0.0f, 1.0f);
         }
         ImGui::Separator();
-        ImGui::Checkbox("Enable Motion Blur", &mMotionBlurEnabled);
-        if (mMotionBlurEnabled)
-        {
-            ImGui::SliderFloat("Motion Blur Strength", &mMotionBlurStrength, 0.0f, 10.0f);
-            ImGui::SliderInt("Motion Blur Samples", &mMotionBlurSamples, 2, 32);
-        }
         // In drawImGui(), inside the Post-Processing section where TAA is handled:
         ImGui::Separator();
         ImGui::Checkbox("Enable TAA", &mTAAEnabled);
@@ -1708,8 +1659,6 @@ void SRender::drawImGui()
 		ImGui::SliderFloat("Ray Offset", &mSSRRayOffset, 0.0f, 3.0f);
 	}
 
-    ImGui::Separator();
-    ImGui::Checkbox("Enable normalmaps", &normalMapping);
     ImGui::End();
     // Performance Statistics Window
     // Performance Statistics Window
@@ -1754,7 +1703,6 @@ void SRender::drawImGui()
             // Main passes
             displayTiming("Light Data", gl::timer::getLastDuration("Light Data"));
             displayTiming("Shadow Pass", gl::timer::getLastDuration("Shadow Pass"));
-            displayTiming("Depth Pass", gl::timer::getLastDuration("Depth Pass"));
             displayTiming("G-Buffer", gl::timer::getLastDuration("G-Buffer"));
             displayTiming("SSAO", gl::timer::getLastDuration("SSAO"));
             displayTiming("Deferred Lighting", gl::timer::getLastDuration("Deferred Lighting"));
@@ -1774,9 +1722,7 @@ void SRender::drawImGui()
             ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Post-Processing Sub-passes:"); ImGui::NextColumn();
             ImGui::NextColumn();
             displayTiming("  SSR Process", gl::timer::getLastDuration("SSR Process"));
-            displayTiming("  Auto Exposure", gl::timer::getLastDuration("Auto Exposure"));
             displayTiming("  TAA Process", gl::timer::getLastDuration("TAA Process"));
-            displayTiming("  Motion Blur", gl::timer::getLastDuration("Motion Blur"));
             displayTiming("  Bloom Process", gl::timer::getLastDuration("Bloom Process"));
             displayTiming("  HDR Process", gl::timer::getLastDuration("HDR Process"));
             displayTiming("  FXAA Process", gl::timer::getLastDuration("FXAA Process"));
@@ -1909,8 +1855,6 @@ void SRender::forwardPass()
 
 
 
-    // Set shader uniforms that don't change per object
-    forwardShader->setBool("normalmapping", normalMapping);
     forwardShader->setBool("ssaoEnabled", ssaoEnabled); // Set once if SSAO state doesn't change per object
 
     bindSkyboxResources(forwardShader); // Binds IBL + Shadows, sets uniforms

@@ -52,11 +52,10 @@ private:
     void geometryPass();
     void ssaoPass();
     void lightingPass();
-    void forwardPass(); // New forward rendering pass for transparent objects
+    void forwardPass(); 
     void postProcessPass(float dt);
 
 
-    // Shadow mapping
     void renderDirectionalShadows(const LightData& lightData);
     void renderSpotShadows(const LightData& lightData);
     void renderPointShadows(const LightData& lightData);
@@ -65,10 +64,8 @@ private:
     void bloomPass();
     void hdrPass();
     void taaPass();
-	void motionBlurPass();
 	void fxaaPass();
     void ssrPass();
-    // Resource binding
     void bindSkyboxResources(std::shared_ptr<Shader>& shader);
     void unbindSkyboxResources();
     void bindShadowMaps(std::shared_ptr<Shader>& shader);
@@ -98,7 +95,6 @@ private:
 	std::shared_ptr<FrameBuffer> mBloomFrameBuffer;
     std::shared_ptr<FrameBuffer> mPingPongFBO[2];
 	std::shared_ptr<FrameBuffer> mFXAAFrameBuffer;
-	std::shared_ptr<FrameBuffer> mMotionBlurFrameBuffer;
 	std::shared_ptr<FrameBuffer> mTAACurrentFrameBuffer;
 	std::shared_ptr<FrameBuffer> mTAAPreviousFrameBuffer;
     std::shared_ptr<FrameBuffer> mSSRBuffer;
@@ -183,8 +179,4 @@ private:
 	float mSSRMinReflectivity = 0.0f;
     float mSSRReflectionFalloffDistance = 500.0f;
     float mSSRRayOffset = 1.0f;
-
-
-    bool normalMapping = true;
-
 };

@@ -1,13 +1,7 @@
 #version 460 core
-precision mediump float;
-precision mediump sampler2DShadow;
-precision mediump samplerCubeShadow;
-
-
 layout (location = 0) out vec4 FragColor;
 
 in vec2 TexCoord;
-
 
 const float PI = 3.14159265359;
 const int   MAX_POINT_LIGHTS        = 10;
