@@ -386,10 +386,10 @@ int FrameBuffer::addAttachment(FrameBufferAttachmentSpecification attachmentSpec
 				index++;
 		}
 	}
-
+	const FrameBufferAttachmentType specType = attachmentSpec.Type;
 	mAttachmentSpecs.push_back(std::move(attachmentSpec));
 
-	return attachmentSpec.Type == FrameBufferAttachmentType::Color ? index : 0;
+	return specType == FrameBufferAttachmentType::Color ? index : 0;
 }
 
 bool FrameBuffer::removeAttachment(FrameBufferAttachmentType type, int index)

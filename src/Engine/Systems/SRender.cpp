@@ -278,7 +278,7 @@ void SRender::calculateSceneBounds()
 			auto& localTransform = meshInstance.localTransform;
 			auto& vertices = mesh->getVertices();
 
-			glm::mat4 finalTransform = transformComp.model_matrix * localTransform;
+			glm::mat4 finalTransform = transformComp.modelMatrix * localTransform;
 			for (const auto& vertex : vertices)
 			{
 				glm::vec4 worldPos = finalTransform * glm::vec4(vertex.position, 1.0f);
@@ -553,7 +553,7 @@ void SRender::buildRenderLists()
 			float localRadius = meshInstance.mesh->getBoundingSphereRadius();
 
 			// Calculate world transform
-			glm::mat4 finalTransform = transformComp.model_matrix * meshInstance.localTransform;
+			glm::mat4 finalTransform = transformComp.modelMatrix * meshInstance.localTransform;
 
 			// Extract scale without decomposing full matrix
 			glm::vec3 scale(

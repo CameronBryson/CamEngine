@@ -36,11 +36,11 @@ void STransform::updateTransform(const entt::entity entity, entt::registry& regi
 	{
 		auto parent = registry.get<CParent>(entity).parent;
 		const auto& parentTransform = registry.get<CTransform>(parent);
-		transform.model_matrix = parentTransform.model_matrix * localMatrix;
+		transform.modelMatrix = parentTransform.modelMatrix * localMatrix;
 	}
 	else
 	{
-		transform.model_matrix = localMatrix;
+		transform.modelMatrix = localMatrix;
 	}
 
 	if (registry.any_of<CChildren>(entity))

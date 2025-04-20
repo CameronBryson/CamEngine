@@ -63,20 +63,20 @@ struct CSpotLight
 struct CText
 {
 	CText(std::string text, const glm::vec2& position, const int font_size, const glm::vec3& color) : text(std::move(
-		text)), font_size(font_size), position(position), color(color) {}
+		text)), fontSize(font_size), position(position), color(color) {}
 	std::string text;
-	int font_size;
+	int fontSize;
 	glm::vec2 position;
 	glm::vec3 color;
 };
 
 struct CTransform
 {
-	CTransform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) : position(position), rotation(rotation), scale(scale), model_matrix(1.0f), dirty(true) {}
+	CTransform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) : position(position), rotation(rotation), scale(scale), modelMatrix(1.0f), dirty(true) {}
 	glm::vec3 position;
 	glm::quat rotation;
 	glm::vec3 scale;
-	glm::mat4 model_matrix;
+	glm::mat4 modelMatrix;
 	bool dirty;
 };
 struct CParent
@@ -86,6 +86,6 @@ struct CParent
 };
 struct CChildren
 {
-	CChildren() : children(children) {}
+	CChildren() : children({}) {}
 	std::vector<entt::entity> children;
 };
