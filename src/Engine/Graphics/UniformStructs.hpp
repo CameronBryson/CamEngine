@@ -3,9 +3,9 @@
 #include <glm/glm.hpp>
 #include <array>
 
-const unsigned int MAX_POINT_LIGHTS = 10;
-const unsigned int MAX_SPOT_LIGHTS = 10;
-const unsigned int MAX_DIRECTIONAL_LIGHTS = 10;
+const unsigned int MAX_POINT_LIGHTS = 1;
+const unsigned int MAX_SPOT_LIGHTS = 1;
+const unsigned int MAX_DIRECTIONAL_LIGHTS = 1;
 
 const unsigned int CAMERA_BINDING = 0;
 const unsigned int LIGHT_BINDING = 1;

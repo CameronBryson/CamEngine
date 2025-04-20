@@ -4,9 +4,9 @@ layout (location = 0) out vec4 FragColor;
 in vec2 TexCoord;
 
 const float PI = 3.14159265359;
-const int   MAX_POINT_LIGHTS        = 10;
-const int   MAX_SPOT_LIGHTS         = 10;
-const int   MAX_DIRECTIONAL_LIGHTS  = 10;
+const int   MAX_POINT_LIGHTS        = 1;
+const int   MAX_SPOT_LIGHTS         = 1;
+const int   MAX_DIRECTIONAL_LIGHTS  = 1;
 
 
 layout(std140, binding = 0) uniform CameraBlock {

@@ -16,8 +16,8 @@ float getLuminance(vec3 color)
 void main()
 {
     vec3 hdrColor = texture(hdrBuffer, TexCoords).rgb;
-    float roughness = texture(gRoughEmissive, TexCoords).r;
     vec3 normal = texture(gNormalMetallic, TexCoords).rgb;
+    float roughness = texture(gRoughEmissive, TexCoords).r;
     
     float brightness = getLuminance(hdrColor);
     

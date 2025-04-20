@@ -1,70 +1,70 @@
-[2025-04-19 16:38:07.858] [info] [engine] Logging system initialized
-[2025-04-19 16:38:07.858] [info] [engine] Starting application
-[2025-04-19 16:38:07.858] [info] [engine] Initializing engine systems
-[2025-04-19 16:38:07.859] [info] [graphics] Initializing OpenGL...
-[2025-04-19 16:38:08.016] [info] [graphics] OpenGL initialized successfully
-[2025-04-19 16:38:08.016] [info] [engine] OpenGL initialized successfully
-[2025-04-19 16:38:08.018] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
-[2025-04-19 16:38:08.018] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
-[2025-04-19 16:38:08.019] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
-[2025-04-19 16:38:08.019] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
-[2025-04-19 16:38:08.020] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
-[2025-04-19 16:38:08.020] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
-[2025-04-19 16:38:08.022] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/deferred.vert and Shaders/deferred.frag
-[2025-04-19 16:38:08.022] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/ssao.vert and Shaders/ssao.frag
-[2025-04-19 16:38:08.023] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
-[2025-04-19 16:38:08.024] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/fxaa.vert and Shaders/fxaa.frag
-[2025-04-19 16:38:08.024] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/taa.vert and Shaders/taa.frag
-[2025-04-19 16:38:08.025] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
-[2025-04-19 16:38:08.025] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/ssr.vert and Shaders/ssr.frag
-[2025-04-19 16:38:08.026] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/forward.vert and Shaders/forward.frag
-[2025-04-19 16:38:08.027] [info] [graphics] Successfully created shader program (ID: 46) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
-[2025-04-19 16:38:08.027] [info] [graphics] Successfully created shader program (ID: 49) from Shaders/cubemap.vert and Shaders/irradiance.frag
-[2025-04-19 16:38:08.028] [info] [graphics] Successfully created shader program (ID: 52) from Shaders/cubemap.vert and Shaders/prefilter.frag
-[2025-04-19 16:38:08.028] [info] [graphics] Successfully created shader program (ID: 55) from Shaders/brdf.vert and Shaders/brdf.frag
-[2025-04-19 16:38:08.278] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
-[2025-04-19 16:38:08.477] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
-[2025-04-19 16:38:09.148] [warning] [resource] Material has no name. Generating unique name: material_2466759595344
-[2025-04-19 16:38:09.289] [warning] [resource] Material has no name. Generating unique name: material_2466759592304
-[2025-04-19 16:38:09.387] [warning] [resource] Material has no name. Generating unique name: material_2466759595824
-[2025-04-19 16:38:09.443] [warning] [resource] Material has no name. Generating unique name: material_2466759593024
-[2025-04-19 16:38:09.494] [warning] [resource] Material has no name. Generating unique name: material_2466759701904
-[2025-04-19 16:38:09.564] [warning] [resource] Material has no name. Generating unique name: material_2466751497088
-[2025-04-19 16:38:09.630] [warning] [resource] Material has no name. Generating unique name: material_2466751497888
-[2025-04-19 16:38:09.708] [warning] [resource] Material has no name. Generating unique name: material_2466751497808
-[2025-04-19 16:38:09.780] [warning] [resource] Material has no name. Generating unique name: material_2466751514848
-[2025-04-19 16:38:09.847] [warning] [resource] Material has no name. Generating unique name: material_2466751494128
-[2025-04-19 16:38:09.920] [warning] [resource] Material has no name. Generating unique name: material_2466751505808
-[2025-04-19 16:38:09.997] [warning] [resource] Material has no name. Generating unique name: material_2466751515728
-[2025-04-19 16:38:10.096] [warning] [resource] Material has no name. Generating unique name: material_2466751502528
-[2025-04-19 16:38:10.165] [warning] [resource] Material has no name. Generating unique name: material_2466751515488
-[2025-04-19 16:38:10.233] [warning] [resource] Material has no name. Generating unique name: material_2466751505248
-[2025-04-19 16:38:10.319] [warning] [resource] Material has no name. Generating unique name: material_2466751503808
-[2025-04-19 16:38:10.396] [warning] [resource] Material has no name. Generating unique name: material_2466751513888
-[2025-04-19 16:38:10.483] [warning] [resource] Material has no name. Generating unique name: material_2466751508608
-[2025-04-19 16:38:10.567] [warning] [resource] Material has no name. Generating unique name: material_2466751514288
-[2025-04-19 16:38:10.648] [warning] [resource] Material has no name. Generating unique name: material_2466751502928
-[2025-04-19 16:38:10.720] [warning] [resource] Material has no name. Generating unique name: material_2466751511328
-[2025-04-19 16:38:10.806] [warning] [resource] Material has no name. Generating unique name: material_2466751505168
-[2025-04-19 16:38:10.884] [warning] [resource] Material has no name. Generating unique name: material_2466751522128
-[2025-04-19 16:38:10.982] [warning] [resource] Material has no name. Generating unique name: material_2466751516608
-[2025-04-19 16:38:11.054] [warning] [resource] Material has no name. Generating unique name: material_2466751507088
-[2025-04-19 16:38:11.055] [info] [resource] Successfully loaded model 'Sponza' from '../assets/Sponza/Sponza.gltf'
-[2025-04-19 16:38:11.103] [info] [resource] Successfully loaded model 'Glass' from '../assets/scene.gltf'
-[2025-04-19 16:38:11.104] [info] [graphics] Creating EnvironmentMap from HDR: ../assets/night.hdr
-[2025-04-19 16:38:11.440] [info] [resource] Successfully loaded environment map 'default' from '../assets/night.hdr'
-[2025-04-19 16:38:11.440] [info] [engine] Graphics resources loaded successfully
-[2025-04-19 16:38:11.441] [info] [engine] Creating test scene
-[2025-04-19 16:38:11.442] [info] [engine] Initializing scene
-[2025-04-19 16:38:11.442] [info] [engine] Initializing current scene...
-[2025-04-19 16:38:11.497] [info] [engine] Scene initialization complete
-[2025-04-19 16:38:11.498] [info] [engine] Entering main loop
-[2025-04-19 16:38:11.509] [warning] [graphics] Uniform 'material.reflectivity' not found in shader program (ID: 43)
-[2025-04-19 16:38:27.714] [info] [engine] Shutting down
-[2025-04-19 16:38:27.714] [info] [engine] Shutting down current scene...
-[2025-04-19 16:38:27.726] [info] [engine] Performing final shutdown...
-[2025-04-19 16:38:27.730] [info] [graphics] Shutting down OpenGL...
-[2025-04-19 16:38:27.756] [info] [graphics] OpenGL shutdown complete
-[2025-04-19 16:38:27.757] [info] [engine] Shutdown complete
-[2025-04-19 16:38:27.757] [info] [engine] Shutting down logging system
-[2025-04-19 16:38:27.757] [info] [engine] Shutting down logging system
+[2025-04-19 19:44:04.526] [info] [engine] Logging system initialized
+[2025-04-19 19:44:04.527] [info] [engine] Starting application
+[2025-04-19 19:44:04.527] [info] [engine] Initializing engine systems
+[2025-04-19 19:44:04.528] [info] [graphics] Initializing OpenGL...
+[2025-04-19 19:44:06.496] [info] [graphics] OpenGL initialized successfully
+[2025-04-19 19:44:06.496] [info] [engine] OpenGL initialized successfully
+[2025-04-19 19:44:06.497] [info] [graphics] Successfully created shader program (ID: 3) from Shaders/skybox.vert and Shaders/skybox.frag
+[2025-04-19 19:44:06.498] [info] [graphics] Successfully created shader program (ID: 6) from Shaders/shadowmap.vert and Shaders/shadowmap.frag
+[2025-04-19 19:44:06.498] [info] [graphics] Successfully created shader program (ID: 10) with geometry shader
+[2025-04-19 19:44:06.498] [info] [graphics] Successfully created shader program (ID: 13) from Shaders/hdr.vert and Shaders/hdr.frag
+[2025-04-19 19:44:06.499] [info] [graphics] Successfully created shader program (ID: 16) from Shaders/bloomblur.vert and Shaders/bloomblur.frag
+[2025-04-19 19:44:06.500] [info] [graphics] Successfully created shader program (ID: 19) from Shaders/gbuffer.vert and Shaders/gbuffer.frag
+[2025-04-19 19:44:06.582] [info] [graphics] Successfully created shader program (ID: 22) from Shaders/deferred.vert and Shaders/deferred.frag
+[2025-04-19 19:44:06.583] [info] [graphics] Successfully created shader program (ID: 25) from Shaders/ssao.vert and Shaders/ssao.frag
+[2025-04-19 19:44:06.584] [info] [graphics] Successfully created shader program (ID: 28) from Shaders/ssaoblur.vert and Shaders/ssaoblur.frag
+[2025-04-19 19:44:06.585] [info] [graphics] Successfully created shader program (ID: 31) from Shaders/fxaa.vert and Shaders/fxaa.frag
+[2025-04-19 19:44:06.586] [info] [graphics] Successfully created shader program (ID: 34) from Shaders/taa.vert and Shaders/taa.frag
+[2025-04-19 19:44:06.587] [info] [graphics] Successfully created shader program (ID: 37) from Shaders/bloomextract.vert and Shaders/bloomextract.frag
+[2025-04-19 19:44:06.587] [info] [graphics] Successfully created shader program (ID: 40) from Shaders/ssr.vert and Shaders/ssr.frag
+[2025-04-19 19:44:06.588] [info] [graphics] Successfully created shader program (ID: 43) from Shaders/forward.vert and Shaders/forward.frag
+[2025-04-19 19:44:06.589] [info] [graphics] Successfully created shader program (ID: 46) from Shaders/cubemap.vert and Shaders/equirect_to_cubemap.frag
+[2025-04-19 19:44:06.589] [info] [graphics] Successfully created shader program (ID: 49) from Shaders/cubemap.vert and Shaders/irradiance.frag
+[2025-04-19 19:44:06.590] [info] [graphics] Successfully created shader program (ID: 52) from Shaders/cubemap.vert and Shaders/prefilter.frag
+[2025-04-19 19:44:06.590] [info] [graphics] Successfully created shader program (ID: 55) from Shaders/brdf.vert and Shaders/brdf.frag
+[2025-04-19 19:44:06.708] [info] [resource] Using lightmap texture as AO map in material 'Material_MR'
+[2025-04-19 19:44:06.826] [info] [resource] Successfully loaded model 'Helmet' from '../assets/Helmet/DamagedHelmet.gltf'
+[2025-04-19 19:44:06.946] [warning] [resource] Material has no name. Generating unique name: material_1791002511072
+[2025-04-19 19:44:07.015] [warning] [resource] Material has no name. Generating unique name: material_1791002512672
+[2025-04-19 19:44:07.064] [warning] [resource] Material has no name. Generating unique name: material_1791002513280
+[2025-04-19 19:44:07.105] [warning] [resource] Material has no name. Generating unique name: material_1791002513056
+[2025-04-19 19:44:07.141] [warning] [resource] Material has no name. Generating unique name: material_1791002512896
+[2025-04-19 19:44:07.190] [warning] [resource] Material has no name. Generating unique name: material_1791002511744
+[2025-04-19 19:44:07.240] [warning] [resource] Material has no name. Generating unique name: material_1791002514336
+[2025-04-19 19:44:07.317] [warning] [resource] Material has no name. Generating unique name: material_1791002513856
+[2025-04-19 19:44:07.364] [warning] [resource] Material has no name. Generating unique name: material_1791002519296
+[2025-04-19 19:44:07.414] [warning] [resource] Material has no name. Generating unique name: material_1791002514720
+[2025-04-19 19:44:07.466] [warning] [resource] Material has no name. Generating unique name: material_1791002517216
+[2025-04-19 19:44:07.524] [warning] [resource] Material has no name. Generating unique name: material_1791002518016
+[2025-04-19 19:44:07.573] [warning] [resource] Material has no name. Generating unique name: material_1791002514464
+[2025-04-19 19:44:07.625] [warning] [resource] Material has no name. Generating unique name: material_1791002518752
+[2025-04-19 19:44:07.672] [warning] [resource] Material has no name. Generating unique name: material_1791002517792
+[2025-04-19 19:44:07.733] [warning] [resource] Material has no name. Generating unique name: material_1791002515232
+[2025-04-19 19:44:07.787] [warning] [resource] Material has no name. Generating unique name: material_1791002517728
+[2025-04-19 19:44:07.849] [warning] [resource] Material has no name. Generating unique name: material_1791002517568
+[2025-04-19 19:44:07.909] [warning] [resource] Material has no name. Generating unique name: material_1791002518144
+[2025-04-19 19:44:07.969] [warning] [resource] Material has no name. Generating unique name: material_1791002514656
+[2025-04-19 19:44:08.021] [warning] [resource] Material has no name. Generating unique name: material_1791002517888
+[2025-04-19 19:44:08.083] [warning] [resource] Material has no name. Generating unique name: material_1791002516128
+[2025-04-19 19:44:08.139] [warning] [resource] Material has no name. Generating unique name: material_1791002521088
+[2025-04-19 19:44:08.209] [warning] [resource] Material has no name. Generating unique name: material_1791002519648
+[2025-04-19 19:44:08.260] [warning] [resource] Material has no name. Generating unique name: material_1791002517344
+[2025-04-19 19:44:08.263] [info] [resource] Successfully loaded model 'Sponza' from '../assets/Sponza/Sponza.gltf'
+[2025-04-19 19:44:08.641] [info] [resource] Successfully loaded model 'Glass' from '../assets/scene.gltf'
+[2025-04-19 19:44:08.643] [info] [graphics] Creating EnvironmentMap from HDR: ../assets/night.hdr
+[2025-04-19 19:44:08.894] [info] [resource] Successfully loaded environment map 'default' from '../assets/night.hdr'
+[2025-04-19 19:44:08.895] [info] [engine] Graphics resources loaded successfully
+[2025-04-19 19:44:08.895] [info] [engine] Creating test scene
+[2025-04-19 19:44:08.895] [info] [engine] Initializing scene
+[2025-04-19 19:44:08.895] [info] [engine] Initializing current scene...
+[2025-04-19 19:44:08.905] [info] [engine] Scene initialization complete
+[2025-04-19 19:44:08.905] [info] [engine] Entering main loop
+[2025-04-19 19:44:08.912] [warning] [graphics] Uniform 'material.reflectivity' not found in shader program (ID: 43)
+[2025-04-19 19:44:11.395] [info] [engine] Shutting down
+[2025-04-19 19:44:11.396] [info] [engine] Shutting down current scene...
+[2025-04-19 19:44:11.417] [info] [engine] Performing final shutdown...
+[2025-04-19 19:44:11.426] [info] [graphics] Shutting down OpenGL...
+[2025-04-19 19:44:11.492] [info] [graphics] OpenGL shutdown complete
+[2025-04-19 19:44:11.492] [info] [engine] Shutdown complete
+[2025-04-19 19:44:11.492] [info] [engine] Shutting down logging system
+[2025-04-19 19:44:11.492] [info] [engine] Shutting down logging system
