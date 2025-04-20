@@ -679,6 +679,7 @@ void SRender::geometryPass()
 	mGBuffer->bind();
 
 	GL_CHECK(glEnable(GL_DEPTH_TEST));
+	GL_CHECK(glDepthMask(GL_TRUE)); // enable depth writes for geometry pass
 	GL_CHECK(glClear(GL_DEPTH_BUFFER_BIT));
 	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
 	//We dont want to clear depth pass
@@ -1707,15 +1708,14 @@ void SRender::forwardPass()
 	// --- Render to HDR buffer ---
 	mHDRFrameBuffer->bind();
 
-
-
 	GL_CHECK(glEnable(GL_BLEND));
 	GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); // Standard alpha blending
-
+	GL_CHECK(glDepthMask(GL_FALSE)); // disable depth writes for transparent pass
 
 	drawRenderList(mTransparentRenderList, forwardShader, true);
 
 	GL_CHECK(glDisable(GL_BLEND));
+	GL_CHECK(glDepthMask(GL_TRUE)); // restore depth writes
 
 	mHDRFrameBuffer->unbind();
 
