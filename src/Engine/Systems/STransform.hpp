@@ -6,12 +6,12 @@ class BaseScene;
 class STransform
 {
 public:
-	STransform(BaseScene* scene);
-	void update(float dt);
+	explicit STransform(BaseScene* scene);
+	void update(float dt) const;
 
 private:
 	BaseScene* mScene;
 
-	void updateTransform(entt::entity entity, entt::registry& registry);
-	glm::mat4 computeLocalMatrix(const CTransform& transform) const;
+	static void updateTransform(entt::entity entity, entt::registry& registry);
+	static glm::mat4 computeLocalMatrix(const CTransform& transform);
 };

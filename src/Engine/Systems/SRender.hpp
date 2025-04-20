@@ -32,47 +32,47 @@ public:
 	void init();
 	void lateInit();
 	void render(float dt);
-	void shutdown();
+	static void shutdown();
 
 private:
 	// Initialization helpers
-	void initImGui();
+	static void initImGui();
 	void initFramebuffers();
 	void calculateSceneBounds();
 
 	// Light data building
-	void buildLightData(LightData& lightData);
-	void buildDirectionalLights(LightData& lightData);
-	void buildPointLights(LightData& lightData);
-	void buildSpotLights(LightData& lightData);
+	void buildLightData(LightData& lightData) const;
+	void buildDirectionalLights(LightData& lightData) const;
+	void buildPointLights(LightData& lightData) const;
+	void buildSpotLights(LightData& lightData) const;
 
 	// Render passes
-	void updateCameraUniforms();
+	void updateCameraUniforms() const;
 	void buildRenderLists();
-	void shadowPass(const LightData& lightData);
-	void geometryPass();
-	void ssaoPass();
+	void shadowPass(const LightData& lightData) const;
+	void geometryPass() const;
+	void ssaoPass() const;
 	void lightingPass();
 	void forwardPass();
 	void postProcessPass(float dt);
 
 
-	void renderDirectionalShadows(const LightData& lightData);
-	void renderSpotShadows(const LightData& lightData);
-	void renderPointShadows(const LightData& lightData);
+	void renderDirectionalShadows(const LightData& lightData) const;
+	void renderSpotShadows(const LightData& lightData) const;
+	void renderPointShadows(const LightData& lightData) const;
 
 	// Post-processing
-	void bloomPass();
-	void hdrPass();
+	void bloomPass() const;
+	void hdrPass() const;
 	void taaPass();
 	void fxaaPass();
-	void ssrPass();
-	void bindSkyboxResources(std::shared_ptr<Shader>& shader);
-	void unbindSkyboxResources();
-	void bindShadowMaps(std::shared_ptr<Shader>& shader);
+	void ssrPass() const;
+	void bindSkyboxResources(const std::shared_ptr<Shader>& shader) const;
+	void unbindSkyboxResources() const;
+	void bindShadowMaps(const std::shared_ptr<Shader>& shader) const;
 
 	// Drawing helpers
-	void drawRenderList(const std::vector<RenderItem>& renderList, std::shared_ptr<Shader>& shader, bool bindMaterial = false) const;
+	static void drawRenderList(const std::vector<RenderItem>& renderList, std::shared_ptr<Shader>& shader, bool bindMaterial = false);
 	void drawImGui();
 
 	void generateSSAOKernel();
@@ -151,8 +151,8 @@ private:
 	std::shared_ptr<Texture> mSSAONoise;
 
 	// SSAO settings
-	static const int SSAO_KERNEL_SIZE = 16;
-	static const int SSAO_NOISE_SIZE = 4;
+	static constexpr int SSAO_KERNEL_SIZE = 16;
+	static constexpr int SSAO_NOISE_SIZE = 4;
 	float mSSAORadius = 0.1f;
 	float mSSAOBias = 0.125f;
 	float mSSAOPower = 0.8f;

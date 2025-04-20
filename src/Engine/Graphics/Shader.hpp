@@ -139,7 +139,7 @@ private:
 	 * @param shaderPath Path to the shader file (for error reporting)
 	 * @return Compiled shader ID
 	 */
-	unsigned int compileShader(unsigned int type, std::string_view source, std::string_view shaderPath);
+	static unsigned int compileShader(unsigned int type, std::string_view source, std::string_view shaderPath);
 
 	/**
 	 * @brief Checks for shader compilation or program linking errors
@@ -149,7 +149,7 @@ private:
 	 * @param filePath Path to the shader file for error reporting
 	 * @throws GraphicsException if compilation/linking fails
 	 */
-	void checkCompileError(unsigned int shader, const std::string& type, const std::string& filePath = "");
+	static void checkCompileError(unsigned int shader, const std::string& type, const std::string& filePath = "");
 
 	/**
 	 * @brief Loads and processes a shader file
@@ -157,7 +157,7 @@ private:
 	 * @param filePath Path to the shader file
 	 * @return String containing shader source code
 	 */
-	std::string loadShaderFile(std::string_view filePath);
+	static std::string loadShaderFile(std::string_view filePath);
 
 	/**
 	 * @brief Gets cached location of a uniform

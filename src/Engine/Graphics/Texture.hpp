@@ -128,8 +128,8 @@ public:
 	Texture& operator=(Texture&& other) noexcept; // Move assignment
 
 	// Core functionality
-	void bind(unsigned int slot = 0);
-	void unbind(unsigned int slot = 0);
+	void bind(unsigned int slot = 0) const;
+	static void unbind(unsigned int slot = 0);
 
 	bool isLoaded() const { return mTextureID != 0; }
 	bool hasAlpha() const;

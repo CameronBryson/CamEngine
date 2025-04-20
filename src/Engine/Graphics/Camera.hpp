@@ -90,7 +90,7 @@ public:
 	 * @brief Calculate the frustum planes for culling
 	 * @return Array of 6 planes as vec4 (left, right, bottom, top, near, far)
 	 */
-	std::array<glm::vec4, 6> getFrustumPlanes();
+	std::array<glm::vec4, 6> getFrustumPlanes() const;
 
 	/**
 	 * @brief Update camera matrices based on current position and orientation
@@ -108,7 +108,7 @@ public:
 	 * @param radius The radius of the sphere
 	 * @return True if the sphere is at least partially visible
 	 */
-	bool isSphereInFrustum(const glm::vec3& center, float radius);
+	bool isSphereInFrustum(const glm::vec3& center, float radius) const;
 
 public:
 	glm::vec3 mPosition;          ///< Camera position in world space

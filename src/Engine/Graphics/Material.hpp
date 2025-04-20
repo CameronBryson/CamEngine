@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <string_view>
+#include <utility>
 #include <vector>
 #include <Shader.hpp>
 #include <glm/vec4.hpp>
@@ -14,49 +15,49 @@ class Material
 {
 public:
 	Material();
-	void bind(Shader& shader);
-	void unbind();
+	void bind(const Shader& shader) const;
+	void unbind() const;
 
-	void setShader(std::shared_ptr<Shader> shader) { this->mShader = shader; }
+	void setShader(std::shared_ptr<Shader> shader) { this->mShader = std::move(shader); }
 	std::shared_ptr<Shader> getShader() const { return mShader; }
 
-	void setName(std::string_view name) { mName = name; }
+	void setName(const std::string_view name) { mName = name; }
 	const std::string& getName() const { return mName; }
 
 	void setAlbedo(const glm::vec4& color) { mAlbedo = color; }
 	glm::vec4 getAlbedo() const { return mAlbedo; }
-	void setOpacity(float value) { mOpacity = value; }
+	void setOpacity(const float value) { mOpacity = value; }
 	float getOpacity() const { return mOpacity; }
 
-	void setMetallic(float value) { mMetallic = value; }
+	void setMetallic(const float value) { mMetallic = value; }
 	float getMetallic() const { return mMetallic; }
-	void setRoughness(float value) { mRoughness = value; }
+	void setRoughness(const float value) { mRoughness = value; }
 	float getRoughness() const { return mRoughness; }
 
 	void setEmissiveColor(const glm::vec3& color) { mEmissiveColor = color; }
 	glm::vec3 getEmissiveColor() const { return mEmissiveColor; }
-	void setEmissiveIntensity(float value) { mEmissiveIntensity = value; }
+	void setEmissiveIntensity(const float value) { mEmissiveIntensity = value; }
 	float getEmissiveIntensity() const { return mEmissiveIntensity; }
 
 
-	void setReflectivity(float value) { mReflectivity = value; }
+	void setReflectivity(const float value) { mReflectivity = value; }
 	float getReflectivity() const { return mReflectivity; }
 
-	void setAlbedoTexture(std::shared_ptr<Texture> texture) { mAlbedoTexture = texture; }
+	void setAlbedoTexture(std::shared_ptr<Texture> texture) { mAlbedoTexture = std::move(texture); }
 	std::shared_ptr<Texture> getAlbedoTexture() const { return mAlbedoTexture; }
-	void setNormalTexture(std::shared_ptr<Texture> texture) { mNormalTexture = texture; }
+	void setNormalTexture(std::shared_ptr<Texture> texture) { mNormalTexture = std::move(texture); }
 	std::shared_ptr<Texture> getNormalTexture() const { return mNormalTexture; }
-	void setMetallicTexture(std::shared_ptr<Texture> texture) { mMetallicTexture = texture; }
+	void setMetallicTexture(std::shared_ptr<Texture> texture) { mMetallicTexture = std::move(texture); }
 	std::shared_ptr<Texture> getMetallicTexture() const { return mMetallicTexture; }
-	void setRoughnessTexture(std::shared_ptr<Texture> texture) { mRoughnessTexture = texture; }
+	void setRoughnessTexture(std::shared_ptr<Texture> texture) { mRoughnessTexture = std::move(texture); }
 	std::shared_ptr<Texture> getRoughnessTexture() const { return mRoughnessTexture; }
-	void setAOTexture(std::shared_ptr<Texture> texture) { mAOTexture = texture; }
+	void setAOTexture(std::shared_ptr<Texture> texture) { mAOTexture = std::move(texture); }
 	std::shared_ptr<Texture> getAOTexture() const { return mAOTexture; }
-	void setEmissiveTexture(std::shared_ptr<Texture> texture) { mEmissiveTexture = texture; }
+	void setEmissiveTexture(std::shared_ptr<Texture> texture) { mEmissiveTexture = std::move(texture); }
 	std::shared_ptr<Texture> getEmissiveTexture() const { return mEmissiveTexture; }
-	void setMetalRoughTexture(std::shared_ptr<Texture> texture) { mMetalRoughTexture = texture; }
+	void setMetalRoughTexture(std::shared_ptr<Texture> texture) { mMetalRoughTexture = std::move(texture); }
 	std::shared_ptr<Texture> getMetalRoughTexture() const { return mMetalRoughTexture; }
-	void setOpacityTexture(std::shared_ptr<Texture> texture) { mOpacityTexture = texture; }
+	void setOpacityTexture(std::shared_ptr<Texture> texture) { mOpacityTexture = std::move(texture); }
 	std::shared_ptr<Texture> getOpacityTexture() const { return mOpacityTexture; }
 
 private:

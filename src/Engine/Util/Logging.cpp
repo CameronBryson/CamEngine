@@ -57,7 +57,7 @@ void init(LogLevel level) {
         LOG_INFO(gEngineLogger, "Logging system initialized");
     }
     catch (const std::exception& e) {
-        std::cerr << "Error initializing logging system: " << e.what() << std::endl;
+        std::cerr << "Error initializing logging system: " << e.what() << '\n';
     }
 }
 
@@ -66,8 +66,7 @@ void setGlobalLevel(LogLevel level) {
 }
 
 void setLoggerLevel(const std::string& loggerName, LogLevel level) {
-    auto logger = spdlog::get(loggerName);
-    if (logger) {
+	if (const auto logger = spdlog::get(loggerName)) {
         logger->set_level(static_cast<spdlog::level::level_enum>(level));
     }
 }
@@ -77,8 +76,7 @@ LogLevel getGlobalLevel() {
 }
 
 LogLevel getLoggerLevel(const std::string& loggerName) {
-    auto logger = spdlog::get(loggerName);
-    if (logger) {
+	if (const auto logger = spdlog::get(loggerName)) {
         return static_cast<LogLevel>(logger->level());
     }
     return LogLevel::Off;
@@ -112,7 +110,7 @@ std::shared_ptr<spdlog::logger> createRotatingLogger(
 }
 
 void flushAll() {
-    spdlog::apply_all([](std::shared_ptr<spdlog::logger> l) { l->flush(); });
+    spdlog::apply_all([](const std::shared_ptr<spdlog::logger>& l) { l->flush(); });
 }
 
 void shutdown() {

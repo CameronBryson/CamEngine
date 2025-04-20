@@ -10,9 +10,9 @@
 #include "Engine/Util/Logging.hpp"
 #include "Shader.hpp"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned> indices, std::shared_ptr<Material> material)
-	: mMaterial(std::move(material)),
-	mVertices(std::move(vertices))
+Mesh::Mesh(std::vector<Vertex> vertices, const std::vector<unsigned>& indices, std::shared_ptr<Material> material)
+	: mVertices(std::move(vertices)),
+	mMaterial(std::move(material))
 {
 	ASSERT_LOG(logging::gGraphicsLogger, !mVertices.empty() && !indices.empty(),
 			   "Attempted to create Mesh '{}' with empty vertices or indices.", mName);
@@ -59,7 +59,7 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept
 	return *this;
 }
 
-void Mesh::draw(glm::mat4 model) const
+void Mesh::draw(const glm::mat4& model) const
 {
 	if (!mMaterial)
 	{
@@ -98,7 +98,7 @@ void Mesh::draw(glm::mat4 model) const
 	mMaterial->unbind();
 }
 
-void Mesh::draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bindMaterial) const
+void Mesh::draw(const std::shared_ptr<Shader>& shadowShader, const glm::mat4& model, const bool bindMaterial) const
 {
 	if (!mVertexArray)
 	{

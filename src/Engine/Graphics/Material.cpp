@@ -20,27 +20,27 @@ Material::Material()
 //     LOG_TRACE(logging::gGraphicsLogger, "Destroying Material '{}'.", mName);
 // }
 
-void Material::bind(Shader& bindShader)
+void Material::bind(const Shader& shader) const
 {
 	LOG_TRACE(logging::gGraphicsLogger, "Binding Material '{}'.", mName);
-	bindShader.use();
+	shader.use();
 	// unbind(); // Consider if unbinding everything here first is necessary or efficient.
 			 // It might be better to only unbind specific slots if textures change.
 
 	// Base Properties
-	bindShader.setVec4("material.albedo", mAlbedo);
-	bindShader.setFloat("material.opacity", mOpacity);
+	shader.setVec4("material.albedo", mAlbedo);
+	shader.setFloat("material.opacity", mOpacity);
 
 	// PBR Properties
-	bindShader.setFloat("material.metallic", mMetallic);
-	bindShader.setFloat("material.roughness", mRoughness);
+	shader.setFloat("material.metallic", mMetallic);
+	shader.setFloat("material.roughness", mRoughness);
 
 	// Emission Properties
-	bindShader.setVec3("material.emissiveColor", mEmissiveColor);
-	bindShader.setFloat("material.emissiveIntensity", mEmissiveIntensity);
+	shader.setVec3("material.emissiveColor", mEmissiveColor);
+	shader.setFloat("material.emissiveIntensity", mEmissiveIntensity);
 
 	// Reflective Properties
-	bindShader.setFloat("material.reflectivity", mReflectivity);
+	shader.setFloat("material.reflectivity", mReflectivity);
 
 
 	int currentTextureUnit = MaterialSlots::ALBEDO; // Start with the first slot
@@ -50,15 +50,15 @@ void Material::bind(Shader& bindShader)
 		{
 			if (tex)
 			{
-				bindShader.setInt(uniformName, slot);
-				bindShader.setBool(hasUniformName, true);
+				shader.setInt(uniformName, slot);
+				shader.setBool(hasUniformName, true);
 				tex->bind(slot);
 				// LOG_TRACE(logging::gGraphicsLogger, "Material '{}': Bound texture '{}' to slot {}", mName, tex->getName(), slot); // Requires Texture::getName()
 				return true;
 			}
 			else
 			{
-				bindShader.setBool(hasUniformName, false);
+				shader.setBool(hasUniformName, false);
 				// Optionally unbind the slot if necessary, though often not needed if shaders check the 'has' flag
 				// GL_CHECK(glActiveTexture(GL_TEXTURE0 + slot));
 				// GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0)); 
@@ -76,7 +76,7 @@ void Material::bind(Shader& bindShader)
 	bindTexture(mOpacityTexture, "material.opacityMap", "material.hasOpacityMap", currentTextureUnit++);
 }
 
-void Material::unbind()
+void Material::unbind() const
 {
 	LOG_TRACE(logging::gGraphicsLogger, "Unbinding Material '{}'.", mName);
 

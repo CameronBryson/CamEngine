@@ -124,7 +124,7 @@ void GameManager::finalShutdown()
 
 void GameManager::gameLoop()
 {
-	const double targetFrameTime = 1.0 / settings::max_fps;
+	constexpr double targetFrameTime = 1.0 / settings::max_fps;
 	auto previousTime = std::chrono::high_resolution_clock::now();
 
 	while (!glfwWindowShouldClose(mGameWindow))

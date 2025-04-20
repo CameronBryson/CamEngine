@@ -161,7 +161,6 @@ void Shader::deleteShader()
 
 std::string Shader::loadShaderFile(std::string_view filePath)
 {
-	std::string code;
 	std::ifstream file;
 
 	// Open the file and check if it was successful
@@ -178,7 +177,7 @@ std::string Shader::loadShaderFile(std::string_view filePath)
 	// Check for any read errors
 	ASSERT_LOG(logging::gGraphicsLogger, !file.bad(), "Error occurred while reading shader file: {}", filePath);
 
-	code = stream.str();
+	std::string code = stream.str();
 	// Verify we actually got content
 	ASSERT_LOG(logging::gGraphicsLogger, !code.empty(), "Shader file is empty: {}", filePath);
 

@@ -11,7 +11,7 @@ Model::Model(std::vector<MeshInstance> meshes) : mMeshes(std::move(meshes))
 	// Optional: Add validation if needed (e.g., check if any mesh pointers are null)
 }
 
-void Model::draw(glm::mat4 model) const
+void Model::draw(const glm::mat4& model) const
 {
 	for (const auto& meshInstance : mMeshes)
 	{
@@ -25,7 +25,7 @@ void Model::draw(glm::mat4 model) const
 	}
 }
 
-void Model::draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bindMaterial) const
+void Model::draw(const std::shared_ptr<Shader>& shadowShader, const glm::mat4& model, const bool bindMaterial) const
 {
 	if (!shadowShader)
 	{

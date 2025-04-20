@@ -100,11 +100,11 @@ public:
 	FrameBuffer& operator=(FrameBuffer&& other) noexcept;
 
 	// Core framebuffer operations
-	void bind();
-	void unbind();
-	void bindRead();
-	void bindDraw();
-	void clear(unsigned int mask);
+	void bind() const;
+	static void unbind();
+	void bindRead() const;
+	void bindDraw() const;
+	void clear(unsigned int mask) const;
 
 	// Framebuffer properties
 	void resize(int width, int height);
@@ -128,21 +128,21 @@ public:
 	const std::vector<FrameBufferAttachmentSpecification>& getAttachments() const { return mAttachmentSpecs; }
 	Texture& getColorAttachment(int index = 0) const;
 	Texture& getDepthAttachment() const { return *mDepthAttachment; }
-	void attachExternalTexture(unsigned int attachment, unsigned int target, unsigned int textureID, int mipLevel = 0);
+	void attachExternalTexture(unsigned int attachment, unsigned int target, unsigned int textureID, int mipLevel = 0) const;
 
 	// Multisampling
 	void setSamples(int samples);
 	int getSamples() const { return mSamples; }
 
-	void setDrawBuffers(const std::vector<unsigned int>& attachments);
-	void setReadBuffer(unsigned int attachment);
+	void setDrawBuffers(const std::vector<unsigned int>& attachments) const;
+	void setReadBuffer(unsigned int attachment) const;
 
 	// Blit operations
-	void blitTo(std::shared_ptr<FrameBuffer> dst,
+	void blitTo(const std::shared_ptr<FrameBuffer>& dst,
 				int srcX0, int srcY0, int srcX1, int srcY1,
 				int dstX0, int dstY0, int dstX1, int dstY1,
 				unsigned int mask,
-				unsigned int filter);
+				unsigned int filter) const;
 
 protected:
 	// OpenGL wrapper methods organized by functionality

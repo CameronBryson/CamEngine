@@ -44,10 +44,10 @@ static const glm::mat4 captureViews[] =
 
 
 EnvironmentMap::EnvironmentMap(std::string_view hdrPath,
-							   std::shared_ptr<Shader> equirectangularToCubemapShader,
-							   std::shared_ptr<Shader> irradianceShader,
-							   std::shared_ptr<Shader> prefilterShader,
-							   std::shared_ptr<Shader> brdfShader)
+                               const std::shared_ptr<Shader>& equirectangularToCubemapShader,
+							   const std::shared_ptr<Shader>& irradianceShader,
+							   const std::shared_ptr<Shader>& prefilterShader,
+							   const std::shared_ptr<Shader>& brdfShader)
 {
 	LOG_INFO(logging::gGraphicsLogger, "Creating EnvironmentMap from HDR: {}", hdrPath);
 	// --- Error Checking for Shaders --- Use ASSERT_LOG ---
@@ -77,7 +77,7 @@ EnvironmentMap::~EnvironmentMap()
 	// Resources are automatically cleaned up by shared_ptr
 }
 
-void EnvironmentMap::generateIrradianceMap(std::shared_ptr<Shader> irradianceShader)
+void EnvironmentMap::generateIrradianceMap(const std::shared_ptr<Shader>& irradianceShader)
 {
 	LOG_DEBUG(logging::gGraphicsLogger, "Generating Irradiance Map ({}x{})...", IRRADIANCE_MAP_SIZE, IRRADIANCE_MAP_SIZE);
 
@@ -137,7 +137,7 @@ void EnvironmentMap::generateIrradianceMap(std::shared_ptr<Shader> irradianceSha
 	fbo->unbind();
 }
 
-void EnvironmentMap::generatePrefilterMap(std::shared_ptr<Shader> prefilterShader)
+void EnvironmentMap::generatePrefilterMap(const std::shared_ptr<Shader>& prefilterShader)
 {
 	LOG_DEBUG(logging::gGraphicsLogger, "Generating Prefilter Map ({}x{}, {} mips)...", PREFILTER_MAP_SIZE, PREFILTER_MAP_SIZE, PREFILTER_MAX_MIP_LEVELS);
 
@@ -189,7 +189,7 @@ void EnvironmentMap::generatePrefilterMap(std::shared_ptr<Shader> prefilterShade
 		GL_CHECK(glViewport(0, 0, mipWidth, mipHeight));
 
 		// Calculate roughness for this mip level
-		float roughness = (float)mip / (float)(PREFILTER_MAX_MIP_LEVELS - 1);
+		float roughness = static_cast<float>(mip) / static_cast<float>(PREFILTER_MAX_MIP_LEVELS - 1);
 		prefilterShader->setFloat("roughness", roughness);
 
 		fbo->bind();
@@ -213,7 +213,7 @@ void EnvironmentMap::generatePrefilterMap(std::shared_ptr<Shader> prefilterShade
 	}
 }
 
-void EnvironmentMap::generateBRDFLUT(std::shared_ptr<Shader> brdfShader)
+void EnvironmentMap::generateBRDFLUT(const std::shared_ptr<Shader>& brdfShader)
 {
 	LOG_DEBUG(logging::gGraphicsLogger, "Generating BRDF LUT ({}x{})...", BRDF_LUT_SIZE, BRDF_LUT_SIZE);
 	if (!brdfShader)
@@ -254,40 +254,40 @@ void EnvironmentMap::generateBRDFLUT(std::shared_ptr<Shader> brdfShader)
 }
 
 // Texture binding utilities
-void EnvironmentMap::bindIrradiance(int slot)
+void EnvironmentMap::bindIrradiance(const int slot) const
 {
 	if (mIrradianceCubemap) mIrradianceCubemap->bind(slot);
 	else LOG_WARN(logging::gGraphicsLogger, "Attempted to bind null Irradiance map.");
 }
 
-void EnvironmentMap::bindPrefilter(int slot)
+void EnvironmentMap::bindPrefilter(const int slot) const
 {
 	if (mPrefilterCubemap) mPrefilterCubemap->bind(slot);
 	else LOG_WARN(logging::gGraphicsLogger, "Attempted to bind null Prefilter map.");
 }
 
-void EnvironmentMap::bindBRDFLUT(int slot)
+void EnvironmentMap::bindBRDFLUT(const int slot) const
 {
 	if (mBRDFLUT) mBRDFLUT->bind(slot);
 	else LOG_WARN(logging::gGraphicsLogger, "Attempted to bind null BRDF LUT.");
 }
 
-void EnvironmentMap::unbindIrradiance(int slot)
+void EnvironmentMap::unbindIrradiance(const int slot) const
 {
 	if (mIrradianceCubemap) mIrradianceCubemap->unbind(slot);
 }
 
-void EnvironmentMap::unbindPrefilter(int slot)
+void EnvironmentMap::unbindPrefilter(const int slot) const
 {
 	if (mPrefilterCubemap) mPrefilterCubemap->unbind(slot);
 }
 
-void EnvironmentMap::unbindBRDFLUT(int slot)
+void EnvironmentMap::unbindBRDFLUT(const int slot) const
 {
 	if (mBRDFLUT) mBRDFLUT->unbind(slot);
 }
 
-void EnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
+void EnvironmentMap::drawSkybox(const std::shared_ptr<Shader>& skyboxShader) const
 {
 	if (!skyboxShader)
 	{

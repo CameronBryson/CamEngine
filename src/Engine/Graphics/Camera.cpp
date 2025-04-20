@@ -8,8 +8,8 @@
 Camera::Camera(glm::vec3 position, glm::vec3 up,
 			   float yaw, float pitch) : mFront(glm::vec3(0.0f, 0.0f, -1.0f))
 {
-	mPosition = std::move(position);
-	mWorldUp = std::move(up);
+	mPosition = position;
+	mWorldUp = up;
 	mYaw = yaw;
 	mPitch = pitch;
 	mFov = FOV;
@@ -91,7 +91,7 @@ void Camera::storePreviousMatrices()
 	mPreviousViewProjectionMatrix = mViewProjectionMatrix;
 }
 
-std::array<glm::vec4, 6> Camera::getFrustumPlanes()
+std::array<glm::vec4, 6> Camera::getFrustumPlanes() const
 {
 	std::array<glm::vec4, 6> planes;
 
@@ -154,7 +154,7 @@ std::array<glm::vec4, 6> Camera::getFrustumPlanes()
 }
 
 
-bool Camera::isSphereInFrustum(const glm::vec3& center, float radius)
+bool Camera::isSphereInFrustum(const glm::vec3& center, const float radius) const
 {
 	auto planes = getFrustumPlanes();
 

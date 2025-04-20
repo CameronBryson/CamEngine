@@ -80,14 +80,15 @@ void GraphicsManager::clear()
 	mEnvironmentMap.clear();
 }
 
-std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string name)
+std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, const std::string& name)
 {
 	auto shader = std::make_shared<Shader>(vertexPath, fragmentPath);
 	mShaderMap[name] = shader;
 	return shader;
 }
 
-std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath, std::string name)
+std::shared_ptr<Shader> GraphicsManager::loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath,
+                                                    const std::string& name)
 {
 	auto shader = std::make_shared<Shader>(vertexPath, fragmentPath, geometryPath);
 	mShaderMap.emplace(name, shader);
@@ -115,14 +116,13 @@ std::shared_ptr<Texture> GraphicsManager::loadTexture(const std::string& path,
 													  const aiScene* scene)
 {
 	std::string uniqueKey;
-	bool isEmbedded = (!path.empty() && path[0] == '*');
 
-	if (isEmbedded)
+	if ((!path.empty() && path[0] == '*'))
 	{
 		// Embedded textures often show up as "*0", "*1", etc.
 		std::string indexStr = path.substr(1);
 		bool isValidIndexFormat = !indexStr.empty() &&
-			std::all_of(indexStr.begin(), indexStr.end(), ::isdigit);
+			std::ranges::all_of(indexStr, ::isdigit);
 
 		ASSERT_LOG(logging::gResourceLogger, isValidIndexFormat,
 				   "Invalid embedded texture index format: {}", path);
@@ -384,10 +384,6 @@ std::shared_ptr<Mesh> GraphicsManager::processMesh(aiMesh* mesh, const aiScene* 
 			LOG_ERROR(logging::gResourceLogger, "Mesh '{}' has out-of-bounds material index ({}), scene has {} materials.", mesh->mName.C_Str(), mesh->mMaterialIndex, scene->mNumMaterials);
 		}
 	}
-	else if (mesh->mMaterialIndex < 0)
-	{
-		LOG_TRACE(logging::gResourceLogger, "Mesh '{}' has no assigned material (Index: {}).", mesh->mName.C_Str(), mesh->mMaterialIndex);
-	}
 	else if (!scene->HasMaterials())
 	{
 		LOG_WARN(logging::gResourceLogger, "Mesh '{}' references material index {} but scene has no materials.", mesh->mName.C_Str(), mesh->mMaterialIndex);
@@ -598,7 +594,7 @@ std::shared_ptr<Material> GraphicsManager::loadMaterial(aiMaterial* mat, const s
 
 
 std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
-	aiMaterial* mat,
+	const aiMaterial* mat,
 	aiTextureType type,
 	const std::string& directory,
 	const aiScene* scene)
@@ -623,9 +619,7 @@ std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
 		std::string texture_path_str = ai_path.C_Str();
 		std::string full_path_or_key;
 
-		bool isEmbedded = (!texture_path_str.empty() && texture_path_str[0] == '*');
-
-		if (isEmbedded)
+		if ((!texture_path_str.empty() && texture_path_str[0] == '*'))
 		{
 			// Embedded texture: Pass the "*" identifier directly to loadTexture
 			full_path_or_key = texture_path_str;
@@ -659,9 +653,8 @@ std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
 		}
 
 		// Use the central loadTexture function (handles caching, embedded/external logic)
-		auto texture = loadTexture(full_path_or_key, type, scene);
 
-		if (texture)
+		if (auto texture = loadTexture(full_path_or_key, type, scene))
 		{
 			if (type == aiTextureType_NORMALS || type == aiTextureType_HEIGHT || type == aiTextureType_DISPLACEMENT)
 			{
@@ -679,7 +672,12 @@ std::vector<std::shared_ptr<Texture>> GraphicsManager::loadMaterialTextures(
 	return textures;
 }
 
-std::shared_ptr<EnvironmentMap> GraphicsManager::loadEnvironmentMap(std::string name, std::string_view hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader)
+std::shared_ptr<EnvironmentMap> GraphicsManager::loadEnvironmentMap(std::string name, std::string_view hdrPath,
+                                                                    const std::shared_ptr<Shader>&
+                                                                    equirectangularToCubemapShader, const std::shared_ptr<Shader>
+                                                                    & irradianceShader, const std::shared_ptr<Shader>&
+                                                                    prefilterShader, const std::shared_ptr<Shader>&
+                                                                    brdfShader)
 {
 	auto it = mEnvironmentMap.find(name);
 	if (it != mEnvironmentMap.end())
@@ -719,7 +717,7 @@ std::shared_ptr<EnvironmentMap> GraphicsManager::getEnvironmentMap(const std::st
 	}
 }
 
-void GraphicsManager::processNode(aiNode* node, const aiScene* scene, const std::string& directory, const glm::mat4& parentTransform, std::vector<MeshInstance>& meshInstances)
+void GraphicsManager::processNode(const aiNode* node, const aiScene* scene, const std::string& directory, const glm::mat4& parentTransform, std::vector<MeshInstance>& meshInstances)
 {
 	ASSERT_LOG(logging::gResourceLogger, node != nullptr, "Received null aiNode pointer in processNode.");
 	ASSERT_LOG(logging::gResourceLogger, scene != nullptr, "Received null aiScene pointer in processNode.");
@@ -738,8 +736,7 @@ void GraphicsManager::processNode(aiNode* node, const aiScene* scene, const std:
 		}
 
 		aiMesh* ai_mesh = scene->mMeshes[meshIndex];
-		auto mesh = processMesh(ai_mesh, scene, directory);
-		if (mesh)
+		if (auto mesh = processMesh(ai_mesh, scene, directory))
 		{
 			meshInstances.emplace_back(mesh, nodeTransform); // Use emplace_back with constructor
 		}

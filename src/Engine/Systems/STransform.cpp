@@ -13,7 +13,7 @@ STransform::STransform(BaseScene* scene)
 {
 }
 
-void STransform::update(float dt)
+void STransform::update(float dt) const
 {
 	auto& registry = mScene->mEnttRegistry;
 
@@ -25,7 +25,7 @@ void STransform::update(float dt)
 	}
 }
 
-void STransform::updateTransform(entt::entity entity, entt::registry& registry)
+void STransform::updateTransform(const entt::entity entity, entt::registry& registry)
 {
 	auto& transform = registry.get<CTransform>(entity);
 
@@ -53,7 +53,7 @@ void STransform::updateTransform(entt::entity entity, entt::registry& registry)
 	}
 }
 
-glm::mat4 STransform::computeLocalMatrix(const CTransform& transform) const
+glm::mat4 STransform::computeLocalMatrix(const CTransform& transform)
 {
 	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.position);
 	glm::mat4 rotationMatrix = glm::mat4_cast(transform.rotation);

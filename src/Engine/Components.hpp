@@ -12,7 +12,7 @@
 
 struct CModel
 {
-	CModel(const std::string& name) : name(name) {}
+	explicit CModel(std::string name) : name(std::move(name)) {}
 	std::string name;
 };
 
@@ -62,7 +62,8 @@ struct CSpotLight
 
 struct CText
 {
-	CText(const std::string& text, const glm::vec2& position, const int font_size, const glm::vec3& color) : text(text), position(position), font_size(font_size), color(color) {}
+	CText(std::string text, const glm::vec2& position, const int font_size, const glm::vec3& color) : text(std::move(
+		text)), font_size(font_size), position(position), color(color) {}
 	std::string text;
 	int font_size;
 	glm::vec2 position;
@@ -80,7 +81,7 @@ struct CTransform
 };
 struct CParent
 {
-	CParent(entt::entity parent) : parent(parent) {}
+	explicit CParent(const entt::entity parent) : parent(parent) {}
 	entt::entity parent;
 };
 struct CChildren

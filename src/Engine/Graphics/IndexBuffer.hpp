@@ -19,7 +19,7 @@ public:
 	 *        lvalues (copy) and rvalues (move).
 	 * @param indices Vector of index data
 	 */
-	explicit IndexBuffer(std::vector<unsigned> indices);
+	explicit IndexBuffer(const std::vector<unsigned>& indices);
 
 	/**
 	 * @brief Destructor - cleans up OpenGL resources
@@ -42,7 +42,7 @@ public:
 	/**
 	 * @brief Unbinds this index buffer
 	 */
-	void unbind() const;
+	static void unbind();
 
 	/**
 	 * @brief Gets the number of indices in this buffer

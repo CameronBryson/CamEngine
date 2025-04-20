@@ -14,7 +14,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 // Constants for cubemap generation
-static const unsigned int ENV_MAP_SIZE = 512;
+static constexpr unsigned int ENV_MAP_SIZE = 512;
 
 // Projection matrix for 90° FOV (for cubemap generation)
 static glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
@@ -37,50 +37,50 @@ static glm::mat4 captureViews[] =
 };
 
 // OpenGL Wrapper Methods Implementation
-void Texture::genTextures(unsigned int count, unsigned int* textureIDs)
+void Texture::genTextures(const unsigned int count, unsigned int* textureIDs)
 {
 	GL_CHECK(glGenTextures(count, textureIDs));
 }
 
-void Texture::deleteTextures(unsigned int count, const unsigned int* textureIDs)
+void Texture::deleteTextures(const unsigned int count, const unsigned int* textureIDs)
 {
 	GL_CHECK(glDeleteTextures(count, textureIDs));
 }
 
-void Texture::bindTexture(unsigned int target, unsigned int textureID)
+void Texture::bindTexture(const unsigned int target, const unsigned int textureID)
 {
 	GL_CHECK(glBindTexture(target, textureID));
 }
 
-void Texture::activeTexture(unsigned int textureUnit)
+void Texture::activeTexture(const unsigned int textureUnit)
 {
 	GL_CHECK(glActiveTexture(textureUnit));
 }
 
-void Texture::texImage2D(unsigned int target, int level, int internalFormat,
-						 int width, int height, int border, unsigned int format,
-						 unsigned int type, const void* data)
+void Texture::texImage2D(const unsigned int target, const int level, const int internalFormat,
+						 const int width, const int height, const int border, const unsigned int format,
+						 const unsigned int type, const void* data)
 {
 	GL_CHECK(glTexImage2D(target, level, internalFormat, width, height, border, format, type, data));
 }
 
-void Texture::texImage2DMultisample(unsigned int target, int samples, int internalFormat,
-									int width, int height, bool fixedSampleLocations)
+void Texture::texImage2DMultisample(const unsigned int target, const int samples, const int internalFormat,
+									const int width, const int height, const bool fixedSampleLocations)
 {
 	GL_CHECK(glTexImage2DMultisample(target, samples, internalFormat, width, height, fixedSampleLocations));
 }
 
-void Texture::genMipmap(unsigned int target)
+void Texture::genMipmap(const unsigned int target)
 {
 	GL_CHECK(glGenerateMipmap(target));
 }
 
-void Texture::texParameteri(unsigned int target, unsigned int pname, int param)
+void Texture::texParameteri(const unsigned int target, const unsigned int pname, const int param)
 {
 	GL_CHECK(glTexParameteri(target, pname, param));
 }
 
-void Texture::texParameterfv(unsigned int target, unsigned int pname, const float* params)
+void Texture::texParameterfv(const unsigned int target, const unsigned int pname, const float* params)
 {
 	GL_CHECK(glTexParameterfv(target, pname, params));
 }
@@ -91,15 +91,15 @@ void Texture::framebufferTexture(unsigned int target, unsigned int attachment,
 	GL_CHECK(glFramebufferTexture(target, attachment, texture, level));
 }
 
-void Texture::framebufferTexture2D(unsigned int target, unsigned int attachment,
-								   unsigned int textarget, unsigned int texture, int level)
+void Texture::framebufferTexture2D(const unsigned int target, const unsigned int attachment,
+								   const unsigned int textarget, const unsigned int texture, const int level)
 {
 	GL_CHECK(glFramebufferTexture2D(target, attachment, textarget, texture, level));
 }
 
 // Create an empty 2D texture with specified dimensions and format
-Texture::Texture(int width, int height, Format format)
-	: mWidth(width), mHeight(height), mFormat(format), mType(Type::TEXTURE_2D)
+Texture::Texture(const int width, const int height, const Format format)
+	: mWidth(width), mHeight(height), mType(Type::TEXTURE_2D), mFormat(format)
 {
 	mTextureID = createEmptyTexture2D(width, height, format);
 
@@ -219,7 +219,7 @@ Texture::Texture(std::string_view equirectangularMapPath, const std::shared_ptr<
 
 	mWidth = ENV_MAP_SIZE;
 	mHeight = ENV_MAP_SIZE;
-	auto fbo = std::make_shared<FrameBuffer>(
+	const auto fbo = std::make_shared<FrameBuffer>(
 		ENV_MAP_SIZE, ENV_MAP_SIZE, std::vector<FrameBufferAttachmentSpecification>
 	{ { FrameBufferAttachmentType::Depth, FrameBufferTextureFormat::Depth24 } }
 	);
@@ -383,7 +383,7 @@ Texture::Texture(const aiTexture* aiTex)
 }
 
 // Create a texture from an existing OpenGL texture ID
-Texture::Texture(GLuint textureID, int width, int height, Type type)
+Texture::Texture(const GLuint textureID, const int width, const int height, const Type type)
 	: mTextureID(textureID), mWidth(width), mHeight(height), mType(type)
 {
 }
@@ -435,7 +435,7 @@ Texture& Texture::operator=(Texture&& other) noexcept
 }
 
 // Bind the texture to a specified texture slot
-void Texture::bind(unsigned int slot)
+void Texture::bind(unsigned int slot) const
 {
 	if (slot >= 32) // OpenGL guarantees at least 32 texture units
 	{
@@ -575,7 +575,7 @@ void Texture::setNormalSamplerParameters()
 }
 
 // Set texture filtering modes
-void Texture::setFilterMode(FilterMode minFilter, FilterMode magFilter)
+void Texture::setFilterMode(const FilterMode minFilter, const FilterMode magFilter)
 {
 	bind(31); // Use a consistent slot for configuration
 
@@ -587,7 +587,7 @@ void Texture::setFilterMode(FilterMode minFilter, FilterMode magFilter)
 }
 
 // Set texture wrapping modes
-void Texture::setWrapMode(WrapMode wrapS, WrapMode wrapT, WrapMode wrapR)
+void Texture::setWrapMode(const WrapMode wrapS, const WrapMode wrapT, const WrapMode wrapR)
 {
 	bind(31); // Use a consistent slot for configuration
 
@@ -604,7 +604,7 @@ void Texture::setWrapMode(WrapMode wrapS, WrapMode wrapT, WrapMode wrapR)
 }
 
 // Set compare mode for shadow sampling
-void Texture::setCompareMode(CompareMode mode, CompareFunc func)
+void Texture::setCompareMode(const CompareMode mode, const CompareFunc func)
 {
 	bind(31); // Use a consistent slot for configuration
 
@@ -649,7 +649,7 @@ void Texture::generateMipmaps()
 // Static helper methods
 
 // Create an empty 2D texture
-GLuint Texture::createEmptyTexture2D(int width, int height, Format format)
+GLuint Texture::createEmptyTexture2D(const int width, const int height, const Format format)
 {
 	GLuint textureID;
 	genTextures(1, &textureID);
@@ -673,7 +673,7 @@ GLuint Texture::createEmptyTexture2D(int width, int height, Format format)
 }
 
 // Create an empty cubemap texture
-GLuint Texture::createEmptyCubemap(int size, Format format)
+GLuint Texture::createEmptyCubemap(const int size, const Format format)
 {
 	GLuint textureID;
 	genTextures(1, &textureID);
@@ -702,7 +702,7 @@ GLuint Texture::createEmptyCubemap(int size, Format format)
 }
 
 // Convert enum values to OpenGL constants
-GLenum Texture::toGLInternalFormat(Format format)
+GLenum Texture::toGLInternalFormat(const Format format)
 {
 	switch (format)
 	{
@@ -719,7 +719,7 @@ GLenum Texture::toGLInternalFormat(Format format)
 	}
 }
 
-GLenum Texture::toGLFormat(Format format)
+GLenum Texture::toGLFormat(const Format format)
 {
 	switch (format)
 	{
@@ -736,7 +736,7 @@ GLenum Texture::toGLFormat(Format format)
 	}
 }
 
-GLenum Texture::toGLType(Format format)
+GLenum Texture::toGLType(const Format format)
 {
 	switch (format)
 	{
@@ -753,7 +753,7 @@ GLenum Texture::toGLType(Format format)
 	}
 }
 
-GLenum Texture::toGLFilterMode(FilterMode mode)
+GLenum Texture::toGLFilterMode(const FilterMode mode)
 {
 	switch (mode)
 	{
@@ -767,7 +767,7 @@ GLenum Texture::toGLFilterMode(FilterMode mode)
 	}
 }
 
-GLenum Texture::toGLWrapMode(WrapMode mode)
+GLenum Texture::toGLWrapMode(const WrapMode mode)
 {
 	switch (mode)
 	{
@@ -779,7 +779,7 @@ GLenum Texture::toGLWrapMode(WrapMode mode)
 	}
 }
 
-GLenum Texture::toGLCompareFunc(CompareFunc func)
+GLenum Texture::toGLCompareFunc(const CompareFunc func)
 {
 	switch (func)
 	{
@@ -795,7 +795,7 @@ GLenum Texture::toGLCompareFunc(CompareFunc func)
 	}
 }
 
-GLenum Texture::toGLTextureTarget(Type type)
+GLenum Texture::toGLTextureTarget(const Type type)
 {
 	switch (type)
 	{

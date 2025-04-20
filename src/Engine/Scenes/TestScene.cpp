@@ -3,6 +3,7 @@
 
 #include <BaseScene.hpp>
 #include <Components.hpp>
+#include <algorithm>
 #include <entt/entity/registry.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include "EngineUtil.hpp"
@@ -166,16 +167,14 @@ void TestScene::update(float dt)
 	{
 		mCurrentCamera.mPitch += rotationSpeed;
 		// Constrain pitch to prevent camera flipping
-		if (mCurrentCamera.mPitch > 89.0f)
-			mCurrentCamera.mPitch = 89.0f;
+		mCurrentCamera.mPitch = std::min(mCurrentCamera.mPitch, 89.0f);
 		mCurrentCamera.updateCamera();
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_DOWN))
 	{
 		mCurrentCamera.mPitch -= rotationSpeed;
 		// Constrain pitch to prevent camera flipping
-		if (mCurrentCamera.mPitch < -89.0f)
-			mCurrentCamera.mPitch = -89.0f;
+		mCurrentCamera.mPitch = std::max(mCurrentCamera.mPitch, -89.0f);
 		mCurrentCamera.updateCamera();
 	}
 	// Handle camera rotation with right mouse button
@@ -212,10 +211,8 @@ void TestScene::update(float dt)
 			mCurrentCamera.mPitch += yoffset;
 
 			// Constrain pitch to prevent camera flipping
-			if (mCurrentCamera.mPitch > 89.0f)
-				mCurrentCamera.mPitch = 89.0f;
-			if (mCurrentCamera.mPitch < -89.0f)
-				mCurrentCamera.mPitch = -89.0f;
+			mCurrentCamera.mPitch = std::min(mCurrentCamera.mPitch, 89.0f);
+			mCurrentCamera.mPitch = std::max(mCurrentCamera.mPitch, -89.0f);
 
 			// Update camera vectors based on new angles
 			mCurrentCamera.updateCamera();

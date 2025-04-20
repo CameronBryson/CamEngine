@@ -19,7 +19,7 @@ public:
 	 *        lvalues (copy) and rvalues (move).
 	 * @param vertices Vector of vertices to store in the buffer
 	 */
-	explicit VertexBuffer(std::vector<Vertex> vertices);
+	explicit VertexBuffer(const std::vector<Vertex>& vertices);
 
 	/**
 	 * @brief Destructor - cleans up OpenGL resources
@@ -42,14 +42,14 @@ public:
 	/**
 	 * @brief Unbinds this buffer
 	 */
-	void unbind() const;
+	static void unbind();
 
 	/**
 	 * @brief Updates buffer data with new content
 	 * @param data Pointer to the new data
 	 * @param size Size of the data in bytes
 	 */
-	void setData(const void* data, unsigned int size);
+	void setData(const void* data, unsigned int size) const;
 
 	/**
 	 * @brief Get the OpenGL buffer ID

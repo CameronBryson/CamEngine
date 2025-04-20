@@ -213,10 +213,10 @@ void SRender::initFramebuffers()
 			{ FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA8 }
 	};
 	mBloomFrameBuffer = std::make_shared<FrameBuffer>(settings::window_width / 2, settings::window_height / 2, colorAttachment);
-	for (int i = 0; i < 2; i++)
+	for (auto& i : mPingPongFBO)
 	{
-		mPingPongFBO[i] = std::make_shared<FrameBuffer>(settings::window_width / 2, settings::window_height / 2, colorAttachment);
-		if (!mPingPongFBO[i]->isComplete())
+		i = std::make_shared<FrameBuffer>(settings::window_width / 2, settings::window_height / 2, colorAttachment);
+		if (!i->isComplete())
 			throw std::runtime_error("Ping-pong framebuffer setup failed!");
 	}
 	mSSAOBuffer = std::make_shared<FrameBuffer>(
@@ -313,14 +313,14 @@ void SRender::calculateSceneBounds()
 // Light Data Building
 // ------------------------------------------------------
 
-void SRender::buildLightData(LightData& lightData)
+void SRender::buildLightData(LightData& lightData) const
 {
 	buildDirectionalLights(lightData);
 	buildPointLights(lightData);
 	buildSpotLights(lightData);
 }
 
-void SRender::buildDirectionalLights(LightData& lightData)
+void SRender::buildDirectionalLights(LightData& lightData) const
 {
 	auto dirLightView = mScene->mEnttRegistry.view<CDirectionalLight>();
 	int numDirLights = 0;
@@ -385,7 +385,7 @@ void SRender::buildDirectionalLights(LightData& lightData)
 	lightData.counts.z = numDirLights; // .z holds # of directional lights
 }
 
-void SRender::buildPointLights(LightData& lightData)
+void SRender::buildPointLights(LightData& lightData) const
 {
 	auto pointLightView = mScene->mEnttRegistry.view<CPointLight>();
 	int numPointLights = 0;
@@ -418,7 +418,7 @@ void SRender::buildPointLights(LightData& lightData)
 	lightData.counts.x = numPointLights; // .x holds # of point lights
 }
 
-void SRender::buildSpotLights(LightData& lightData)
+void SRender::buildSpotLights(LightData& lightData) const
 {
 	auto spotLightView = mScene->mEnttRegistry.view<CSpotLight>();
 	int numSpotLights = 0;
@@ -467,11 +467,11 @@ void SRender::buildSpotLights(LightData& lightData)
 			maxDepth = std::max(maxDepth, depth);
 		}
 
-		float depthPadding = (maxDepth - minDepth) * 0.05f;
-		float nearPlane = std::max(0.1f, minDepth - depthPadding);
-		float farPlane = maxDepth + depthPadding;
+		const float depthPadding = (maxDepth - minDepth) * 0.05f;
+		const float nearPlane = std::max(0.1f, minDepth - depthPadding);
+		const float farPlane = maxDepth + depthPadding;
 
-		float spotAngle = glm::acos(light.outerCutoff) * 2.0f; // outerCutoff is cos(halfAngle)
+		const float spotAngle = glm::acos(light.outerCutoff) * 2.0f; // outerCutoff is cos(halfAngle)
 		glm::mat4 lightProj = glm::perspective(spotAngle, 1.0f, nearPlane, farPlane);
 
 		sld.lightSpaceMatrix = lightProj * lightView;
@@ -485,7 +485,7 @@ void SRender::buildSpotLights(LightData& lightData)
 // Render Passes
 // ------------------------------------------------------
 
-void SRender::updateCameraUniforms()
+void SRender::updateCameraUniforms() const
 {
 
 	CameraData cameraData;
@@ -617,20 +617,20 @@ void SRender::buildRenderLists()
 	}
 
 	// Sort opaque objects by material to minimize state changes
-	std::sort(mOpaqueRenderList.begin(), mOpaqueRenderList.end(),
-			  [](const RenderItem& a, const RenderItem& b)
-			  {
-				  auto ma = a.mesh->getMaterial();
-				  auto mb = b.mesh->getMaterial();
-				  return ma < mb;
-			  });
+	std::ranges::sort(mOpaqueRenderList,
+	                  [](const RenderItem& a, const RenderItem& b)
+	                  {
+		                  auto ma = a.mesh->getMaterial();
+		                  auto mb = b.mesh->getMaterial();
+		                  return ma < mb;
+	                  });
 
 	// Sort transparent objects back-to-front
-	std::sort(mTransparentRenderList.begin(), mTransparentRenderList.end(),
-			  [](const RenderItem& a, const RenderItem& b)
-			  {
-				  return a.distance > b.distance;
-			  });
+	std::ranges::sort(mTransparentRenderList,
+	                  [](const RenderItem& a, const RenderItem& b)
+	                  {
+		                  return a.distance > b.distance;
+	                  });
 
 	// Log transparency statistics for debugging
 	//std::cout << "Total meshes: " << totalMeshes 
@@ -642,7 +642,7 @@ void SRender::buildRenderLists()
 
 
 
-void SRender::shadowPass(const LightData& lightData)
+void SRender::shadowPass(const LightData& lightData) const
 {
 	GL_VALIDATE_STATE();
 	GL_SCOPED_MARKER("Shadow Maps");
@@ -676,7 +676,7 @@ void SRender::shadowPass(const LightData& lightData)
 
 }
 
-void SRender::geometryPass()
+void SRender::geometryPass() const
 {
 	auto gBufferShader = GameManager::mGraphicsManager->getShader("GBuffer");
 	gBufferShader->use();
@@ -695,7 +695,7 @@ void SRender::geometryPass()
 
 }
 
-void SRender::ssaoPass()
+void SRender::ssaoPass() const
 {
 	if (!ssaoEnabled) return;
 
@@ -897,7 +897,7 @@ void SRender::postProcessPass(float dt)
 // Shadow Mapping
 // ------------------------------------------------------
 
-void SRender::renderDirectionalShadows(const LightData& lightData)
+void SRender::renderDirectionalShadows(const LightData& lightData) const
 {
 	auto shadowMapShader = GameManager::mGraphicsManager->getShader("ShadowMap");
 
@@ -915,7 +915,7 @@ void SRender::renderDirectionalShadows(const LightData& lightData)
 	}
 }
 
-void SRender::renderSpotShadows(const LightData& lightData)
+void SRender::renderSpotShadows(const LightData& lightData) const
 {
 	auto shadowMapShader = GameManager::mGraphicsManager->getShader("ShadowMap");
 
@@ -931,7 +931,7 @@ void SRender::renderSpotShadows(const LightData& lightData)
 	}
 }
 
-void SRender::renderPointShadows(const LightData& lightData)
+void SRender::renderPointShadows(const LightData& lightData) const
 {
 	auto pointShadowMapShader = GameManager::mGraphicsManager->getShader("PointShadowMap");
 
@@ -960,7 +960,7 @@ void SRender::renderPointShadows(const LightData& lightData)
 // Post-Processing
 // ------------------------------------------------------
 
-void SRender::bloomPass()
+void SRender::bloomPass() const
 {
 	if (!bloomEnabled)
 		return;
@@ -1042,7 +1042,7 @@ void SRender::bloomPass()
 
 
 
-void SRender::hdrPass()
+void SRender::hdrPass() const
 {
 
 	auto hdrShader = GameManager::mGraphicsManager->getShader("HDR");
@@ -1163,7 +1163,7 @@ void SRender::fxaaPass()
 }
 
 
-void SRender::ssrPass()
+void SRender::ssrPass() const
 {
 	if (!mSSREnabled) return;
 	auto ssrShader = GameManager::mGraphicsManager->getShader("SSR");
@@ -1215,7 +1215,7 @@ void SRender::ssrPass()
 
 
 
-void SRender::bindSkyboxResources(std::shared_ptr<Shader>& shader)
+void SRender::bindSkyboxResources(const std::shared_ptr<Shader>& shader) const
 {
 	auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
 	skybox->bindIrradiance(IBLSlots::IRRADIANCE);
@@ -1231,7 +1231,7 @@ void SRender::bindSkyboxResources(std::shared_ptr<Shader>& shader)
 	shader->setFloat("farPlane", farPlane);
 	shader->setBool("enableShadows", mEnableShadows);
 }
-void SRender::unbindSkyboxResources()
+void SRender::unbindSkyboxResources() const
 {
 	// Unbind environment maps
 	auto skybox = GameManager::mGraphicsManager->getEnvironmentMap("default");
@@ -1245,7 +1245,7 @@ void SRender::unbindSkyboxResources()
 	mPointShadwMapBuffer->getDepthAttachment().unbind(ShadowSlots::POINT);
 }
 
-void SRender::bindShadowMaps(std::shared_ptr<Shader>& shader)
+void SRender::bindShadowMaps(const std::shared_ptr<Shader>& shader) const
 {
 	mDirectionalShadowMapBuffer->getDepthAttachment().bind(ShadowSlots::DIRECTIONAL);
 	shader->setInt("directionalShadowMap", ShadowSlots::DIRECTIONAL);
@@ -1261,7 +1261,7 @@ void SRender::bindShadowMaps(std::shared_ptr<Shader>& shader)
 
 
 
-void SRender::drawRenderList(const std::vector<RenderItem>& renderList, std::shared_ptr<Shader>& shader, bool bindMaterial) const
+void SRender::drawRenderList(const std::vector<RenderItem>& renderList, std::shared_ptr<Shader>& shader, bool bindMaterial)
 {
 	for (const auto& item : renderList)
 	{
@@ -1524,11 +1524,11 @@ void SRender::drawImGui()
 
 		// Culling Statistics
 		ImGui::Text("Culling Statistics:");
-		int totalMeshes = mOpaqueRenderList.size() + mTransparentRenderList.size() + mCulledMeshes;
+		const int totalMeshes = mOpaqueRenderList.size() + mTransparentRenderList.size() + mCulledMeshes;
 		ImGui::Text("Total Meshes: %d", totalMeshes);
 		ImGui::Text("Visible Meshes: %d", mOpaqueRenderList.size() + mTransparentRenderList.size());
 		ImGui::Text("Culled Meshes: %d", mCulledMeshes);
-		float cullPercentage = (totalMeshes > 0) ? (float)mCulledMeshes / totalMeshes * 100.0f : 0.0f;
+		float cullPercentage = (totalMeshes > 0) ? static_cast<float>(mCulledMeshes) / totalMeshes * 100.0f : 0.0f;
 		ImGui::Text("Culling Percentage: %.1f%%", cullPercentage);
 
 		// GPU Timings for each render pass
@@ -1626,7 +1626,7 @@ void SRender::generateSSAOKernel()
 		sample = glm::normalize(sample);
 
 		// Scale samples s.t. they're more aligned to center of kernel
-		float scale = (float)i / SSAO_KERNEL_SIZE;
+		float scale = static_cast<float>(i) / SSAO_KERNEL_SIZE;
 		scale = glm::lerp(0.1f, 1.0f, scale * scale);
 		sample *= scale;
 

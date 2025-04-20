@@ -2,7 +2,7 @@
 #include "IndexBuffer.hpp"
 #include "OpenGLUtil.hpp" 
 
-IndexBuffer::IndexBuffer(std::vector<unsigned> indices) : mCount(indices.size())
+IndexBuffer::IndexBuffer(const std::vector<unsigned>& indices) : mCount(indices.size())
 {
 	GL_CHECK(glGenBuffers(1, &mEBO));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO));
@@ -46,7 +46,7 @@ void IndexBuffer::bind() const
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO));
 }
 
-void IndexBuffer::unbind() const
+void IndexBuffer::unbind()
 {
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }

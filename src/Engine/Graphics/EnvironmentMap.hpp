@@ -15,31 +15,31 @@ class EnvironmentMap
 public:
 	// Create an environment map from an HDR equirectangular map
 	EnvironmentMap(std::string_view hdrPath,
-				   std::shared_ptr<Shader> equirectangularToCubemapShader,
-				   std::shared_ptr<Shader> irradianceShader,
-				   std::shared_ptr<Shader> prefilterShader,
-				   std::shared_ptr<Shader> brdfShader);
+	               const std::shared_ptr<Shader>& equirectangularToCubemapShader,
+				   const std::shared_ptr<Shader>& irradianceShader,
+				   const std::shared_ptr<Shader>& prefilterShader,
+				   const std::shared_ptr<Shader>& brdfShader);
 	~EnvironmentMap();
 
 	// Generate different maps for PBR rendering
-	void generateIrradianceMap(std::shared_ptr<Shader> irradianceShader);
-	void generatePrefilterMap(std::shared_ptr<Shader> prefilterShader);
-	void generateBRDFLUT(std::shared_ptr<Shader> brdfShader);
+	void generateIrradianceMap(const std::shared_ptr<Shader>& irradianceShader);
+	void generatePrefilterMap(const std::shared_ptr<Shader>& prefilterShader);
+	void generateBRDFLUT(const std::shared_ptr<Shader>& brdfShader);
 
 	// Texture binding utilities
-	void bindIrradiance(int slot);
-	void bindPrefilter(int slot);
-	void bindBRDFLUT(int slot);
-	void unbindIrradiance(int slot);
-	void unbindPrefilter(int slot);
-	void unbindBRDFLUT(int slot);
+	void bindIrradiance(int slot) const;
+	void bindPrefilter(int slot) const;
+	void bindBRDFLUT(int slot) const;
+	void unbindIrradiance(int slot) const;
+	void unbindPrefilter(int slot) const;
+	void unbindBRDFLUT(int slot) const;
 
 	bool isLoaded() const
 	{
 		return mSkyboxCubemap && mIrradianceCubemap && mPrefilterCubemap && mBRDFLUT;
 	}
 	// Draw the skybox
-	void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
+	void drawSkybox(const std::shared_ptr<Shader>& skyboxShader) const;
 
 private:
 

@@ -9,7 +9,7 @@
 namespace
 {
 	// Helper function to convert FrameBufferTextureFormat to OpenGL internal format
-	GLenum toGLInternalFormat(FrameBufferTextureFormat format)
+	GLenum toGLInternalFormat(const FrameBufferTextureFormat format)
 	{
 		switch (format)
 		{
@@ -34,7 +34,7 @@ namespace
 	}
 
 	// Helper function to convert FrameBufferTextureFormat to OpenGL format
-	GLenum toGLFormat(FrameBufferTextureFormat format)
+	GLenum toGLFormat(const FrameBufferTextureFormat format)
 	{
 		switch (format)
 		{
@@ -69,7 +69,7 @@ namespace
 	}
 
 	// Helper function to convert FrameBufferTextureFormat to OpenGL data type
-	GLenum toGLType(FrameBufferTextureFormat format)
+	GLenum toGLType(const FrameBufferTextureFormat format)
 	{
 		switch (format)
 		{
@@ -102,7 +102,7 @@ namespace
 	}
 
 	// Convert attachment type to OpenGL attachment point
-	GLenum getAttachmentPoint(FrameBufferAttachmentType type, int index = 0)
+	GLenum getAttachmentPoint(const FrameBufferAttachmentType type, const int index = 0)
 	{
 		switch (type)
 		{
@@ -197,65 +197,65 @@ FrameBuffer& FrameBuffer::operator=(FrameBuffer&& other) noexcept
 }
 
 // Implementation of OpenGL wrapper methods
-void FrameBuffer::genFramebuffers(unsigned int count, unsigned int* ids)
+void FrameBuffer::genFramebuffers(const unsigned int count, unsigned int* ids)
 {
 	GL_CHECK(glGenFramebuffers(count, ids));
 }
 
-void FrameBuffer::deleteFramebuffers(unsigned int count, const unsigned int* ids)
+void FrameBuffer::deleteFramebuffers(const unsigned int count, const unsigned int* ids)
 {
 	GL_CHECK(glDeleteFramebuffers(count, ids));
 }
 
-void FrameBuffer::bindFramebuffer(unsigned int target, unsigned int framebuffer)
+void FrameBuffer::bindFramebuffer(const unsigned int target, const unsigned int framebuffer)
 {
 	GL_CHECK(glBindFramebuffer(target, framebuffer));
 }
 
-void FrameBuffer::drawBuffer(unsigned int buffer)
+void FrameBuffer::drawBuffer(const unsigned int buffer)
 {
 	GL_CHECK(glDrawBuffer(buffer));
 }
 
-void FrameBuffer::drawBuffers(unsigned int n, const unsigned int* bufs)
+void FrameBuffer::drawBuffers(const unsigned int n, const unsigned int* bufs)
 {
 	GL_CHECK(glDrawBuffers(n, bufs));
 }
 
-void FrameBuffer::readBuffer(unsigned int src)
+void FrameBuffer::readBuffer(const unsigned int src)
 {
 	GL_CHECK(glReadBuffer(src));
 }
 
-void FrameBuffer::blitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1,
-								  int dstX0, int dstY0, int dstX1, int dstY1,
-								  unsigned int mask, unsigned int filter)
+void FrameBuffer::blitFramebuffer(const int srcX0, const int srcY0, const int srcX1, const int srcY1,
+								  const int dstX0, const int dstY0, const int dstX1, const int dstY1,
+								  const unsigned int mask, const unsigned int filter)
 {
 	GL_CHECK(glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter));
 }
 
-void FrameBuffer::clearBuffers(unsigned int mask)
+void FrameBuffer::clearBuffers(const unsigned int mask)
 {
 	GL_CHECK(glClear(mask));
 }
 
-void FrameBuffer::viewport(int x, int y, int width, int height)
+void FrameBuffer::viewport(const int x, const int y, const int width, const int height)
 {
 	GL_CHECK(glViewport(x, y, width, height));
 }
 
-void FrameBuffer::readPixelsBuffer(int x, int y, int width, int height, unsigned int format,
-								   unsigned int type, void* data)
+void FrameBuffer::readPixelsBuffer(const int x, const int y, const int width, const int height, const unsigned int format,
+								   const unsigned int type, void* data)
 {
 	GL_CHECK(glReadPixels(x, y, width, height, format, type, data));
 }
 
-unsigned int FrameBuffer::checkFramebufferStatus(unsigned int target)
+unsigned int FrameBuffer::checkFramebufferStatus(const unsigned int target)
 {
 	return glCheckFramebufferStatus(target);
 }
 
-void FrameBuffer::getIntegerv(unsigned int pname, int* params)
+void FrameBuffer::getIntegerv(const unsigned int pname, int* params)
 {
 	GL_CHECK(glGetIntegerv(pname, params));
 }
@@ -276,7 +276,7 @@ void FrameBuffer::cleanup()
 	// We don't need to explicitly delete the textures as they're managed by shared_ptr
 }
 
-void FrameBuffer::bind()
+void FrameBuffer::bind() const
 {
 	if (mRendererID == 0)
 	{
@@ -296,7 +296,7 @@ void FrameBuffer::unbind()
 	bindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::bindRead()
+void FrameBuffer::bindRead() const
 {
 	if (mRendererID == 0)
 	{
@@ -307,7 +307,7 @@ void FrameBuffer::bindRead()
 	bindFramebuffer(GL_READ_FRAMEBUFFER, mRendererID);
 }
 
-void FrameBuffer::bindDraw()
+void FrameBuffer::bindDraw() const
 {
 	if (mRendererID == 0)
 	{
@@ -365,7 +365,7 @@ void FrameBuffer::getViewport(int& x, int& y, int& width, int& height) const
 	height = mViewportH;
 }
 
-void FrameBuffer::clear(unsigned int mask)
+void FrameBuffer::clear(unsigned int mask) const
 {
 	bind();
 	clearBuffers(mask);
@@ -480,7 +480,7 @@ Texture& FrameBuffer::getColorAttachment(int index) const
 	return *mColorAttachments[index];
 }
 
-void FrameBuffer::setDrawBuffers(const std::vector<unsigned int>& attachments)
+void FrameBuffer::setDrawBuffers(const std::vector<unsigned int>& attachments) const
 {
 	bindDraw();
 	if (attachments.empty())
@@ -493,18 +493,18 @@ void FrameBuffer::setDrawBuffers(const std::vector<unsigned int>& attachments)
 	}
 }
 
-void FrameBuffer::setReadBuffer(unsigned int attachment)
+void FrameBuffer::setReadBuffer(const unsigned int attachment) const
 {
 	bindRead();
 	readBuffer(attachment);
 }
 
 void FrameBuffer::blitTo(
-	std::shared_ptr<FrameBuffer> dst,
+	const std::shared_ptr<FrameBuffer>& dst,
 	int srcX0, int srcY0, int srcX1, int srcY1,
 	int dstX0, int dstY0, int dstX1, int dstY1,
-	unsigned int mask,
-	unsigned int filter)
+	const unsigned int mask,
+	const unsigned int filter) const
 {
 	if (!dst)
 	{
@@ -547,7 +547,7 @@ void FrameBuffer::attachExternalTexture(
 	unsigned int attachment,
 	unsigned int target,
 	unsigned int textureID,
-	int mipLevel)
+	int mipLevel) const
 {
 	if (textureID == 0)
 	{

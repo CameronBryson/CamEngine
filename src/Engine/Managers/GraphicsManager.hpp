@@ -34,8 +34,9 @@ public:
 	void reloadShaders();
 
 	// Shader management
-	std::shared_ptr<Shader> loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string name);
-	std::shared_ptr<Shader> loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath, std::string name);
+	std::shared_ptr<Shader> loadShader(std::string_view vertexPath, std::string_view fragmentPath, const std::string& name);
+	std::shared_ptr<Shader> loadShader(std::string_view vertexPath, std::string_view fragmentPath, std::string_view geometryPath,
+	                                   const std::string& name);
 	std::shared_ptr<Shader> getShader(const std::string& name);
 
 	// Texture management
@@ -51,7 +52,10 @@ public:
 
 
 
-	std::shared_ptr<EnvironmentMap> loadEnvironmentMap(std::string name, std::string_view hdrPath, std::shared_ptr<Shader> equirectangularToCubemapShader, std::shared_ptr<Shader> irradianceShader, std::shared_ptr<Shader> prefilterShader, std::shared_ptr<Shader> brdfShader);
+	std::shared_ptr<EnvironmentMap> loadEnvironmentMap(std::string name, std::string_view hdrPath, const std::shared_ptr<Shader>
+	                                                   & equirectangularToCubemapShader, const std::shared_ptr<Shader>&
+	                                                   irradianceShader, const std::shared_ptr<Shader>& prefilterShader,
+	                                                   const std::shared_ptr<Shader>& brdfShader);
 	std::shared_ptr<EnvironmentMap> getEnvironmentMap(const std::string& name);
 
 
@@ -69,7 +73,7 @@ private:
 
 	std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory);
 	std::shared_ptr<Material> loadMaterial(aiMaterial* mat, const std::string& directory, const aiScene* scene);
-	std::vector<std::shared_ptr<Texture>> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& directory, const aiScene* scene);
-	void processNode(aiNode* node, const aiScene* scene, const std::string& directory, const glm::mat4& parentTransform, std::vector<MeshInstance>& meshInstances);
-	glm::mat4 aiMatrixToGlm(const aiMatrix4x4& aiMat);
+	std::vector<std::shared_ptr<Texture>> loadMaterialTextures(const aiMaterial* mat, aiTextureType type, const std::string& directory, const aiScene* scene);
+	void processNode(const aiNode* node, const aiScene* scene, const std::string& directory, const glm::mat4& parentTransform, std::vector<MeshInstance>& meshInstances);
+	static glm::mat4 aiMatrixToGlm(const aiMatrix4x4& aiMat);
 };

@@ -1,5 +1,6 @@
 # Visual Studio
 /.vs
+/.idea
 **.sln
 **.vcxproj
 **.vcxproj.user
