@@ -613,6 +613,14 @@ void SRender::buildRenderLists()
 		}
 	}
 
+	// Sort opaque objects by material to minimize state changes
+	std::sort(mOpaqueRenderList.begin(), mOpaqueRenderList.end(),
+			  [](const RenderItem& a, const RenderItem& b) {
+				  auto ma = a.mesh->getMaterial();
+				  auto mb = b.mesh->getMaterial();
+				  return ma < mb;
+			  });
+
 	// Sort transparent objects back-to-front
 	std::sort(mTransparentRenderList.begin(), mTransparentRenderList.end(),
 			  [](const RenderItem& a, const RenderItem& b) {
