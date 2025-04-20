@@ -11,72 +11,72 @@
 #include "Shader.hpp"
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned> indices, std::shared_ptr<Material> material)
-    : mMaterial(std::move(material)),
-      mVertices(std::move(vertices))
+	: mMaterial(std::move(material)),
+	mVertices(std::move(vertices))
 {
-    ASSERT_LOG(logging::gGraphicsLogger, !mVertices.empty() && !indices.empty(),
-               "Attempted to create Mesh '{}' with empty vertices or indices.", mName);
+	ASSERT_LOG(logging::gGraphicsLogger, !mVertices.empty() && !indices.empty(),
+			   "Attempted to create Mesh '{}' with empty vertices or indices.", mName);
 
 	mVertexArray = std::make_unique<VertexArray>(VertexBuffer(mVertices), IndexBuffer(indices));
 
 	calculateBoundingSphere();
-    LOG_TRACE(logging::gGraphicsLogger, "Mesh '{}' created with {} vertices and {} indices.", mName, mVertices.size(), mVertexArray->getIndexBuffer() ? mVertexArray->getIndexBuffer()->getCount() : 0);
+	LOG_TRACE(logging::gGraphicsLogger, "Mesh '{}' created with {} vertices and {} indices.", mName, mVertices.size(), mVertexArray->getIndexBuffer() ? mVertexArray->getIndexBuffer()->getCount() : 0);
 }
 
 Mesh::~Mesh()
 {
-    LOG_TRACE(logging::gGraphicsLogger, "Destroying Mesh '{}'.", mName);
+	LOG_TRACE(logging::gGraphicsLogger, "Destroying Mesh '{}'.", mName);
 }
 
 // Move constructor implementation
 Mesh::Mesh(Mesh&& other) noexcept
-    : mVertices(std::move(other.mVertices)),
-      mVertexArray(std::move(other.mVertexArray)),
-      mMaterial(std::move(other.mMaterial)),
-      mBoundingSphereCenter(other.mBoundingSphereCenter),
-      mBoundingSphereRadius(other.mBoundingSphereRadius),
-      mName(std::move(other.mName))
+	: mVertices(std::move(other.mVertices)),
+	mVertexArray(std::move(other.mVertexArray)),
+	mMaterial(std::move(other.mMaterial)),
+	mBoundingSphereCenter(other.mBoundingSphereCenter),
+	mBoundingSphereRadius(other.mBoundingSphereRadius),
+	mName(std::move(other.mName))
 {
-    LOG_TRACE(logging::gGraphicsLogger, "Mesh '{}' move constructed.", mName);
+	LOG_TRACE(logging::gGraphicsLogger, "Mesh '{}' move constructed.", mName);
 }
 
 // Move assignment operator implementation
 Mesh& Mesh::operator=(Mesh&& other) noexcept
 {
-    if (this != &other)
-    {
-        LOG_TRACE(logging::gGraphicsLogger, "Mesh '{}' move assigned from '{}'.", mName, other.mName);
-        mVertices = std::move(other.mVertices);
-        mVertexArray = std::move(other.mVertexArray);
-        mMaterial = std::move(other.mMaterial);
-        mBoundingSphereCenter = other.mBoundingSphereCenter;
-        mBoundingSphereRadius = other.mBoundingSphereRadius;
-        mName = std::move(other.mName);
+	if (this != &other)
+	{
+		LOG_TRACE(logging::gGraphicsLogger, "Mesh '{}' move assigned from '{}'.", mName, other.mName);
+		mVertices = std::move(other.mVertices);
+		mVertexArray = std::move(other.mVertexArray);
+		mMaterial = std::move(other.mMaterial);
+		mBoundingSphereCenter = other.mBoundingSphereCenter;
+		mBoundingSphereRadius = other.mBoundingSphereRadius;
+		mName = std::move(other.mName);
 
-        other.mBoundingSphereCenter = {};
-        other.mBoundingSphereRadius = 0.0f;
-    }
-    return *this;
+		other.mBoundingSphereCenter = {};
+		other.mBoundingSphereRadius = 0.0f;
+	}
+	return *this;
 }
 
 void Mesh::draw(glm::mat4 model) const
 {
 	if (!mMaterial)
 	{
-        LOG_WARN(logging::gGraphicsLogger, "Attempted to draw Mesh '{}' with no material.", mName);
-        return;
-    }
-    if (!mVertexArray)
-    {
-        LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw Mesh '{}' with no vertex array.", mName);
-        return;
-    }
-    auto shader = mMaterial->getShader();
-    if (!shader)
-    {
-        LOG_WARN(logging::gGraphicsLogger, "Attempted to draw Mesh '{}', but its material '{}' has no shader.", mName, mMaterial->getName());
-        return;
-    }
+		LOG_WARN(logging::gGraphicsLogger, "Attempted to draw Mesh '{}' with no material.", mName);
+		return;
+	}
+	if (!mVertexArray)
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw Mesh '{}' with no vertex array.", mName);
+		return;
+	}
+	auto shader = mMaterial->getShader();
+	if (!shader)
+	{
+		LOG_WARN(logging::gGraphicsLogger, "Attempted to draw Mesh '{}', but its material '{}' has no shader.", mName, mMaterial->getName());
+		return;
+	}
 
 	shader->use();
 	shader->setMat4("model", model);
@@ -84,13 +84,13 @@ void Mesh::draw(glm::mat4 model) const
 
 	mVertexArray->bind();
 
-    const auto& ib = mVertexArray->getIndexBuffer();
-    //if (!ib) {
-    //    LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw Mesh '{}', but it has no index buffer.", mName);
-    //    mVertexArray->unbind();
-    //    mMaterial->unbind();
-    //    return;
-    //}
+	const auto& ib = mVertexArray->getIndexBuffer();
+	//if (!ib) {
+	//    LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw Mesh '{}', but it has no index buffer.", mName);
+	//    mVertexArray->unbind();
+	//    mMaterial->unbind();
+	//    return;
+	//}
 
 	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(ib.getCount()), GL_UNSIGNED_INT, nullptr));
 
@@ -101,52 +101,53 @@ void Mesh::draw(glm::mat4 model) const
 void Mesh::draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bindMaterial) const
 {
 	if (!mVertexArray)
-    {
-        LOG_ERROR(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}' with no vertex array.", mName);
-        return;
-    }
-    if (!shadowShader) {
-        LOG_ERROR(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}' with a null shader.", mName);
-        return;
-    }
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}' with no vertex array.", mName);
+		return;
+	}
+	if (!shadowShader)
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}' with a null shader.", mName);
+		return;
+	}
 
 	if (bindMaterial)
 	{
 		if (!mMaterial)
 		{
-            LOG_WARN(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}' with material binding, but no material is set.", mName);
+			LOG_WARN(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}' with material binding, but no material is set.", mName);
 		}
 	}
 
-    shadowShader->use();
-    shadowShader->setMat4("model", model);
+	shadowShader->use();
+	shadowShader->setMat4("model", model);
 
 	if (bindMaterial && mMaterial)
-    {
+	{
 		mMaterial->bind(*shadowShader);
-    }
+	}
 
 	mVertexArray->bind();
 
-    const auto& ib = mVertexArray->getIndexBuffer();
-    //if (!ib) {
-    //    LOG_ERROR(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}', but it has no index buffer.", mName);
-    //    mVertexArray->unbind();
-    //    if (bindMaterial && mMaterial) mMaterial->unbind();
-    //    return;
-    //}
+	const auto& ib = mVertexArray->getIndexBuffer();
+	//if (!ib) {
+	//    LOG_ERROR(logging::gGraphicsLogger, "Attempted to shadow draw Mesh '{}', but it has no index buffer.", mName);
+	//    mVertexArray->unbind();
+	//    if (bindMaterial && mMaterial) mMaterial->unbind();
+	//    return;
+	//}
 
 	GL_CHECK(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(ib.getCount()), GL_UNSIGNED_INT, nullptr));
 	mVertexArray->unbind();
 	if (bindMaterial && mMaterial)
-    {
+	{
 		mMaterial->unbind();
-    }
+	}
 }
 
 void Mesh::setMaterial(const std::shared_ptr<Material>& material)
 {
-    LOG_TRACE(logging::gGraphicsLogger, "Setting material for Mesh '{}'.", mName);
+	LOG_TRACE(logging::gGraphicsLogger, "Setting material for Mesh '{}'.", mName);
 	mMaterial = material;
 }
 
@@ -172,10 +173,10 @@ float Mesh::getBoundingSphereRadius() const
 
 void Mesh::calculateBoundingSphere()
 {
-    LOG_TRACE(logging::gGraphicsLogger, "Calculating bounding sphere for Mesh '{}'.", mName);
+	LOG_TRACE(logging::gGraphicsLogger, "Calculating bounding sphere for Mesh '{}'.", mName);
 	if (mVertices.empty())
 	{
-        LOG_WARN(logging::gGraphicsLogger, "Cannot calculate bounding sphere for Mesh '{}': No vertices.", mName);
+		LOG_WARN(logging::gGraphicsLogger, "Cannot calculate bounding sphere for Mesh '{}': No vertices.", mName);
 		mBoundingSphereCenter = glm::vec3(0.0f);
 		mBoundingSphereRadius = 0.0f;
 		return;
@@ -204,8 +205,8 @@ void Mesh::calculateBoundingSphere()
 
 	// Add small padding to ensure complete coverage
 	mBoundingSphereRadius *= 1.01f;
-    LOG_DEBUG(logging::gGraphicsLogger, "Mesh '{}' bounding sphere calculated: Center=({:.2f}, {:.2f}, {:.2f}), Radius={:.2f}", 
-              mName, mBoundingSphereCenter.x, mBoundingSphereCenter.y, mBoundingSphereCenter.z, mBoundingSphereRadius);
+	LOG_DEBUG(logging::gGraphicsLogger, "Mesh '{}' bounding sphere calculated: Center=({:.2f}, {:.2f}, {:.2f}), Radius={:.2f}",
+			  mName, mBoundingSphereCenter.x, mBoundingSphereCenter.y, mBoundingSphereCenter.z, mBoundingSphereRadius);
 }
 
 

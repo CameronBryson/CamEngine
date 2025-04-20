@@ -1,7 +1,7 @@
 #include "pch.hpp"
 #include "BaseScene.hpp"
 #include "Engine/Components.hpp"
-BaseScene::BaseScene() : mRenderSystem(this),  mTransformSystem(this)
+BaseScene::BaseScene() : mRenderSystem(this), mTransformSystem(this)
 {
 }
 void BaseScene::init()

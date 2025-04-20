@@ -15,12 +15,13 @@
 #include <stb_image.h>
 #include <memory>
 
-namespace {
-    // Constants for generated map resolutions and mip levels
-    constexpr unsigned int IRRADIANCE_MAP_SIZE = 32;
-    constexpr unsigned int PREFILTER_MAP_SIZE = 128;
-    constexpr unsigned int PREFILTER_MAX_MIP_LEVELS = 5;
-    constexpr unsigned int BRDF_LUT_SIZE = 512;
+namespace
+{
+	// Constants for generated map resolutions and mip levels
+	constexpr unsigned int IRRADIANCE_MAP_SIZE = 32;
+	constexpr unsigned int PREFILTER_MAP_SIZE = 128;
+	constexpr unsigned int PREFILTER_MAX_MIP_LEVELS = 5;
+	constexpr unsigned int BRDF_LUT_SIZE = 512;
 } // anonymous namespace
 
 // Static view matrices for cubemap faces (constant for all cubemap operations)
@@ -43,17 +44,17 @@ static const glm::mat4 captureViews[] =
 
 
 EnvironmentMap::EnvironmentMap(std::string_view hdrPath,
-							  std::shared_ptr<Shader> equirectangularToCubemapShader,
-							  std::shared_ptr<Shader> irradianceShader,
-							  std::shared_ptr<Shader> prefilterShader,
-							  std::shared_ptr<Shader> brdfShader)
+							   std::shared_ptr<Shader> equirectangularToCubemapShader,
+							   std::shared_ptr<Shader> irradianceShader,
+							   std::shared_ptr<Shader> prefilterShader,
+							   std::shared_ptr<Shader> brdfShader)
 {
-    LOG_INFO(logging::gGraphicsLogger, "Creating EnvironmentMap from HDR: {}", hdrPath);
-    // --- Error Checking for Shaders --- Use ASSERT_LOG ---
-    ASSERT_LOG(logging::gGraphicsLogger, equirectangularToCubemapShader != nullptr, "EnvironmentMap requires a valid EquirectangularToCubemap shader.");
-    ASSERT_LOG(logging::gGraphicsLogger, irradianceShader != nullptr, "EnvironmentMap requires a valid Irradiance shader.");
-    ASSERT_LOG(logging::gGraphicsLogger, prefilterShader != nullptr, "EnvironmentMap requires a valid Prefilter shader.");
-    ASSERT_LOG(logging::gGraphicsLogger, brdfShader != nullptr, "EnvironmentMap requires a valid BRDF shader.");
+	LOG_INFO(logging::gGraphicsLogger, "Creating EnvironmentMap from HDR: {}", hdrPath);
+	// --- Error Checking for Shaders --- Use ASSERT_LOG ---
+	ASSERT_LOG(logging::gGraphicsLogger, equirectangularToCubemapShader != nullptr, "EnvironmentMap requires a valid EquirectangularToCubemap shader.");
+	ASSERT_LOG(logging::gGraphicsLogger, irradianceShader != nullptr, "EnvironmentMap requires a valid Irradiance shader.");
+	ASSERT_LOG(logging::gGraphicsLogger, prefilterShader != nullptr, "EnvironmentMap requires a valid Prefilter shader.");
+	ASSERT_LOG(logging::gGraphicsLogger, brdfShader != nullptr, "EnvironmentMap requires a valid BRDF shader.");
 
 	// Save current viewport to restore it later
 	GLint oldViewport[4];
@@ -80,19 +81,21 @@ void EnvironmentMap::generateIrradianceMap(std::shared_ptr<Shader> irradianceSha
 {
 	LOG_DEBUG(logging::gGraphicsLogger, "Generating Irradiance Map ({}x{})...", IRRADIANCE_MAP_SIZE, IRRADIANCE_MAP_SIZE);
 
-    if (!irradianceShader) {
-        LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Irradiance Map: Irradiance shader is missing.");
-        return;
-    }
-    if (!mSkyboxCubemap) {
-        LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Irradiance Map: Skybox cubemap is missing.");
-        return;
-    }
+	if (!irradianceShader)
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Irradiance Map: Irradiance shader is missing.");
+		return;
+	}
+	if (!mSkyboxCubemap)
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Irradiance Map: Skybox cubemap is missing.");
+		return;
+	}
 
 	// Create empty cubemap and texture object
 	GLuint irradianceCubemapID = Texture::createEmptyCubemap(IRRADIANCE_MAP_SIZE, Texture::Format::RGB16F);
 	mIrradianceCubemap = std::make_unique<Texture>(irradianceCubemapID, IRRADIANCE_MAP_SIZE, IRRADIANCE_MAP_SIZE, Texture::Type::CUBEMAP);
-	
+
 	// Set texture parameters
 	mIrradianceCubemap->setWrapMode(Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge);
 	mIrradianceCubemap->setFilterMode(Texture::FilterMode::Linear, Texture::FilterMode::Linear);
@@ -102,12 +105,12 @@ void EnvironmentMap::generateIrradianceMap(std::shared_ptr<Shader> irradianceSha
 		IRRADIANCE_MAP_SIZE,
 		IRRADIANCE_MAP_SIZE,
 		std::vector<FrameBufferAttachmentSpecification>{
-		    FrameBufferAttachmentSpecification(FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F, "IrradianceColor")
-	    },
-        1, // No multisampling needed for generation
-        "IrradianceFBO"
+		FrameBufferAttachmentSpecification(FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F, "IrradianceColor")
+	},
+		1, // No multisampling needed for generation
+		"IrradianceFBO"
 	);
-	
+
 	// Setup for irradiance convolution
 	fbo->bind();
 	irradianceShader->use();
@@ -138,19 +141,21 @@ void EnvironmentMap::generatePrefilterMap(std::shared_ptr<Shader> prefilterShade
 {
 	LOG_DEBUG(logging::gGraphicsLogger, "Generating Prefilter Map ({}x{}, {} mips)...", PREFILTER_MAP_SIZE, PREFILTER_MAP_SIZE, PREFILTER_MAX_MIP_LEVELS);
 
-    if (!prefilterShader) {
-        LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Prefilter Map: Prefilter shader is missing.");
-        return;
-    }
-    if (!mSkyboxCubemap) {
-        LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Prefilter Map: Skybox cubemap is missing.");
-        return;
-    }
+	if (!prefilterShader)
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Prefilter Map: Prefilter shader is missing.");
+		return;
+	}
+	if (!mSkyboxCubemap)
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Cannot generate Prefilter Map: Skybox cubemap is missing.");
+		return;
+	}
 
 	// Create empty cubemap with mipmaps
 	GLuint prefilterCubemapID = Texture::createEmptyCubemap(PREFILTER_MAP_SIZE, Texture::Format::RGB16F);
 	mPrefilterCubemap = std::make_unique<Texture>(prefilterCubemapID, PREFILTER_MAP_SIZE, PREFILTER_MAP_SIZE, Texture::Type::CUBEMAP);
-	
+
 	// Set parameters and generate mipmaps
 	mPrefilterCubemap->setWrapMode(Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge);
 	mPrefilterCubemap->setFilterMode(Texture::FilterMode::LinearMipmapLinear, Texture::FilterMode::Linear);
@@ -161,10 +166,10 @@ void EnvironmentMap::generatePrefilterMap(std::shared_ptr<Shader> prefilterShade
 		PREFILTER_MAP_SIZE, // Initial size, will be resized per mip
 		PREFILTER_MAP_SIZE,
 		std::vector<FrameBufferAttachmentSpecification>{
-		    FrameBufferAttachmentSpecification(FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F, "PrefilterColor")
-	    },
-        1, // No multisampling
-        "PrefilterFBO"
+		FrameBufferAttachmentSpecification(FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA16F, "PrefilterColor")
+	},
+		1, // No multisampling
+		"PrefilterFBO"
 	);
 
 	// Setup shader uniforms
@@ -177,16 +182,16 @@ void EnvironmentMap::generatePrefilterMap(std::shared_ptr<Shader> prefilterShade
 	for (unsigned int mip = 0; mip < PREFILTER_MAX_MIP_LEVELS; ++mip)
 	{
 		// Resize based on mip level
-        // Use std::max to prevent 0x0 dimension for the last mip level if size isn't power of 2
+		// Use std::max to prevent 0x0 dimension for the last mip level if size isn't power of 2
 		unsigned int mipWidth = std::max(1u, static_cast<unsigned int>(PREFILTER_MAP_SIZE * std::pow(0.5, mip)));
 		unsigned int mipHeight = std::max(1u, static_cast<unsigned int>(PREFILTER_MAP_SIZE * std::pow(0.5, mip)));
 		fbo->resize(mipWidth, mipHeight); // Framebuffer handles its own resizing
 		GL_CHECK(glViewport(0, 0, mipWidth, mipHeight));
-		
+
 		// Calculate roughness for this mip level
 		float roughness = (float)mip / (float)(PREFILTER_MAX_MIP_LEVELS - 1);
 		prefilterShader->setFloat("roughness", roughness);
-		
+
 		fbo->bind();
 
 		// Render to all six faces for this mip level
@@ -211,15 +216,16 @@ void EnvironmentMap::generatePrefilterMap(std::shared_ptr<Shader> prefilterShade
 void EnvironmentMap::generateBRDFLUT(std::shared_ptr<Shader> brdfShader)
 {
 	LOG_DEBUG(logging::gGraphicsLogger, "Generating BRDF LUT ({}x{})...", BRDF_LUT_SIZE, BRDF_LUT_SIZE);
-    if (!brdfShader) {
-        LOG_ERROR(logging::gGraphicsLogger, "Cannot generate BRDF LUT: BRDF shader is missing.");
-        return;
-    }
+	if (!brdfShader)
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Cannot generate BRDF LUT: BRDF shader is missing.");
+		return;
+	}
 
 	// Create empty 2D texture for the BRDF lookup table
 	GLuint brdfLUTID = Texture::createEmptyTexture2D(BRDF_LUT_SIZE, BRDF_LUT_SIZE, Texture::Format::RG);
 	mBRDFLUT = std::make_unique<Texture>(brdfLUTID, BRDF_LUT_SIZE, BRDF_LUT_SIZE, Texture::Type::TEXTURE_2D);
-	
+
 	// Set appropriate texture parameters
 	mBRDFLUT->setWrapMode(Texture::WrapMode::ClampToEdge, Texture::WrapMode::ClampToEdge);
 	mBRDFLUT->setFilterMode(Texture::FilterMode::Linear, Texture::FilterMode::Linear);
@@ -229,19 +235,19 @@ void EnvironmentMap::generateBRDFLUT(std::shared_ptr<Shader> brdfShader)
 		BRDF_LUT_SIZE,
 		BRDF_LUT_SIZE,
 		std::vector<FrameBufferAttachmentSpecification>{
-		    FrameBufferAttachmentSpecification(FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RG16F, "BRDFColor")
-	    },
-        1, // No multisampling
-        "BRDFLUT_FBO"
+		FrameBufferAttachmentSpecification(FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RG16F, "BRDFColor")
+	},
+		1, // No multisampling
+		"BRDFLUT_FBO"
 	);
-	
+
 	// Render the BRDF integration map
 	fbo->bind();
 	GL_CHECK(glViewport(0, 0, BRDF_LUT_SIZE, BRDF_LUT_SIZE));
 	fbo->attachExternalTexture(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTID, 0);
 	fbo->setDrawBuffers({ GL_COLOR_ATTACHMENT0 });
 	fbo->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	brdfShader->use();
 	gl::drawQuad();
 	fbo->unbind();
@@ -250,47 +256,49 @@ void EnvironmentMap::generateBRDFLUT(std::shared_ptr<Shader> brdfShader)
 // Texture binding utilities
 void EnvironmentMap::bindIrradiance(int slot)
 {
-    if (mIrradianceCubemap) mIrradianceCubemap->bind(slot);
-    else LOG_WARN(logging::gGraphicsLogger, "Attempted to bind null Irradiance map.");
+	if (mIrradianceCubemap) mIrradianceCubemap->bind(slot);
+	else LOG_WARN(logging::gGraphicsLogger, "Attempted to bind null Irradiance map.");
 }
 
 void EnvironmentMap::bindPrefilter(int slot)
 {
-    if (mPrefilterCubemap) mPrefilterCubemap->bind(slot);
-    else LOG_WARN(logging::gGraphicsLogger, "Attempted to bind null Prefilter map.");
+	if (mPrefilterCubemap) mPrefilterCubemap->bind(slot);
+	else LOG_WARN(logging::gGraphicsLogger, "Attempted to bind null Prefilter map.");
 }
 
 void EnvironmentMap::bindBRDFLUT(int slot)
 {
-    if (mBRDFLUT) mBRDFLUT->bind(slot);
-    else LOG_WARN(logging::gGraphicsLogger, "Attempted to bind null BRDF LUT.");
+	if (mBRDFLUT) mBRDFLUT->bind(slot);
+	else LOG_WARN(logging::gGraphicsLogger, "Attempted to bind null BRDF LUT.");
 }
 
 void EnvironmentMap::unbindIrradiance(int slot)
 {
-    if (mIrradianceCubemap) mIrradianceCubemap->unbind(slot);
+	if (mIrradianceCubemap) mIrradianceCubemap->unbind(slot);
 }
 
 void EnvironmentMap::unbindPrefilter(int slot)
 {
-    if (mPrefilterCubemap) mPrefilterCubemap->unbind(slot);
+	if (mPrefilterCubemap) mPrefilterCubemap->unbind(slot);
 }
 
 void EnvironmentMap::unbindBRDFLUT(int slot)
 {
-    if (mBRDFLUT) mBRDFLUT->unbind(slot);
+	if (mBRDFLUT) mBRDFLUT->unbind(slot);
 }
 
 void EnvironmentMap::drawSkybox(std::shared_ptr<Shader>& skyboxShader)
 {
-    if (!skyboxShader) {
-        LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw skybox with null shader.");
-        return;
-    }
-    if (!mSkyboxCubemap) {
-        LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw null skybox cubemap.");
-        return;
-    }
+	if (!skyboxShader)
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw skybox with null shader.");
+		return;
+	}
+	if (!mSkyboxCubemap)
+	{
+		LOG_ERROR(logging::gGraphicsLogger, "Attempted to draw null skybox cubemap.");
+		return;
+	}
 	GL_CHECK(glDepthFunc(GL_LEQUAL));
 	skyboxShader->use();
 	skyboxShader->setInt("skybox", IBLSlots::SKYBOX); // Use defined slot

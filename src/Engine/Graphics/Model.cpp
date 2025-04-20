@@ -15,7 +15,8 @@ void Model::draw(glm::mat4 model) const
 {
 	for (const auto& meshInstance : mMeshes)
 	{
-		if (!meshInstance.mesh) {
+		if (!meshInstance.mesh)
+		{
 			LOG_WARN(logging::gGraphicsLogger, "Skipping draw for null mesh in Model '{}'.", mName);
 			continue;
 		}
@@ -26,13 +27,15 @@ void Model::draw(glm::mat4 model) const
 
 void Model::draw(std::shared_ptr<Shader>& shadowShader, glm::mat4 model, bool bindMaterial) const
 {
-	if (!shadowShader) {
+	if (!shadowShader)
+	{
 		LOG_ERROR(logging::gGraphicsLogger, "Attempted to shadow draw Model '{}' with a null shader.", mName);
 		return;
 	}
 	for (const auto& meshInstance : mMeshes)
 	{
-		if (!meshInstance.mesh) {
+		if (!meshInstance.mesh)
+		{
 			LOG_WARN(logging::gGraphicsLogger, "Skipping shadow draw for null mesh in Model '{}'.", mName);
 			continue;
 		}

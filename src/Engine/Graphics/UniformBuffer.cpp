@@ -24,7 +24,8 @@ UniformBuffer::UniformBuffer(unsigned int size, unsigned int binding) : mSize(si
 
 UniformBuffer::~UniformBuffer()
 {
-	if (mRendererID != 0) {
+	if (mRendererID != 0)
+	{
 		LOG_TRACE(logging::gGraphicsLogger, "Deleting UniformBuffer (ID: {}).", mRendererID);
 		GL_CHECK(glDeleteBuffers(1, &mRendererID));
 		mRendererID = 0; // Ensure ID is zeroed after deletion
@@ -34,8 +35,8 @@ UniformBuffer::~UniformBuffer()
 // Move constructor
 UniformBuffer::UniformBuffer(UniformBuffer&& other) noexcept
 	: mRendererID(other.mRendererID),
-	  mSize(other.mSize),
-	  mBinding(other.mBinding)
+	mSize(other.mSize),
+	mBinding(other.mBinding)
 {
 	// Invalidate other object
 	other.mRendererID = 0;
@@ -50,7 +51,8 @@ UniformBuffer& UniformBuffer::operator=(UniformBuffer&& other) noexcept
 	if (this != &other)
 	{
 		// Clean up existing resource
-		if (mRendererID != 0) {
+		if (mRendererID != 0)
+		{
 			GL_CHECK(glDeleteBuffers(1, &mRendererID));
 		}
 
@@ -70,16 +72,19 @@ UniformBuffer& UniformBuffer::operator=(UniformBuffer&& other) noexcept
 
 void UniformBuffer::setData(const void* data, unsigned int size, unsigned int offset)
 {
-	if (mRendererID == 0) {
+	if (mRendererID == 0)
+	{
 		LOG_ERROR(logging::gGraphicsLogger, "Attempted to set data on invalid UniformBuffer.");
 		return;
 	}
-	if (data == nullptr) {
+	if (data == nullptr)
+	{
 		LOG_WARN(logging::gGraphicsLogger, "Attempted to set null data on UniformBuffer (ID: {}).", mRendererID);
 		// Depending on use case, this might be valid or an error.
 		// return; // Or proceed if setting null data is intended.
 	}
-	if (offset + size > mSize) {
+	if (offset + size > mSize)
+	{
 		LOG_ERROR(logging::gGraphicsLogger, "UniformBuffer::setData out of bounds (Offset: {}, Size: {}, Buffer Size: {}).", offset, size, mSize);
 		// Option 1: Throw an exception
 		// throw std::out_of_range("UniformBuffer::setData out of bounds");
@@ -87,7 +92,7 @@ void UniformBuffer::setData(const void* data, unsigned int size, unsigned int of
 		// size = mSize - offset;
 		// if (size <= 0) return;
 		// Option 3: Just return and log
-		return; 
+		return;
 	}
 
 	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, mRendererID));

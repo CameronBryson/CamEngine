@@ -46,7 +46,7 @@ void SRender::init()
 void SRender::lateInit()
 {
 	calculateSceneBounds();
-  
+
 }
 
 void SRender::render(float dt)
@@ -96,7 +96,7 @@ void SRender::render(float dt)
 		mLightUBO->setData(&lightData, sizeof(LightData));
 		lightingPass();
 	}
-	
+
 	{
 		GL_SCOPED_MARKER("Forward Pass");
 		GL_SCOPED_TIMER("Forward Transparency");
@@ -149,7 +149,7 @@ void SRender::initFramebuffers()
 	GL_LABEL_OBJECT(GL_BUFFER, mCameraUBO->getID(), "Camera UBO");
 	mLightUBO = std::make_shared<UniformBuffer>(sizeof(LightData), LIGHT_BINDING);
 	GL_LABEL_OBJECT(GL_BUFFER, mLightUBO->getID(), "Light UBO");
-	
+
 
 	// Directional & Spot shadow map FBO
 	auto depthAttachment =
@@ -174,7 +174,7 @@ void SRender::initFramebuffers()
 		std::vector<FrameBufferAttachmentSpecification>{
 			{ FrameBufferAttachmentType::DepthCubemap, FrameBufferTextureFormat::Depth32F }
 	};
-	
+
 	mPointShadwMapBuffer = std::make_shared<FrameBuffer>(mShadowMapWidth, mShadowMapHeight, depthCubemapAttachment);
 	GL_LABEL_OBJECT(GL_FRAMEBUFFER, mPointShadwMapBuffer->getRendererID(), "Point Shadow FBO");
 	mPointShadwMapBuffer->getDepthAttachment().setShadowSamplerParameters();
@@ -212,23 +212,23 @@ void SRender::initFramebuffers()
 		std::vector<FrameBufferAttachmentSpecification>{
 			{ FrameBufferAttachmentType::Color, FrameBufferTextureFormat::RGBA8 }
 	};
-	mBloomFrameBuffer = std::make_shared<FrameBuffer>(settings::window_width/2, settings::window_height/2, colorAttachment);
+	mBloomFrameBuffer = std::make_shared<FrameBuffer>(settings::window_width / 2, settings::window_height / 2, colorAttachment);
 	for (int i = 0; i < 2; i++)
 	{
-		mPingPongFBO[i] = std::make_shared<FrameBuffer>(settings::window_width/2, settings::window_height/2, colorAttachment);
+		mPingPongFBO[i] = std::make_shared<FrameBuffer>(settings::window_width / 2, settings::window_height / 2, colorAttachment);
 		if (!mPingPongFBO[i]->isComplete())
 			throw std::runtime_error("Ping-pong framebuffer setup failed!");
 	}
 	mSSAOBuffer = std::make_shared<FrameBuffer>(
-		settings::window_width/2, 
-		settings::window_height/2, 
+		settings::window_width / 2,
+		settings::window_height / 2,
 		colorAttachment
 	);
 
 	// SSAO Blur buffer
 	mSSAOBlurBuffer = std::make_shared<FrameBuffer>(
-		settings::window_width/2, 
-		settings::window_height/2, 
+		settings::window_width / 2,
+		settings::window_height / 2,
 		colorAttachment
 	);
 
@@ -252,7 +252,7 @@ void SRender::initFramebuffers()
 		settings::window_height,
 		colorAttachment
 	);
-	
+
 }
 
 void SRender::calculateSceneBounds()
@@ -485,7 +485,7 @@ void SRender::buildSpotLights(LightData& lightData)
 // Render Passes
 // ------------------------------------------------------
 
-void SRender::updateCameraUniforms() 
+void SRender::updateCameraUniforms()
 {
 
 	CameraData cameraData;
@@ -495,7 +495,7 @@ void SRender::updateCameraUniforms()
 	// Apply the jitter to the projection matrix
 	// This will offset the projection slightly for each frame in the sequence
 	cameraData.projection = mScene->mCurrentCamera.getProjectionMatrix();
-	if(mTAAEnabled)
+	if (mTAAEnabled)
 	{
 		cameraData.projection[2][0] += mCurrentJitter.x;
 		cameraData.projection[2][1] += mCurrentJitter.y;
@@ -563,7 +563,7 @@ void SRender::buildRenderLists()
 			);
 
 			// Use maximum scale for radius
-			float maxScale = std::max({scale.x, scale.y, scale.z});
+			float maxScale = std::max({ scale.x, scale.y, scale.z });
 			float worldRadius = localRadius * maxScale;
 
 			// Transform center directly
@@ -582,7 +582,8 @@ void SRender::buildRenderLists()
 			bool isTransparent = false;
 
 			// More robust transparency detection
-			if (material) {
+			if (material)
+			{
 				// Check opacity value first
 				float opacity = material->getOpacity();
 
@@ -593,18 +594,20 @@ void SRender::buildRenderLists()
 				auto albedoTexture = material->getAlbedoTexture();
 
 				// Determine if transparent based on all criteria
-				if (opacity < 0.999f || opacityTexture != nullptr) {
+				if (opacity < 0.999f || opacityTexture != nullptr)
+				{
 					isTransparent = true;
 					transparentMeshes++;
 				}
 				// Check if material has albedo texture with alpha channel
-				else if (albedoTexture && albedoTexture->hasAlpha()) {
+				else if (albedoTexture && albedoTexture->hasAlpha())
+				{
 					isTransparent = true;
 					transparentMeshes++;
 				}
 			}
 
-			RenderItem item{meshInstance.mesh, finalTransform, distanceToCamera};
+			RenderItem item{ meshInstance.mesh, finalTransform, distanceToCamera };
 
 			if (isTransparent)
 				mTransparentRenderList.emplace_back(item);
@@ -615,7 +618,8 @@ void SRender::buildRenderLists()
 
 	// Sort opaque objects by material to minimize state changes
 	std::sort(mOpaqueRenderList.begin(), mOpaqueRenderList.end(),
-			  [](const RenderItem& a, const RenderItem& b) {
+			  [](const RenderItem& a, const RenderItem& b)
+			  {
 				  auto ma = a.mesh->getMaterial();
 				  auto mb = b.mesh->getMaterial();
 				  return ma < mb;
@@ -623,7 +627,8 @@ void SRender::buildRenderLists()
 
 	// Sort transparent objects back-to-front
 	std::sort(mTransparentRenderList.begin(), mTransparentRenderList.end(),
-			  [](const RenderItem& a, const RenderItem& b) {
+			  [](const RenderItem& a, const RenderItem& b)
+			  {
 				  return a.distance > b.distance;
 			  });
 
@@ -645,7 +650,7 @@ void SRender::shadowPass(const LightData& lightData)
 	// Front-face culling for shadow rendering
 	GL_CHECK(glCullFace(GL_FRONT));
 	GL_CHECK(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
-	
+
 	// Render directional, spot, and point shadows
 	{
 		GL_SCOPED_MARKER("Directional Shadows");
@@ -663,11 +668,11 @@ void SRender::shadowPass(const LightData& lightData)
 		renderPointShadows(lightData);
 	}
 
-	
+
 	// Restore back-face culling
 	GL_CHECK(glCullFace(GL_BACK));
 	GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
-	
+
 
 }
 
@@ -798,7 +803,8 @@ void SRender::lightingPass()
 	bindSkyboxResources(deferredShader);
 
 	// 6. Bind SSAO result if enabled
-	if (ssaoEnabled) {
+	if (ssaoEnabled)
+	{
 		mSSAOBlurBuffer->getColorAttachment(0).bind(SSAOSlots::SSAO_BLURRED_RESULT);
 		deferredShader->setInt("ssaoTexture", SSAOSlots::SSAO_BLURRED_RESULT);
 	}
@@ -819,7 +825,8 @@ void SRender::lightingPass()
 	mGBuffer->getColorAttachment(2).unbind(GBufferSlots::ROUGH_EMISSIVE);
 	mGBuffer->getDepthAttachment().unbind(GBufferSlots::DEPTH);
 
-	if (ssaoEnabled) {
+	if (ssaoEnabled)
+	{
 		mSSAOBlurBuffer->getColorAttachment(0).unbind(SSAOSlots::SSAO_BLURRED_RESULT);
 	}
 
@@ -883,7 +890,7 @@ void SRender::postProcessPass(float dt)
 		fxaaPass();
 	}
 
-   
+
 }
 
 // ------------------------------------------------------
@@ -901,9 +908,9 @@ void SRender::renderDirectionalShadows(const LightData& lightData)
 
 		mDirectionalShadowMapBuffer->bind();
 		mDirectionalShadowMapBuffer->clear(GL_DEPTH_BUFFER_BIT);
-		
+
 		drawRenderList(mOpaqueRenderList, shadowMapShader);
-		
+
 		mDirectionalShadowMapBuffer->unbind();
 	}
 }
@@ -1071,7 +1078,8 @@ void SRender::hdrPass()
 
 }
 
-void SRender::taaPass() {
+void SRender::taaPass()
+{
 	if (!mTAAEnabled) return;
 
 	auto taaShader = GameManager::mGraphicsManager->getShader("TAA");
@@ -1080,14 +1088,17 @@ void SRender::taaPass() {
 	mTAACurrentFrameBuffer->bind();
 
 	// Init history buffer on first frame
-	if (mFirstFrame) {
+	if (mFirstFrame)
+	{
 		mTAACurrentFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
 		mTAAPreviousFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
 		mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR_INPUT_OUTPUT);
 		taaShader->setInt("currentFrame", PostProcessSlots::HDR_INPUT_OUTPUT);
 		taaShader->setInt("previousFrame", PostProcessSlots::HDR_INPUT_OUTPUT);
 		mFirstFrame = false;
-	} else {
+	}
+	else
+	{
 		// Normal TAA pass bindings
 
 		mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR_INPUT_OUTPUT);
@@ -1128,79 +1139,79 @@ void SRender::taaPass() {
 
 
 
-   void SRender::fxaaPass()
-   {
-	   auto fxaaShader = GameManager::mGraphicsManager->getShader("FXAA");
-	   fxaaShader->use();
-
-	   
-	   // Use HDR framebuffer as input (which now contains the tonemapped result)
-	   mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR_INPUT_OUTPUT);
-	   fxaaShader->setInt("screenTexture", PostProcessSlots::HDR_INPUT_OUTPUT);
-	   fxaaShader->setBool("fxaaEnabled",mFXAAEnabled);
-
-	   // Set FXAA parameters
-	   fxaaShader->setVec2("inverseScreenSize", 
-						  glm::vec2(1.0f / settings::window_width, 1.0f / settings::window_height));
-	   fxaaShader->setFloat("EDGE_THRESHOLD_MIN", mFXAAEdgeThreshholdMin);
-	   fxaaShader->setFloat("EDGE_THRESHOLD_MAX", mFXAAEdgeThreshholdMax);
-	   fxaaShader->setFloat("SUBPIXEL_QUALITY", mFXAASubPixelQuality);
-
-	   // Draw fullscreen quad to apply FXAA directly to the screen
-	   gl::drawQuad();
-	   mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR_INPUT_OUTPUT);
-   }
+void SRender::fxaaPass()
+{
+	auto fxaaShader = GameManager::mGraphicsManager->getShader("FXAA");
+	fxaaShader->use();
 
 
-   void SRender::ssrPass()
-   {
-	   if (!mSSREnabled) return;
-	   auto ssrShader = GameManager::mGraphicsManager->getShader("SSR");
-	   ssrShader->use();
+	// Use HDR framebuffer as input (which now contains the tonemapped result)
+	mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR_INPUT_OUTPUT);
+	fxaaShader->setInt("screenTexture", PostProcessSlots::HDR_INPUT_OUTPUT);
+	fxaaShader->setBool("fxaaEnabled", mFXAAEnabled);
 
-	   mGBuffer->getColorAttachment(1).bind(GBufferSlots::NORMAL_METALLIC);
-	   ssrShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
+	// Set FXAA parameters
+	fxaaShader->setVec2("inverseScreenSize",
+						glm::vec2(1.0f / settings::window_width, 1.0f / settings::window_height));
+	fxaaShader->setFloat("EDGE_THRESHOLD_MIN", mFXAAEdgeThreshholdMin);
+	fxaaShader->setFloat("EDGE_THRESHOLD_MAX", mFXAAEdgeThreshholdMax);
+	fxaaShader->setFloat("SUBPIXEL_QUALITY", mFXAASubPixelQuality);
 
-	   mGBuffer->getColorAttachment(3).bind(GBufferSlots::VELOCITY_REFLECTIVE);
-	   ssrShader->setInt("gVelocityReflective", GBufferSlots::VELOCITY_REFLECTIVE);
-
-	   mGBuffer->getDepthAttachment().bind(GBufferSlots::DEPTH);
-	   ssrShader->setInt("gDepth", GBufferSlots::DEPTH);
-
-	   mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR_INPUT_OUTPUT);
-	   ssrShader->setInt("gSceneColor", PostProcessSlots::HDR_INPUT_OUTPUT);
-
-	   ssrShader->setFloat("uReflectionIntensity", mSSRReflectionIntensity);
-	   ssrShader->setFloat("uRayThickness", mSSRRayThickness);
-	   ssrShader->setInt("uMaxRaySteps", mSSRMaxRaySteps);
-	   ssrShader->setFloat("uMinReflectivity", mSSRMinReflectivity);
-	   ssrShader->setFloat("uReflectionFalloffDistance", mSSRReflectionFalloffDistance);
-	   ssrShader->setFloat("uRayOffset", mSSRRayOffset);
+	// Draw fullscreen quad to apply FXAA directly to the screen
+	gl::drawQuad();
+	mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR_INPUT_OUTPUT);
+}
 
 
-	   mSSRBuffer->bind();
-	   mSSRBuffer->clear(GL_COLOR_BUFFER_BIT);
-	   gl::drawQuad();
-	   mSSRBuffer->blitTo(mHDRFrameBuffer,
-						  0, 0, settings::window_width, settings::window_height,
-						  0, 0, settings::window_width, settings::window_height,
-						  GL_COLOR_BUFFER_BIT,
-						  GL_LINEAR);
-	   mSSRBuffer->unbind();
-	   mGBuffer->getColorAttachment(1).unbind(GBufferSlots::NORMAL_METALLIC);
-	   mGBuffer->getColorAttachment(3).unbind(GBufferSlots::VELOCITY_REFLECTIVE);
-	   mGBuffer->getDepthAttachment().unbind(GBufferSlots::DEPTH);
-	   mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR_INPUT_OUTPUT);
+void SRender::ssrPass()
+{
+	if (!mSSREnabled) return;
+	auto ssrShader = GameManager::mGraphicsManager->getShader("SSR");
+	ssrShader->use();
+
+	mGBuffer->getColorAttachment(1).bind(GBufferSlots::NORMAL_METALLIC);
+	ssrShader->setInt("gNormalMetallic", GBufferSlots::NORMAL_METALLIC);
+
+	mGBuffer->getColorAttachment(3).bind(GBufferSlots::VELOCITY_REFLECTIVE);
+	ssrShader->setInt("gVelocityReflective", GBufferSlots::VELOCITY_REFLECTIVE);
+
+	mGBuffer->getDepthAttachment().bind(GBufferSlots::DEPTH);
+	ssrShader->setInt("gDepth", GBufferSlots::DEPTH);
+
+	mHDRFrameBuffer->getColorAttachment(0).bind(PostProcessSlots::HDR_INPUT_OUTPUT);
+	ssrShader->setInt("gSceneColor", PostProcessSlots::HDR_INPUT_OUTPUT);
+
+	ssrShader->setFloat("uReflectionIntensity", mSSRReflectionIntensity);
+	ssrShader->setFloat("uRayThickness", mSSRRayThickness);
+	ssrShader->setInt("uMaxRaySteps", mSSRMaxRaySteps);
+	ssrShader->setFloat("uMinReflectivity", mSSRMinReflectivity);
+	ssrShader->setFloat("uReflectionFalloffDistance", mSSRReflectionFalloffDistance);
+	ssrShader->setFloat("uRayOffset", mSSRRayOffset);
 
 
-
-   }
+	mSSRBuffer->bind();
+	mSSRBuffer->clear(GL_COLOR_BUFFER_BIT);
+	gl::drawQuad();
+	mSSRBuffer->blitTo(mHDRFrameBuffer,
+					   0, 0, settings::window_width, settings::window_height,
+					   0, 0, settings::window_width, settings::window_height,
+					   GL_COLOR_BUFFER_BIT,
+					   GL_LINEAR);
+	mSSRBuffer->unbind();
+	mGBuffer->getColorAttachment(1).unbind(GBufferSlots::NORMAL_METALLIC);
+	mGBuffer->getColorAttachment(3).unbind(GBufferSlots::VELOCITY_REFLECTIVE);
+	mGBuffer->getDepthAttachment().unbind(GBufferSlots::DEPTH);
+	mHDRFrameBuffer->getColorAttachment(0).unbind(PostProcessSlots::HDR_INPUT_OUTPUT);
 
 
 
+}
 
 
-   
+
+
+
+
 
 
 
@@ -1354,7 +1365,7 @@ void SRender::drawImGui()
 					ImGui::Indent();
 					for (int i = 0; i < HALTON_SAMPLES; i++)
 					{
-						ImGui::Text("[%d]: (%.3f, %.3f)", i, 
+						ImGui::Text("[%d]: (%.3f, %.3f)", i,
 									mHaltonPattern[i].x, mHaltonPattern[i].y);
 					}
 					ImGui::Unindent();
@@ -1536,9 +1547,10 @@ void SRender::drawImGui()
 			ImGui::Separator();
 
 			// Common helper for displaying timing row
-			auto displayTiming = [](const char* label, float time) {
-				ImGui::Text("%s", label); ImGui::NextColumn();
-				ImGui::Text("%.2f", time); ImGui::NextColumn();
+			auto displayTiming = [](const char* label, float time)
+				{
+					ImGui::Text("%s", label); ImGui::NextColumn();
+					ImGui::Text("%.2f", time); ImGui::NextColumn();
 				};
 
 			// Main passes
@@ -1579,7 +1591,7 @@ void SRender::drawImGui()
 		}
 		else
 		{
-			ImGui::TextColored(ImVec4(1.0f, 0.7f, 0.7f, 1.0f), 
+			ImGui::TextColored(ImVec4(1.0f, 0.7f, 0.7f, 1.0f),
 							   "Enable GPU Profiling in Debug Settings to see detailed timings");
 		}
 	}
@@ -1602,7 +1614,8 @@ void SRender::generateSSAOKernel()
 	{
 		// Generate sample point in hemisphere
 		glm::vec3 sample;
-		do {
+		do
+		{
 			sample = glm::vec3(
 				randomFloats(generator) * 2.0f - 1.0f,
 				randomFloats(generator) * 2.0f - 1.0f,
@@ -1658,25 +1671,29 @@ void SRender::generateSSAONoise()
 	mSSAONoise = std::make_shared<Texture>(noiseTexture, SSAO_NOISE_SIZE, SSAO_NOISE_SIZE);
 }
 
-void SRender::generateHaltonSequence() {
+void SRender::generateHaltonSequence()
+{
 	mHaltonPattern.resize(HALTON_SAMPLES);
 
-	auto halton = [](int index, int base) -> float {
-		float f = 1.0f;
-		float r = 0.0f;
-		while (index > 0) {
-			f /= base;
-			r += f * (index % base);
-			index /= base;
-		}
-		return r;
+	auto halton = [](int index, int base) -> float
+		{
+			float f = 1.0f;
+			float r = 0.0f;
+			while (index > 0)
+			{
+				f /= base;
+				r += f * (index % base);
+				index /= base;
+			}
+			return r;
 		};
 
-	for (int i = 0; i < HALTON_SAMPLES; i++) {
+	for (int i = 0; i < HALTON_SAMPLES; i++)
+	{
 		float x = 2.0f * halton(i + 1, 2) - 1.0f; // Base 2 for X
 		float y = 2.0f * halton(i + 1, 3) - 1.0f;  // Base 3 for Y
 
-		float u = x /  settings::window_width;
+		float u = x / settings::window_width;
 		float v = y / settings::window_height;
 
 		mHaltonPattern[i] = glm::vec2(u, v);
@@ -1686,7 +1703,8 @@ void SRender::generateHaltonSequence() {
 
 void SRender::forwardPass()
 {
-	if (mTransparentRenderList.empty()) {
+	if (mTransparentRenderList.empty())
+	{
 		// Skip if no transparent objects
 		return;
 	}
@@ -1700,7 +1718,8 @@ void SRender::forwardPass()
 
 	bindSkyboxResources(forwardShader); // Binds IBL + Shadows, sets uniforms
 
-	if (ssaoEnabled) {
+	if (ssaoEnabled)
+	{
 		mSSAOBlurBuffer->getColorAttachment(0).bind(SSAOSlots::SSAO_BLURRED_RESULT);
 		forwardShader->setInt("ssaoTexture", SSAOSlots::SSAO_BLURRED_RESULT); // Ensure uniform is set correctly
 	}
@@ -1719,7 +1738,8 @@ void SRender::forwardPass()
 
 	mHDRFrameBuffer->unbind();
 
-	if (ssaoEnabled) {
+	if (ssaoEnabled)
+	{
 		// Unbind SSAO from its slot to be safe
 		mSSAOBlurBuffer->getColorAttachment(0).unbind(SSAOSlots::SSAO_BLURRED_RESULT);
 	}

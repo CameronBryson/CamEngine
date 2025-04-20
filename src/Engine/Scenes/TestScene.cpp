@@ -21,9 +21,9 @@ void TestScene::init()
 	mEnttRegistry.emplace<CTransform>(sceneRoot, glm::vec3{ 0, 0, 0 }, glm::vec3{ 0, 0, 0 }, glm::vec3{ 1, 1, 1 });
 	mEnttRegistry.emplace<CChildren>(sceneRoot);
 
-	
 
-	
+
+
 	auto testParent = mEnttRegistry.create();
 	mEnttRegistry.emplace<CTransform>(testParent, glm::vec3{ 0, 0, 0 }, glm::quat(), glm::vec3{ 1, 1, 1 });
 	mEnttRegistry.emplace<CParent>(testParent, sceneRoot);
@@ -34,7 +34,7 @@ void TestScene::init()
 	mEnttRegistry.emplace<CModel>(testModel, "Helmet");
 	glm::vec3 rotationEulerAngles = glm::radians(glm::vec3(0.0f, 0.0f, 180.0f)); // Adjust angles as needed
 	glm::quat rotationQuat = glm::quat(rotationEulerAngles);
-	mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -0.5}, rotationQuat, glm::vec3{1, 1, 1});
+	mEnttRegistry.emplace<CTransform>(testModel, glm::vec3{ 0, 0, -0.5 }, rotationQuat, glm::vec3{ 1, 1, 1 });
 	mEnttRegistry.emplace<CParent>(testModel, testParent);
 	mEnttRegistry.get<CChildren>(testParent).children.push_back(testModel);
 
@@ -68,11 +68,11 @@ void TestScene::init()
 	float linear = 0.22f;      // Reduced for larger scenes
 	float quadratic = 0.20f; // Reduced for larger scenes
 
-	 //Position the light higher and further back to better illuminate the chess piece
+	//Position the light higher and further back to better illuminate the chess piece
 	mEnttRegistry.emplace<CPointLight>(pointLight,
-		glm::vec3(9.0f, -3.0f, -3.5f), // Positioned above and closer to the chess piece
-		pointAmbient, pointDiffuse, pointSpecular,
-		constant, linear, quadratic);
+									   glm::vec3(9.0f, -3.0f, -3.5f), // Positioned above and closer to the chess piece
+									   pointAmbient, pointDiffuse, pointSpecular,
+									   constant, linear, quadratic);
 
 	// For the spot light, adjust similarly
 	//auto spotLight = mEnttRegistry.create();
@@ -108,26 +108,32 @@ void TestScene::init()
 
 }
 void TestScene::lateInit() { BaseScene::lateInit(); }
-void TestScene::update(float dt) {
+void TestScene::update(float dt)
+{
 	BaseScene::update(dt);
 
 	// Handle camera movement
 	float finalSpeed = mMoveSpeed;
-	if (engine_util::isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_LEFT_SHIFT))
+	{
 		finalSpeed *= 2.0f; // Unity-like fast movement with shift
 	}
 
 	// WASD movement (horizontal and forward/backward)
-	if (engine_util::isKeyPressed(GLFW_KEY_W)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_W))
+	{
 		mCurrentCamera.mPosition += mCurrentCamera.mFront * finalSpeed * dt;
 	}
-	if (engine_util::isKeyPressed(GLFW_KEY_S)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_S))
+	{
 		mCurrentCamera.mPosition -= mCurrentCamera.mFront * finalSpeed * dt;
 	}
-	if (engine_util::isKeyPressed(GLFW_KEY_A)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_A))
+	{
 		mCurrentCamera.mPosition -= mCurrentCamera.mRight * finalSpeed * dt;
 	}
-	if (engine_util::isKeyPressed(GLFW_KEY_D)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_D))
+	{
 		mCurrentCamera.mPosition += mCurrentCamera.mRight * finalSpeed * dt;
 	}
 	if (engine_util::isKeyPressed(GLFW_KEY_R))
@@ -136,30 +142,36 @@ void TestScene::update(float dt) {
 	}
 
 	// Q/E for vertical movement (Unity-like)
-	if (engine_util::isKeyPressed(GLFW_KEY_E) || engine_util::isKeyPressed(GLFW_KEY_SPACE)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_E) || engine_util::isKeyPressed(GLFW_KEY_SPACE))
+	{
 		mCurrentCamera.mPosition += mCurrentCamera.mWorldUp * finalSpeed * dt;
 	}
-	if (engine_util::isKeyPressed(GLFW_KEY_Q)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_Q))
+	{
 		mCurrentCamera.mPosition -= mCurrentCamera.mWorldUp * finalSpeed * dt;
 	}
 	// Arrow key camera rotation
 	float rotationSpeed = 100.0f * dt; // Adjust this value to change rotation speed
-	if (engine_util::isKeyPressed(GLFW_KEY_LEFT)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_LEFT))
+	{
 		mCurrentCamera.mYaw -= rotationSpeed;
 		mCurrentCamera.updateCamera();
 	}
-	if (engine_util::isKeyPressed(GLFW_KEY_RIGHT)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_RIGHT))
+	{
 		mCurrentCamera.mYaw += rotationSpeed;
 		mCurrentCamera.updateCamera();
 	}
-	if (engine_util::isKeyPressed(GLFW_KEY_UP)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_UP))
+	{
 		mCurrentCamera.mPitch += rotationSpeed;
 		// Constrain pitch to prevent camera flipping
 		if (mCurrentCamera.mPitch > 89.0f)
 			mCurrentCamera.mPitch = 89.0f;
 		mCurrentCamera.updateCamera();
 	}
-	if (engine_util::isKeyPressed(GLFW_KEY_DOWN)) {
+	if (engine_util::isKeyPressed(GLFW_KEY_DOWN))
+	{
 		mCurrentCamera.mPitch -= rotationSpeed;
 		// Constrain pitch to prevent camera flipping
 		if (mCurrentCamera.mPitch < -89.0f)
@@ -167,20 +179,23 @@ void TestScene::update(float dt) {
 		mCurrentCamera.updateCamera();
 	}
 	// Handle camera rotation with right mouse button
-	if (engine_util::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+	if (engine_util::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+	{
 		// Hide cursor when right mouse is pressed
 		glfwSetInputMode(GameManager::getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		double mouseX, mouseY;
 		glfwGetCursorPos(GameManager::getGLFWWindow(), &mouseX, &mouseY);
 
-		if (!mIsRightMousePressed) {
+		if (!mIsRightMousePressed)
+		{
 			// First frame of right click, just update last position
 			mIsRightMousePressed = true;
 			mLastMouseX = mouseX;
 			mLastMouseY = mouseY;
 		}
-		else {
+		else
+		{
 			// Calculate mouse movement
 			float xoffset = static_cast<float>(mouseX - mLastMouseX);
 			float yoffset = static_cast<float>(mLastMouseY - mouseY); // Reversed: y coordinates are bottom-to-top
@@ -206,9 +221,11 @@ void TestScene::update(float dt) {
 			mCurrentCamera.updateCamera();
 		}
 	}
-	else {
+	else
+	{
 		// Show cursor when right mouse is released
-		if (mIsRightMousePressed) {
+		if (mIsRightMousePressed)
+		{
 			glfwSetInputMode(GameManager::getGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			mIsRightMousePressed = false;
 		}
@@ -220,8 +237,8 @@ void TestScene::lateRender()
 {
 	BaseScene::lateRender();
 }
-void TestScene::shutdown() 
-{ 
+void TestScene::shutdown()
+{
 	BaseScene::shutdown();
 }
 void TestScene::lateShutdown() { BaseScene::lateShutdown(); }

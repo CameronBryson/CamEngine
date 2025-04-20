@@ -30,7 +30,7 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept
 	{
 		// Clean up existing resources
 		GL_CHECK(glDeleteBuffers(1, &mVBO));
-		
+
 		// Transfer ownership
 		mVBO = other.mVBO;
 		other.mVBO = 0;

@@ -13,7 +13,7 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <GameSettings.hpp>
-GLFWwindow * GameManager::mGameWindow = nullptr;
+GLFWwindow* GameManager::mGameWindow = nullptr;
 std::unique_ptr<BaseScene> GameManager::mCurrentScene = nullptr;
 std::unique_ptr<BaseScene> GameManager::mPendingScene = nullptr;
 
@@ -54,17 +54,19 @@ void GameManager::render(float dt)
 void GameManager::shutdown()
 {
 	LOG_INFO(logging::gEngineLogger, "Shutting down current scene...");
-	if (mCurrentScene) {
+	if (mCurrentScene)
+	{
 		mCurrentScene->shutdown();
 		mCurrentScene->lateShutdown();
 		mCurrentScene = nullptr;
 	}
 }
 
-void GameManager::finalShutdown() 
+void GameManager::finalShutdown()
 {
 	LOG_INFO(logging::gEngineLogger, "Performing final shutdown...");
-	if (mGraphicsManager) {
+	if (mGraphicsManager)
+	{
 		mGraphicsManager->unloadResources();
 	}
 	gl::shutdown();
@@ -136,7 +138,7 @@ void GameManager::gameLoop()
 		update(static_cast<float>(deltaTime));
 		render(static_cast<float>(deltaTime));
 		gl::endFrame();
-		
+
 		// End frame
 		glfwSwapBuffers(mGameWindow);
 
@@ -157,12 +159,12 @@ void GameManager::gameLoop()
 }
 
 
-GLFWwindow * GameManager::getGLFWWindow()
+GLFWwindow* GameManager::getGLFWWindow()
 {
 	return mGameWindow;
 }
 
-void GameManager::setGLFWWindow(GLFWwindow * window)
+void GameManager::setGLFWWindow(GLFWwindow* window)
 {
 	mGameWindow = window;
 }

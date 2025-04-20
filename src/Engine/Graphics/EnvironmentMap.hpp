@@ -14,11 +14,11 @@ class EnvironmentMap
 {
 public:
 	// Create an environment map from an HDR equirectangular map
-	EnvironmentMap(std::string_view hdrPath, 
-	              std::shared_ptr<Shader> equirectangularToCubemapShader, 
-	              std::shared_ptr<Shader> irradianceShader, 
-	              std::shared_ptr<Shader> prefilterShader, 
-	              std::shared_ptr<Shader> brdfShader);
+	EnvironmentMap(std::string_view hdrPath,
+				   std::shared_ptr<Shader> equirectangularToCubemapShader,
+				   std::shared_ptr<Shader> irradianceShader,
+				   std::shared_ptr<Shader> prefilterShader,
+				   std::shared_ptr<Shader> brdfShader);
 	~EnvironmentMap();
 
 	// Generate different maps for PBR rendering
@@ -42,7 +42,7 @@ public:
 	void drawSkybox(std::shared_ptr<Shader>& skyboxShader);
 
 private:
-	
+
 	std::unique_ptr<Texture> mSkyboxCubemap;
 	std::unique_ptr<Texture> mIrradianceCubemap;
 	std::unique_ptr<Texture> mPrefilterCubemap;

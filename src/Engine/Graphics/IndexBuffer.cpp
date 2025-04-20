@@ -31,7 +31,7 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
 	{
 		// Clean up existing resources
 		GL_CHECK(glDeleteBuffers(1, &mEBO));
-		
+
 		// Transfer ownership
 		mEBO = other.mEBO;
 		mCount = other.mCount;

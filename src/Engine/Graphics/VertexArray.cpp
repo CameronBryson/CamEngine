@@ -6,7 +6,7 @@
 #include "VertexBuffer.hpp"
 #include "OpenGLUtil.hpp"
 
-VertexArray::VertexArray(VertexBuffer vertexBuffer, IndexBuffer indexBuffer) : mVertexBuffer(std::move(vertexBuffer)),mIndexBuffer(std::move(indexBuffer))
+VertexArray::VertexArray(VertexBuffer vertexBuffer, IndexBuffer indexBuffer) : mVertexBuffer(std::move(vertexBuffer)), mIndexBuffer(std::move(indexBuffer))
 {
 	GL_CHECK(glGenVertexArrays(1, &mVAO));
 	GL_CHECK(glBindVertexArray(mVAO));
@@ -40,33 +40,33 @@ VertexArray::~VertexArray()
 }
 
 VertexArray::VertexArray(VertexArray&& other) noexcept
-    : mVAO(other.mVAO), 
-      mVertexBuffer(std::move(other.mVertexBuffer)),
-      mIndexBuffer(std::move(other.mIndexBuffer))
+	: mVAO(other.mVAO),
+	mVertexBuffer(std::move(other.mVertexBuffer)),
+	mIndexBuffer(std::move(other.mIndexBuffer))
 {
-    // Invalidate the other object's VAO handle
-    other.mVAO = 0;
+	// Invalidate the other object's VAO handle
+	other.mVAO = 0;
 }
 
 VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
 {
-    if (this != &other)
-    {
-        // Delete our current VAO
-        if (mVAO != 0)
-        {
-            GL_CHECK(glDeleteVertexArrays(1, &mVAO));
-        }
+	if (this != &other)
+	{
+		// Delete our current VAO
+		if (mVAO != 0)
+		{
+			GL_CHECK(glDeleteVertexArrays(1, &mVAO));
+		}
 
-        // Move resources from other to this
-        mVAO = other.mVAO;
-        mVertexBuffer = std::move(other.mVertexBuffer);
-        mIndexBuffer = std::move(other.mIndexBuffer);
+		// Move resources from other to this
+		mVAO = other.mVAO;
+		mVertexBuffer = std::move(other.mVertexBuffer);
+		mIndexBuffer = std::move(other.mIndexBuffer);
 
-        // Invalidate the other object's VAO handle
-        other.mVAO = 0;
-    }
-    return *this;
+		// Invalidate the other object's VAO handle
+		other.mVAO = 0;
+	}
+	return *this;
 }
 
 void VertexArray::bind() const

@@ -25,7 +25,7 @@ void Material::bind(Shader& bindShader)
 	LOG_TRACE(logging::gGraphicsLogger, "Binding Material '{}'.", mName);
 	bindShader.use();
 	// unbind(); // Consider if unbinding everything here first is necessary or efficient.
-             // It might be better to only unbind specific slots if textures change.
+			 // It might be better to only unbind specific slots if textures change.
 
 	// Base Properties
 	bindShader.setVec4("material.albedo", mAlbedo);
@@ -46,30 +46,34 @@ void Material::bind(Shader& bindShader)
 	int currentTextureUnit = MaterialSlots::ALBEDO; // Start with the first slot
 
 	// Helper lambda to bind texture and set uniforms
-	auto bindTexture = [&](const std::shared_ptr<Texture>& tex, const char* uniformName, const char* hasUniformName, int slot) {
-		if (tex) {
-			bindShader.setInt(uniformName, slot);
-			bindShader.setBool(hasUniformName, true);
-			tex->bind(slot);
-			// LOG_TRACE(logging::gGraphicsLogger, "Material '{}': Bound texture '{}' to slot {}", mName, tex->getName(), slot); // Requires Texture::getName()
-			return true;
-		} else {
-			bindShader.setBool(hasUniformName, false);
-			// Optionally unbind the slot if necessary, though often not needed if shaders check the 'has' flag
-			// GL_CHECK(glActiveTexture(GL_TEXTURE0 + slot));
-			// GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0)); 
-			return false;
-		}
-	};
+	auto bindTexture = [&](const std::shared_ptr<Texture>& tex, const char* uniformName, const char* hasUniformName, int slot)
+		{
+			if (tex)
+			{
+				bindShader.setInt(uniformName, slot);
+				bindShader.setBool(hasUniformName, true);
+				tex->bind(slot);
+				// LOG_TRACE(logging::gGraphicsLogger, "Material '{}': Bound texture '{}' to slot {}", mName, tex->getName(), slot); // Requires Texture::getName()
+				return true;
+			}
+			else
+			{
+				bindShader.setBool(hasUniformName, false);
+				// Optionally unbind the slot if necessary, though often not needed if shaders check the 'has' flag
+				// GL_CHECK(glActiveTexture(GL_TEXTURE0 + slot));
+				// GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0)); 
+				return false;
+			}
+		};
 
-	bindTexture(mAlbedoTexture,      "material.albedoMap",       "material.hasAlbedoMap",       currentTextureUnit++);
-	bindTexture(mNormalTexture,      "material.normalMap",       "material.hasNormalMap",       currentTextureUnit++);
-	bindTexture(mMetallicTexture,    "material.metallicMap",     "material.hasMetallicMap",     currentTextureUnit++);
-	bindTexture(mRoughnessTexture,   "material.roughnessMap",    "material.hasRoughnessMap",    currentTextureUnit++);
-	bindTexture(mAOTexture,          "material.AOMap",           "material.hasAOMap",           currentTextureUnit++);
-	bindTexture(mEmissiveTexture,    "material.emissiveMap",     "material.hasEmissiveMap",     currentTextureUnit++);
-	bindTexture(mMetalRoughTexture,  "material.metalRoughMap",   "material.hasMetalRoughMap",   currentTextureUnit++);
-	bindTexture(mOpacityTexture,     "material.opacityMap",      "material.hasOpacityMap",      currentTextureUnit++);
+	bindTexture(mAlbedoTexture, "material.albedoMap", "material.hasAlbedoMap", currentTextureUnit++);
+	bindTexture(mNormalTexture, "material.normalMap", "material.hasNormalMap", currentTextureUnit++);
+	bindTexture(mMetallicTexture, "material.metallicMap", "material.hasMetallicMap", currentTextureUnit++);
+	bindTexture(mRoughnessTexture, "material.roughnessMap", "material.hasRoughnessMap", currentTextureUnit++);
+	bindTexture(mAOTexture, "material.AOMap", "material.hasAOMap", currentTextureUnit++);
+	bindTexture(mEmissiveTexture, "material.emissiveMap", "material.hasEmissiveMap", currentTextureUnit++);
+	bindTexture(mMetalRoughTexture, "material.metalRoughMap", "material.hasMetalRoughMap", currentTextureUnit++);
+	bindTexture(mOpacityTexture, "material.opacityMap", "material.hasOpacityMap", currentTextureUnit++);
 }
 
 void Material::unbind()
@@ -85,8 +89,10 @@ void Material::unbind()
 	};
 
 	// Unbind textures if they exist
-	for (const auto& tex : textures) {
-		if (tex) {
+	for (const auto& tex : textures)
+	{
+		if (tex)
+		{
 			// LOG_TRACE(logging::gGraphicsLogger, "Material '{}': Unbinding texture '{}' from slot {}", mName, tex->getName(), currentTextureUnit); // Requires Texture::getName()
 			tex->unbind(currentTextureUnit);
 		}

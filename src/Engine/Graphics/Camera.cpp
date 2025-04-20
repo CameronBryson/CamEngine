@@ -6,21 +6,21 @@
 #include "glm/ext/matrix_transform.hpp"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up,
-				float yaw , float pitch ) : mFront(glm::vec3(0.0f, 0.0f, -1.0f))
-		{
-			mPosition = std::move(position);
-			mWorldUp = std::move(up);
-			mYaw = yaw;
-			mPitch = pitch;
-			mFov = FOV;
-			updateCamera();
-			mProjectionMatrix = glm::perspective(glm::radians(mFov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
-			mViewMatrix = glm::lookAt(mPosition, mPosition + mFront, mUp);
-			mInverseProjectionMatrix = glm::inverse(mProjectionMatrix);
+			   float yaw, float pitch) : mFront(glm::vec3(0.0f, 0.0f, -1.0f))
+{
+	mPosition = std::move(position);
+	mWorldUp = std::move(up);
+	mYaw = yaw;
+	mPitch = pitch;
+	mFov = FOV;
+	updateCamera();
+	mProjectionMatrix = glm::perspective(glm::radians(mFov), static_cast<float>(settings::window_width) / static_cast<float>(settings::window_height), 0.1f, 10000.0f);
+	mViewMatrix = glm::lookAt(mPosition, mPosition + mFront, mUp);
+	mInverseProjectionMatrix = glm::inverse(mProjectionMatrix);
 
-			mPreviousProjectionMatrix = mProjectionMatrix;
-			mPreviousViewMatrix = mViewMatrix;
-		}
+	mPreviousProjectionMatrix = mProjectionMatrix;
+	mPreviousViewMatrix = mViewMatrix;
+}
 glm::mat4& Camera::getViewMatrix()
 {
 	return mViewMatrix;
@@ -39,7 +39,7 @@ glm::mat4& Camera::getInverseViewMatrix()
 }
 glm::mat4& Camera::getInverseProjectionMatrix()
 {
-   return mInverseProjectionMatrix;
+	return mInverseProjectionMatrix;
 }
 
 glm::mat4& Camera::getInverseViewProjectionMatrix()
@@ -99,9 +99,10 @@ std::array<glm::vec4, 6> Camera::getFrustumPlanes()
 	glm::mat4 VP = mProjectionMatrix * mViewMatrix;
 
 	// Helper lambda to normalize a plane
-	auto normalizePlane = [](const glm::vec4& plane) -> glm::vec4 {
-		float magnitude = glm::length(glm::vec3(plane));
-		return plane / magnitude;
+	auto normalizePlane = [](const glm::vec4& plane) -> glm::vec4
+		{
+			float magnitude = glm::length(glm::vec3(plane));
+			return plane / magnitude;
 		};
 
 	// Since glm is column-major, extract each row:
