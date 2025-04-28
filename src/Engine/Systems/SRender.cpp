@@ -670,8 +670,6 @@ void SRender::geometryPass() const
 	mGBuffer->setDrawBuffers({ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 });
 	mGBuffer->bind();
 
-	GL_CHECK(glEnable(GL_DEPTH_TEST));
-	GL_CHECK(glDepthMask(GL_TRUE)); // enable depth writes for geometry pass
 	GL_CHECK(glClear(GL_DEPTH_BUFFER_BIT));
 	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
 	//We dont want to clear depth pass
@@ -774,8 +772,6 @@ void SRender::lightingPass()
 	mHDRFrameBuffer->clear(GL_COLOR_BUFFER_BIT);
 
 	GL_CHECK(glDisable(GL_DEPTH_TEST));
-	GL_CHECK(glDisable(GL_CULL_FACE));
-
 	// 3. Setup deferred shader
 	auto deferredShader = GameManager::mGraphicsManager->getShader("Deferred");
 	deferredShader->use();
@@ -820,9 +816,7 @@ void SRender::lightingPass()
 	// 10. Unbind shadow maps and environment maps
 	unbindSkyboxResources();
 
-	// 11. Restore OpenGL state for skybox
 	GL_CHECK(glEnable(GL_DEPTH_TEST));
-	GL_CHECK(glEnable(GL_CULL_FACE));
 
 	// 12. Draw skybox
 	auto skyboxShader = GameManager::mGraphicsManager->getShader("Skybox");
@@ -839,9 +833,8 @@ void SRender::lightingPass()
 
 	// 13. Unbind HDR framebuffer
 	mHDRFrameBuffer->unbind();
+	GL_CHECK(glDisable(GL_DEPTH_TEST));
 
-	glDepthFunc(GL_LESS);
-	glDepthMask(GL_TRUE);
 }
 
 
@@ -1716,12 +1709,10 @@ void SRender::forwardPass()
 
 	GL_CHECK(glEnable(GL_BLEND));
 	GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); // Standard alpha blending
-	GL_CHECK(glDepthMask(GL_FALSE)); // disable depth writes for transparent pass
 
 	drawRenderList(mTransparentRenderList, forwardShader, true);
 
 	GL_CHECK(glDisable(GL_BLEND));
-	GL_CHECK(glDepthMask(GL_TRUE)); // restore depth writes
 
 	mHDRFrameBuffer->unbind();
 

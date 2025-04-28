@@ -172,7 +172,7 @@ private:
 	//SSR
 	bool mSSREnabled = true;
 	float mSSRReflectionIntensity = 1.2f;
-	float mSSRRayThickness = 0.05;
+	float mSSRRayThickness = 0.05f;
 	int mSSRMaxRaySteps = 96;
 	float mSSRMinReflectivity = 0.0f;
 	float mSSRReflectionFalloffDistance = 500.0f;

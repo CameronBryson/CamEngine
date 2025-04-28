@@ -89,8 +89,6 @@ namespace
 			return GL_UNSIGNED_INT;
 
 		case FrameBufferTextureFormat::Stencil8:
-			return GL_UNSIGNED_BYTE;
-
 		case FrameBufferTextureFormat::RGBA8:
 			return GL_UNSIGNED_BYTE;
 
