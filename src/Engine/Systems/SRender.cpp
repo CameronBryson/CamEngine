@@ -309,9 +309,6 @@ void SRender::calculateSceneBounds()
 	mSceneBounds.radius *= 1.1f;
 }
 
-// ------------------------------------------------------
-// Light Data Building
-// ------------------------------------------------------
 
 void SRender::buildLightData(LightData& lightData) const
 {
@@ -323,7 +320,7 @@ void SRender::buildLightData(LightData& lightData) const
 void SRender::buildDirectionalLights(LightData& lightData) const
 {
 	auto dirLightView = mScene->mEnttRegistry.view<CDirectionalLight>();
-	int numDirLights = 0;
+	unsigned numDirLights = 0;
 
 	for (auto entity : dirLightView)
 	{
@@ -388,7 +385,7 @@ void SRender::buildDirectionalLights(LightData& lightData) const
 void SRender::buildPointLights(LightData& lightData) const
 {
 	auto pointLightView = mScene->mEnttRegistry.view<CPointLight>();
-	int numPointLights = 0;
+	unsigned numPointLights = 0;
 
 	glm::mat4 shadowProjection = glm::perspective(glm::radians(90.0f), 1.0f, nearPlane, farPlane);
 
@@ -421,7 +418,7 @@ void SRender::buildPointLights(LightData& lightData) const
 void SRender::buildSpotLights(LightData& lightData) const
 {
 	auto spotLightView = mScene->mEnttRegistry.view<CSpotLight>();
-	int numSpotLights = 0;
+	unsigned numSpotLights = 0;
 
 	for (auto entity : spotLightView)
 	{
@@ -481,10 +478,6 @@ void SRender::buildSpotLights(LightData& lightData) const
 	lightData.counts.y = numSpotLights; // .y holds # of spot lights
 }
 
-// ------------------------------------------------------
-// Render Passes
-// ------------------------------------------------------
-
 void SRender::updateCameraUniforms() const
 {
 
@@ -492,8 +485,6 @@ void SRender::updateCameraUniforms() const
 	cameraData.cameraPos = glm::vec4(mScene->mCurrentCamera.mPosition, 0.0f);
 	cameraData.view = mScene->mCurrentCamera.getViewMatrix();
 
-	// Apply the jitter to the projection matrix
-	// This will offset the projection slightly for each frame in the sequence
 	cameraData.projection = mScene->mCurrentCamera.getProjectionMatrix();
 	if (mTAAEnabled)
 	{
@@ -632,10 +623,6 @@ void SRender::buildRenderLists()
 		                  return a.distance > b.distance;
 	                  });
 
-	// Log transparency statistics for debugging
-	//std::cout << "Total meshes: " << totalMeshes 
-	//    << ", Transparent: " << transparentMeshes 
-	//    << ", Culled: " << mCulledMeshes << std::endl;
 }
 
 
@@ -690,7 +677,7 @@ void SRender::geometryPass() const
 	//We dont want to clear depth pass
 	GL_CHECK(glDisable(GL_BLEND)); // Disable blending for G-Buffer pass
 	drawRenderList(mOpaqueRenderList, gBufferShader, true);
-
+	
 	mGBuffer->unbind();
 
 }
